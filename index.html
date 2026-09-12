@@ -86,6 +86,14 @@ button { font: inherit; }
   overflow: hidden;
   box-shadow: var(--shadow);
 }
+.story-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+.story-image.hidden { display: none; }
 .image-placeholder {
   width: 100%; height: 100%;
   display: grid;
@@ -277,6 +285,17 @@ button { font: inherit; }
 .inventory-item strong { display:block; color: var(--accent2); margin-bottom:4px; }
 .inventory-empty { color: var(--muted); margin-top: 14px; }
 
+
+.choice-copy { display: flex; flex-direction: column; gap: 3px; text-align: left; }
+.choice-dest {
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--accent2);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .9;
+}
+
 @media (max-width: 520px) {
   .app-shell { padding-left: 12px; padding-right: 12px; }
   .story-card { padding: 19px 16px 22px; }
@@ -298,9 +317,10 @@ button { font: inherit; }
 
     <main id="game" class="game" aria-live="polite">
       <section class="image-frame" id="imageFrame">
-        <div class="image-placeholder">
+        <img id="storyImage" class="story-image hidden" alt="" />
+        <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
-          <small id="imageLabel">Valombre — Prologue</small>
+          <small id="imageLabel">La-Grotte-de-Valombre-01</small>
         </div>
       </section>
 
@@ -565,6 +585,14 @@ const STORY = {
   }
 };
 
+// Numérotation façon livre-jeu : 1 page = 1 nœud narratif.
+// Le prologue est la page 01, puis les anciens chapitres 1 à 30 deviennent les pages 02 à 31.
+const PAGE_ORDER = ['start', ...Array.from({ length: 30 }, (_, i) => `c${i + 1}`)];
+const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
+const padPage = n => String(n).padStart(2, '0');
+const imageBaseForPage = n => `La-Grotte-de-Valombre-${padPage(n)}`;
+const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg'];
+
 function addItem(state, id, name, description) {
   if (!state.inventory[id]) state.inventory[id] = { name, description };
 }
@@ -588,6 +616,8 @@ const chapterNumber = document.getElementById('chapterNumber');
 const chapterTitle = document.getElementById('chapterTitle');
 const storyText = document.getElementById('storyText');
 const choices = document.getElementById('choices');
+const storyImage = document.getElementById('storyImage');
+const imagePlaceholder = document.getElementById('imagePlaceholder');
 const imageLabel = document.getElementById('imageLabel');
 const statusTags = document.getElementById('statusTags');
 const inventoryCount = document.getElementById('inventoryCount');
@@ -635,11 +665,38 @@ function enterNode(id) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function loadPageImage(pageNumber, title) {
+  const base = imageBaseForPage(pageNumber);
+  imageLabel.textContent = base;
+  storyImage.classList.add('hidden');
+  imagePlaceholder.style.display = 'grid';
+  storyImage.alt = title ? `Illustration — ${title}` : `Illustration page ${padPage(pageNumber)}`;
+
+  let index = 0;
+  const tryNext = () => {
+    if (index >= IMAGE_EXTENSIONS.length) {
+      storyImage.removeAttribute('src');
+      storyImage.classList.add('hidden');
+      imagePlaceholder.style.display = 'grid';
+      return;
+    }
+    const ext = IMAGE_EXTENSIONS[index++];
+    storyImage.onload = () => {
+      storyImage.classList.remove('hidden');
+      imagePlaceholder.style.display = 'none';
+    };
+    storyImage.onerror = tryNext;
+    storyImage.src = `./images/${base}.${ext}`;
+  };
+  tryNext();
+}
+
 function render() {
   const node = STORY[state.node] || STORY.start;
-  chapterNumber.textContent = node.number || '';
+  const pageNumber = PAGE_BY_NODE[state.node] || 1;
+  chapterNumber.textContent = `PAGE ${padPage(pageNumber)}`;
   chapterTitle.textContent = node.title || '';
-  imageLabel.textContent = node.image || node.title || '';
+  loadPageImage(pageNumber, node.title || '');
   storyText.innerHTML = typeof node.text === 'function' ? node.text(state) : node.text;
 
   const itemCount = Object.keys(state.inventory).length;
@@ -663,7 +720,11 @@ function render() {
   availableChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-index">${i + 1}</span>${choice.label}`;
+    const destinationPage = PAGE_BY_NODE[choice.to];
+    const destination = destinationPage
+      ? `<span class="choice-dest">Rendez-vous à la page ${padPage(destinationPage)}</span>`
+      : '';
+    btn.innerHTML = `<span class="choice-index">${i + 1}</span><span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
     btn.addEventListener('click', () => {
       if (typeof choice.effect === 'function') choice.effect(state);
       enterNode(choice.to);

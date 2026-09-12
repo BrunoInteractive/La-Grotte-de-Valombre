@@ -27,6 +27,26 @@ Ouvre l'adresse du jeu dans Safari, touche **Partager**, puis **Sur l'écran d'a
 
 Après une première ouverture en ligne, le service worker conserve le cœur de l'application en cache. Les images ajoutées ensuite dans `images/` seront également mises en cache après leur première consultation.
 
-## Ajouter les illustrations
+## Pages et illustrations
 
-Le dossier `images/` est prévu pour les illustrations de l'histoire. La version actuelle conserve volontairement les emplacements « IMAGE À VENIR » de la démo d'origine.
+L'histoire comporte maintenant **31 pages numérotées**. Chaque choix affiche la page de destination, comme dans un vrai livre-jeu.
+
+Les illustrations sont chargées automatiquement depuis le dossier `images/`.
+
+Pour la page 01, ajoute par exemple :
+
+`images/La-Grotte-de-Valombre-01.png`
+
+Pour la page 02 :
+
+`images/La-Grotte-de-Valombre-02.png`
+
+... jusqu'à la page 31.
+
+Extensions acceptées : `.webp`, `.png`, `.jpg`, `.jpeg`.
+
+Si une image manque, l'application conserve automatiquement l'emplacement **IMAGE À VENIR**. Tu peux donc remplir le dossier progressivement.
+
+Pour remplacer une image plus tard, remplace simplement le fichier sur GitHub en gardant le même nom. La version en ligne privilégie la nouvelle image et la remet ensuite en cache pour l'usage hors connexion.
+
+Le fichier `PAGES_ET_IMAGES.txt` donne la correspondance complète entre les 31 pages et les noms d'images.
