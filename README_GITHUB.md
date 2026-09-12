@@ -50,3 +50,10 @@ Si une image manque, l'application conserve automatiquement l'emplacement **IMAG
 Pour remplacer une image plus tard, remplace simplement le fichier sur GitHub en gardant le même nom. La version en ligne privilégie la nouvelle image et la remet ensuite en cache pour l'usage hors connexion.
 
 Le fichier `PAGES_ET_IMAGES.txt` donne la correspondance complète entre les 31 pages et les noms d'images.
+
+
+## Version « faux livre ancien »
+
+Cette version affiche chaque écran comme une page de livre-jeu : illustration en haut, texte en dessous, numéro de page et choix avec renvoi vers la page de destination.
+
+La logique du chapitre 10 a également été corrigée : l'avertissement de Père Auguste n'est rappelé que si le joueur a réellement lu la lettre dans la sacoche (page correspondant au chapitre 2). Sinon, le symbole de l'œil fermé reste inconnu du héros.

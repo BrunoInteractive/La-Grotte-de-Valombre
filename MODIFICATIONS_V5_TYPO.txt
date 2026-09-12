@@ -1,0 +1,9 @@
+V5 — Typographie plus « vrai livre-jeu »
+- Corps de texte Garamond/Times plus dense et plus noir.
+- Texte justifié, césure automatique, retraits de paragraphes.
+- Titre plus lourd et moins « Didot chic ».
+- Léger effet d'encre / impression pour casser le rendu web trop propre.
+- Papier un peu plus irrégulier.
+- Cartouches de choix rendus plus éditoriaux.
+- Une seule page conservée sur desktop et mobile.
+- Histoire, numérotation et système d'images inchangés.

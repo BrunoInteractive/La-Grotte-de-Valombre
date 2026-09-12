@@ -1,0 +1,12 @@
+LA GROTTE DE VALOMBRE — V4 LIVRE-JEU 80s
+
+- Une seule page visible sur desktop ET téléphone.
+- Typographie plus proche des livres-jeux classiques (polices système uniquement, donc compatible hors ligne).
+- Effet de pile de feuillets sur les côtés de la page.
+- Double filet intérieur, papier ivoire, ombres de tranche.
+- Image toujours en haut, texte en dessous.
+- Cartouches de choix plus travaillés, bandeau sombre « Rendez-vous à la page XX ».
+- Numérotation 01–31 inchangée.
+- Système d'images inchangé : images/La-Grotte-de-Valombre-XX.(webp|png|jpg|jpeg).
+- Correction conditionnelle de la lettre au chapitre 10 conservée.
+- Histoire et embranchements inchangés.
