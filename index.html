@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#10100f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-title" content="Valombre" />
+  <meta name="application-name" content="La Grotte de Valombre" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description" content="La Grotte de Valombre — livre-jeu interactif médiéval fantastique." />
+  <title>La Grotte de Valombre</title>
+  <style>
+:root {
+  --bg: #0e0f0f;
+  --panel: #171918;
+  --panel2: #1f2220;
+  --text: #f0eee6;
+  --muted: #aaa89e;
+  --line: #32352f;
+  --accent: #b8a46e;
+  --accent2: #d2bd81;
+  --danger: #b96f68;
+  --shadow: 0 18px 50px rgba(0,0,0,.36);
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(184,164,110,.08), transparent 40%),
+    var(--bg);
+  color: var(--text);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+button { font: inherit; }
+
+.app-shell {
+  min-height: 100vh;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 4px 14px;
+}
+.topbar h1 {
+  margin: 3px 0 0;
+  font-size: clamp(26px, 6vw, 38px);
+  line-height: 1.02;
+  font-weight: 600;
+}
+.eyebrow {
+  font-family: system-ui, -apple-system, sans-serif;
+  letter-spacing: .16em;
+  font-size: 10px;
+  color: var(--accent);
+}
+.icon-btn {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  font-family: system-ui, sans-serif;
+  font-size: 21px;
+}
+
+.game { padding-bottom: 92px; }
+.image-frame {
+  aspect-ratio: 16/9;
+  border: 1px solid var(--line);
+  background: #111311;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.image-placeholder {
+  width: 100%; height: 100%;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  text-align: center;
+  background:
+    linear-gradient(145deg, transparent 48%, rgba(184,164,110,.05) 49%, rgba(184,164,110,.05) 51%, transparent 52%),
+    radial-gradient(circle at center, #21231f 0, #141614 70%);
+  color: var(--muted);
+  font-family: system-ui, sans-serif;
+  letter-spacing: .16em;
+}
+.image-placeholder span { font-size: 11px; }
+.image-placeholder small { letter-spacing: .04em; opacity: .75; }
+
+.story-card {
+  margin-top: 16px;
+  background: linear-gradient(180deg, rgba(31,34,32,.96), rgba(23,25,24,.98));
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 22px 20px 24px;
+  box-shadow: var(--shadow);
+}
+.chapter-number {
+  font-family: system-ui, sans-serif;
+  color: var(--accent);
+  letter-spacing: .12em;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+.story-card h2 {
+  margin: 0 0 18px;
+  font-size: 29px;
+  font-weight: 600;
+}
+.story-text {
+  font-size: 18px;
+  line-height: 1.62;
+  color: #e9e5da;
+}
+.story-text p { margin: 0 0 1em; }
+.story-text blockquote {
+  margin: 1.1em 0;
+  padding: 10px 16px;
+  border-left: 2px solid var(--accent);
+  color: #d9d2bf;
+  font-style: italic;
+  background: rgba(184,164,110,.05);
+}
+.story-text ul { padding-left: 1.2em; }
+.story-text .ending {
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid rgba(184,164,110,.3);
+  border-radius: 12px;
+  text-align: center;
+  color: var(--accent2);
+  font-family: system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+.status-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
+.tag {
+  border: 1px solid rgba(184,164,110,.35);
+  background: rgba(184,164,110,.08);
+  color: #d7c796;
+  border-radius: 999px;
+  padding: 6px 9px;
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+}
+
+.choices { display: grid; gap: 10px; margin-top: 20px; }
+.choice-btn {
+  text-align: left;
+  width: 100%;
+  border: 1px solid #3a3d36;
+  background: #20231f;
+  color: var(--text);
+  padding: 15px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: .15s ease;
+  line-height: 1.35;
+}
+.choice-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.choice-btn:active { transform: translateY(0); }
+.choice-index {
+  display: inline-grid;
+  place-items: center;
+  width: 25px; height: 25px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background: rgba(184,164,110,.12);
+  color: var(--accent2);
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.footer {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(760px, 100%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  background: linear-gradient(180deg, rgba(14,15,15,0), rgba(14,15,15,.95) 30%);
+}
+.footer-btn, .drawer-action {
+  border: 1px solid var(--line);
+  background: rgba(31,34,32,.96);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+}
+.footer-btn span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px; height: 20px;
+  margin-left: 4px;
+  background: var(--accent);
+  color: #111;
+  border-radius: 999px;
+  font-weight: 800;
+}
+.danger { color: #d8a6a1; }
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.58);
+  backdrop-filter: blur(4px);
+  z-index: 30;
+}
+.hidden { display: none !important; }
+.drawer {
+  position: fixed;
+  top: 0; right: 0;
+  width: min(360px, 88vw);
+  height: 100%;
+  z-index: 40;
+  background: #171918;
+  border-left: 1px solid var(--line);
+  padding: max(18px, env(safe-area-inset-top)) 18px 18px;
+  transform: translateX(102%);
+  transition: transform .2s ease;
+  box-shadow: -20px 0 60px rgba(0,0,0,.4);
+}
+.drawer.open { transform: translateX(0); }
+.drawer-head { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.drawer-head h3 { margin:0; font-size:24px; }
+.drawer-action { display:block; width:100%; text-align:left; margin-top:12px; }
+.drawer-note { margin-top:22px; color:var(--muted); font: 12px/1.5 system-ui, sans-serif; }
+.danger-text { color:#d8a6a1; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+.modal-card {
+  width: min(520px, 100%);
+  max-height: 80vh;
+  overflow: auto;
+  background: #181a19;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.inventory-list { display:grid; gap:10px; margin-top:16px; }
+.inventory-item {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel2);
+}
+.inventory-item strong { display:block; color: var(--accent2); margin-bottom:4px; }
+.inventory-empty { color: var(--muted); margin-top: 14px; }
+
+@media (max-width: 520px) {
+  .app-shell { padding-left: 12px; padding-right: 12px; }
+  .story-card { padding: 19px 16px 22px; }
+  .story-text { font-size: 17px; }
+  .story-card h2 { font-size: 26px; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">LIVRE-JEU INTERACTIF</div>
+        <h1>La Grotte de Valombre</h1>
+      </div>
+      <button id="menuBtn" class="icon-btn" aria-label="Ouvrir le menu">☰</button>
+    </header>
+
+    <main id="game" class="game" aria-live="polite">
+      <section class="image-frame" id="imageFrame">
+        <div class="image-placeholder">
+          <span>IMAGE À VENIR</span>
+          <small id="imageLabel">Valombre — Prologue</small>
+        </div>
+      </section>
+
+      <section class="story-card">
+        <div class="chapter-number" id="chapterNumber"></div>
+        <h2 id="chapterTitle"></h2>
+        <div id="storyText" class="story-text"></div>
+        <div id="statusTags" class="status-tags"></div>
+        <div id="choices" class="choices"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button id="inventoryBtn" class="footer-btn">Inventaire <span id="inventoryCount">0</span></button>
+      <button id="restartBtn" class="footer-btn danger">Recommencer</button>
+    </footer>
+  </div>
+
+  <div id="drawerBackdrop" class="backdrop hidden"></div>
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <h3>Menu</h3>
+      <button id="closeDrawerBtn" class="icon-btn">×</button>
+    </div>
+    <button id="continueBtn" class="drawer-action">Continuer la partie</button>
+    <button id="drawerInventoryBtn" class="drawer-action">Voir l’inventaire</button>
+    <button id="drawerRestartBtn" class="drawer-action danger-text">Recommencer depuis le début</button>
+    <div class="drawer-note">La progression est sauvegardée automatiquement sur cet appareil.</div>
+  </aside>
+
+  <div id="modalBackdrop" class="backdrop hidden"></div>
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="drawer-head">
+        <h3 id="modalTitle">Inventaire</h3>
+        <button id="closeModalBtn" class="icon-btn">×</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+const STORY = {
+  start: {
+    number: 'PROLOGUE', title: 'Le cheval revenu seul', image: 'Valombre — Prologue',
+    text: `
+      <p>Depuis trois nuits, personne ne dort vraiment à Valombre.</p>
+      <p>À la tombée du jour, quelque chose hurle dans les collines. Ce n'est ni un loup, ni un homme.</p>
+      <p>La première nuit, les chiens du village ont aboyé jusqu'à l'aube. La deuxième, on a retrouvé trois chèvres éventrées derrière la maison du meunier. La troisième, le vieux Martin a disparu.</p>
+      <p>Ce matin, le seigneur de Valombre a envoyé son chevalier, <strong>Sir Aldren de Rochebrune</strong>, explorer les grottes situées au nord du village.</p>
+      <p>Tu es son écuyer. Mais Sir Aldren t'a ordonné de rester au village.</p>
+      <blockquote>« Je serai revenu avant le coucher du soleil. »</blockquote>
+      <p>Le soleil s'est couché depuis longtemps. Sir Aldren n'est pas revenu.</p>
+      <p>Son cheval, lui, est revenu seul. La selle est couverte de sang.</p>
+      <p>Accrochée à la selle, la sacoche de Sir Aldren est toujours là. Dans l'écurie, son ancienne épée repose contre le mur.</p>`,
+    choices: [
+      { label: "Prendre immédiatement l'épée et partir vers les grottes", to: 'c1' },
+      { label: 'Fouiller la sacoche de Sir Aldren avant de partir', to: 'c2' },
+      { label: "Demander de l'aide au village", to: 'c3' }
+    ]
+  },
+  c1: {
+    number: 'CHAPITRE 1', title: 'Le chemin des collines', image: 'Le chemin des collines',
+    text: `<p>Tu quittes Valombre avec l'épée de Sir Aldren.</p><p>Après une demi-heure de marche, tu découvres un cadavre au milieu du chemin. C'est le vieux Martin.</p><p>Ses yeux sont ouverts. Sa poitrine semble intacte. Mais sa bouche est remplie de terre noire.</p><p>À côté de lui, le chemin se divise. À gauche, le sentier principal monte vers la grotte. À droite, une piste étroite descend dans les bois.</p><p>Tu remarques des traces de bottes allant vers la forêt.</p>`,
+    choices: [
+      { label: 'Inspecter le cadavre', to: 'c4' },
+      { label: 'Suivre directement le sentier vers la grotte', to: 'c5' },
+      { label: 'Suivre les traces dans la forêt', to: 'c6' }
+    ]
+  },
+  c2: {
+    number: 'CHAPITRE 2', title: 'La sacoche', image: 'La sacoche de Sir Aldren',
+    text: `<p>À l'intérieur, tu trouves une petite lanterne à huile, trois pièces d'argent, un morceau de craie, une fiole contenant un liquide rouge sombre et une lettre pliée.</p><blockquote>« Aldren, les galeries sous Valombre sont plus anciennes que le village. Si tu trouves une porte portant le symbole de l'œil fermé, ne l'ouvre sous aucun prétexte. — Père Auguste. »</blockquote><p>Tu emportes la lanterne et la craie. Mais tu hésites devant la fiole.</p>`,
+    onEnter: s => { s.flags.lanterne = true; s.flags.craie = true; },
+    choices: [
+      { label: 'Prendre également la fiole rouge', to: 'c1', effect: s => addItem(s,'fiole','Fiole rouge','Un liquide rouge sombre trouvé dans la sacoche de Sir Aldren.') },
+      { label: 'Laisser la fiole et partir', to: 'c1' }
+    ]
+  },
+  c3: {
+    number: 'CHAPITRE 3', title: "Chercher de l'aide", image: 'La forge de Valombre',
+    text: `<p>Tu frappes chez plusieurs habitants. Personne ne veut sortir.</p><p>Finalement, le forgeron ouvre sa porte.</p><blockquote>« Aldren savait se battre. Si quelque chose l'a vaincu, toi et moi ne ferons pas mieux. »</blockquote><p>Il te donne cependant un petit marteau.</p><blockquote>« Prends ça. Ce n'est pas une épée, mais parfois il vaut mieux casser une serrure que combattre ce qu'elle protège. »</blockquote>`,
+    onEnter: s => addItem(s,'marteau','Marteau','Un lourd marteau donné par le forgeron.'),
+    choices: [{ label: 'Partir seul vers les collines', to: 'c1' }]
+  },
+  c4: {
+    number: 'CHAPITRE 4', title: 'Le mort', image: 'Le corps de Martin',
+    text: `<p>Tu t'agenouilles près de Martin. Quelque chose brille entre ses dents : une petite médaille de cuivre représentant un cercle traversé par trois lignes.</p><p>Au moment où tu te relèves, les yeux de Martin bougent. Sa main se referme brutalement sur ton poignet.</p><blockquote>« Il rêve sous la pierre… »</blockquote><p>Puis son corps se cambre.</p>`,
+    choices: [
+      { label: 'Reculer immédiatement', to: 'c7' },
+      { label: 'Essayer de lui parler', to: 'c8' },
+      { label: "Frapper Martin avec l'épée", to: 'c9' }
+    ]
+  },
+  c5: {
+    number: 'CHAPITRE 5', title: "L'entrée de la grotte", image: "L'entrée de la grotte",
+    text: s => `<p>La grotte apparaît entre deux rochers. Devant l'entrée repose le bouclier de Sir Aldren, fendu en deux. Une traînée de sang disparaît dans l'obscurité.</p><p>À l'intérieur, deux passages. Le premier descend profondément sous terre. Le second suit la paroi de la montagne.</p>${s.flags.craie ? `<p>Sur le sol, quelqu'un a tracé une flèche avec de la craie. Tu reconnais celle de Sir Aldren.</p>` : `<p>Sur le sol, quelqu'un a tracé une flèche blanche qui indique le passage descendant.</p>`}`,
+    choices: [
+      { label: 'Suivre les marques vers les profondeurs', to: 'c10' },
+      { label: "Emprunter l'autre galerie", to: 'c11' }
+    ]
+  },
+  c6: {
+    number: 'CHAPITRE 6', title: 'Les traces dans la forêt', image: 'La cabane dans les bois',
+    text: `<p>Les traces te conduisent jusqu'à une vieille cabane abandonnée. Une faible lumière passe sous la porte. Tu entends trois hommes parler à l'intérieur.</p><blockquote>« Le chevalier est encore vivant. »<br>« Plus pour longtemps. »<br>« À minuit, ils ouvriront la porte. »</blockquote>`,
+    choices: [
+      { label: 'Écouter encore', to: 'c12' },
+      { label: 'Entrer brutalement dans la cabane', to: 'c13' },
+      { label: 'Quitter discrètement les lieux et courir vers la grotte', to: 'c5' }
+    ]
+  },
+  c7: {
+    number: 'CHAPITRE 7', title: 'Le réveil', image: 'Martin se relève',
+    text: `<p>Tu recules. Martin se redresse lentement. Ses mouvements sont impossibles.</p><p>Quelque chose semble bouger sous la peau de son cou.</p><p>Tu cours. Derrière toi, Martin pousse un hurlement qui n'a plus rien d'humain.</p><p>Tu ne t'arrêtes qu'en apercevant la grotte.</p>`,
+    choices: [{ label: 'Entrer dans la grotte', to: 'c5' }]
+  },
+  c8: {
+    number: 'CHAPITRE 8', title: 'Mauvais choix', image: 'La chose dans la bouche de Martin', ending: true,
+    text: `<p>Tu te penches vers Martin.</p><blockquote>« Martin ? Qu'est-ce qui s'est passé ? »</blockquote><p>Il sourit. Sa mâchoire s'ouvre beaucoup trop largement.</p><p>Quelque chose de noir jaillit de sa bouche et s'enroule autour de ton cou. Tu essayes de crier. Impossible.</p><p>La dernière chose que tu vois est le visage du vieux Martin qui te regarde avec une expression presque désolée.</p><div class="ending">FIN — LE PREMIER HÔTE</div>`,
+    choices: []
+  },
+  c9: {
+    number: 'CHAPITRE 9', title: 'Le coup', image: 'La médaille de cuivre',
+    text: `<p>Tu frappes. Le corps de Martin retombe immédiatement.</p><p>Un liquide noir s'écoule de sa bouche. Au milieu de cette substance, quelque chose ressemblant à un gros ver se tortille quelques secondes avant de mourir.</p><p>Tu récupères la médaille.</p>`,
+    onEnter: s => addItem(s,'medaille','Médaille de cuivre','Un cercle traversé par trois lignes. Tu ignores encore sa fonction.'),
+    choices: [{ label: 'Poursuivre vers la grotte', to: 'c5' }]
+  },
+  c10: {
+    number: 'CHAPITRE 10', title: 'Les marques de craie', image: "La porte à l'œil fermé",
+    text: `<p>Tu descends longtemps. Les marques s'arrêtent devant une immense porte de pierre.</p><p>Au centre est gravé un symbole : <strong>un œil fermé</strong>.</p><p>Tu repenses à la lettre : « Ne l'ouvre sous aucun prétexte. »</p><p>Mais la traînée de sang passe sous cette porte. À quelques mètres, une seconde galerie descend encore plus profondément.</p>`,
+    choices: [
+      { label: 'Ouvrir la porte', to: 'c14' },
+      { label: 'Chercher un autre passage', to: 'c15' },
+      { label: 'Appeler Sir Aldren', to: 'c16' }
+    ]
+  },
+  c11: {
+    number: 'CHAPITRE 11', title: 'La galerie oubliée', image: 'Le squelette en armure',
+    text: `<p>La galerie devient de plus en plus étroite. Tu arrives dans une salle naturelle.</p><p>Au centre repose un squelette en armure, là depuis des siècles. Dans sa main se trouve une étrange dague noire.</p><blockquote>« Ce qui n'a pas de chair ne peut être tué par le fer. »</blockquote>`,
+    choices: [
+      { label: 'Prendre la dague noire', to: 'c15', effect: s => addItem(s,'dague','Dague noire','Une arme ancienne, glaciale au toucher.') },
+      { label: 'Laisser la dague', to: 'c15' }
+    ]
+  },
+  c12: {
+    number: 'CHAPITRE 12', title: 'Le complot', image: 'Les hommes dans la cabane',
+    text: `<p>Les hommes parlent d'un culte et d'une cérémonie. Ils mentionnent un nom : <strong>Le Dormeur de Valombre</strong>.</p><p>Sir Aldren a été capturé. Il doit être sacrifié à minuit.</p><blockquote>« Il faut la médaille. Sans elle, impossible d'ouvrir le sanctuaire. »</blockquote><p>Soudain, une branche craque sous ton pied. La porte de la cabane s'ouvre.</p>`,
+    choices: s => hasItem(s,'medaille')
+      ? [{ label: 'Montrer la médaille et improviser', to: 'c17' }]
+      : [{ label: 'Prendre la fuite', to: 'c18' }]
+  },
+  c13: {
+    number: 'CHAPITRE 13', title: "L'assaut", image: 'Combat dans la cabane', ending: true,
+    text: `<p>Tu défonces la porte. Trois hommes en robes sombres se retournent.</p><p>Le premier n'a pas le temps de réagir. Mais les deux autres sortent des couteaux.</p><p>Tu n'es pas encore un chevalier. Le combat est rapide. Une lame pénètre sous tes côtes.</p><p>À travers ta vision brouillée, tu les entends murmurer :</p><blockquote>« Un deuxième sacrifice ne fera pas de mal. »</blockquote><div class="ending">FIN — LE SACRIFICE</div>`,
+    choices: []
+  },
+  c14: {
+    number: 'CHAPITRE 14', title: 'La porte interdite', image: 'Ce qui dormait', ending: true,
+    text: `<p>Tu pousses la porte. Elle s'ouvre presque sans résistance.</p><p>Sir Aldren est là, attaché à une colonne.</p><blockquote>« NON ! »</blockquote><p>Son cri arrive trop tard. La porte se referme derrière toi.</p><p>Dans l'obscurité, quelque chose respire. Une respiration lente, profonde, ancienne.</p><p>Deux yeux s'ouvrent. Puis quatre. Puis des dizaines.</p><div class="ending">FIN — CE QUI DORMAIT</div>`,
+    choices: []
+  },
+  c15: {
+    number: 'CHAPITRE 15', title: 'Le sanctuaire', image: 'Le sanctuaire souterrain',
+    text: `<p>La galerie secondaire contourne la porte. Tu arrives au-dessus d'une grande salle souterraine.</p><p>En contrebas, six silhouettes en robes entourent Sir Aldren. Il est vivant, mais blessé.</p><p>Derrière lui se dresse une énorme porte de pierre couverte de symboles.</p>`,
+    choices: s => {
+      const arr = [];
+      if (hasItem(s,'marteau')) arr.push({ label: 'Briser le mécanisme avec le marteau', to: 'c19' });
+      if (hasItem(s,'dague')) arr.push({ label: 'Descendre discrètement avec la dague noire', to: 'c20' });
+      arr.push({ label: 'Attaquer directement', to: 'c21' });
+      return arr;
+    }
+  },
+  c16: {
+    number: 'CHAPITRE 16', title: 'Une voix familière', image: 'La voix derrière la porte',
+    text: `<p>« Sir Aldren ! »</p><p>Silence.</p><p>Puis une voix répond derrière la porte :</p><blockquote>« Je suis ici ! Ouvre ! »</blockquote><p>Tu poses la main sur la pierre. Mais quelque chose te dérange.</p><p>Sir Aldren ne t'appelle jamais par ton prénom.</p><blockquote>« Bruno… ouvre-moi. »</blockquote><p>Tu n'as jamais dit ton nom.</p>`,
+    choices: [
+      { label: 'Ouvrir malgré tout', to: 'c14' },
+      { label: 'Reculer et chercher un autre passage', to: 'c15' }
+    ]
+  },
+  c17: {
+    number: 'CHAPITRE 17', title: 'Le mensonge', image: 'La médaille montrée aux cultistes',
+    text: `<p>Les cultistes te trouvent devant la cabane. Tu montres immédiatement la médaille.</p><blockquote>« Martin m'a envoyé. »</blockquote><p>Les hommes hésitent. L'un d'eux examine le symbole puis sourit.</p><blockquote>« Alors viens. Nous avons besoin de toi. »</blockquote><p>Ils t'escortent jusqu'à la grotte.</p>`,
+    choices: [{ label: 'Les suivre jusqu’au sanctuaire', to: 'c22' }]
+  },
+  c18: {
+    number: 'CHAPITRE 18', title: 'La chasse', image: 'La fuite dans les bois', ending: true,
+    text: `<p>Les hommes sortent de la cabane. Tu cours. Ils te poursuivent dans les bois.</p><p>Un quatrième homme apparaît devant toi. Tu changes de direction.</p><p>Le sol disparaît sous tes pieds. Tu tombes dans un ravin.</p><p>La chute ne te tue pas immédiatement. Lorsque les cultistes te trouvent enfin, tu comprends que tu aurais préféré mourir dans la chute.</p><div class="ending">FIN — TROUVÉ DANS LES BOIS</div>`,
+    choices: []
+  },
+  c19: {
+    number: 'CHAPITRE 19', title: 'Le marteau', image: 'Le mécanisme brisé', ending: true,
+    text: `<p>Tu comprends que la porte est maintenue fermée par un ancien mécanisme.</p><p>Tu descends derrière les cultistes et frappes de toutes tes forces sur une pièce métallique.</p><p><strong>CRAC.</strong></p><p>Un engrenage se brise. La porte tremble. Le plafond commence à s'effondrer.</p><p>Tu cours vers Sir Aldren et tranches ses liens. Vous fuyez ensemble.</p><p>Au petit matin, Sir Aldren s'arrête devant l'entrée de la grotte.</p><blockquote>« Tu m'as désobéi. »</blockquote><p>Tu baisses les yeux. Il sourit.</p><blockquote>« Heureusement. »</blockquote><div class="ending">FIN — L'ÉCUYER DE VALOMBRE</div>`,
+    choices: []
+  },
+  c20: {
+    number: 'CHAPITRE 20', title: 'La dague noire', image: 'La dague noire contre le culte',
+    text: `<p>Tu te glisses derrière les cultistes. Un homme te voit. Tu plantes la dague noire dans sa poitrine.</p><p>Il ne crie pas. Son corps se transforme en une masse de poussière sombre.</p><p>Les autres reculent, terrifiés.</p><p>Sir Aldren crie :</p><blockquote>« La porte ! »</blockquote><p>Elle commence à s'ouvrir. Derrière elle apparaît une masse gigantesque.</p>`,
+    choices: [
+      { label: 'Fuir avec Sir Aldren', to: 'c23' },
+      { label: 'Attaquer la créature avec la dague', to: 'c24' }
+    ]
+  },
+  c21: {
+    number: 'CHAPITRE 21', title: 'Le combat', image: 'Combat dans le sanctuaire',
+    text: `<p>Tu bondis dans la salle. Sir Aldren profite de la confusion pour renverser son gardien.</p><p>Vous combattez côte à côte. Pendant quelques secondes, tu crois que vous pouvez gagner.</p><p>Puis la grande porte commence à s'ouvrir. Un vent glacial traverse la salle.</p><p>Sir Aldren te regarde.</p><blockquote>« Cours. »</blockquote>`,
+    choices: [
+      { label: 'Obéir et fuir', to: 'c25' },
+      { label: 'Rester avec lui', to: 'c26' }
+    ]
+  },
+  c22: {
+    number: 'CHAPITRE 22', title: 'Le faux initié', image: 'Le rituel',
+    text: `<p>Les cultistes t'emmènent jusqu'au sanctuaire. Personne ne t'arrête.</p><p>Sir Aldren te voit, mais son visage ne trahit aucune émotion.</p><p>Le chef du culte te tend un couteau.</p><blockquote>« Puisque Martin t'a envoyé, tu auras l'honneur de commencer. »</blockquote><p>Il désigne Sir Aldren.</p>`,
+    choices: [
+      { label: "Faire semblant d'accepter puis attaquer le chef", to: 'c27' },
+      { label: 'Refuser', to: 'c28' },
+      { label: 'Planter réellement le couteau dans Sir Aldren', to: 'c29' }
+    ]
+  },
+  c23: {
+    number: 'CHAPITRE 23', title: 'La fuite', image: 'La montagne qui tremble', ending: true,
+    text: `<p>Tu coupes les liens de Sir Aldren. Vous courez.</p><p>Derrière vous, quelque chose sort du sanctuaire. La montagne tremble.</p><p>Vous atteignez l'extérieur juste avant que l'entrée de la grotte ne s'effondre.</p><p>Vous êtes vivants.</p><p>Mais au loin, dans les champs de Valombre, des oiseaux s'envolent brusquement. Puis quelque chose bouge sous la terre.</p><blockquote>« Nous n'avons rien arrêté. »</blockquote><div class="ending">FIN — NOUS L'AVONS RÉVEILLÉ</div>`,
+    choices: []
+  },
+  c24: {
+    number: 'CHAPITRE 24', title: 'Le dernier coup', image: 'La dague face au Dormeur', ending: true,
+    text: `<p>Tu cours vers la chose. Tu ne comprends même pas sa forme.</p><p>Tu lèves la dague. La lame s'enfonce.</p><p>Le monde devient blanc. Puis silencieux.</p><p>Lorsque tu ouvres les yeux, tu es couché dans l'herbe devant Valombre. Sir Aldren est à côté de toi.</p><p>La montagne a disparu. À sa place se trouve un immense cratère.</p><blockquote>« Qu'est-ce que tu as fait ? »</blockquote><p>Tu n'en sais rien.</p><div class="ending">FIN — CELUI QUI A FERMÉ LA PORTE</div>`,
+    choices: []
+  },
+  c25: {
+    number: 'CHAPITRE 25', title: 'Survivre', image: 'Le retour seul au village', ending: true,
+    text: `<p>Tu cours. Sir Aldren reste derrière toi.</p><p>Tu entends son cri. Puis plus rien.</p><p>Tu atteins le village au lever du soleil. Personne ne te croit.</p><p>Des années passent. Tu deviens chevalier. Mais tu ne retournes jamais à Valombre.</p><div class="ending">FIN — LE SURVIVANT</div>`,
+    choices: []
+  },
+  c26: {
+    number: 'CHAPITRE 26', title: "Le chevalier et l'écuyer", image: 'Deux épées face à la porte', ending: true,
+    text: `<p>Tu te places à côté de Sir Aldren.</p><blockquote>« Tu es vraiment incapable d'obéir. »</blockquote><p>Tu souris.</p><p>Devant vous, quelque chose traverse la porte. Vous levez vos épées.</p><p>Personne ne saura exactement comment vous êtes morts.</p><p>Plus tard, on découvrira deux épées brisées devant une porte de pierre désormais refermée.</p><div class="ending">FIN — JUSQU'AU BOUT</div>`,
+    choices: []
+  },
+  c27: {
+    number: 'CHAPITRE 27', title: 'La trahison', image: 'Le chef blessé',
+    text: `<p>Tu prends le couteau. Tu approches de Sir Aldren.</p><p>Puis tu te retournes brutalement et plantes la lame dans l'épaule du chef.</p><p>Sir Aldren frappe son gardien avec ses chaînes. La salle plonge dans le chaos.</p>`,
+    choices: s => hasItem(s,'fiole')
+      ? [{ label: 'Utiliser la fiole rouge', to: 'c30' }, { label: 'Combattre aux côtés de Sir Aldren', to: 'c21' }]
+      : [{ label: 'Combattre aux côtés de Sir Aldren', to: 'c21' }]
+  },
+  c28: {
+    number: 'CHAPITRE 28', title: 'Le refus', image: 'Le vrai sens de la médaille', ending: true,
+    text: `<p>Tu laisses tomber le couteau.</p><blockquote>« Je ne suis pas l'un des vôtres. »</blockquote><p>Le chef du culte te regarde presque avec tristesse.</p><blockquote>« Je sais. »</blockquote><p>Tu comprends trop tard. La médaille n'était pas un signe d'appartenance. C'était une marque destinée aux sacrifices.</p><div class="ending">FIN — LE SECOND SACRIFICE</div>`,
+    choices: []
+  },
+  c29: {
+    number: 'CHAPITRE 29', title: 'Le choix impossible', image: 'Le sang du chevalier', ending: true,
+    text: `<p>Tu plantes le couteau dans Sir Aldren. Il te regarde sans comprendre.</p><p>Les cultistes applaudissent.</p><blockquote>« Le sang du chevalier ouvre la porte. »</blockquote><p>La pierre tremble. Tu comprends enfin ce que tu viens de faire.</p><p>Sir Aldren meurt dans tes bras. La porte s'ouvre.</p><div class="ending">FIN — LE TRAÎTRE</div>`,
+    choices: []
+  },
+  c30: {
+    number: 'CHAPITRE 30', title: 'La fiole rouge', image: 'Les flammes bleues', ending: true,
+    text: `<p>Tu te souviens de la fiole trouvée dans la sacoche.</p><p>Tu la jettes contre la grande porte. Le liquide s'enflamme immédiatement.</p><p>Les flammes deviennent bleues. Les symboles gravés sur la pierre commencent à briller.</p><blockquote>« NON ! »</blockquote><p>La porte se fissure puis s'effondre vers l'intérieur. Un cri gigantesque résonne derrière elle.</p><p>Tu libères Sir Aldren. Vous courez. Quelques secondes plus tard, toute la galerie s'effondre.</p><p>Sir Aldren regarde la fiole vide dans ta main.</p><blockquote>« Père Auguste savait. »</blockquote><div class="ending">FIN — LE SECRET DE PÈRE AUGUSTE</div>`,
+    choices: []
+  }
+};
+
+function addItem(state, id, name, description) {
+  if (!state.inventory[id]) state.inventory[id] = { name, description };
+}
+function hasItem(state, id) { return !!state.inventory[id]; }
+
+  </script>
+  <script>
+const STORAGE_KEY = 'valombre_save_v1';
+
+const defaultState = () => ({
+  node: 'start',
+  inventory: {},
+  flags: {},
+  visited: {},
+  history: []
+});
+
+let state = loadState();
+
+const chapterNumber = document.getElementById('chapterNumber');
+const chapterTitle = document.getElementById('chapterTitle');
+const storyText = document.getElementById('storyText');
+const choices = document.getElementById('choices');
+const imageLabel = document.getElementById('imageLabel');
+const statusTags = document.getElementById('statusTags');
+const inventoryCount = document.getElementById('inventoryCount');
+const inventoryBtn = document.getElementById('inventoryBtn');
+const restartBtn = document.getElementById('restartBtn');
+const menuBtn = document.getElementById('menuBtn');
+const drawer = document.getElementById('drawer');
+const drawerBackdrop = document.getElementById('drawerBackdrop');
+const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+const continueBtn = document.getElementById('continueBtn');
+const drawerInventoryBtn = document.getElementById('drawerInventoryBtn');
+const drawerRestartBtn = document.getElementById('drawerRestartBtn');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modal = document.getElementById('modal');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const modalTitle = document.getElementById('modalTitle');
+const modalContent = document.getElementById('modalContent');
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? { ...defaultState(), ...JSON.parse(saved) } : defaultState();
+  } catch { return defaultState(); }
+}
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    // Certains aperçus/lecteurs HTML bloquent le stockage local.
+    // Le jeu reste jouable pendant la session.
+  }
+}
+
+function enterNode(id) {
+  const node = STORY[id];
+  if (!node) return;
+  state.node = id;
+  if (!state.visited[id]) {
+    state.visited[id] = true;
+    if (typeof node.onEnter === 'function') node.onEnter(state);
+  }
+  state.history.push(id);
+  saveState();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function render() {
+  const node = STORY[state.node] || STORY.start;
+  chapterNumber.textContent = node.number || '';
+  chapterTitle.textContent = node.title || '';
+  imageLabel.textContent = node.image || node.title || '';
+  storyText.innerHTML = typeof node.text === 'function' ? node.text(state) : node.text;
+
+  const itemCount = Object.keys(state.inventory).length;
+  inventoryCount.textContent = itemCount;
+  statusTags.innerHTML = '';
+  if (itemCount) {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = `${itemCount} objet${itemCount > 1 ? 's' : ''} dans l’inventaire`;
+    statusTags.appendChild(tag);
+  }
+  if (node.ending) {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = 'Fin découverte';
+    statusTags.appendChild(tag);
+  }
+
+  const availableChoices = typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
+  choices.innerHTML = '';
+  availableChoices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-index">${i + 1}</span>${choice.label}`;
+    btn.addEventListener('click', () => {
+      if (typeof choice.effect === 'function') choice.effect(state);
+      enterNode(choice.to);
+    });
+    choices.appendChild(btn);
+  });
+
+  if (node.ending) {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-index">↻</span>Recommencer l’aventure`;
+    btn.addEventListener('click', restartGame);
+    choices.appendChild(btn);
+  }
+}
+
+function restartGame() {
+  // Redémarrage direct : window.confirm() est bloqué dans certains aperçus HTML.
+  state = defaultState();
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (e) {}
+  saveState();
+  closeDrawer();
+  closeModal();
+  render();
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    window.scrollTo(0, 0);
+  }
+}
+
+function openInventory() {
+  modalTitle.textContent = 'Inventaire';
+  const items = Object.entries(state.inventory);
+  modalContent.innerHTML = items.length
+    ? `<div class="inventory-list">${items.map(([id,item]) => `<div class="inventory-item"><strong>${item.name}</strong><span>${item.description}</span></div>`).join('')}</div>`
+    : `<div class="inventory-empty">Tu ne transportes encore aucun objet particulier.</div>`;
+  modal.classList.remove('hidden');
+  modalBackdrop.classList.remove('hidden');
+}
+function closeModal() {
+  modal.classList.add('hidden');
+  modalBackdrop.classList.add('hidden');
+}
+function openDrawer() {
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden','false');
+  drawerBackdrop.classList.remove('hidden');
+}
+function closeDrawer() {
+  drawer.classList.remove('open');
+  drawer.setAttribute('aria-hidden','true');
+  drawerBackdrop.classList.add('hidden');
+}
+
+inventoryBtn.addEventListener('click', openInventory);
+restartBtn.addEventListener('click', restartGame);
+menuBtn.addEventListener('click', openDrawer);
+closeDrawerBtn.addEventListener('click', closeDrawer);
+drawerBackdrop.addEventListener('click', closeDrawer);
+continueBtn.addEventListener('click', closeDrawer);
+drawerInventoryBtn.addEventListener('click', () => { closeDrawer(); openInventory(); });
+drawerRestartBtn.addEventListener('click', restartGame);
+closeModalBtn.addEventListener('click', closeModal);
+modalBackdrop.addEventListener('click', closeModal);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeDrawer(); closeModal(); }
+});
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+render();
+
+  </script>
+</body>
+</html>
