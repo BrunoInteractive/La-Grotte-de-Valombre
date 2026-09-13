@@ -1118,6 +1118,73 @@ button { font: inherit; }
   background: #d6b98d;
 }
 
+
+/* ===== JOURNAL TEXTE SIMPLE ===== */
+.journal-body {
+  display:flex;
+  flex-direction:column;
+  min-height:360px;
+}
+
+.journal-textarea {
+  width:100%;
+  min-height:300px;
+  resize:vertical;
+  border:1px solid #8a6b45;
+  border-radius:0;
+  padding:16px 14px 18px;
+  color:#251a11;
+  font-family:var(--body-font);
+  font-size:18px;
+  line-height:1.42;
+  outline:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(122,94,57,.14) 0,
+      rgba(122,94,57,.14) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    linear-gradient(180deg,#f0e3c2,#e8d5ac);
+  box-shadow:inset 0 0 0 3px rgba(125,92,51,.06);
+}
+
+.journal-textarea:focus {
+  border-color:#63472d;
+  box-shadow:
+    inset 0 0 0 3px rgba(125,92,51,.06),
+    0 0 0 1px rgba(99,71,45,.16);
+}
+
+.journal-status {
+  margin-top:8px;
+  text-align:right;
+  color:#725a3d;
+  font-size:12px;
+  font-style:italic;
+}
+
+@media (max-width:620px) {
+  .notebook-panel {
+    left:8px;
+    right:8px;
+    bottom:8px;
+    width:auto;
+    max-height:72vh;
+  }
+
+  .journal-body {
+    min-height:300px;
+  }
+
+  .journal-textarea {
+    min-height:260px;
+    font-size:17px;
+    line-height:1.4;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1150,7 +1217,7 @@ button { font: inherit; }
 
     <footer class="footer">
       <button id="inventoryBtn" class="footer-btn">Inventaire <span id="inventoryCount">0</span></button>
-      <button id="notebookBtn" class="footer-btn">Cahier <span id="notebookCount">0</span></button>
+      <button id="notebookBtn" class="footer-btn">Journal</button>
       <button id="restartBtn" class="footer-btn danger">Recommencer</button>
     </footer>
   </div>
@@ -1158,34 +1225,16 @@ button { font: inherit; }
 
   <aside id="notebookPanel" class="notebook-panel hidden" aria-hidden="true">
     <div class="notebook-head">
-      <h3>Cahier</h3>
-      <button id="notebookCloseBtn" class="notebook-close" type="button" aria-label="Fermer le cahier">×</button>
+      <h3>Journal</h3>
+      <button id="notebookCloseBtn" class="notebook-close" type="button" aria-label="Fermer le journal">×</button>
     </div>
-    <div class="notebook-body">
-      <p id="notebookHint" class="notebook-hint">Capture n’importe quel détail de la page : image, phrase, symbole ou choix.</p>
-      <button id="clipImageBtn" class="notebook-action" type="button">Capturer un indice sur la page</button>
-      <div id="notebookClips" class="notebook-clips"></div>
-      <div id="notebookEmpty" class="notebook-empty">Ton cahier est encore vide.</div>
+    <div class="notebook-body journal-body">
+      <p class="notebook-hint">Écris ce que tu veux, ou colle ici un passage copié depuis l’histoire.</p>
+      <textarea id="journalText" class="journal-textarea" spellcheck="true"
+        placeholder="Tes notes, indices, hypothèses…"></textarea>
+      <div class="journal-status" id="journalStatus">Sauvegarde automatique</div>
     </div>
   </aside>
-
-
-  <div id="pageCaptureWorkspace" class="page-capture-workspace hidden" aria-hidden="true">
-    <div class="page-capture-toolbar">
-      <div>
-        <strong>Capture d’indice</strong>
-        <span id="captureStatus">Préparation de la page…</span>
-      </div>
-      <button id="pageCaptureCloseBtn" type="button">Annuler</button>
-    </div>
-
-    <div id="pageCaptureScroller" class="page-capture-scroller">
-      <div id="pageCaptureStage" class="page-capture-stage">
-        <img id="pageCaptureImage" alt="Instantané de la page" draggable="false" />
-        <div id="pageCaptureSelector" class="page-capture-selector hidden">
-          <div id="pageCaptureSelection" class="page-capture-selection"></div>
-        </div>
-      </div>
     </div>
 
     <div class="page-capture-bottom">
@@ -1193,17 +1242,6 @@ button { font: inherit; }
       <button id="pageCaptureSaveBtn" type="button" class="hidden">Coller dans le cahier</button>
     </div>
   </div>
-
-
-  <div id="clipPreviewModal" class="clip-preview-modal hidden" aria-hidden="true">
-    <div id="clipPreviewBackdrop" class="clip-preview-backdrop"></div>
-    <div class="clip-preview-card">
-      <div class="clip-preview-tools">
-        <button id="clipPreviewDeleteBtn" class="clip-preview-delete" type="button" aria-label="Supprimer cet indice" title="Supprimer cet indice">🗑︎</button>
-        <button id="clipPreviewCloseBtn" class="clip-preview-close" type="button" aria-label="Fermer l'aperçu" title="Fermer">×</button>
-      </div>
-      <div id="clipPreviewContent" class="clip-preview-content"></div>
-    </div>
   </div>
 
   <div id="drawerBackdrop" class="backdrop hidden"></div>
@@ -1476,7 +1514,8 @@ const defaultState = () => ({
   flags: {},
   visited: {},
   history: [],
-  clippings: []
+  clippings: [],
+  journal: ''
 });
 
 let state = loadState();
@@ -1506,37 +1545,10 @@ const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('modalContent');
 
 const notebookBtn = document.getElementById('notebookBtn');
-const notebookCount = document.getElementById('notebookCount');
 const notebookPanel = document.getElementById('notebookPanel');
 const notebookCloseBtn = document.getElementById('notebookCloseBtn');
-const notebookClips = document.getElementById('notebookClips');
-const notebookEmpty = document.getElementById('notebookEmpty');
-const notebookHint = document.getElementById('notebookHint');
-const clipImageBtn = document.getElementById('clipImageBtn');
-
-const pageCaptureWorkspace = document.getElementById('pageCaptureWorkspace');
-const pageCaptureCloseBtn = document.getElementById('pageCaptureCloseBtn');
-const pageCaptureScroller = document.getElementById('pageCaptureScroller');
-const pageCaptureStage = document.getElementById('pageCaptureStage');
-const pageCaptureImage = document.getElementById('pageCaptureImage');
-const pageCaptureSelector = document.getElementById('pageCaptureSelector');
-const pageCaptureSelection = document.getElementById('pageCaptureSelection');
-const pageCaptureRetryBtn = document.getElementById('pageCaptureRetryBtn');
-const pageCaptureSaveBtn = document.getElementById('pageCaptureSaveBtn');
-const captureStatus = document.getElementById('captureStatus');
-
-const clipPreviewModal = document.getElementById('clipPreviewModal');
-const clipPreviewBackdrop = document.getElementById('clipPreviewBackdrop');
-const clipPreviewCloseBtn = document.getElementById('clipPreviewCloseBtn');
-const clipPreviewDeleteBtn = document.getElementById('clipPreviewDeleteBtn');
-const clipPreviewContent = document.getElementById('clipPreviewContent');
-
-let activePreviewClipId = null;
-
-let pageShotCanvas = null;
-let pageCaptureStart = null;
-let pageCaptureRect = null;
-let pageCapturePointerId = null;
+const journalText = document.getElementById('journalText');
+const journalStatus = document.getElementById('journalStatus');
 
 function loadState() {
   try {
@@ -1580,14 +1592,12 @@ function loadPageImage(pageNumber, title) {
       storyImage.removeAttribute('src');
       storyImage.classList.add('hidden');
       imagePlaceholder.style.display = 'grid';
-      if (!notebookPanel.classList.contains('hidden')) renderNotebook();
       return;
     }
     const ext = IMAGE_EXTENSIONS[index++];
     storyImage.onload = () => {
       storyImage.classList.remove('hidden');
       imagePlaceholder.style.display = 'none';
-      if (!notebookPanel.classList.contains('hidden')) renderNotebook();
     };
     storyImage.onerror = tryNext;
     storyImage.src = `./images/${base}.${ext}`;
@@ -1598,316 +1608,45 @@ function loadPageImage(pageNumber, title) {
 
 
 
-function openClipPreview(clip) {
-  if (!clip) return;
 
-  activePreviewClipId = clip.id;
-  clipPreviewContent.innerHTML = '';
-
-  const img = document.createElement('img');
-  img.src = clip.image;
-  img.alt = `Indice agrandi depuis la page ${padPage(clip.page)}`;
-  clipPreviewContent.appendChild(img);
-
-  const caption = document.createElement('div');
-  caption.className = 'clip-preview-caption';
-  caption.textContent = `Page ${padPage(clip.page)}`;
-  clipPreviewContent.appendChild(caption);
-
-  clipPreviewModal.classList.remove('hidden');
-  clipPreviewModal.setAttribute('aria-hidden', 'false');
-}
-
-function closeClipPreview() {
-  activePreviewClipId = null;
-  clipPreviewModal.classList.add('hidden');
-  clipPreviewModal.setAttribute('aria-hidden', 'true');
-  clipPreviewContent.innerHTML = '';
-}
-
-function deleteActivePreviewClip() {
-  if (!activePreviewClipId) return;
-
-  ensureNotebookState();
-  state.clippings = state.clippings.filter(clip => clip.id !== activePreviewClipId);
-  saveState();
-
-  closeClipPreview();
-  renderNotebook();
-}
-
-function ensureNotebookState() {
-  if (!Array.isArray(state.clippings)) state.clippings = [];
-}
-
-
-function renderNotebook() {
-  ensureNotebookState();
-  notebookCount.textContent = state.clippings.length;
-  notebookClips.innerHTML = '';
-
-  if (!state.clippings.length) {
-    notebookEmpty.style.display = 'block';
-  } else {
-    notebookEmpty.style.display = 'none';
-
-    state.clippings.forEach(clip => {
-      const figure = document.createElement('figure');
-      figure.className = 'notebook-clip';
-      figure.tabIndex = 0;
-      figure.setAttribute('role', 'button');
-      figure.setAttribute('aria-label', `Agrandir l’indice de la page ${padPage(clip.page)}`);
-
-      const img = document.createElement('img');
-      img.src = clip.image;
-      img.alt = `Indice conservé depuis la page ${padPage(clip.page)}`;
-      figure.appendChild(img);
-
-      const caption = document.createElement('figcaption');
-      caption.textContent = `page ${padPage(clip.page)}`;
-      figure.appendChild(caption);
-
-      const del = document.createElement('button');
-      del.type = 'button';
-      del.className = 'notebook-delete';
-      del.setAttribute('aria-label', 'Supprimer cet indice');
-      del.setAttribute('title', 'Supprimer cet indice');
-      del.textContent = '🗑︎';
-      del.addEventListener('click', event => {
-        event.preventDefault();
-        event.stopPropagation();
-        state.clippings = state.clippings.filter(item => item.id !== clip.id);
-        saveState();
-        renderNotebook();
-      });
-      figure.appendChild(del);
-
-      // Direct click on the note opens it enlarged.
-      figure.addEventListener('click', event => {
-        if (event.target.closest('.notebook-delete')) return;
-        openClipPreview(clip);
-      });
-
-      figure.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          openClipPreview(clip);
-        }
-      });
-
-      notebookClips.appendChild(figure);
-    });
-  }
-
-  clipImageBtn.disabled = false;
-  notebookHint.textContent = 'Capture n’importe quel détail de la page : image, phrase, symbole ou choix.';
+function ensureJournalState() {
+  if (typeof state.journal !== 'string') state.journal = '';
 }
 
 function openNotebook() {
-  renderNotebook();
+  ensureJournalState();
+  journalText.value = state.journal;
   notebookPanel.classList.remove('hidden');
   notebookPanel.setAttribute('aria-hidden', 'false');
+
+  setTimeout(() => {
+    journalText.focus();
+    journalText.setSelectionRange(journalText.value.length, journalText.value.length);
+  }, 30);
 }
 
 function closeNotebook() {
+  saveJournalNow();
   notebookPanel.classList.add('hidden');
   notebookPanel.setAttribute('aria-hidden', 'true');
 }
 
+let journalSaveTimer = null;
 
-function resetPageCaptureSelection() {
-  pageCaptureStart = null;
-  pageCaptureRect = null;
-  pageCapturePointerId = null;
-  pageCaptureSelection.style.display = 'none';
-  pageCaptureRetryBtn.classList.add('hidden');
-  pageCaptureSaveBtn.classList.add('hidden');
-}
-
-function closePageCapture({ reopenNotebook = false } = {}) {
-  resetPageCaptureSelection();
-  pageCaptureSelector.classList.add('hidden');
-  pageCaptureWorkspace.classList.add('hidden');
-  pageCaptureWorkspace.setAttribute('aria-hidden', 'true');
-  pageShotCanvas = null;
-  pageCaptureImage.removeAttribute('src');
-  if (reopenNotebook) openNotebook();
-}
-
-async function startImageCapture() {
-  closeNotebook();
-
-  pageCaptureWorkspace.classList.remove('hidden');
-  pageCaptureWorkspace.setAttribute('aria-hidden', 'false');
-  pageCaptureSelector.classList.add('hidden');
-  pageCaptureRetryBtn.classList.add('hidden');
-  pageCaptureSaveBtn.classList.add('hidden');
-  captureStatus.textContent = 'Création de l’instantané de la page…';
-  pageCaptureStage.classList.add('page-capture-loading');
-  pageCaptureStage.textContent = 'Création de l’instantané…';
-
-  if (typeof window.html2canvas !== 'function') {
-    pageCaptureStage.classList.remove('page-capture-loading');
-    pageCaptureStage.textContent = '';
-    captureStatus.textContent = 'Le module de capture n’a pas pu être chargé. Recharge la page puis réessaie.';
-    pageCaptureRetryBtn.classList.add('hidden');
-    pageCaptureSaveBtn.classList.add('hidden');
-    return;
-  }
-
-  try {
-    const game = document.getElementById('game');
-
-    const canvas = await window.html2canvas(game, {
-      backgroundColor: null,
-      scale: Math.min(2, Math.max(1, window.devicePixelRatio || 1)),
-      useCORS: true,
-      allowTaint: false,
-      logging: false,
-      imageTimeout: 5000,
-      removeContainer: true
-    });
-
-    pageShotCanvas = canvas;
-
-    pageCaptureStage.classList.remove('page-capture-loading');
-    pageCaptureStage.textContent = '';
-    pageCaptureStage.appendChild(pageCaptureImage);
-    pageCaptureStage.appendChild(pageCaptureSelector);
-
-    pageCaptureImage.src = canvas.toDataURL('image/jpeg', .92);
-    captureStatus.textContent = 'Fais défiler l’instantané si besoin, puis trace directement un rectangle autour de l’indice.';
-    pageCaptureSelector.classList.remove('hidden');
-
-    // Start near the part of the book that was visible before opening the notebook.
-    const gameRect = game.getBoundingClientRect();
-    const viewportYInsideGame = Math.max(0, -gameRect.top);
-    requestAnimationFrame(() => {
-      const ratio = pageCaptureImage.clientWidth / Math.max(1, game.offsetWidth);
-      pageCaptureScroller.scrollTop = viewportYInsideGame * ratio;
-      enterPageSelectionMode();
-    });
-
-  } catch (error) {
-    console.error(error);
-    pageCaptureStage.classList.remove('page-capture-loading');
-    pageCaptureStage.textContent = '';
-    captureStatus.textContent = 'Impossible de créer l’instantané dans cet aperçu.';
-    pageCaptureRetryBtn.classList.add('hidden');
-    pageCaptureSaveBtn.classList.add('hidden');
-  }
-}
-
-function enterPageSelectionMode() {
-  if (!pageShotCanvas) return;
-  resetPageCaptureSelection();
-  pageCaptureSelector.classList.remove('hidden');
-  captureStatus.textContent = 'Trace un rectangle autour de l’indice.';
-}
-
-function pointInPageCapture(event) {
-  const rect = pageCaptureSelector.getBoundingClientRect();
-  return {
-    x: Math.max(0, Math.min(rect.width, event.clientX - rect.left)),
-    y: Math.max(0, Math.min(rect.height, event.clientY - rect.top))
-  };
-}
-
-function updatePageCaptureSelection(a, b) {
-  const x = Math.min(a.x, b.x);
-  const y = Math.min(a.y, b.y);
-  const w = Math.abs(a.x - b.x);
-  const h = Math.abs(a.y - b.y);
-
-  pageCaptureRect = { x, y, w, h };
-  pageCaptureSelection.style.display = 'block';
-  pageCaptureSelection.style.left = `${x}px`;
-  pageCaptureSelection.style.top = `${y}px`;
-  pageCaptureSelection.style.width = `${w}px`;
-  pageCaptureSelection.style.height = `${h}px`;
-}
-
-pageCaptureSelector.addEventListener('pointerdown', event => {
-  pageCapturePointerId = event.pointerId;
-  pageCaptureSelector.setPointerCapture?.(event.pointerId);
-  pageCaptureStart = pointInPageCapture(event);
-  updatePageCaptureSelection(pageCaptureStart, pageCaptureStart);
-  event.preventDefault();
-});
-
-pageCaptureSelector.addEventListener('pointermove', event => {
-  if (pageCapturePointerId !== event.pointerId || !pageCaptureStart) return;
-  updatePageCaptureSelection(pageCaptureStart, pointInPageCapture(event));
-  event.preventDefault();
-});
-
-pageCaptureSelector.addEventListener('pointerup', event => {
-  if (pageCapturePointerId !== event.pointerId || !pageCaptureStart) return;
-
-  updatePageCaptureSelection(pageCaptureStart, pointInPageCapture(event));
-  pageCaptureSelector.releasePointerCapture?.(event.pointerId);
-  pageCapturePointerId = null;
-  pageCaptureStart = null;
-
-  if (pageCaptureRect && pageCaptureRect.w >= 18 && pageCaptureRect.h >= 18) {
-    pageCaptureRetryBtn.classList.remove('hidden');
-    pageCaptureSaveBtn.classList.remove('hidden');
-    captureStatus.textContent = 'La zone est prête à être collée dans le cahier.';
-  } else {
-    resetPageCaptureSelection();
-    captureStatus.textContent = 'Trace un rectangle un peu plus grand.';
-  }
-
-  event.preventDefault();
-});
-
-function retryPageSelection() {
-  resetPageCaptureSelection();
-  pageCaptureSelector.classList.remove('hidden');
-  captureStatus.textContent = 'Trace un nouveau rectangle autour de l’indice.';
-}
-
-function savePageSelection() {
-  if (!pageShotCanvas || !pageCaptureRect) return;
-
-  const shownW = pageCaptureImage.clientWidth;
-  const shownH = pageCaptureImage.clientHeight;
-  if (!shownW || !shownH) return;
-
-  const scaleX = pageShotCanvas.width / shownW;
-  const scaleY = pageShotCanvas.height / shownH;
-
-  const sx = Math.max(0, Math.round(pageCaptureRect.x * scaleX));
-  const sy = Math.max(0, Math.round(pageCaptureRect.y * scaleY));
-  const sw = Math.max(1, Math.min(pageShotCanvas.width - sx, Math.round(pageCaptureRect.w * scaleX)));
-  const sh = Math.max(1, Math.min(pageShotCanvas.height - sy, Math.round(pageCaptureRect.h * scaleY)));
-
-  const maxSide = 560;
-  const outScale = Math.min(1, maxSide / Math.max(sw, sh));
-
-  const out = document.createElement('canvas');
-  out.width = Math.max(1, Math.round(sw * outScale));
-  out.height = Math.max(1, Math.round(sh * outScale));
-
-  const ctx = out.getContext('2d');
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(pageShotCanvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
-
-  const dataUrl = out.toDataURL('image/jpeg', .86);
-
-  ensureNotebookState();
-  state.clippings.push({
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    page: PAGE_BY_NODE[state.node] || 1,
-    image: dataUrl
-  });
-
+function saveJournalNow() {
+  ensureJournalState();
+  state.journal = journalText.value;
   saveState();
-  closePageCapture({ reopenNotebook: true });
-  renderNotebook();
+  journalStatus.textContent = 'Sauvegardé';
 }
 
+function scheduleJournalSave() {
+  journalStatus.textContent = 'Sauvegarde…';
+  clearTimeout(journalSaveTimer);
+  journalSaveTimer = setTimeout(saveJournalNow, 250);
+}
+
+journalText.addEventListener('input', scheduleJournalSave);
 
 function render() {
   const node = STORY[state.node] || STORY.start;
@@ -1919,8 +1658,6 @@ function render() {
 
   const itemCount = Object.keys(state.inventory).length;
   inventoryCount.textContent = itemCount;
-  ensureNotebookState();
-  notebookCount.textContent = state.clippings.length;
   statusTags.innerHTML = '';
   if (itemCount) {
     const tag = document.createElement('span');
@@ -1971,8 +1708,7 @@ function restartGame() {
   closeDrawer();
   closeModal();
   closeNotebook();
-  closeClipPreview();
-  closePageCapture({ reopenNotebook: false });
+  closeNotebook();
   render();
   try {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2008,13 +1744,6 @@ function closeDrawer() {
 inventoryBtn.addEventListener('click', openInventory);
 notebookBtn.addEventListener('click', openNotebook);
 notebookCloseBtn.addEventListener('click', closeNotebook);
-clipImageBtn.addEventListener('click', startImageCapture);
-pageCaptureCloseBtn.addEventListener('click', () => closePageCapture({ reopenNotebook: true }));
-pageCaptureRetryBtn.addEventListener('click', retryPageSelection);
-pageCaptureSaveBtn.addEventListener('click', savePageSelection);
-clipPreviewBackdrop.addEventListener('click', closeClipPreview);
-clipPreviewCloseBtn.addEventListener('click', closeClipPreview);
-clipPreviewDeleteBtn.addEventListener('click', deleteActivePreviewClip);
 restartBtn.addEventListener('click', restartGame);
 menuBtn.addEventListener('click', openDrawer);
 closeDrawerBtn.addEventListener('click', closeDrawer);
@@ -2030,10 +1759,6 @@ document.addEventListener('keydown', e => {
     closeDrawer();
     closeModal();
     closeNotebook();
-    closeClipPreview();
-    if (!pageCaptureWorkspace.classList.contains('hidden')) {
-      closePageCapture({ reopenNotebook: false });
-    }
   }
 });
 
