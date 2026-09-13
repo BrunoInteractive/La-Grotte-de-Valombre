@@ -1,19 +1,15 @@
-# La Grotte de Valombre — V6 test du vrai système
+# La Grotte de Valombre — V7 fluidité et cohérence
 
-Cette version teste une tranche représentative du futur grand livre.
+Corrections de cette version :
 
-- Force 6 / 12
-- Dextérité 9 / 12
-- Chance 8 / 12
-- tests à 2D6 avec les deux faces affichées
-- Épée lourde : Puissance 10, Dextérité 6
-- Épée légère : Puissance 4, Dextérité 11
-- lames de jet : test de Dextérité ; en cas d'échec le combat normal démarre
-- Puissance : permet d'abattre certaines créatures résistantes en un seul coup
-- second tour de combat quand l'arme n'est pas assez puissante
-- objets de progression (+1 Force)
-- Lame noire mystérieuse
-- checkpoint au camp d'Anselme
-- checkpoint au monde sous la montagne
-- routes différentes : temps / Force / rencontre ambiguë
-- monde souterrain aux proportions impossibles
+- À Rochebrume, Élias propose directement d’acheter **1, 2 ou 3 lames de jet** selon l’or disponible.
+- Après l’achat, une petite page de transition confirme clairement le nombre de lames.
+- Les dés utilisent toujours un tirage cryptographique uniforme, mais leur représentation est désormais dessinée avec de vrais points dans deux carrés, plus les valeurs numériques.
+- Au camp d’Anselme, le texte annonce explicitement le vieux camp, le bloc de pierre et les sanglots avant de proposer ces choix.
+- La Lame noire ne réapparaît plus après avoir été prise.
+- Les grandes marches ont maintenant leur propre scène et leurs fresques.
+- Le lac noir ne ramène plus en arrière :
+  - regarder sous l’eau montre Aldren puis la traversée continue ;
+  - ne pas regarder permet également de continuer.
+- Les trois routes du monde sous la montagne convergent sur la Terrasse de l’œil fermé.
+- Un nouveau checkpoint est placé sur cette terrasse.

@@ -808,6 +808,47 @@ button { font: inherit; }
   line-height:1;
 }
 .dice-result p { margin:3px 0; }
+
+.dice-faces {
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:10px;
+}
+
+.die-visual {
+  width:58px;
+  height:58px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  padding:6px;
+  border:1px solid #5f4931;
+  border-radius:7px;
+  background:#eee0bd;
+  box-shadow:
+    inset 0 0 0 2px rgba(92,68,42,.12),
+    0 2px 5px rgba(35,24,14,.18);
+}
+
+.die-cell {
+  display:grid;
+  place-items:center;
+}
+
+.die-cell i {
+  display:block;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#2e2117;
+}
+
+.dice-values {
+  font-size:14px;
+  color:#60482f;
+}
+
 </style>
 </head>
 <body>
@@ -1690,34 +1731,29 @@ const STORY = {
 
       <blockquote>« Gaspard vend ça aux voyageurs. Ça ne tue pas grand-chose, mais lancé au visage, ça peut te donner quelques secondes. »</blockquote>
 
-      <p>Il en pose une devant toi.</p>
-
       <blockquote>« Une pièce d’or la lame. »</blockquote>
 
       <p><strong>Tu possèdes ${state.goldCoins} pièce${state.goldCoins > 1 ? 's' : ''} d’or.</strong></p>
-
-      ${state.throwingBlades > 0
-        ? `<p>Tu as déjà acheté <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
-        : ''}
     `,
     choices: state => {
       const list = [];
+      const maxBuy = Math.min(3, state.goldCoins);
 
-      if (state.goldCoins > 0) {
+      for (let qty = 1; qty <= maxBuy; qty++) {
         list.push({
-          label: 'Acheter une lame de jet — 1 pièce d’or',
-          to: 'c18',
+          label: `Acheter ${qty} lame${qty > 1 ? 's' : ''} de jet — ${qty} pièce${qty > 1 ? 's' : ''} d’or`,
+          to: 'c43',
           effect: s => {
-            s.goldCoins -= 1;
-            s.throwingBlades += 1;
+            s.goldCoins -= qty;
+            s.throwingBlades += qty;
             syncThrowingBlades(s);
           }
         });
       }
 
       list.push(
-        { label: 'Aller voir la personne dans la rue', to: 'c19' },
-        { label: 'Quitter le village et repartir vers la grotte', to: 'c20' }
+        { label: 'Ne rien acheter et retourner dans la rue', to: 'c15' },
+        { label: 'Ne rien acheter et repartir vers la grotte', to: 'c20' }
       );
 
       return list;
@@ -2265,25 +2301,58 @@ const STORY = {
 
   c39: {
     number: 'PAGE 39',
-    title: 'La lame noire',
-    image: 'La lame noire',
+    title: 'La corniche',
+    image: 'La corniche',
     onEnter: s => {
       if (!s.flags.blackBladeFound) {
         s.flags.blackBladeFound = true;
-        addItem(s, 'lame_noire', 'Lame noire',
-          'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.');
+        addItem(
+          s,
+          'lame_noire',
+          'Lame noire',
+          'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.'
+        );
       }
     },
-    text: `
-      <p>Dans une anfractuosité, une petite dague repose sur la pierre.</p>
-      <p>Son métal est parfaitement noir.</p>
-      <p>Pas de lumière, pas de chaleur, aucun signe évident de magie.</p>
-      <p>Pourtant, en la tenant, tu as l’impression absurde que certaines choses plus bas savent déjà que tu l’as trouvée.</p>
-    `,
-    choices: [
-      { label: 'Équiper la lame noire', to: 'c40', effect: s => { s.weapon = 'black_blade'; } },
-      { label: 'La garder dans ton inventaire', to: 'c40' }
-    ]
+    text: state => {
+      if (hasItem(state,'lame_noire')) {
+        return `
+          <p>La corniche longe le vide sur plusieurs dizaines de mètres.</p>
+
+          <p>Tu reconnais l’anfractuosité où tu as découvert la lame noire.</p>
+
+          <p>Elle est maintenant vide.</p>
+
+          <p>Plus loin, le chemin rejoint un ancien pont de pierre qui traverse une partie du gouffre.</p>
+        `;
+      }
+
+      return `
+        <p>La corniche longe le vide sur plusieurs dizaines de mètres.</p>
+
+        <p>Dans une anfractuosité, une petite dague repose sur la pierre.</p>
+
+        <p>Son métal est parfaitement noir.</p>
+
+        <p>Pas de lumière, pas de chaleur, aucun signe évident de magie.</p>
+
+        <p>Pourtant, en la tenant, tu as l’impression absurde que certaines choses plus bas savent déjà que tu l’as trouvée.</p>
+      `;
+    },
+    choices: state => {
+      if (state.weapon === 'black_blade') {
+        return [{ label: 'Continuer jusqu’au pont', to: 'c46' }];
+      }
+
+      return [
+        {
+          label: hasItem(state,'lame_noire') ? 'Équiper la lame noire' : 'Équiper la lame noire',
+          to: 'c46',
+          effect: s => { s.weapon = 'black_blade'; }
+        },
+        { label: 'Continuer jusqu’au pont sans changer d’arme', to: 'c46' }
+      ];
+    }
   },
 
   c40: {
@@ -2293,18 +2362,32 @@ const STORY = {
     onEnter: s => setCheckpoint(s, 'Le monde sous la montagne'),
     text: `
       <p>Devant toi s’ouvre un espace si vaste que ton esprit refuse d’abord de l’accepter.</p>
+
       <p>Le plafond disparaît dans une brume lumineuse, peut-être à plusieurs kilomètres au-dessus.</p>
+
       <p>Une clarté blanc-bleu vient de nulle part.</p>
+
       <p>Très loin sous toi, des formations rocheuses ressemblent à des montagnes.</p>
+
       <p>Tu regardes la fissure dont tu viens de sortir.</p>
+
       <p>La montagne ne pourrait pas contenir cet endroit.</p>
+
       <p>Peut-être que le soufre t’a brûlé le cerveau.</p>
+
       <p>Ou peut-être que tout cela existe réellement.</p>
+
+      <p>Trois routes permettent de poursuivre la descente.</p>
     `,
-    choices: [
+    choices: state => [
       { label: 'Descendre vers le lac noir', to: 'c41' },
-      { label: 'Prendre les marches gigantesques', to: 'c42' },
-      { label: 'Longer la corniche vers un pont', to: 'c39' }
+      { label: 'Prendre les marches gigantesques', to: 'c44' },
+      {
+        label: hasItem(state,'lame_noire')
+          ? 'Reprendre la corniche vers le pont'
+          : 'Longer la corniche',
+        to: hasItem(state,'lame_noire') ? 'c46' : 'c39'
+      }
     ]
   },
 
@@ -2313,13 +2396,24 @@ const STORY = {
     title: 'Le lac noir',
     image: 'Le lac noir',
     text: `
-      <p>Une vieille embarcation attend sur une eau parfaitement noire.</p>
+      <p>Le chemin descend jusqu’à une rive parfaitement lisse.</p>
+
+      <p>Une vieille embarcation attend sur une eau si noire qu’elle ne reflète presque pas la lumière.</p>
+
+      <p>Tu détaches la corde et commences à traverser.</p>
+
       <p>À mi-chemin, trois coups résonnent sous la coque.</p>
-      <p><strong>TOC.</strong></p><p><strong>TOC.</strong></p><p><strong>TOC.</strong></p>
-      <p>Les mêmes trois temps que le chant impossible de Rochebrume.</p>
+
+      <p><strong>TOC.</strong></p>
+      <p><strong>TOC.</strong></p>
+      <p><strong>TOC.</strong></p>
+
+      <p>Les mêmes trois temps que le chant impossible entendu dans la forêt de Rochebrume.</p>
+
+      <p>Puis quelque chose effleure lentement le bois sous tes pieds.</p>
     `,
     choices: [
-      { label: 'Continuer sans regarder', to: 'c40' },
+      { label: 'Ne pas regarder et continuer à ramer', to: 'c45' },
       { label: 'Regarder dans l’eau', to: 'c42' }
     ]
   },
@@ -2329,13 +2423,136 @@ const STORY = {
     title: 'Un visage sous l’eau',
     image: 'Un visage sous l’eau',
     text: `
-      <p>Très loin sous la surface, des points brillent comme des étoiles.</p>
+      <p>Tu te penches au-dessus de l’eau.</p>
+
+      <p>Très loin sous la surface, des points lumineux brillent comme des étoiles.</p>
+
       <p>Puis un visage apparaît.</p>
+
       <p><strong>Sir Aldren.</strong></p>
+
       <p>Plusieurs mètres sous l’eau.</p>
+
       <p>Ses yeux s’ouvrent.</p>
+
       <p>Sa bouche prononce quelque chose que tu n’entends pas.</p>
-      <p>Puis il disparaît.</p>
+
+      <p>Tu recules brusquement.</p>
+
+      <p>Lorsque tu regardes de nouveau, il n’y a plus que l’eau noire.</p>
+
+      <p>Tu ne sais pas si Aldren était réellement là, si quelque chose t’a montré son visage… ou si ton esprit commence simplement à céder.</p>
+
+      <p>Tu reprends les rames.</p>
+    `,
+    choices: [
+      { label: 'Continuer jusqu’à l’autre rive', to: 'c45' }
+    ]
+  },
+
+  c43: {
+    number: 'PAGE 43',
+    title: 'Les lames dans la poche',
+    image: 'Les lames dans la poche',
+    text: state => `
+      <p>Élias enveloppe soigneusement les lames dans un morceau de cuir avant de te les tendre.</p>
+
+      <blockquote>« Garde-les à portée de main. Si quelque chose te saute dessus, tu n’auras probablement pas le temps de fouiller ton sac. »</blockquote>
+
+      <p>Tu possèdes maintenant <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>
+    `,
+    choices: [
+      { label: 'Retourner dans la rue de Rochebrume', to: 'c15' },
+      { label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' }
+    ]
+  },
+
+  c44: {
+    number: 'PAGE 44',
+    title: 'Les marches des géants',
+    image: 'Les marches des géants',
+    text: `
+      <p>Tu t’engages sur l’escalier.</p>
+
+      <p>Chaque marche est si haute que tu dois parfois poser une main sur la pierre pour te hisser.</p>
+
+      <p>Ce n’est pas un escalier construit pour des hommes.</p>
+
+      <p>Après une longue ascension, tu atteins une terrasse où des fresques couvrent la paroi.</p>
+
+      <p>Tu y vois de petites silhouettes humaines entourant une forme immense.</p>
+
+      <p>Au-dessus d’elles revient sans cesse le même signe.</p>
+
+      <p><strong>Un œil fermé.</strong></p>
+
+      <p>Mais les personnages ne semblent pas l’adorer.</p>
+
+      <p>Ils construisent quelque chose autour de la grande forme.</p>
+
+      <p>Des murs.</p>
+
+      <p>Des portes.</p>
+
+      <p>Une prison.</p>
+
+      <p>Plus loin, une autre fresque représente une petite lame sombre coupant des filaments qui relient un homme à quelque chose hors du dessin.</p>
+
+      <p>Tu restes longtemps devant cette image avant de reprendre ta route.</p>
+    `,
+    choices: [
+      { label: 'Continuer jusqu’à la terrasse suivante', to: 'c46' }
+    ]
+  },
+
+  c45: {
+    number: 'PAGE 45',
+    title: 'L’autre rive',
+    image: 'L’autre rive',
+    text: `
+      <p>La barque finit par toucher une rive de pierre.</p>
+
+      <p>Tu descends sans attendre et attaches rapidement l’embarcation.</p>
+
+      <p>Derrière toi, l’eau redevient parfaitement immobile.</p>
+
+      <p>Un sentier monte entre deux colonnes naturelles et rejoint une vaste terrasse.</p>
+
+      <p>Pour la première fois depuis ton entrée dans ce monde impossible, tu aperçois au loin une construction clairement façonnée par des mains.</p>
+
+      <p>Ou par quelque chose qui possédait des mains.</p>
+    `,
+    choices: [
+      { label: 'Monter vers la terrasse', to: 'c46' }
+    ]
+  },
+
+  c46: {
+    number: 'PAGE 46',
+    title: 'La terrasse de l’œil fermé',
+    image: 'La terrasse de l’œil fermé',
+    onEnter: s => setCheckpoint(s, 'La terrasse de l’œil fermé'),
+    text: `
+      <p>Les différentes routes se rejoignent sur une immense terrasse suspendue au-dessus du vide.</p>
+
+      <p>Devant toi se dresse une arche de pierre noire.</p>
+
+      <p>Au centre de sa clé de voûte est gravé le symbole désormais familier :</p>
+
+      <p><strong>l’œil fermé.</strong></p>
+
+      <p>Au-delà de l’arche, un chemin descend encore.</p>
+
+      <p>Très loin dans les profondeurs, une lumière rouge pulse lentement.</p>
+
+      <p>Une fois.</p>
+
+      <p>Puis une seconde.</p>
+
+      <p>Comme un battement.</p>
+
+      <p>Tu comprends que ce que tu as vu jusqu’ici n’était que l’entrée du monde enfoui.</p>
+
       <p><strong>Fin de cette version test.</strong></p>
     `,
     choices: [
@@ -2347,7 +2564,7 @@ const STORY = {
 
 // Numérotation façon livre-jeu : 1 page = 1 nœud narratif.
 // Le prologue est la page 01, puis les anciens chapitres 1 à 30 deviennent les pages 02 à 31.
-const PAGE_ORDER = Array.from({ length: 42 }, (_, i) => `c${i + 1}`);
+const PAGE_ORDER = Array.from({ length: 46 }, (_, i) => `c${i + 1}`);
 const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
 const padPage = n => String(n).padStart(2, '0');
 const imageBaseForPage = n => `La-Grotte-de-Valombre-${padPage(n)}`;
@@ -2405,15 +2622,21 @@ function syncThrowingBlades(state) {
 }
 
 function rollDie6() {
+  // Tirage uniforme sur 1–6 avec le générateur cryptographique du navigateur.
+  // Les valeurs hors du plus grand multiple de 6 sont rejetées pour éviter tout biais.
   if (window.crypto && window.crypto.getRandomValues) {
-    const buffer = new Uint8Array(1);
+    const buffer = new Uint32Array(1);
+    const limit = 4294967292; // plus grand multiple de 6 < 2^32
     let value;
+
     do {
       window.crypto.getRandomValues(buffer);
       value = buffer[0];
-    } while (value >= 252);
+    } while (value >= limit);
+
     return (value % 6) + 1;
   }
+
   return Math.floor(Math.random() * 6) + 1;
 }
 
@@ -2427,25 +2650,44 @@ function roll2D6(state, statName, statValue) {
   return state.lastTotal <= statValue;
 }
 
-function dieFace(value) {
-  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-  return faces[Math.max(1, Math.min(6, value)) - 1];
+function renderDie(value) {
+  const layouts = {
+    1: [5],
+    2: [1,9],
+    3: [1,5,9],
+    4: [1,3,7,9],
+    5: [1,3,5,7,9],
+    6: [1,3,4,6,7,9]
+  };
+
+  const active = new Set(layouts[value] || []);
+  let cells = '';
+
+  for (let i = 1; i <= 9; i++) {
+    cells += `<span class="die-cell">${active.has(i) ? '<i></i>' : ''}</span>`;
+  }
+
+  return `<span class="die-visual" aria-label="Dé : ${value}">${cells}</span>`;
 }
 
 function diceResultHtml(state) {
   if (!state.lastDice) return '';
+
   const [d1,d2] = state.lastDice;
+
   return `
     <div class="dice-result">
       <div class="dice-faces">
-        <span>${dieFace(d1)}</span>
-        <span>${dieFace(d2)}</span>
+        ${renderDie(d1)}
+        ${renderDie(d2)}
       </div>
+      <p class="dice-values">Dé 1 : <strong>${d1}</strong> &nbsp;·&nbsp; Dé 2 : <strong>${d2}</strong></p>
       <p><strong>Total : ${state.lastTotal}</strong></p>
       <p><strong>${state.lastStatName} : ${state.lastStat}</strong></p>
     </div>
   `;
 }
+
 function escapeHtml(value) {
   return String(value || '')
     .replaceAll('&','&amp;')
@@ -2455,7 +2697,7 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v8_systeme_aventure';
+const STORAGE_KEY = 'valombre_save_v9_fluidite';
 const CHECKPOINT_KEY = 'valombre_checkpoint_v8';
 
 const defaultState = () => ({
