@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#10100f" />
+  <meta name="theme-color" content="#251e17" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.webmanifest" />
@@ -12,298 +12,771 @@
   <meta name="application-name" content="La Grotte de Valombre" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="description" content="La Grotte de Valombre — livre-jeu interactif médiéval fantastique." />
-  <title>La Grotte de Valombre</title>
+  <title>La Grotte de Valombre — Livre-jeu</title>
   <style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:wght@500;600&display=swap');
+
+
+
 :root {
-  --bg: #0e0f0f;
-  --panel: #171918;
-  --panel2: #1f2220;
-  --text: #f0eee6;
-  --muted: #aaa89e;
-  --line: #32352f;
-  --accent: #b8a46e;
-  --accent2: #d2bd81;
-  --danger: #b96f68;
-  --shadow: 0 18px 50px rgba(0,0,0,.36);
+  --desk: #1a1511;
+  --desk2: #2a2119;
+  --paper: #eadcb9;
+  --paper-light: #f1e6cc;
+  --paper-mid: #e6d5af;
+  --paper-edge: #b79e72;
+  --paper-edge-dark: #856a46;
+  --ink: #1a1410;
+  --ink-soft: #5a4938;
+  --rule: #765c39;
+  --rule-light: #c0a16a;
+  --cartouche: #2d2017;
+  --cartouche-light: #493527;
+  --gold: #9b7a49;
+  --danger: #71372f;
+  --body-font: 'EB Garamond', Garamond, 'Times New Roman', serif;
+  --display-font: 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
 }
 
+
 * { box-sizing: border-box; }
-html, body { min-height: 100%; }
+html, 
 body {
   margin: 0;
+  color: var(--ink);
+  font-family: var(--body-font);
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   background:
-    radial-gradient(circle at 50% -10%, rgba(184,164,110,.08), transparent 40%),
-    var(--bg);
-  color: var(--text);
-  font-family: Georgia, 'Times New Roman', serif;
+    radial-gradient(ellipse at 50% -10%, rgba(171,128,73,.11), transparent 42%),
+    linear-gradient(180deg, var(--desk2), var(--desk));
 }
+
 button { font: inherit; }
+
 
 .app-shell {
   min-height: 100vh;
-  max-width: 760px;
+  max-width: 1060px;
   margin: 0 auto;
-  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  padding: max(12px, env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom));
 }
 
 .topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 18px 4px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  padding: 8px 6px 14px;
+  color: #dcc79b;
 }
 .topbar h1 {
-  margin: 3px 0 0;
-  font-size: clamp(26px, 6vw, 38px);
-  line-height: 1.02;
+  margin: 0;
+  font-family: var(--display-font);
+  font-size: clamp(24px, 4.6vw, 34px);
+  line-height: 1;
   font-weight: 600;
+  letter-spacing: .01em;
 }
 .eyebrow {
-  font-family: system-ui, -apple-system, sans-serif;
+  margin-bottom: 4px;
+  font-family: var(--body-font);
   letter-spacing: .16em;
-  font-size: 10px;
-  color: var(--accent);
+  font-size: 11px;
+  color: #bea375;
 }
 .icon-btn {
-  border: 1px solid var(--line);
-  background: var(--panel);
-  color: var(--text);
-  border-radius: 12px;
+  border: 1px solid rgba(180,153,109,.52);
+  background: linear-gradient(180deg, rgba(73,55,38,.95), rgba(42,31,22,.95));
+  color: #ead9b3;
+  border-radius: 0;
   width: 42px;
   height: 42px;
   cursor: pointer;
-  font-family: system-ui, sans-serif;
-  font-size: 21px;
+  font-family: var(--body-font);
+  font-size: 20px;
+  box-shadow: inset 0 0 0 1px rgba(27,18,11,.45);
 }
 
-.game { padding-bottom: 92px; }
-.image-frame {
-  aspect-ratio: 16/9;
-  border: 1px solid var(--line);
-  background: #111311;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-.story-image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  object-position: center;
-}
-.story-image.hidden { display: none; }
-.image-placeholder {
-  width: 100%; height: 100%;
-  display: grid;
-  place-content: center;
-  gap: 10px;
-  text-align: center;
+
+
+/* Page unique : on reproduit une page de livre-jeu imprimé, pas une interface web moderne. */
+.game {
+  position: relative;
+  padding: 16px 16px 24px;
+  border: 1px solid #89704b;
   background:
-    linear-gradient(145deg, transparent 48%, rgba(184,164,110,.05) 49%, rgba(184,164,110,.05) 51%, transparent 52%),
-    radial-gradient(circle at center, #21231f 0, #141614 70%);
-  color: var(--muted);
-  font-family: system-ui, sans-serif;
-  letter-spacing: .16em;
+    radial-gradient(circle at 12% 18%, rgba(126,94,54,.035) 0 1.2px, transparent 1.9px),
+    radial-gradient(circle at 76% 70%, rgba(126,94,54,.028) 0 1px, transparent 1.7px),
+    linear-gradient(180deg, var(--paper-light), var(--paper-mid));
+  box-shadow:
+    0 0 0 2px rgba(102,79,48,.22),
+    0 20px 52px rgba(0,0,0,.24);
 }
-.image-placeholder span { font-size: 11px; }
-.image-placeholder small { letter-spacing: .04em; opacity: .75; }
+.game .print-grain { display:none; }
+.game::before,
+.game::after {
+  content:'';
+  position:absolute;
+  pointer-events:none;
+}
+.game::before {
+  inset: 6px;
+  border: 1px solid rgba(116,90,56,.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(241,231,206,.92),
+    inset 0 0 0 5px rgba(163,134,87,.10);
+}
+.game::after {
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(71,52,32,.13), transparent 2.1%, transparent 97.9%, rgba(71,52,32,.11)),
+    linear-gradient(180deg, rgba(71,52,32,.09), transparent 2.2%, transparent 97.6%, rgba(71,52,32,.09));
+  opacity: .55;
+  mix-blend-mode: multiply;
+}
+
+.game::before {
+  inset: 8px;
+  border: 1px solid rgba(92,68,39,.72);
+  outline: 1px solid rgba(163,133,85,.48);
+  outline-offset: -4px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.17);
+}
+.game::after {
+  inset: 0;
+  opacity: .28;
+  background:
+    linear-gradient(90deg, rgba(64,43,24,.26), transparent 2.1%, transparent 97.6%, rgba(64,43,24,.20)),
+    linear-gradient(180deg, rgba(64,43,24,.13), transparent 2.6%, transparent 97.2%, rgba(64,43,24,.13));
+  mix-blend-mode: multiply;
+}
+
+
+
+.image-frame {
+  position: relative;
+  z-index: 2;
+  aspect-ratio: 4/3;
+  margin: 6px 6px 0;
+  border: 1px solid #6e5739;
+  background: #cab995;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(245,235,211,.95),
+    inset 0 0 0 4px rgba(104,82,52,.46);
+}
+.image-frame::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  box-shadow:
+    inset 0 0 0 6px rgba(236,225,198,.18),
+    inset 0 0 20px rgba(26,18,12,.10);
+}
+.story-image { width:100%; height:100%; display:block; object-fit:cover; object-position:center; }
+.story-image.hidden { display:none; }
+.image-placeholder {
+  width:100%; height:100%;
+  display:grid;
+  place-content:center;
+  gap:8px;
+  text-align:center;
+  background: linear-gradient(180deg, #d7c5a3, #cfbb94);
+  color:#5e4c37;
+  font-family:var(--body-font);
+}
+.image-placeholder span { font-size:13px; letter-spacing:.06em; }
+.image-placeholder small { font-size:11px; letter-spacing:.02em; opacity:.9; }
+
+
+
+
 
 .story-card {
-  margin-top: 16px;
-  background: linear-gradient(180deg, rgba(31,34,32,.96), rgba(23,25,24,.98));
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 22px 20px 24px;
-  box-shadow: var(--shadow);
+  position:relative;
+  z-index:2;
+  margin: 18px 18px 0;
+  padding: 0 26px 0;
+  background: transparent;
+  border: 0;
 }
 .chapter-number {
-  font-family: system-ui, sans-serif;
-  color: var(--accent);
-  letter-spacing: .12em;
-  font-size: 11px;
-  margin-bottom: 6px;
+  display:block;
+  margin: 0 0 8px;
+  color:#6a563c;
+  font-family:var(--body-font);
+  font-size:14px;
+  letter-spacing:.02em;
+  text-align:right;
 }
 .story-card h2 {
-  margin: 0 0 18px;
-  font-size: 29px;
+  margin: 0 0 16px;
+  text-align:center;
+  color:#221912;
+  font-family:var(--display-font);
+  font-size: clamp(40px, 6vw, 58px);
+  line-height: 1;
   font-weight: 600;
+  letter-spacing: 0;
 }
+.story-card h2::after { content:none; }
+
+
+
+
 .story-text {
-  font-size: 18px;
-  line-height: 1.62;
-  color: #e9e5da;
+  max-width: 860px;
+  margin: 0 auto;
+  color:#19130f;
+  font-family:var(--body-font);
+  font-size: clamp(21px, 2.65vw, 25px);
+  line-height: 1.22;
+  font-weight: 500;
+  letter-spacing: -.004em;
+  text-align: left;
+  hyphens: none;
 }
-.story-text p { margin: 0 0 1em; }
-.story-text blockquote {
-  margin: 1.1em 0;
-  padding: 10px 16px;
-  border-left: 2px solid var(--accent);
-  color: #d9d2bf;
-  font-style: italic;
-  background: rgba(184,164,110,.05);
+.story-text p {
+  margin: 0 0 .28em;
+  text-indent: 0;
 }
-.story-text ul { padding-left: 1.2em; }
-.story-text .ending {
-  margin-top: 20px;
-  padding: 14px;
-  border: 1px solid rgba(184,164,110,.3);
-  border-radius: 12px;
-  text-align: center;
-  color: var(--accent2);
-  font-family: system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: .08em;
-}
-.status-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
-.tag {
-  border: 1px solid rgba(184,164,110,.35);
-  background: rgba(184,164,110,.08);
-  color: #d7c796;
-  border-radius: 999px;
-  padding: 6px 9px;
-  font-family: system-ui, sans-serif;
-  font-size: 12px;
+.story-text p:first-child { text-indent:0; }
+.story-text p:first-child::first-letter {
+  float:none;
+  margin:0;
+  color:inherit;
+  font-family:inherit;
+  font-size:inherit;
+  line-height:inherit;
 }
 
-.choices { display: grid; gap: 10px; margin-top: 20px; }
+
+
+
+.story-text blockquote {
+  margin: .9em 0;
+  padding: 0;
+  border: 0;
+  color:#2f2419;
+  font-style: italic;
+  text-align:center;
+  background:none;
+}
+
+
+.story-text ul { padding-left:1.25em; }
+.story-text .ending {
+  margin:27px auto 0;
+  padding:13px 14px;
+  border-top:4px double #826846;
+  border-bottom:4px double #826846;
+  text-align:center;
+  color:#563923;
+  font-family:var(--display-font);
+  font-weight:600;
+  letter-spacing:.10em;
+}
+
+
+.status-tags {
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin: 15px 0 0;
+}
+.tag {
+  border:1px solid rgba(122,96,60,.48);
+  background: rgba(255,255,255,.08);
+  color:#5f4730;
+  padding: 4px 9px;
+  font-family:var(--body-font);
+  font-size:13px;
+}
+
+
+
+/* Cartouches de choix : inspirés d'une maquette de livre imprimé, pas d'une UI moderne. */
+.choices {
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap: 20px;
+  margin: 22px auto 6px;
+  padding-top: 4px;
+  max-width: 860px;
+}
 .choice-btn {
-  text-align: left;
-  width: 100%;
-  border: 1px solid #3a3d36;
-  background: #20231f;
-  color: var(--text);
-  padding: 15px 16px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: .15s ease;
-  line-height: 1.35;
+  position:relative;
+  display:flex;
+  align-items:stretch;
+  width:100%;
+  min-height:140px;
+  border:1px solid #896d48;
+  background: linear-gradient(180deg, #efe2c3, #ecdcbc);
+  color:var(--ink);
+  padding: 18px 18px 54px;
+  border-radius:0;
+  cursor:pointer;
+  box-shadow:
+    inset 0 0 0 1px rgba(243,234,212,.98),
+    inset 0 0 0 4px rgba(121,95,62,.28);
+  transition:none;
 }
-.choice-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
-.choice-btn:active { transform: translateY(0); }
-.choice-index {
-  display: inline-grid;
-  place-items: center;
-  width: 25px; height: 25px;
-  border-radius: 50%;
-  margin-right: 10px;
-  background: rgba(184,164,110,.12);
-  color: var(--accent2);
-  font-family: system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+.choice-btn::before,
+.choice-btn::after {
+  content:'';
+  position:absolute;
+  width:14px;
+  height:14px;
+  border-color:#a18255;
 }
+.choice-btn::before {
+  left:8px;
+  top:8px;
+  border-left:1px solid;
+  border-top:1px solid;
+}
+.choice-btn::after {
+  right:8px;
+  top:8px;
+  border-right:1px solid;
+  border-top:1px solid;
+}
+.choice-btn:hover { filter:none; transform:none; }
+.choice-copy {
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+  font-family:var(--body-font);
+  font-size:20px;
+  line-height:1.18;
+  font-weight:500;
+}
+.choice-dest {
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:8px;
+  min-height:36px;
+  display:grid;
+  place-items:center;
+  padding: 6px 10px;
+  border:1px solid #20160f;
+  background: linear-gradient(180deg, #453125, #2b2018);
+  color:#efdfbd;
+  font-family:var(--body-font);
+  font-size:17px;
+  font-weight:600;
+  letter-spacing:0;
+}
+.choice-dest::before,
+.choice-dest::after { content:''; margin:0; }
+.choice-btn:only-child,
+.choice-btn:last-child:nth-child(odd) {
+  grid-column:1 / -1;
+  max-width:390px;
+  justify-self:center;
+}
+
+
+
 
 .footer {
-  position: fixed;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: min(760px, 100%);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 12px max(16px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-  background: linear-gradient(180deg, rgba(14,15,15,0), rgba(14,15,15,.95) 30%);
+  position: static;
+  width: min(860px,100%);
+  margin: 16px auto 0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:0;
+  background:none;
 }
 .footer-btn, .drawer-action {
-  border: 1px solid var(--line);
-  background: rgba(31,34,32,.96);
-  color: var(--text);
-  padding: 12px 14px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-family: system-ui, sans-serif;
-  font-size: 13px;
+  border:1px solid rgba(166,136,93,.58);
+  background: linear-gradient(180deg, #4e3929, #2b1f17);
+  color:#efe0ba;
+  padding: 11px 13px;
+  border-radius:0;
+  cursor:pointer;
+  font-family:var(--body-font);
+  font-size:15px;
+  box-shadow: inset 0 0 0 1px rgba(30,21,15,.5);
 }
 .footer-btn span {
-  display: inline-grid;
-  place-items: center;
-  min-width: 20px; height: 20px;
-  margin-left: 4px;
-  background: var(--accent);
-  color: #111;
-  border-radius: 999px;
-  font-weight: 800;
+  display:inline-grid;
+  place-items:center;
+  min-width:20px;
+  height:20px;
+  margin-left:4px;
+  background:#b99762;
+  color:#1e1710;
+  font-size:11px;
+  font-weight:700;
 }
-.danger { color: #d8a6a1; }
 
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.58);
-  backdrop-filter: blur(4px);
-  z-index: 30;
-}
-.hidden { display: none !important; }
+.danger { color:#e5c1b4; }
+
+.backdrop { position:fixed; inset:0; background:rgba(0,0,0,.61); backdrop-filter:blur(3px); z-index:30; }
+.hidden { display:none !important; }
+
 .drawer {
-  position: fixed;
-  top: 0; right: 0;
-  width: min(360px, 88vw);
-  height: 100%;
-  z-index: 40;
-  background: #171918;
-  border-left: 1px solid var(--line);
-  padding: max(18px, env(safe-area-inset-top)) 18px 18px;
-  transform: translateX(102%);
-  transition: transform .2s ease;
-  box-shadow: -20px 0 60px rgba(0,0,0,.4);
+  position:fixed;
+  top:0;
+  right:0;
+  width:min(360px,88vw);
+  height:100%;
+  z-index:40;
+  color:var(--ink);
+  background:linear-gradient(180deg, #efe2c0, #e2cf9f);
+  border-left:1px solid #7b6546;
+  padding:max(18px,env(safe-area-inset-top)) 18px 18px;
+  transform:translateX(102%);
+  transition:transform .2s ease;
+  box-shadow:-16px 0 38px rgba(0,0,0,.34);
 }
-.drawer.open { transform: translateX(0); }
+.drawer.open { transform:translateX(0); }
 .drawer-head { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-.drawer-head h3 { margin:0; font-size:24px; }
-.drawer-action { display:block; width:100%; text-align:left; margin-top:12px; }
-.drawer-note { margin-top:22px; color:var(--muted); font: 12px/1.5 system-ui, sans-serif; }
-.danger-text { color:#d8a6a1; }
+.drawer-head h3 { margin:0; font-family:var(--display-font); font-size:30px; font-weight:600; }
+.drawer .icon-btn,.modal .icon-btn { color:#34271b; background:transparent; border-color:#8b7452; box-shadow:none; }
+.drawer-action { display:block; width:100%; text-align:left; margin-top:12px; background:rgba(83,61,39,.08); color:#392b1f; border-color:#907552; }
+.drawer-note { margin-top:22px; color:#6b5a45; font:14px/1.4 var(--body-font); }
+.danger-text { color:#793f36; }
 
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: grid;
-  place-items: center;
-  padding: 18px;
-}
+
+.modal { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:18px; }
+
 .modal-card {
-  width: min(520px, 100%);
-  max-height: 80vh;
-  overflow: auto;
-  background: #181a19;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: var(--shadow);
+  width:min(520px,100%);
+  max-height:80vh;
+  overflow:auto;
+  color:var(--ink);
+  background:linear-gradient(180deg, #f1e5c4, #e5d3a9);
+  border:1px solid #806847;
+  border-radius:0;
+  padding:18px;
+  box-shadow:0 18px 40px rgba(0,0,0,.32);
 }
 .inventory-list { display:grid; gap:10px; margin-top:16px; }
-.inventory-item {
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel2);
-}
-.inventory-item strong { display:block; color: var(--accent2); margin-bottom:4px; }
-.inventory-empty { color: var(--muted); margin-top: 14px; }
+.inventory-item { padding:12px; border:1px solid #987d57; background:rgba(255,255,255,.14); }
+.inventory-item strong { display:block; color:#6c4a2e; margin-bottom:4px; }
+.inventory-empty { color:#6b5a45; margin-top:14px; }
 
 
-.choice-copy { display: flex; flex-direction: column; gap: 3px; text-align: left; }
-.choice-dest {
-  font-family: system-ui, -apple-system, sans-serif;
-  color: var(--accent2);
-  font-size: 11px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  opacity: .9;
-}
 
-@media (max-width: 520px) {
-  .app-shell { padding-left: 12px; padding-right: 12px; }
-  .story-card { padding: 19px 16px 22px; }
-  .story-text { font-size: 17px; }
-  .story-card h2 { font-size: 26px; }
+@media (max-width:620px) {
+  .app-shell { padding-left:10px; padding-right:10px; }
+  .topbar { padding-left:2px; padding-right:2px; }
+  .topbar h1 { font-size:26px; }
+  .game { padding: 12px 12px 20px; box-shadow: 0 14px 36px rgba(0,0,0,.24); }
+  .game::before { inset: 5px; }
+  .image-frame { margin: 4px 4px 0; }
+  .story-card { margin: 14px 10px 0; padding:0 8px; }
+  .chapter-number { font-size:13px; }
+  .story-card h2 { font-size: 32px; margin-bottom: 12px; }
+  .story-text { font-size: 18px; line-height: 1.22; }
+  .choices { grid-template-columns:1fr; gap:12px; }
+    .choice-btn { min-height: 120px; padding: 14px 12px 48px; }
+  .choice-copy { font-size: 17px; }
+  .choice-dest { font-size: 15px; min-height: 32px; }
+  .footer { grid-template-columns:1fr 1fr; }
 }
 
-  </style>
+
+
+  .choices { grid-template-columns:1fr; gap:12px; margin-top:27px; }
+  .choice-btn { min-height:116px; }
+  .choice-copy { font-size:17px; }
+}
+
+  
+/* =========================================================
+   AJOUTS FONCTIONNELS — le design principal des pages reste intact.
+   ========================================================= */
+
+.footer {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.hero-sheet {
+  max-width: 690px;
+  margin: 0 auto 18px;
+  padding: 16px;
+  border: 1px solid #927653;
+  background: rgba(255,255,255,.10);
+  box-shadow: inset 0 0 0 3px rgba(126,94,56,.07);
+}
+
+.hero-sheet-row {
+  display:grid;
+  grid-template-columns: 125px 1fr;
+  gap:14px;
+  padding:7px 0;
+  border-bottom:1px solid rgba(103,77,46,.22);
+}
+
+.hero-label {
+  color:#65492f;
+  font-variant:small-caps;
+  letter-spacing:.05em;
+}
+
+.hero-value {
+  color:#21170f;
+}
+
+.hero-name-input {
+  width:100%;
+  border:0;
+  border-bottom:1px solid #806442;
+  border-radius:0;
+  outline:none;
+  padding:3px 2px 5px;
+  background:transparent;
+  color:#21170f;
+  font-family:var(--body-font);
+  font-size:19px;
+}
+
+.hero-sheet-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.hero-stat {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid #9a7e58;
+  padding:9px 11px;
+  background:rgba(255,255,255,.08);
+}
+
+.hero-stat strong {
+  color:#694a2e;
+}
+
+.hero-weapon {
+  margin-top:12px;
+  text-align:center;
+  color:#49331f;
+  font-style:italic;
+}
+
+.parchment-verse {
+  max-width:650px;
+  margin:18px auto;
+  padding:14px 18px;
+  border-top:1px solid #94764f;
+  border-bottom:1px solid #94764f;
+  text-align:center;
+  color:#342419;
+  font-style:italic;
+  background:rgba(255,255,255,.07);
+}
+
+.weapon-compare {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:16px 0;
+}
+
+.weapon-compare > div {
+  border:1px solid #9a7e58;
+  padding:11px;
+  background:rgba(255,255,255,.08);
+  text-align:center;
+}
+
+.inventory-topline {
+  margin:12px 0 4px;
+  color:#6c5338;
+  font-style:italic;
+}
+
+.inventory-item p {
+  margin:.25em 0 0;
+}
+
+.inventory-actions {
+  margin-top:10px;
+}
+
+.inventory-action-btn {
+  width:100%;
+  border:1px solid rgba(224,205,164,.36);
+  outline:1px solid rgba(69,49,31,.75);
+  outline-offset:-4px;
+  background:linear-gradient(180deg, #57432f, #35281d);
+  color:#efe1bd;
+  padding:10px 12px;
+  border-radius:1px;
+  cursor:pointer;
+  font-family:var(--body-font);
+  font-size:14px;
+}
+
+.inventory-action-btn:disabled {
+  opacity:.42;
+  cursor:default;
+}
+
+.inventory-parchment-image {
+  display:block;
+  width:100%;
+  max-width:430px;
+  margin:12px auto 16px;
+  border:1px solid #806746;
+}
+
+.inventory-image-fallback {
+  display:none;
+  padding:14px;
+  margin:12px 0;
+  border:1px dashed #96784f;
+  color:#725739;
+  text-align:center;
+}
+
+.journal-panel {
+  position:fixed;
+  left:16px;
+  bottom:16px;
+  z-index:70;
+  width:min(390px,calc(100vw - 32px));
+  max-height:68vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid #765d3d;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(101,72,39,.035) 0 1px, transparent 1.8px),
+    linear-gradient(180deg,#efe2c0,#e1cda2);
+  box-shadow:0 18px 45px rgba(0,0,0,.36);
+  color:#251a11;
+}
+
+.journal-panel.hidden {
+  display:none !important;
+}
+
+.journal-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px 8px;
+  border-bottom:3px double #9b7b50;
+}
+
+.journal-head h3 {
+  margin:0;
+  font-family:var(--display-font);
+  font-size:28px;
+  font-weight:600;
+}
+
+.journal-close {
+  width:34px;
+  height:34px;
+  border:1px solid #8a6e48;
+  border-radius:0;
+  background:transparent;
+  color:#382819;
+  font-size:21px;
+  cursor:pointer;
+}
+
+.journal-body {
+  padding:11px 12px 13px;
+  overflow:auto;
+}
+
+.journal-hint {
+  margin:0 0 9px;
+  color:#665039;
+  font-size:14px;
+  line-height:1.28;
+  font-style:italic;
+}
+
+.journal-textarea {
+  width:100%;
+  min-height:300px;
+  resize:vertical;
+  border:1px solid #876943;
+  border-radius:0;
+  outline:none;
+  padding:14px;
+  color:#251a11;
+  font-family:var(--body-font);
+  font-size:17px;
+  line-height:1.42;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(120,91,54,.12) 0,
+      rgba(120,91,54,.12) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    rgba(244,230,198,.52);
+}
+
+.journal-status {
+  margin-top:7px;
+  text-align:right;
+  color:#735b3f;
+  font-size:11px;
+  font-style:italic;
+}
+
+@media (max-width:620px) {
+  .footer {
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+  }
+
+  .footer-btn {
+    padding-left:5px;
+    padding-right:5px;
+    font-size:12px;
+  }
+
+  .hero-sheet-row {
+    grid-template-columns:1fr;
+    gap:3px;
+  }
+
+  .hero-sheet-grid,
+  .weapon-compare {
+    grid-template-columns:1fr;
+  }
+
+  .journal-panel {
+    left:8px;
+    right:8px;
+    bottom:8px;
+    width:auto;
+    max-height:72vh;
+  }
+
+  .journal-textarea {
+    min-height:260px;
+    font-size:17px;
+  }
+}
+
+</style>
 </head>
 <body>
   <div class="app-shell">
@@ -315,7 +788,7 @@ button { font: inherit; }
       <button id="menuBtn" class="icon-btn" aria-label="Ouvrir le menu">☰</button>
     </header>
 
-    <main id="game" class="game" aria-live="polite">
+    <main id="game" class="game" aria-live="polite" data-design="livre-jeu-80s">
       <section class="image-frame" id="imageFrame">
         <img id="storyImage" class="story-image hidden" alt="" />
         <div class="image-placeholder" id="imagePlaceholder">
@@ -335,9 +808,24 @@ button { font: inherit; }
 
     <footer class="footer">
       <button id="inventoryBtn" class="footer-btn">Inventaire <span id="inventoryCount">0</span></button>
+      <button id="journalBtn" class="footer-btn">Journal</button>
       <button id="restartBtn" class="footer-btn danger">Recommencer</button>
     </footer>
   </div>
+
+
+  <aside id="journalPanel" class="journal-panel hidden" aria-hidden="true">
+    <div class="journal-head">
+      <h3>Journal</h3>
+      <button id="journalCloseBtn" class="journal-close" type="button" aria-label="Fermer le journal">×</button>
+    </div>
+    <div class="journal-body">
+      <p class="journal-hint">Écris librement, ou copie-colle ici un passage important de l’histoire.</p>
+      <textarea id="journalText" class="journal-textarea" spellcheck="true"
+        placeholder="Indices, hypothèses, détails à retenir…"></textarea>
+      <div id="journalStatus" class="journal-status">Sauvegarde automatique</div>
+    </div>
+  </aside>
 
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer" aria-hidden="true">
@@ -365,229 +853,269 @@ button { font: inherit; }
   <script>
 const STORY = {
   start: {
-    number: 'PROLOGUE', title: 'Le cheval revenu seul', image: 'Valombre — Prologue',
-    text: `
-      <p>Depuis trois nuits, personne ne dort vraiment à Valombre.</p>
-      <p>À la tombée du jour, quelque chose hurle dans les collines. Ce n'est ni un loup, ni un homme.</p>
-      <p>La première nuit, les chiens du village ont aboyé jusqu'à l'aube. La deuxième, on a retrouvé trois chèvres éventrées derrière la maison du meunier. La troisième, le vieux Martin a disparu.</p>
-      <p>Ce matin, le seigneur de Valombre a envoyé son chevalier, <strong>Sir Aldren de Rochebrune</strong>, explorer les grottes situées au nord du village.</p>
-      <p>Tu es son écuyer. Mais Sir Aldren t'a ordonné de rester au village.</p>
-      <blockquote>« Je serai revenu avant le coucher du soleil. »</blockquote>
-      <p>Le soleil s'est couché depuis longtemps. Sir Aldren n'est pas revenu.</p>
-      <p>Son cheval, lui, est revenu seul. La selle est couverte de sang.</p>
-      <p>Accrochée à la selle, la sacoche de Sir Aldren est toujours là. Dans l'écurie, son ancienne épée repose contre le mur.</p>`,
-    choices: [
-      { label: "Prendre immédiatement l'épée et partir vers les grottes", to: 'c1' },
-      { label: 'Fouiller la sacoche de Sir Aldren avant de partir', to: 'c2' },
-      { label: "Demander de l'aide au village", to: 'c3' }
-    ]
+    sheet: true,
+    number: 'FICHE DU HÉROS',
+    title: 'Ton personnage',
+    text: state => `
+      <div class="hero-sheet">
+        <div class="hero-sheet-row">
+          <span class="hero-label">Nom</span>
+          <input id="heroNameInput" class="hero-name-input" type="text" maxlength="24"
+            placeholder="Ton nom" value="${escapeHtml(state.heroName || '')}">
+        </div>
+        <div class="hero-sheet-row"><span class="hero-label">Rang</span><span class="hero-value">Écuyer de Sir Aldren de Rochebrune</span></div>
+        <div class="hero-sheet-row"><span class="hero-label">Style</span><span class="hero-value">Vif, prudent et observateur</span></div>
+        <div class="hero-sheet-row"><span class="hero-label">Technique de bataille</span><span class="hero-value">Esquive, déplacement rapide et contre-attaque</span></div>
+
+        <div class="hero-sheet-grid">
+          <div class="hero-stat"><strong>Vie</strong><span>${state.hp} / ${state.maxHp}</span></div>
+          <div class="hero-stat"><strong>Chance</strong><span>${state.chance} / 6</span></div>
+          <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)} / 6</span></div>
+          <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)} / 6</span></div>
+        </div>
+
+        <div class="hero-weapon">Au départ, tu ne portes encore aucune arme.</div>
+      </div>
+      <p>Sir Aldren t’a ordonné de rester au village. Pourtant, la nuit est tombée depuis longtemps et son cheval vient de revenir seul.</p>
+    `,
+    choices: [{ label: 'Commencer l’aventure', to: 'c1' }]
   },
+
   c1: {
-    number: 'CHAPITRE 1', title: 'Le chemin des collines', image: 'Le chemin des collines',
-    text: `<p>Tu quittes Valombre avec l'épée de Sir Aldren.</p><p>Après une demi-heure de marche, tu découvres un cadavre au milieu du chemin. C'est le vieux Martin.</p><p>Ses yeux sont ouverts. Sa poitrine semble intacte. Mais sa bouche est remplie de terre noire.</p><p>À côté de lui, le chemin se divise. À gauche, le sentier principal monte vers la grotte. À droite, une piste étroite descend dans les bois.</p><p>Tu remarques des traces de bottes allant vers la forêt.</p>`,
+    number: 'PAGE 1',
+    title: 'Le cheval revenu seul',
+    image: 'Le cheval revenu seul',
+    text: state => `
+      <p>Des sabots résonnent soudain sur les pavés de Valombre.</p>
+      <p>Le cheval de <strong>Sir Aldren de Rochebrune</strong> apparaît au bout de la rue. Seul.</p>
+      <p>De l’écume couvre son poitrail. Une longue entaille traverse la selle et du sang séché macule l’une des sacoches.</p>
+      <p>Dans l’écurie, contre le mur, repose encore l’ancienne épée de ton maître. Une arme solide, mais beaucoup trop lourde pour toi.</p>
+      <p>Personne ne te demande de partir à sa recherche. Personne ne te l’interdit non plus.</p>
+    `,
     choices: [
-      { label: 'Inspecter le cadavre', to: 'c4' },
-      { label: 'Suivre directement le sentier vers la grotte', to: 'c5' },
-      { label: 'Suivre les traces dans la forêt', to: 'c6' }
+      { label: 'Fouiller la sacoche de Sir Aldren', to: 'c2' },
+      { label: 'Partir au village demander de l’aide', to: 'c3', effect: s => equipHeavySword(s) },
+      { label: 'Prendre l’épée et partir immédiatement vers les grottes', to: 'c8', effect: s => equipHeavySword(s) }
     ]
   },
+
   c2: {
-    number: 'CHAPITRE 2', title: 'La sacoche', image: 'La sacoche de Sir Aldren',
-    text: `<p>À l'intérieur, tu trouves une petite lanterne à huile, trois pièces d'argent, un morceau de craie, une fiole contenant un liquide rouge sombre et une lettre pliée.</p><blockquote>« Aldren, les galeries sous Valombre sont plus anciennes que le village. Si tu trouves une porte portant le symbole de l'œil fermé, ne l'ouvre sous aucun prétexte. — Père Auguste. »</blockquote><p>Tu emportes la lanterne et la craie. Mais tu hésites devant la fiole.</p>`,
-    onEnter: s => { s.flags.lanterne = true; s.flags.craie = true; },
-    choices: [
-      { label: 'Prendre également la fiole rouge', to: 'c1', effect: s => addItem(s,'fiole','Fiole rouge','Un liquide rouge sombre trouvé dans la sacoche de Sir Aldren.') },
-      { label: 'Laisser la fiole et partir', to: 'c1' }
-    ]
-  },
-  c3: {
-    number: 'CHAPITRE 3', title: "Chercher de l'aide", image: 'La forge de Valombre',
-    text: `<p>Tu frappes chez plusieurs habitants. Personne ne veut sortir.</p><p>Finalement, le forgeron ouvre sa porte.</p><blockquote>« Aldren savait se battre. Si quelque chose l'a vaincu, toi et moi ne ferons pas mieux. »</blockquote><p>Il te donne cependant un petit marteau.</p><blockquote>« Prends ça. Ce n'est pas une épée, mais parfois il vaut mieux casser une serrure que combattre ce qu'elle protège. »</blockquote>`,
-    onEnter: s => addItem(s,'marteau','Marteau','Un lourd marteau donné par le forgeron.'),
-    choices: [{ label: 'Partir seul vers les collines', to: 'c1' }]
-  },
-  c4: {
-    number: 'CHAPITRE 4', title: 'Le mort', image: 'Le corps de Martin',
-    text: `<p>Tu t'agenouilles près de Martin. Quelque chose brille entre ses dents : une petite médaille de cuivre représentant un cercle traversé par trois lignes.</p><p>Au moment où tu te relèves, les yeux de Martin bougent. Sa main se referme brutalement sur ton poignet.</p><blockquote>« Il rêve sous la pierre… »</blockquote><p>Puis son corps se cambre.</p>`,
-    choices: [
-      { label: 'Reculer immédiatement', to: 'c7' },
-      { label: 'Essayer de lui parler', to: 'c8' },
-      { label: "Frapper Martin avec l'épée", to: 'c9' }
-    ]
-  },
-  c5: {
-    number: 'CHAPITRE 5', title: "L'entrée de la grotte", image: "L'entrée de la grotte",
-    text: s => `<p>La grotte apparaît entre deux rochers. Devant l'entrée repose le bouclier de Sir Aldren, fendu en deux. Une traînée de sang disparaît dans l'obscurité.</p><p>À l'intérieur, deux passages. Le premier descend profondément sous terre. Le second suit la paroi de la montagne.</p>${s.flags.craie ? `<p>Sur le sol, quelqu'un a tracé une flèche avec de la craie. Tu reconnais celle de Sir Aldren.</p>` : `<p>Sur le sol, quelqu'un a tracé une flèche blanche qui indique le passage descendant.</p>`}`,
-    choices: [
-      { label: 'Suivre les marques vers les profondeurs', to: 'c10' },
-      { label: "Emprunter l'autre galerie", to: 'c11' }
-    ]
-  },
-  c6: {
-    number: 'CHAPITRE 6', title: 'Les traces dans la forêt', image: 'La cabane dans les bois',
-    text: `<p>Les traces te conduisent jusqu'à une vieille cabane abandonnée. Une faible lumière passe sous la porte. Tu entends trois hommes parler à l'intérieur.</p><blockquote>« Le chevalier est encore vivant. »<br>« Plus pour longtemps. »<br>« À minuit, ils ouvriront la porte. »</blockquote>`,
-    choices: [
-      { label: 'Écouter encore', to: 'c12' },
-      { label: 'Entrer brutalement dans la cabane', to: 'c13' },
-      { label: 'Quitter discrètement les lieux et courir vers la grotte', to: 'c5' }
-    ]
-  },
-  c7: {
-    number: 'CHAPITRE 7', title: 'Le réveil', image: 'Martin se relève',
-    text: `<p>Tu recules. Martin se redresse lentement. Ses mouvements sont impossibles.</p><p>Quelque chose semble bouger sous la peau de son cou.</p><p>Tu cours. Derrière toi, Martin pousse un hurlement qui n'a plus rien d'humain.</p><p>Tu ne t'arrêtes qu'en apercevant la grotte.</p>`,
-    choices: [{ label: 'Entrer dans la grotte', to: 'c5' }]
-  },
-  c8: {
-    number: 'CHAPITRE 8', title: 'Mauvais choix', image: 'La chose dans la bouche de Martin', ending: true,
-    text: `<p>Tu te penches vers Martin.</p><blockquote>« Martin ? Qu'est-ce qui s'est passé ? »</blockquote><p>Il sourit. Sa mâchoire s'ouvre beaucoup trop largement.</p><p>Quelque chose de noir jaillit de sa bouche et s'enroule autour de ton cou. Tu essayes de crier. Impossible.</p><p>La dernière chose que tu vois est le visage du vieux Martin qui te regarde avec une expression presque désolée.</p><div class="ending">FIN — LE PREMIER HÔTE</div>`,
-    choices: []
-  },
-  c9: {
-    number: 'CHAPITRE 9', title: 'Le coup', image: 'La médaille de cuivre',
-    text: `<p>Tu frappes. Le corps de Martin retombe immédiatement.</p><p>Un liquide noir s'écoule de sa bouche. Au milieu de cette substance, quelque chose ressemblant à un gros ver se tortille quelques secondes avant de mourir.</p><p>Tu récupères la médaille.</p>`,
-    onEnter: s => addItem(s,'medaille','Médaille de cuivre','Un cercle traversé par trois lignes. Tu ignores encore sa fonction.'),
-    choices: [{ label: 'Poursuivre vers la grotte', to: 'c5' }]
-  },
-  c10: {
-    number: 'CHAPITRE 10', title: 'Les marques de craie', image: "La porte à l'œil fermé",
-    text: `<p>Tu descends longtemps. Les marques s'arrêtent devant une immense porte de pierre.</p><p>Au centre est gravé un symbole : <strong>un œil fermé</strong>.</p><p>Tu repenses à la lettre : « Ne l'ouvre sous aucun prétexte. »</p><p>Mais la traînée de sang passe sous cette porte. À quelques mètres, une seconde galerie descend encore plus profondément.</p>`,
-    choices: [
-      { label: 'Ouvrir la porte', to: 'c14' },
-      { label: 'Chercher un autre passage', to: 'c15' },
-      { label: 'Appeler Sir Aldren', to: 'c16' }
-    ]
-  },
-  c11: {
-    number: 'CHAPITRE 11', title: 'La galerie oubliée', image: 'Le squelette en armure',
-    text: `<p>La galerie devient de plus en plus étroite. Tu arrives dans une salle naturelle.</p><p>Au centre repose un squelette en armure, là depuis des siècles. Dans sa main se trouve une étrange dague noire.</p><blockquote>« Ce qui n'a pas de chair ne peut être tué par le fer. »</blockquote>`,
-    choices: [
-      { label: 'Prendre la dague noire', to: 'c15', effect: s => addItem(s,'dague','Dague noire','Une arme ancienne, glaciale au toucher.') },
-      { label: 'Laisser la dague', to: 'c15' }
-    ]
-  },
-  c12: {
-    number: 'CHAPITRE 12', title: 'Le complot', image: 'Les hommes dans la cabane',
-    text: `<p>Les hommes parlent d'un culte et d'une cérémonie. Ils mentionnent un nom : <strong>Le Dormeur de Valombre</strong>.</p><p>Sir Aldren a été capturé. Il doit être sacrifié à minuit.</p><blockquote>« Il faut la médaille. Sans elle, impossible d'ouvrir le sanctuaire. »</blockquote><p>Soudain, une branche craque sous ton pied. La porte de la cabane s'ouvre.</p>`,
-    choices: s => hasItem(s,'medaille')
-      ? [{ label: 'Montrer la médaille et improviser', to: 'c17' }]
-      : [{ label: 'Prendre la fuite', to: 'c18' }]
-  },
-  c13: {
-    number: 'CHAPITRE 13', title: "L'assaut", image: 'Combat dans la cabane', ending: true,
-    text: `<p>Tu défonces la porte. Trois hommes en robes sombres se retournent.</p><p>Le premier n'a pas le temps de réagir. Mais les deux autres sortent des couteaux.</p><p>Tu n'es pas encore un chevalier. Le combat est rapide. Une lame pénètre sous tes côtes.</p><p>À travers ta vision brouillée, tu les entends murmurer :</p><blockquote>« Un deuxième sacrifice ne fera pas de mal. »</blockquote><div class="ending">FIN — LE SACRIFICE</div>`,
-    choices: []
-  },
-  c14: {
-    number: 'CHAPITRE 14', title: 'La porte interdite', image: 'Ce qui dormait', ending: true,
-    text: `<p>Tu pousses la porte. Elle s'ouvre presque sans résistance.</p><p>Sir Aldren est là, attaché à une colonne.</p><blockquote>« NON ! »</blockquote><p>Son cri arrive trop tard. La porte se referme derrière toi.</p><p>Dans l'obscurité, quelque chose respire. Une respiration lente, profonde, ancienne.</p><p>Deux yeux s'ouvrent. Puis quatre. Puis des dizaines.</p><div class="ending">FIN — CE QUI DORMAIT</div>`,
-    choices: []
-  },
-  c15: {
-    number: 'CHAPITRE 15', title: 'Le sanctuaire', image: 'Le sanctuaire souterrain',
-    text: `<p>La galerie secondaire contourne la porte. Tu arrives au-dessus d'une grande salle souterraine.</p><p>En contrebas, six silhouettes en robes entourent Sir Aldren. Il est vivant, mais blessé.</p><p>Derrière lui se dresse une énorme porte de pierre couverte de symboles.</p>`,
-    choices: s => {
-      const arr = [];
-      if (hasItem(s,'marteau')) arr.push({ label: 'Briser le mécanisme avec le marteau', to: 'c19' });
-      if (hasItem(s,'dague')) arr.push({ label: 'Descendre discrètement avec la dague noire', to: 'c20' });
-      arr.push({ label: 'Attaquer directement', to: 'c21' });
-      return arr;
+    number: 'PAGE 2',
+    title: 'La sacoche de Sir Aldren',
+    image: 'La sacoche de Sir Aldren',
+    onEnter: s => {
+      if (!s.flags.sacocheFouillee) {
+        s.flags.sacocheFouillee = true;
+        s.gold += 3;
+        addItem(
+          s,
+          'parchemin',
+          'Parchemin ancien',
+          'Un fragment ancien découvert dans les affaires de Sir Aldren. Il peut être relu quand tu veux.'
+        );
+      }
+    },
+    text: state => `
+      <p>Tu ouvres la sacoche. À l’intérieur, tu trouves <strong>trois pièces d’argent</strong>, une petite <strong>fiole rouge sombre</strong> et un morceau de parchemin plié plusieurs fois.</p>
+      <p>Le papier paraît beaucoup plus ancien que le reste. Certaines lettres sont presque effacées.</p>
+
+      <div class="parchment-verse">
+        <strong>L’œil qui dort doit demeurer fermé,</strong><br>
+        <strong>Car nul vivant ne doit le réveiller.</strong><br><br>
+        <strong>Là où le soufre vient empoisonner l’air,</strong><br>
+        <strong>Détourne tes pas et rebrousse en arrière.</strong><br><br>
+        <strong>Lorsque les liens ne pourront plus céder,</strong><br>
+        <strong>Cherche la lame noire : elle seule peut libérer.</strong>
+      </div>
+
+      <p>Tu plies soigneusement le parchemin et le ranges dans ton inventaire. Tu pourras désormais le relire quand tu le souhaites.</p>
+      ${hasItem(state,'fiole_rouge') || state.flags.fioleLaissee
+        ? '<p>Tu as déjà décidé quoi faire de la mystérieuse fiole rouge.</p>'
+        : '<p>La fiole rouge reste entre tes mains. Tu ignores encore ce qu’elle contient.</p>'}
+    `,
+    choices: state => {
+      if (!hasItem(state,'fiole_rouge') && !state.flags.fioleLaissee) {
+        return [
+          { label: 'Prendre la fiole et aller au village', to: 'c3', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); equipHeavySword(s); } },
+          { label: 'Prendre la fiole et partir vers les grottes', to: 'c8', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); equipHeavySword(s); } },
+          { label: 'Laisser la fiole et aller au village', to: 'c3', effect: s => { s.flags.fioleLaissee = true; equipHeavySword(s); } },
+          { label: 'Laisser la fiole et partir vers les grottes', to: 'c8', effect: s => { s.flags.fioleLaissee = true; equipHeavySword(s); } }
+        ];
+      }
+      return [
+        { label: 'Aller au village', to: 'c3', effect: s => equipHeavySword(s) },
+        { label: 'Partir vers les grottes', to: 'c8', effect: s => equipHeavySword(s) }
+      ];
     }
   },
-  c16: {
-    number: 'CHAPITRE 16', title: 'Une voix familière', image: 'La voix derrière la porte',
-    text: `<p>« Sir Aldren ! »</p><p>Silence.</p><p>Puis une voix répond derrière la porte :</p><blockquote>« Je suis ici ! Ouvre ! »</blockquote><p>Tu poses la main sur la pierre. Mais quelque chose te dérange.</p><p>Sir Aldren ne t'appelle jamais par ton prénom.</p><blockquote>« Bruno… ouvre-moi. »</blockquote><p>Tu n'as jamais dit ton nom.</p>`,
+
+  c3: {
+    number: 'PAGE 3',
+    title: 'La place de Valombre',
+    image: 'La place de Valombre',
+    onEnter: s => equipHeavySword(s),
+    text: `
+      <p>La place de Valombre est presque déserte. Les volets se ferment les uns après les autres.</p>
+      <p>Sous son auvent, le <strong>marchand</strong> termine de ranger ses affaires. Dans la forge, une lueur rouge éclaire encore les murs.</p>
+      <p>Plus loin, dans l’ombre d’une ruelle, une étrange silhouette semble parler toute seule.</p>
+      <p>Tu peux rencontrer qui tu veux — ou quitter le village immédiatement.</p>
+    `,
     choices: [
-      { label: 'Ouvrir malgré tout', to: 'c14' },
-      { label: 'Reculer et chercher un autre passage', to: 'c15' }
+      { label: 'Voir le marchand', to: 'c4' },
+      { label: 'Voir le forgeron', to: 'c5' },
+      { label: 'Approcher la personne dans la ruelle', to: 'c6' },
+      { label: 'Partir vers la grotte', to: 'c8' }
     ]
   },
-  c17: {
-    number: 'CHAPITRE 17', title: 'Le mensonge', image: 'La médaille montrée aux cultistes',
-    text: `<p>Les cultistes te trouvent devant la cabane. Tu montres immédiatement la médaille.</p><blockquote>« Martin m'a envoyé. »</blockquote><p>Les hommes hésitent. L'un d'eux examine le symbole puis sourit.</p><blockquote>« Alors viens. Nous avons besoin de toi. »</blockquote><p>Ils t'escortent jusqu'à la grotte.</p>`,
-    choices: [{ label: 'Les suivre jusqu’au sanctuaire', to: 'c22' }]
+
+  c4: {
+    number: 'PAGE 4',
+    title: 'Le marchand',
+    image: 'Le marchand de Valombre',
+    text: state => {
+      if (hasItem(state,'potion_guerison')) {
+        return `
+          <p>Le marchand reconnaît la potion qui dépasse de ton sac.</p>
+          <blockquote>« Garde-la pour le moment où tu en auras vraiment besoin. »</blockquote>
+        `;
+      }
+      if (state.gold >= 3) {
+        return `
+          <p>Le marchand t’écoute raconter le retour du cheval. Son visage devient grave.</p>
+          <p>Il sort alors d’une petite caisse une fiole soigneusement bouchée.</p>
+          <blockquote>« Une potion de guérison. Elle rendra jusqu’à <strong>2 points de vie</strong>. Trois pièces d’argent. »</blockquote>
+        `;
+      }
+      return `
+        <p>Le marchand fouille rapidement ses étagères, puis secoue la tête.</p>
+        <blockquote>« Sans argent, je ne peux rien faire pour toi, mon ami. Reviens quand tu auras de quoi payer. »</blockquote>
+      `;
+    },
+    choices: state => {
+      if (!hasItem(state,'potion_guerison') && state.gold >= 3) {
+        return [
+          {
+            label: 'Acheter la potion de guérison',
+            to: 'c3',
+            effect: s => {
+              s.gold -= 3;
+              addItem(
+                s,
+                'potion_guerison',
+                'Potion de guérison',
+                'Une potion achetée au marchand. Elle peut être utilisée à tout moment pour récupérer 2 points de vie.'
+              );
+            }
+          },
+          { label: 'Ne rien acheter et repartir', to: 'c3' }
+        ];
+      }
+      return [{ label: 'Retourner sur la place', to: 'c3' }];
+    }
   },
-  c18: {
-    number: 'CHAPITRE 18', title: 'La chasse', image: 'La fuite dans les bois', ending: true,
-    text: `<p>Les hommes sortent de la cabane. Tu cours. Ils te poursuivent dans les bois.</p><p>Un quatrième homme apparaît devant toi. Tu changes de direction.</p><p>Le sol disparaît sous tes pieds. Tu tombes dans un ravin.</p><p>La chute ne te tue pas immédiatement. Lorsque les cultistes te trouvent enfin, tu comprends que tu aurais préféré mourir dans la chute.</p><div class="ending">FIN — TROUVÉ DANS LES BOIS</div>`,
-    choices: []
+
+  c5: {
+    number: 'PAGE 5',
+    title: 'Le forgeron',
+    image: 'Le forgeron de Valombre',
+    text: state => {
+      if (state.weapon === 'light') {
+        return `
+          <p>Le forgeron observe la lame qu’il t’a confiée.</p>
+          <blockquote>« Elle te convient mieux. Ne cherche pas à frapper comme Aldren. Bouge. Observe. Puis frappe. »</blockquote>
+          <p>Avec cette arme, tes valeurs de combat sont <strong>Force 3</strong> et <strong>Dextérité 5</strong>.</p>
+        `;
+      }
+
+      return `
+        <p>Le forgeron t’accueille avec beaucoup de sympathie. Il connaissait bien Sir Aldren.</p>
+        <blockquote>« J’aimerais pouvoir venir avec toi. Mais je ne te laisserai pas partir avec cette enclume à la ceinture. »</blockquote>
+        <p>Il désigne l’ancienne épée de ton maître, trop lourde pour toi, puis pose sur l’établi une lame plus courte et mieux équilibrée.</p>
+
+        <div class="weapon-compare">
+          <div><strong>Épée lourde de Sir Aldren</strong><br>Force 5 · Dextérité 3</div>
+          <div><strong>Épée maniable du forgeron</strong><br>Force 3 · Dextérité 5</div>
+        </div>
+
+        <p>Aucune n’est meilleure dans toutes les situations. L’une frappe plus fort ; l’autre te permet de combattre avec plus d’agilité.</p>
+      `;
+    },
+    choices: state => {
+      if (state.weapon === 'light') {
+        return [{ label: 'Remercier le forgeron et retourner sur la place', to: 'c3' }];
+      }
+      return [
+        {
+          label: 'Échanger l’épée lourde contre la lame maniable',
+          to: 'c3',
+          effect: s => { s.weapon = 'light'; }
+        },
+        {
+          label: 'Garder l’épée lourde de Sir Aldren',
+          to: 'c3',
+          effect: s => { s.weapon = 'heavy'; }
+        }
+      ];
+    }
   },
-  c19: {
-    number: 'CHAPITRE 19', title: 'Le marteau', image: 'Le mécanisme brisé', ending: true,
-    text: `<p>Tu comprends que la porte est maintenue fermée par un ancien mécanisme.</p><p>Tu descends derrière les cultistes et frappes de toutes tes forces sur une pièce métallique.</p><p><strong>CRAC.</strong></p><p>Un engrenage se brise. La porte tremble. Le plafond commence à s'effondrer.</p><p>Tu cours vers Sir Aldren et tranches ses liens. Vous fuyez ensemble.</p><p>Au petit matin, Sir Aldren s'arrête devant l'entrée de la grotte.</p><blockquote>« Tu m'as désobéi. »</blockquote><p>Tu baisses les yeux. Il sourit.</p><blockquote>« Heureusement. »</blockquote><div class="ending">FIN — L'ÉCUYER DE VALOMBRE</div>`,
-    choices: []
-  },
-  c20: {
-    number: 'CHAPITRE 20', title: 'La dague noire', image: 'La dague noire contre le culte',
-    text: `<p>Tu te glisses derrière les cultistes. Un homme te voit. Tu plantes la dague noire dans sa poitrine.</p><p>Il ne crie pas. Son corps se transforme en une masse de poussière sombre.</p><p>Les autres reculent, terrifiés.</p><p>Sir Aldren crie :</p><blockquote>« La porte ! »</blockquote><p>Elle commence à s'ouvrir. Derrière elle apparaît une masse gigantesque.</p>`,
+
+  c6: {
+    number: 'PAGE 6',
+    title: 'La silhouette dans la ruelle',
+    image: 'La silhouette dans la ruelle',
+    text: `
+      <p>Tu t’approches de la personne étrangement accoudée contre le mur.</p>
+      <p>Elle semble parler seule, marmonnant quelque chose dans sa barbe. Sa silhouette est si maigre qu’elle paraît presque déformée.</p>
+      <p>Plus tu avances, plus une odeur particulière devient nette.</p>
+      <p><strong>Du soufre.</strong></p>
+    `,
     choices: [
-      { label: 'Fuir avec Sir Aldren', to: 'c23' },
-      { label: 'Attaquer la créature avec la dague', to: 'c24' }
+      { label: 'S’approcher encore davantage', to: 'c7' },
+      { label: 'Repartir vers la place', to: 'c3' }
     ]
   },
-  c21: {
-    number: 'CHAPITRE 21', title: 'Le combat', image: 'Combat dans le sanctuaire',
-    text: `<p>Tu bondis dans la salle. Sir Aldren profite de la confusion pour renverser son gardien.</p><p>Vous combattez côte à côte. Pendant quelques secondes, tu crois que vous pouvez gagner.</p><p>Puis la grande porte commence à s'ouvrir. Un vent glacial traverse la salle.</p><p>Sir Aldren te regarde.</p><blockquote>« Cours. »</blockquote>`,
+
+  c7: {
+    number: 'PAGE 7',
+    title: 'Ils arrivent',
+    image: 'Les yeux du fou',
+    onEnter: s => { s.flags.avertissementSoufre = true; },
+    text: `
+      <p>La silhouette tourne brusquement la tête vers toi.</p>
+      <p>Ses yeux sont grands ouverts, presque fous.</p>
+      <blockquote>« Recule… recule si tu ne veux pas mourir… »</blockquote>
+      <p>Elle regarde derrière toi comme si quelque chose se tenait au milieu de la rue.</p>
+      <blockquote>« Ils arrivent. Vous ne voyez pas ? Ils arrivent… »</blockquote>
+      <p>L’odeur de soufre est désormais si forte qu’elle te brûle la gorge.</p>
+    `,
     choices: [
-      { label: 'Obéir et fuir', to: 'c25' },
-      { label: 'Rester avec lui', to: 'c26' }
+      { label: 'Retourner sur la place', to: 'c3' },
+      { label: 'Quitter Valombre et partir vers la grotte', to: 'c8' }
     ]
   },
-  c22: {
-    number: 'CHAPITRE 22', title: 'Le faux initié', image: 'Le rituel',
-    text: `<p>Les cultistes t'emmènent jusqu'au sanctuaire. Personne ne t'arrête.</p><p>Sir Aldren te voit, mais son visage ne trahit aucune émotion.</p><p>Le chef du culte te tend un couteau.</p><blockquote>« Puisque Martin t'a envoyé, tu auras l'honneur de commencer. »</blockquote><p>Il désigne Sir Aldren.</p>`,
+
+  c8: {
+    number: 'PAGE 8',
+    title: 'Le chemin de la grotte',
+    image: 'Le chemin de la grotte',
+    text: state => `
+      <p>Tu quittes Valombre. Les dernières lumières du village disparaissent derrière toi.</p>
+      <p>Devant toi, quelque part dans l’obscurité, se trouve la grotte. Et Sir Aldren.</p>
+      <p>Ton arme est <strong>${weaponLabel(state)}</strong>. Tu possèdes <strong>${state.hp} points de vie</strong> et <strong>${state.gold} pièce${state.gold > 1 ? 's' : ''} d’argent</strong>.</p>
+      ${hasItem(state,'parchemin')
+        ? '<p>Le vieux parchemin repose dans ton inventaire. Tu pourras le consulter à tout moment pendant la suite de l’aventure.</p>'
+        : '<p>Tu es parti sans connaître le contenu de la sacoche de ton maître.</p>'}
+      <p><strong>Fin de cette courte version de test.</strong> La prochaine étape commencera réellement sur le chemin de la montagne.</p>
+    `,
     choices: [
-      { label: "Faire semblant d'accepter puis attaquer le chef", to: 'c27' },
-      { label: 'Refuser', to: 'c28' },
-      { label: 'Planter réellement le couteau dans Sir Aldren', to: 'c29' }
+      { label: 'Retourner au village pour continuer à tester', to: 'c3' }
     ]
-  },
-  c23: {
-    number: 'CHAPITRE 23', title: 'La fuite', image: 'La montagne qui tremble', ending: true,
-    text: `<p>Tu coupes les liens de Sir Aldren. Vous courez.</p><p>Derrière vous, quelque chose sort du sanctuaire. La montagne tremble.</p><p>Vous atteignez l'extérieur juste avant que l'entrée de la grotte ne s'effondre.</p><p>Vous êtes vivants.</p><p>Mais au loin, dans les champs de Valombre, des oiseaux s'envolent brusquement. Puis quelque chose bouge sous la terre.</p><blockquote>« Nous n'avons rien arrêté. »</blockquote><div class="ending">FIN — NOUS L'AVONS RÉVEILLÉ</div>`,
-    choices: []
-  },
-  c24: {
-    number: 'CHAPITRE 24', title: 'Le dernier coup', image: 'La dague face au Dormeur', ending: true,
-    text: `<p>Tu cours vers la chose. Tu ne comprends même pas sa forme.</p><p>Tu lèves la dague. La lame s'enfonce.</p><p>Le monde devient blanc. Puis silencieux.</p><p>Lorsque tu ouvres les yeux, tu es couché dans l'herbe devant Valombre. Sir Aldren est à côté de toi.</p><p>La montagne a disparu. À sa place se trouve un immense cratère.</p><blockquote>« Qu'est-ce que tu as fait ? »</blockquote><p>Tu n'en sais rien.</p><div class="ending">FIN — CELUI QUI A FERMÉ LA PORTE</div>`,
-    choices: []
-  },
-  c25: {
-    number: 'CHAPITRE 25', title: 'Survivre', image: 'Le retour seul au village', ending: true,
-    text: `<p>Tu cours. Sir Aldren reste derrière toi.</p><p>Tu entends son cri. Puis plus rien.</p><p>Tu atteins le village au lever du soleil. Personne ne te croit.</p><p>Des années passent. Tu deviens chevalier. Mais tu ne retournes jamais à Valombre.</p><div class="ending">FIN — LE SURVIVANT</div>`,
-    choices: []
-  },
-  c26: {
-    number: 'CHAPITRE 26', title: "Le chevalier et l'écuyer", image: 'Deux épées face à la porte', ending: true,
-    text: `<p>Tu te places à côté de Sir Aldren.</p><blockquote>« Tu es vraiment incapable d'obéir. »</blockquote><p>Tu souris.</p><p>Devant vous, quelque chose traverse la porte. Vous levez vos épées.</p><p>Personne ne saura exactement comment vous êtes morts.</p><p>Plus tard, on découvrira deux épées brisées devant une porte de pierre désormais refermée.</p><div class="ending">FIN — JUSQU'AU BOUT</div>`,
-    choices: []
-  },
-  c27: {
-    number: 'CHAPITRE 27', title: 'La trahison', image: 'Le chef blessé',
-    text: `<p>Tu prends le couteau. Tu approches de Sir Aldren.</p><p>Puis tu te retournes brutalement et plantes la lame dans l'épaule du chef.</p><p>Sir Aldren frappe son gardien avec ses chaînes. La salle plonge dans le chaos.</p>`,
-    choices: s => hasItem(s,'fiole')
-      ? [{ label: 'Utiliser la fiole rouge', to: 'c30' }, { label: 'Combattre aux côtés de Sir Aldren', to: 'c21' }]
-      : [{ label: 'Combattre aux côtés de Sir Aldren', to: 'c21' }]
-  },
-  c28: {
-    number: 'CHAPITRE 28', title: 'Le refus', image: 'Le vrai sens de la médaille', ending: true,
-    text: `<p>Tu laisses tomber le couteau.</p><blockquote>« Je ne suis pas l'un des vôtres. »</blockquote><p>Le chef du culte te regarde presque avec tristesse.</p><blockquote>« Je sais. »</blockquote><p>Tu comprends trop tard. La médaille n'était pas un signe d'appartenance. C'était une marque destinée aux sacrifices.</p><div class="ending">FIN — LE SECOND SACRIFICE</div>`,
-    choices: []
-  },
-  c29: {
-    number: 'CHAPITRE 29', title: 'Le choix impossible', image: 'Le sang du chevalier', ending: true,
-    text: `<p>Tu plantes le couteau dans Sir Aldren. Il te regarde sans comprendre.</p><p>Les cultistes applaudissent.</p><blockquote>« Le sang du chevalier ouvre la porte. »</blockquote><p>La pierre tremble. Tu comprends enfin ce que tu viens de faire.</p><p>Sir Aldren meurt dans tes bras. La porte s'ouvre.</p><div class="ending">FIN — LE TRAÎTRE</div>`,
-    choices: []
-  },
-  c30: {
-    number: 'CHAPITRE 30', title: 'La fiole rouge', image: 'Les flammes bleues', ending: true,
-    text: `<p>Tu te souviens de la fiole trouvée dans la sacoche.</p><p>Tu la jettes contre la grande porte. Le liquide s'enflamme immédiatement.</p><p>Les flammes deviennent bleues. Les symboles gravés sur la pierre commencent à briller.</p><blockquote>« NON ! »</blockquote><p>La porte se fissure puis s'effondre vers l'intérieur. Un cri gigantesque résonne derrière elle.</p><p>Tu libères Sir Aldren. Vous courez. Quelques secondes plus tard, toute la galerie s'effondre.</p><p>Sir Aldren regarde la fiole vide dans ta main.</p><blockquote>« Père Auguste savait. »</blockquote><div class="ending">FIN — LE SECRET DE PÈRE AUGUSTE</div>`,
-    choices: []
   }
 };
 
 // Numérotation façon livre-jeu : 1 page = 1 nœud narratif.
 // Le prologue est la page 01, puis les anciens chapitres 1 à 30 deviennent les pages 02 à 31.
-const PAGE_ORDER = ['start', ...Array.from({ length: 30 }, (_, i) => `c${i + 1}`)];
+const PAGE_ORDER = ['c1','c2','c3','c4','c5','c6','c7','c8'];
 const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
 const padPage = n => String(n).padStart(2, '0');
 const imageBaseForPage = n => `La-Grotte-de-Valombre-${padPage(n)}`;
@@ -596,18 +1124,54 @@ const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg'];
 function addItem(state, id, name, description) {
   if (!state.inventory[id]) state.inventory[id] = { name, description };
 }
-function hasItem(state, id) { return !!state.inventory[id]; }
+function removeItem(state, id) {
+  delete state.inventory[id];
+}
+function hasItem(state, id) {
+  return !!state.inventory[id];
+}
+function equipHeavySword(state) {
+  if (state.weapon === 'none') state.weapon = 'heavy';
+}
+function currentForce(state) {
+  if (state.weapon === 'heavy') return Math.min(6, state.baseForce + 2);
+  return state.baseForce;
+}
+function currentDexterity(state) {
+  if (state.weapon === 'heavy') return Math.max(1, state.baseDexterity - 2);
+  return state.baseDexterity;
+}
+function weaponLabel(state) {
+  if (state.weapon === 'heavy') return 'Épée lourde de Sir Aldren';
+  if (state.weapon === 'light') return 'Épée maniable du forgeron';
+  return 'Aucune';
+}
+function escapeHtml(value) {
+  return String(value || '')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;');
+}
 
-  </script>
-  <script>
-const STORAGE_KEY = 'valombre_save_v1';
+
+const STORAGE_KEY = 'valombre_save_v3_design_restaure';
 
 const defaultState = () => ({
   node: 'start',
+  heroName: '',
   inventory: {},
   flags: {},
   visited: {},
-  history: []
+  history: [],
+  journal: '',
+  hp: 10,
+  maxHp: 10,
+  chance: 4,
+  baseForce: 3,
+  baseDexterity: 5,
+  weapon: 'none',
+  gold: 0
 });
 
 let state = loadState();
@@ -617,6 +1181,7 @@ const chapterTitle = document.getElementById('chapterTitle');
 const storyText = document.getElementById('storyText');
 const choices = document.getElementById('choices');
 const storyImage = document.getElementById('storyImage');
+const imageFrame = document.getElementById('imageFrame');
 const imagePlaceholder = document.getElementById('imagePlaceholder');
 const imageLabel = document.getElementById('imageLabel');
 const statusTags = document.getElementById('statusTags');
@@ -635,6 +1200,12 @@ const modal = document.getElementById('modal');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('modalContent');
+
+const journalBtn = document.getElementById('journalBtn');
+const journalPanel = document.getElementById('journalPanel');
+const journalCloseBtn = document.getElementById('journalCloseBtn');
+const journalText = document.getElementById('journalText');
+const journalStatus = document.getElementById('journalStatus');
 
 function loadState() {
   try {
@@ -691,54 +1262,113 @@ function loadPageImage(pageNumber, title) {
   tryNext();
 }
 
+
+function ensureJournal() {
+  if (typeof state.journal !== 'string') state.journal = '';
+}
+
+let journalTimer = null;
+
+function saveJournalNow() {
+  ensureJournal();
+  state.journal = journalText.value;
+  saveState();
+  journalStatus.textContent = 'Sauvegardé';
+}
+
+function openJournal() {
+  ensureJournal();
+  journalText.value = state.journal;
+  journalPanel.classList.remove('hidden');
+  journalPanel.setAttribute('aria-hidden','false');
+}
+
+function closeJournal() {
+  if (!journalPanel.classList.contains('hidden')) saveJournalNow();
+  journalPanel.classList.add('hidden');
+  journalPanel.setAttribute('aria-hidden','true');
+}
+
+function scheduleJournalSave() {
+  journalStatus.textContent = 'Sauvegarde…';
+  clearTimeout(journalTimer);
+  journalTimer = setTimeout(saveJournalNow, 250);
+}
+
+journalText.addEventListener('input', scheduleJournalSave);
+
 function render() {
   const node = STORY[state.node] || STORY.start;
-  const pageNumber = PAGE_BY_NODE[state.node] || 1;
-  chapterNumber.textContent = `PAGE ${padPage(pageNumber)}`;
+
+  if (node.sheet) {
+    chapterNumber.textContent = 'FICHE DU HÉROS';
+    imageFrame.classList.add('hidden');
+  } else {
+    const pageNumber = PAGE_BY_NODE[state.node] || 1;
+    chapterNumber.textContent = `PAGE ${padPage(pageNumber)}`;
+    imageFrame.classList.remove('hidden');
+    loadPageImage(pageNumber, node.title || '');
+  }
+
   chapterTitle.textContent = node.title || '';
-  loadPageImage(pageNumber, node.title || '');
   storyText.innerHTML = typeof node.text === 'function' ? node.text(state) : node.text;
+
+  const heroNameInput = document.getElementById('heroNameInput');
+  if (heroNameInput) {
+    heroNameInput.addEventListener('input', event => {
+      state.heroName = event.target.value.slice(0,24);
+      saveState();
+    });
+  }
 
   const itemCount = Object.keys(state.inventory).length;
   inventoryCount.textContent = itemCount;
+
   statusTags.innerHTML = '';
-  if (itemCount) {
-    const tag = document.createElement('span');
-    tag.className = 'tag';
-    tag.textContent = `${itemCount} objet${itemCount > 1 ? 's' : ''} dans l’inventaire`;
-    statusTags.appendChild(tag);
-  }
-  if (node.ending) {
-    const tag = document.createElement('span');
-    tag.className = 'tag';
-    tag.textContent = 'Fin découverte';
-    statusTags.appendChild(tag);
+
+  if (!node.sheet) {
+    const labels = [
+      `♥ ${state.hp}/${state.maxHp}`,
+      `Chance ${state.chance}/6`,
+      `Force ${currentForce(state)}/6`,
+      `Dextérité ${currentDexterity(state)}/6`
+    ];
+
+    if (state.gold > 0) labels.push(`${state.gold} pièce${state.gold > 1 ? 's' : ''}`);
+
+    labels.forEach(label => {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = label;
+      statusTags.appendChild(tag);
+    });
   }
 
-  const availableChoices = typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
+  const availableChoices =
+    typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
+
   choices.innerHTML = '';
+
   availableChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
+
     const destinationPage = PAGE_BY_NODE[choice.to];
     const destination = destinationPage
       ? `<span class="choice-dest">Rendez-vous à la page ${padPage(destinationPage)}</span>`
       : '';
-    btn.innerHTML = `<span class="choice-index">${i + 1}</span><span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
+
+    btn.innerHTML =
+      `<span class="choice-index">${i + 1}</span>` +
+      `<span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
+
     btn.addEventListener('click', () => {
       if (typeof choice.effect === 'function') choice.effect(state);
       enterNode(choice.to);
     });
+
     choices.appendChild(btn);
   });
-
-  if (node.ending) {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-index">↻</span>Recommencer l’aventure`;
-    btn.addEventListener('click', restartGame);
-    choices.appendChild(btn);
-  }
 }
 
 function restartGame() {
@@ -750,6 +1380,7 @@ function restartGame() {
   saveState();
   closeDrawer();
   closeModal();
+  closeJournal();
   render();
   try {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -758,15 +1389,96 @@ function restartGame() {
   }
 }
 
+function useHealingPotion() {
+  if (!hasItem(state,'potion_guerison')) return;
+
+  if (state.hp >= state.maxHp) {
+    openInventory();
+    return;
+  }
+
+  state.hp = Math.min(state.maxHp, state.hp + 2);
+  removeItem(state,'potion_guerison');
+  saveState();
+  render();
+  openInventory();
+}
+
+function openParchment() {
+  modalTitle.textContent = 'Parchemin ancien';
+
+  modalContent.innerHTML = `
+    <img
+      class="inventory-parchment-image"
+      src="./images/objets/La-Grotte-de-Valombre-Parchemin.png"
+      alt="Parchemin ancien"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+    >
+    <div class="inventory-image-fallback">
+      Ton image apparaîtra ici dès que tu ajouteras :
+      <br><strong>images/objets/La-Grotte-de-Valombre-Parchemin.png</strong>
+    </div>
+
+    <div class="parchment-verse">
+      <strong>L’œil qui dort doit demeurer fermé,</strong><br>
+      <strong>Car nul vivant ne doit le réveiller.</strong><br><br>
+      <strong>Là où le soufre vient empoisonner l’air,</strong><br>
+      <strong>Détourne tes pas et rebrousse en arrière.</strong><br><br>
+      <strong>Lorsque les liens ne pourront plus céder,</strong><br>
+      <strong>Cherche la lame noire : elle seule peut libérer.</strong>
+    </div>
+
+    <button class="inventory-action-btn" data-action="back-inventory">
+      Retour à l’inventaire
+    </button>
+  `;
+}
+
 function openInventory() {
   modalTitle.textContent = 'Inventaire';
+
   const items = Object.entries(state.inventory);
-  modalContent.innerHTML = items.length
-    ? `<div class="inventory-list">${items.map(([id,item]) => `<div class="inventory-item"><strong>${item.name}</strong><span>${item.description}</span></div>`).join('')}</div>`
+
+  const moneyLine =
+    `<div class="inventory-topline">Argent : ${state.gold} pièce${state.gold > 1 ? 's' : ''} · Arme : ${weaponLabel(state)}</div>`;
+
+  const list = items.length
+    ? `<div class="inventory-list">${items.map(([id,item]) => {
+        let action = '';
+
+        if (id === 'parchemin') {
+          action = `
+            <div class="inventory-actions">
+              <button class="inventory-action-btn" data-action="read-parchment">
+                Lire le parchemin
+              </button>
+            </div>`;
+        }
+
+        if (id === 'potion_guerison') {
+          action = `
+            <div class="inventory-actions">
+              <button class="inventory-action-btn" data-action="use-potion"
+                ${state.hp >= state.maxHp ? 'disabled' : ''}>
+                Boire la potion (+2 PV)
+              </button>
+            </div>`;
+        }
+
+        return `
+          <div class="inventory-item">
+            <strong>${item.name}</strong>
+            <p>${item.description}</p>
+            ${action}
+          </div>`;
+      }).join('')}</div>`
     : `<div class="inventory-empty">Tu ne transportes encore aucun objet particulier.</div>`;
+
+  modalContent.innerHTML = moneyLine + list;
   modal.classList.remove('hidden');
   modalBackdrop.classList.remove('hidden');
 }
+
 function closeModal() {
   modal.classList.add('hidden');
   modalBackdrop.classList.add('hidden');
@@ -782,7 +1494,22 @@ function closeDrawer() {
   drawerBackdrop.classList.add('hidden');
 }
 
+modalContent.addEventListener('click', event => {
+  const button = event.target.closest('[data-action]');
+  if (!button) return;
+
+  if (button.dataset.action === 'read-parchment') {
+    openParchment();
+  } else if (button.dataset.action === 'back-inventory') {
+    openInventory();
+  } else if (button.dataset.action === 'use-potion') {
+    useHealingPotion();
+  }
+});
+
 inventoryBtn.addEventListener('click', openInventory);
+journalBtn.addEventListener('click', openJournal);
+journalCloseBtn.addEventListener('click', closeJournal);
 restartBtn.addEventListener('click', restartGame);
 menuBtn.addEventListener('click', openDrawer);
 closeDrawerBtn.addEventListener('click', closeDrawer);
@@ -794,7 +1521,7 @@ closeModalBtn.addEventListener('click', closeModal);
 modalBackdrop.addEventListener('click', closeModal);
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeDrawer(); closeModal(); }
+  if (e.key === 'Escape') { closeDrawer(); closeModal(); closeJournal(); }
 });
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
