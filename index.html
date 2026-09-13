@@ -844,6 +844,13 @@ button { font: inherit; }
   background:#2e2117;
 }
 
+.roll-number {
+  margin:0 0 8px;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  opacity:.72;
+}
 .dice-values {
   font-size:14px;
   color:#60482f;
@@ -2074,32 +2081,89 @@ const STORY = {
     image: 'Le camp sous la roche',
     onEnter: s => setCheckpoint(s, 'Le camp sous la roche'),
     text: `
-      <p>Au-delà de la salle, une lueur orange apparaît.</p>
-      <p>Un homme blessé est adossé à la roche, près d’un feu presque éteint.</p>
+      <p>Tu quittes enfin la salle du combat.</p>
+
+      <p>Le passage descend en longues courbes entre des parois humides. À plusieurs reprises, tu crois entendre des pas derrière toi, mais chaque fois que tu t’arrêtes, le silence revient.</p>
+
+      <p>Après quelques minutes, une faible lumière orangée apparaît entre les rochers.</p>
+
+      <p>Tu débouches dans une cavité plus large. Un feu presque éteint brûle entre trois pierres noircies. Près de lui, un homme est adossé à la paroi.</p>
+
+      <p>Sa barbe est longue, ses vêtements déchirés. Une de ses jambes est enveloppée de bandages raidis par le sang.</p>
+
+      <p>Lorsqu’il te voit, il lève brusquement une main devant son visage.</p>
+
+      <blockquote>« Non… pas encore. »</blockquote>
+
+      <p>Puis il te fixe plus attentivement.</p>
+
+      <blockquote>« Tu es réel ? »</blockquote>
+
       <p>Il dit s’appeler <strong>Anselme Varn</strong>.</p>
+
+      <p>Tu lui demandes depuis combien de temps il se trouve ici.</p>
+
       <blockquote>« Deux jours… peut-être trois. »</blockquote>
-      <p>Il regarde ses mains.</p>
+
+      <p>Il baisse les yeux vers ses mains.</p>
+
       <blockquote>« Non… des mois. »</blockquote>
+
+      <p>Son regard se perd un instant dans le feu.</p>
+
       <blockquote>« Ce n’est pas une grotte. Pas vraiment. »</blockquote>
+
       <blockquote>« Ceux qui disparaissent… personne ne les enlève. Ils viennent ici. »</blockquote>
+
       <blockquote>« La terre noire… ne la laisse pas entrer en toi. »</blockquote>
+
+      <p>Il se penche soudain et serre ton poignet.</p>
+
       <blockquote>« Et si tu entends Aldren… assure-toi d’abord que c’est bien lui. »</blockquote>
-      <p>Puis il fixe quelque chose derrière toi.</p>
+
+      <p>Puis son visage se fige.</p>
+
+      <p>Il regarde derrière toi.</p>
+
       <blockquote>« Tu l’as amené avec toi. »</blockquote>
+
+      <p>Tu te retournes.</p>
+
       <p>Il n’y a personne.</p>
+
+      <p>Lorsque tu fais de nouveau face à Anselme, il marmonne déjà pour lui-même.</p>
+
+      <p>La cavité se prolonge dans plusieurs directions. À quelques mètres du feu, tu distingues les restes d’un <strong>ancien campement</strong>. Sur la droite, une galerie est presque entièrement <strong>barrée par un énorme bloc de pierre</strong>. Plus loin, un <strong>tunnel étroit</strong> s’enfonce dans l’obscurité.</p>
     `,
-    choices: [
-      { label: 'Examiner le vieux campement', to: 'c30' },
-      { label: 'Explorer la galerie bloquée par une pierre', to: 'c31' },
-      { label: 'Suivre les sanglots dans le tunnel voisin', to: 'c34' }
-    ]
+    choices: state => {
+      const list = [
+        { label: 'Examiner le vieux campement', to: 'c30' }
+      ];
+
+      if (!state.flags.galleryAttempted) {
+        list.push({ label: 'Explorer la galerie bloquée par une pierre', to: 'c31' });
+      }
+
+      list.push(
+        { label: 'Aller dans le tunnel voisin', to: 'c34' },
+        { label: 'Quitter le camp et poursuivre la descente', to: 'c37' }
+      );
+
+      return list;
+    }
   },
 
   c29: {
     number: 'PAGE 29',
     title: 'Le deuxième échange',
     image: 'Le deuxième échange',
-    text: `<p>La créature revient à la charge.</p>`,
+    text: `
+      <p>La créature a encaissé ton premier coup.</p>
+
+      <p>Elle recule d’un pas, heurte la paroi, puis revient immédiatement sur toi.</p>
+
+      <p>Tu n’as plus l’espace nécessaire pour esquiver longtemps. Le prochain échange se fera presque au corps à corps.</p>
+    `,
     choices: [{
       label: 'Lancer les deux dés',
       to: 'c33',
@@ -2107,7 +2171,7 @@ const STORY = {
         if (roll2D6(s, 'Dextérité', currentDexterity(s))) {
           s.lastCombatOutcome = 'second_round_win';
         } else {
-          s.lastCombatOutcome = 'second_round_hit';
+          s.lastCombatOutcome = 'second_round_wounded_win';
           s.hp = Math.max(0, s.hp - 1);
         }
       }
@@ -2119,20 +2183,46 @@ const STORY = {
     title: 'Le journal d’Anselme',
     image: 'Le journal d’Anselme',
     text: `
-      <p>À quelques mètres du feu, tu trouves un ancien campement.</p>
-      <p>Un petit carnet repose sous une tasse.</p>
+      <p>Tu laisses Anselme près du feu et t’approches de l’ancien campement.</p>
+
+      <p>Il semble abandonné depuis bien plus longtemps. Une couverture moisie s’est presque soudée au sol. Une tasse de métal repose près d’un cercle de cendres froides.</p>
+
+      <p>Sous la tasse, tu découvres un petit carnet protégé par une couverture de cuir.</p>
+
+      <p>Les premières pages sont datées.</p>
+
       <blockquote>Troisième jour. J’ai encore entendu ma femme cette nuit.</blockquote>
+
+      <p>Plus loin :</p>
+
       <blockquote>Septième jour. Elle est morte depuis onze ans.</blockquote>
-      <p>La dernière ligne dit :</p>
+
+      <p>À partir de là, les dates disparaissent.</p>
+
+      <p>Les phrases deviennent courtes, nerveuses. Certaines pages ne contiennent qu’un même mot répété jusqu’au bord du papier.</p>
+
+      <p>La dernière ligne est écrite d’une main tremblante :</p>
+
       <blockquote>J’entends quelqu’un arriver. Peut-être enfin un autre vivant.</blockquote>
-      <p>Sur la couverture : <strong>ANSELME VARN.</strong></p>
-      <p>Il t’a pourtant dit être arrivé il y a deux ou trois jours.</p>
+
+      <p>Sur la couverture intérieure, tu lis un nom.</p>
+
+      <p><strong>ANSELME VARN.</strong></p>
+
+      <p>Tu regardes vers l’homme assis près du feu.</p>
+
+      <p>Il t’a pourtant affirmé être entré dans cette grotte il y a deux ou trois jours.</p>
     `,
-    choices: [
-      { label: 'Continuer vers les profondeurs', to: 'c37' },
-      { label: 'Explorer la galerie bloquée', to: 'c31' },
-      { label: 'Suivre les sanglots', to: 'c34' }
-    ]
+    choices: state => {
+      const list = [{ label: 'Continuer vers les profondeurs', to: 'c37' }];
+
+      if (!state.flags.galleryAttempted) {
+        list.push({ label: 'Explorer la galerie bloquée', to: 'c31' });
+      }
+
+      list.push({ label: 'Aller dans le tunnel voisin', to: 'c34' });
+      return list;
+    }
   },
 
   c31: {
@@ -2140,8 +2230,14 @@ const STORY = {
     title: 'La galerie condamnée',
     image: 'La galerie condamnée',
     text: state => `
-      <p>Un énorme bloc de pierre obstrue presque tout le passage.</p>
-      <p>Il semble possible de le faire pivoter.</p>
+      <p>Tu t’engages dans la galerie de droite.</p>
+
+      <p>Elle ne va pas loin. Après une vingtaine de pas, un bloc de pierre énorme bouche presque entièrement le passage.</p>
+
+      <p>Une fente sombre subsiste sur le côté. Elle est trop étroite pour ton corps, mais suffisamment large pour laisser passer un courant d’air froid.</p>
+
+      <p>En examinant la pierre, tu remarques qu’elle repose dans une sorte de logement circulaire. Avec assez de force, il est peut-être possible de la faire pivoter une fois.</p>
+
       <p><strong>Ta Force : ${currentForce(state)}</strong></p>
     `,
     choices: [
@@ -2149,40 +2245,72 @@ const STORY = {
         label: 'Tenter de déplacer le bloc — lancer les deux dés',
         to: 'c32',
         effect: s => {
+          s.flags.galleryAttempted = true;
           s.lastCombatOutcome = roll2D6(s, 'Force', currentForce(s))
-            ? 'force_success' : 'force_fail';
+            ? 'force_success'
+            : 'force_fail';
         }
       },
-      { label: 'Renoncer', to: 'c28' }
+      { label: 'Ne pas prendre le risque et revenir au camp', to: 'c28' }
     ]
   },
 
   c32: {
     number: 'PAGE 32',
-    title: 'Le brassard',
-    image: 'Le brassard',
+    title: 'La pierre',
+    image: 'La pierre',
     onEnter: s => {
       if (s.lastCombatOutcome === 'force_success' && !s.flags.brassardPris) {
         s.flags.brassardPris = true;
         s.forceBonus += 1;
-        addItem(s, 'brassard_veilleurs', 'Brassard des Veilleurs',
-          'Un brassard sombre étonnamment léger une fois porté. +1 Force.');
+        addItem(
+          s,
+          'brassard_veilleurs',
+          'Brassard des Veilleurs',
+          'Un brassard sombre étonnamment léger une fois porté. +1 Force.'
+        );
       }
     },
     text: state => {
       const r = diceResultHtml(state);
+
       if (state.lastCombatOutcome === 'force_success') {
         return r + `
-          <p>La pierre pivote lentement.</p>
-          <p>Derrière, sur un squelette, repose un brassard de métal sombre.</p>
-          <p>Une fois porté, son poids disparaît presque.</p>
-          <p><strong>+1 Force.</strong></p>`;
+          <p>Tu cales ton épaule contre la pierre et pousses de toutes tes forces.</p>
+
+          <p>Elle résiste longtemps.</p>
+
+          <p>Puis un grondement profond traverse la galerie.</p>
+
+          <p>Le bloc pivote de quelques dizaines de centimètres et libère juste assez d’espace pour te glisser de l’autre côté.</p>
+
+          <p>La petite chambre derrière lui est sèche et parfaitement silencieuse.</p>
+
+          <p>Un squelette est assis contre le mur. Autour de son avant-bras repose un brassard de métal sombre.</p>
+
+          <p>Lorsque tu le prends, il paraît incroyablement lourd.</p>
+
+          <p>Une fois passé autour de ton bras, son poids disparaît presque totalement.</p>
+
+          <p><strong>Brassard des Veilleurs : +1 Force.</strong></p>
+        `;
       }
-      return r + `<p>La pierre ne bouge presque pas. Tu finis par renoncer.</p>`;
+
+      return r + `
+        <p>Tu prends appui contre la paroi et pousses jusqu’à sentir tes muscles trembler.</p>
+
+        <p>La pierre bouge à peine.</p>
+
+        <p>Un craquement sec retentit alors dans son logement. Le bloc s’affaisse de quelques centimètres et se coince définitivement contre la roche.</p>
+
+        <p>Tu essaies encore de trouver une prise, mais il n’y en a plus.</p>
+
+        <p>Cette galerie ne s’ouvrira pas pour toi.</p>
+      `;
     },
     choices: [
-      { label: 'Revenir au camp', to: 'c28' },
-      { label: 'Continuer vers les profondeurs', to: 'c37' }
+      { label: 'Revenir au camp d’Anselme', to: 'c28' },
+      { label: 'Poursuivre vers les profondeurs', to: 'c37' }
     ]
   },
 
@@ -2192,33 +2320,97 @@ const STORY = {
     image: 'La fin du combat',
     text: state => {
       const r = diceResultHtml(state);
+
       if (state.lastCombatOutcome === 'second_round_win') {
         return r + `
-          <p>Cette fois, ton coup atteint sa cible.</p>
-          <p>Dans sa chute, tu crois distinguer sous la terre noire une manche de chemise.</p>
-          <p>Tu n’es plus certain de vouloir savoir ce que tu viens de tuer.</p>`;
+          <p>Cette fois, tu anticipes son mouvement.</p>
+
+          <p>Au moment où la masse se jette sur toi, tu te décales et frappes de toutes tes forces.</p>
+
+          <p>La lame s’enfonce profondément.</p>
+
+          <p>La créature se raidit, puis s’effondre contre la pierre.</p>
+
+          <p>Dans sa chute, son bras passe dans la faible lumière.</p>
+
+          <p>Sous la terre noire et la peau déformée, tu crois distinguer une manche de chemise.</p>
+
+          <p>Quelque chose de parfaitement humain.</p>
+
+          <p>Tu détournes les yeux avant d’en voir davantage.</p>
+        `;
       }
+
       return r + `
-        <p>Tu rates de nouveau.</p>
-        <p><strong>Tu perds encore 1 point de Vie.</strong></p>
-        <p>La créature s’enfuit finalement dans une fissure.</p>`;
+        <p>Tu réagis une fraction de seconde trop tard.</p>
+
+        <p>La créature te percute et une douleur vive traverse ton épaule.</p>
+
+        <p><strong>Tu perds 1 point de Vie.</strong></p>
+
+        <p>Vous tombez tous les deux contre la paroi.</p>
+
+        <p>Pendant quelques secondes, il n’y a plus ni technique ni distance : seulement son poids contre toi, son souffle humide, et ta main qui cherche désespérément la garde de ton arme.</p>
+
+        <p>Tu parviens finalement à libérer ton bras.</p>
+
+        <p>Tu frappes presque au hasard.</p>
+
+        <p>Une fois.</p>
+
+        <p>Puis une seconde.</p>
+
+        <p>La masse cesse enfin de bouger.</p>
+
+        <p>Lorsque tu recules, haletant, tu aperçois sous la terre noire un morceau de vêtement qui ressemble terriblement à une chemise humaine.</p>
+
+        <p>Tu viens de gagner.</p>
+
+        <p>Mais tu n’es plus certain d’avoir combattu un monstre.</p>
+      `;
     },
-    choices: [{ label: 'Continuer jusqu’au camp', to: 'c28' }]
+    choices: [
+      { label: 'Quitter la salle et poursuivre dans la grotte', to: 'c28' }
+    ]
   },
 
   c34: {
     number: 'PAGE 34',
-    title: 'Les sanglots',
-    image: 'Les sanglots',
+    title: 'Le tunnel voisin',
+    image: 'Le tunnel voisin',
     text: `
-      <p>Une silhouette est recroquevillée contre la roche.</p>
+      <p>Tu laisses la lumière du feu derrière toi et t’engages dans le tunnel voisin.</p>
+
+      <p>Le passage descend doucement. La roche y est plus sombre et le sol couvert d’une fine poussière grise qui étouffe presque le bruit de tes pas.</p>
+
+      <p>Tu avances prudemment.</p>
+
+      <p>Après quelques dizaines de mètres, un son très faible te parvient.</p>
+
+      <p>Des sanglots.</p>
+
+      <p>Ils sont lointains au début, à peine perceptibles.</p>
+
+      <p>Mais plus tu avances, plus ils deviennent distincts.</p>
+
+      <p>Quelqu’un pleure dans l’obscurité.</p>
+
+      <p>Le tunnel tourne une dernière fois.</p>
+
+      <p>Tu tombes finalement sur une silhouette recroquevillée contre la roche.</p>
+
+      <p>Elle porte encore ce qui ressemble à des vêtements humains.</p>
+
       <blockquote>« Ne me regarde pas… »</blockquote>
+
+      <p>Sa voix est faible, presque brisée.</p>
+
       <blockquote>« S’il te plaît. Ne me regarde pas. »</blockquote>
     `,
     choices: [
       { label: 'Lui parler sans t’approcher', to: 'c35' },
-      { label: 'T’approcher pour l’aider', to: 'c36' },
-      { label: 'Repartir', to: 'c37' }
+      { label: 'T’approcher pour essayer de l’aider', to: 'c36' },
+      { label: 'Reculer lentement et repartir', to: 'c37' }
     ]
   },
 
@@ -2227,14 +2419,41 @@ const STORY = {
     title: 'Une voix humaine',
     image: 'Une voix humaine',
     text: `
-      <p>Tu restes à distance.</p>
+      <p>Tu restes à plusieurs pas de la silhouette.</p>
+
+      <blockquote>« Je ne vais pas te faire de mal. »</blockquote>
+
+      <p>Les sanglots cessent.</p>
+
+      <p>Un long silence suit.</p>
+
       <blockquote>« Rochebrume… »</blockquote>
+
+      <p>Tu lui demandes si elle vient du village.</p>
+
+      <p>La silhouette redresse légèrement la tête, sans jamais te montrer complètement son visage.</p>
+
       <blockquote>« Ils ont dit que ma fille m’appelait. »</blockquote>
-      <p>Un silence.</p>
+
+      <p>Ses doigts se crispent contre la pierre.</p>
+
+      <blockquote>« Je l’ai suivie jusque-là. »</blockquote>
+
+      <p>Sa respiration devient irrégulière.</p>
+
       <blockquote>« Je n’ai pas de fille. »</blockquote>
-      <p>Elle recommence à rire. Ou à pleurer.</p>
+
+      <p>Un rire étouffé lui échappe.</p>
+
+      <p>Ou peut-être recommence-t-elle simplement à pleurer.</p>
+
+      <p>Tu recules sans la quitter des yeux, puis reprends le tunnel en sens inverse.</p>
+
+      <p>Lorsque tu retrouves la galerie principale, les sanglots continuent encore derrière toi.</p>
     `,
-    choices: [{ label: 'Continuer vers les profondeurs', to: 'c37' }]
+    choices: [
+      { label: 'Poursuivre vers les profondeurs', to: 'c37' }
+    ]
   },
 
   c36: {
@@ -2242,9 +2461,26 @@ const STORY = {
     title: 'Sous la terre noire',
     image: 'Sous la terre noire',
     text: `
-      <p>La silhouette se retourne et bondit.</p>
-      <p>Sous la boue noire, tu aperçois un morceau de tissu bleu.</p>
-      <p>Sur la poitrine : <strong>ROCHEBRUME.</strong></p>
+      <p>Tu avances lentement, les mains bien visibles.</p>
+
+      <blockquote>« Je veux seulement t’aider. »</blockquote>
+
+      <p>La silhouette cesse de respirer pendant une seconde.</p>
+
+      <p>Puis elle se retourne d’un seul mouvement.</p>
+
+      <p>Elle bondit.</p>
+
+      <p>Tu n’as qu’un instant pour distinguer un visage couvert de plaques sombres, des yeux injectés de sang et une bouche déformée par la terre noire.</p>
+
+      <p>Mais sous toute cette saleté, il y a autre chose.</p>
+
+      <p>Un morceau de tissu bleu.</p>
+
+      <p>Sur la poitrine, un petit écusson.</p>
+
+      <p><strong>ROCHEBRUME.</strong></p>
+
       <p>Humain ou non, tu dois réagir.</p>
     `,
     choices: [{
@@ -2252,8 +2488,9 @@ const STORY = {
       to: 'c38',
       effect: s => {
         const hit = roll2D6(s, 'Dextérité', currentDexterity(s));
+
         if (!hit) {
-          s.lastCombatOutcome = 'crying_miss';
+          s.lastCombatOutcome = 'crying_wounded_win';
           s.hp = Math.max(0, s.hp - 1);
         } else if (combatPower(s) >= 5) {
           s.lastCombatOutcome = 'crying_kill';
@@ -2266,13 +2503,40 @@ const STORY = {
 
   c37: {
     number: 'PAGE 37',
-    title: 'La fissure',
-    image: 'La fissure',
+    title: 'Toujours plus bas',
+    image: 'Toujours plus bas',
     text: `
-      <p>La galerie devient si étroite que tu dois avancer de profil.</p>
-      <p>Puis la roche s’ouvre brutalement.</p>
+      <p>Tu quittes finalement les galeries proches du camp.</p>
+
+      <p>Le chemin descend désormais sans interruption.</p>
+
+      <p>Par endroits, les murs portent encore des traces d’outils : entailles régulières, anciennes niches pour des torches, marches grossièrement taillées.</p>
+
+      <p>Puis ces marques disparaissent.</p>
+
+      <p>La roche devient lisse.</p>
+
+      <p>Presque trop lisse.</p>
+
+      <p>Tu marches longtemps sans savoir combien de temps s’écoule. Une demi-heure peut-être. Davantage.</p>
+
+      <p>Le tunnel se resserre peu à peu jusqu’à t’obliger à avancer de profil.</p>
+
+      <p>Ton épaule frotte contre la pierre. Ton souffle te revient au visage.</p>
+
+      <p>Devant toi, pourtant, un courant d’air froid commence à se faire sentir.</p>
+
+      <p>Encore quelques pas.</p>
+
+      <p>La fissure s’élargit.</p>
+
+      <p>Tu avances.</p>
+
+      <p>Et le monde s’ouvre devant toi.</p>
     `,
-    choices: [{ label: 'Regarder ce qui se trouve au-delà', to: 'c40' }]
+    choices: [
+      { label: 'Sortir de la fissure', to: 'c40' }
+    ]
   },
 
   c38: {
@@ -2281,76 +2545,146 @@ const STORY = {
     image: 'Ce qui restait de lui',
     text: state => {
       const r = diceResultHtml(state);
+
       if (state.lastCombatOutcome === 'crying_kill') {
         return r + `
-          <p>Ton coup l’abat.</p>
-          <p>Sous les plaques noires, tu distingues encore un visage humain.</p>`;
+          <p>Tu te décales au dernier moment et ton coup l’atteint avant qu’il puisse refermer ses mains sur toi.</p>
+
+          <p>La silhouette s’effondre lourdement.</p>
+
+          <p>Pendant quelques secondes, tu restes immobile, l’arme levée.</p>
+
+          <p>Elle ne bouge plus.</p>
+
+          <p>Sous les plaques de terre noire, tu distingues encore un visage humain.</p>
+
+          <p>Tu préfères ne pas chercher à savoir depuis combien de temps il ne l’était plus tout à fait.</p>
+        `;
       }
+
       if (state.lastCombatOutcome === 'crying_wound') {
         return r + `
-          <p>Tu le blesses, mais il s’enfuit à quatre pattes.</p>
-          <p>Tu restes seul avec une question que tu aurais préféré ne jamais te poser.</p>`;
+          <p>Ton coup porte, mais ton arme manque de puissance pour l’abattre immédiatement.</p>
+
+          <p>La silhouette hurle et recule en titubant.</p>
+
+          <p>Pendant une seconde, tu crois qu’elle va revenir sur toi.</p>
+
+          <p>Au lieu de cela, elle se retourne et s’enfuit à quatre pattes dans une fissure latérale.</p>
+
+          <p>Tu l’entends encore quelques instants racler la pierre, puis plus rien.</p>
+
+          <p>Au sol reste un lambeau de tissu bleu portant l’écusson de Rochebrume.</p>
+        `;
       }
+
       return r + `
-        <p>Ses ongles labourent ton bras.</p>
+        <p>Tu réagis trop tard.</p>
+
+        <p>La silhouette te percute et ses ongles labourent ton bras.</p>
+
         <p><strong>Tu perds 1 point de Vie.</strong></p>
-        <p>Au sol reste l’écusson de Rochebrume.</p>`;
+
+        <p>Vous tombez ensemble dans la poussière.</p>
+
+        <p>Son visage est maintenant à quelques centimètres du tien.</p>
+
+        <p>Derrière la terre noire, tu aperçois une expression qui ressemble moins à de la rage qu’à de la terreur.</p>
+
+        <p>Tu réussis enfin à dégager ton arme.</p>
+
+        <p>Tu frappes à bout portant.</p>
+
+        <p>Le corps se contracte puis retombe contre toi.</p>
+
+        <p>Tu le repousses lentement.</p>
+
+        <p>Il est mort.</p>
+
+        <p>Sur sa poitrine, l’écusson de Rochebrume est maintenant parfaitement visible.</p>
+      `;
     },
-    choices: [{ label: 'Continuer', to: 'c37' }]
+    choices: [
+      { label: 'Reprendre ton souffle et poursuivre', to: 'c37' }
+    ]
   },
 
   c39: {
     number: 'PAGE 39',
     title: 'La corniche',
     image: 'La corniche',
-    onEnter: s => {
-      if (!s.flags.blackBladeFound) {
-        s.flags.blackBladeFound = true;
-        addItem(
-          s,
-          'lame_noire',
-          'Lame noire',
-          'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.'
-        );
-      }
-    },
     text: state => {
-      if (hasItem(state,'lame_noire')) {
+      if (hasItem(state, 'lame_noire')) {
         return `
-          <p>La corniche longe le vide sur plusieurs dizaines de mètres.</p>
+          <p>Tu retrouves la corniche suspendue au-dessus du gouffre.</p>
 
-          <p>Tu reconnais l’anfractuosité où tu as découvert la lame noire.</p>
+          <p>Le vide s’étend à ta gauche, noyé dans une brume bleuâtre.</p>
 
-          <p>Elle est maintenant vide.</p>
+          <p>Tu passes devant l’anfractuosité où reposait la petite lame noire.</p>
 
-          <p>Plus loin, le chemin rejoint un ancien pont de pierre qui traverse une partie du gouffre.</p>
+          <p>La niche est vide.</p>
+
+          <p>Plus loin, la corniche rejoint les premières pierres d’un pont ancien.</p>
         `;
       }
 
       return `
-        <p>La corniche longe le vide sur plusieurs dizaines de mètres.</p>
+        <p>Tu t’engages sur une corniche étroite qui longe la falaise.</p>
 
-        <p>Dans une anfractuosité, une petite dague repose sur la pierre.</p>
+        <p>À ta gauche, le vide descend si profondément que la brume finit par en masquer le fond.</p>
+
+        <p>Tu avances lentement, une main contre la roche.</p>
+
+        <p>Après plusieurs dizaines de mètres, quelque chose attire ton regard dans une petite anfractuosité.</p>
+
+        <p>Une dague.</p>
+
+        <p>Elle repose seule sur la pierre, comme si quelqu’un venait de la déposer.</p>
 
         <p>Son métal est parfaitement noir.</p>
 
-        <p>Pas de lumière, pas de chaleur, aucun signe évident de magie.</p>
+        <p>Pas sombre. Pas terni.</p>
 
-        <p>Pourtant, en la tenant, tu as l’impression absurde que certaines choses plus bas savent déjà que tu l’as trouvée.</p>
+        <p>Noir au point de sembler absorber la faible lumière qui l’entoure.</p>
+
+        <p>Tu ne ressens pourtant ni chaleur, ni froid, ni vibration.</p>
+
+        <p>Rien qui ressemble à de la magie.</p>
       `;
     },
     choices: state => {
-      if (state.weapon === 'black_blade') {
-        return [{ label: 'Continuer jusqu’au pont', to: 'c46' }];
+      if (hasItem(state, 'lame_noire')) {
+        return [{ label: 'Continuer vers le pont', to: 'c46' }];
       }
 
       return [
         {
-          label: hasItem(state,'lame_noire') ? 'Équiper la lame noire' : 'Équiper la lame noire',
+          label: 'Prendre la lame noire et l’équiper',
           to: 'c46',
-          effect: s => { s.weapon = 'black_blade'; }
+          effect: s => {
+            s.flags.blackBladeFound = true;
+            addItem(
+              s,
+              'lame_noire',
+              'Lame noire',
+              'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.'
+            );
+            s.weapon = 'black_blade';
+          }
         },
-        { label: 'Continuer jusqu’au pont sans changer d’arme', to: 'c46' }
+        {
+          label: 'Prendre la lame noire et garder ton arme actuelle',
+          to: 'c46',
+          effect: s => {
+            s.flags.blackBladeFound = true;
+            addItem(
+              s,
+              'lame_noire',
+              'Lame noire',
+              'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.'
+            );
+          }
+        }
       ];
     }
   },
@@ -2361,32 +2695,50 @@ const STORY = {
     image: 'Le monde sous la montagne',
     onEnter: s => setCheckpoint(s, 'Le monde sous la montagne'),
     text: `
-      <p>Devant toi s’ouvre un espace si vaste que ton esprit refuse d’abord de l’accepter.</p>
+      <p>Tu sors de la fissure.</p>
 
-      <p>Le plafond disparaît dans une brume lumineuse, peut-être à plusieurs kilomètres au-dessus.</p>
+      <p>Et tu t’arrêtes aussitôt.</p>
 
-      <p>Une clarté blanc-bleu vient de nulle part.</p>
+      <p>Devant toi s’ouvre un espace si vaste que ton esprit refuse d’abord de lui donner une forme.</p>
 
-      <p>Très loin sous toi, des formations rocheuses ressemblent à des montagnes.</p>
+      <p>Tu avais cru atteindre une grande caverne.</p>
 
-      <p>Tu regardes la fissure dont tu viens de sortir.</p>
+      <p>Ce n’est pas une caverne.</p>
 
-      <p>La montagne ne pourrait pas contenir cet endroit.</p>
+      <p>Le plafond disparaît dans une brume lumineuse, peut-être à plusieurs kilomètres au-dessus de toi.</p>
 
-      <p>Peut-être que le soufre t’a brûlé le cerveau.</p>
+      <p>Une clarté blanc-bleu baigne le paysage sans que tu puisses en identifier la source.</p>
 
-      <p>Ou peut-être que tout cela existe réellement.</p>
+      <p>Pas de torches.</p>
 
-      <p>Trois routes permettent de poursuivre la descente.</p>
+      <p>Pas de soleil.</p>
+
+      <p>Très loin en contrebas, des masses rocheuses émergent de la brume comme des chaînes de montagnes.</p>
+
+      <p>Tu te retournes.</p>
+
+      <p>La fissure dont tu viens de sortir n’est plus qu’une fente minuscule dans une falaise gigantesque.</p>
+
+      <p>La montagne de Valombre ne pourrait pas contenir cet endroit.</p>
+
+      <p>Cette certitude est presque rassurante tant elle est simple.</p>
+
+      <p>Soit le soufre, la fatigue ou la peur ont fini par briser quelque chose dans ton esprit.</p>
+
+      <p>Soit ce lieu est réel.</p>
+
+      <p>Et cette seconde possibilité te paraît soudain bien pire.</p>
+
+      <p>Trois voies s’enfoncent dans ce monde impossible : un sentier vers un lac parfaitement noir, un escalier monumental taillé dans la falaise, et une corniche qui disparaît derrière un éperon rocheux.</p>
     `,
     choices: state => [
       { label: 'Descendre vers le lac noir', to: 'c41' },
       { label: 'Prendre les marches gigantesques', to: 'c44' },
       {
-        label: hasItem(state,'lame_noire')
+        label: hasItem(state, 'lame_noire')
           ? 'Reprendre la corniche vers le pont'
           : 'Longer la corniche',
-        to: hasItem(state,'lame_noire') ? 'c46' : 'c39'
+        to: hasItem(state, 'lame_noire') ? 'c46' : 'c39'
       }
     ]
   },
@@ -2396,25 +2748,43 @@ const STORY = {
     title: 'Le lac noir',
     image: 'Le lac noir',
     text: `
-      <p>Le chemin descend jusqu’à une rive parfaitement lisse.</p>
+      <p>Le sentier descend longtemps en lacets.</p>
 
-      <p>Une vieille embarcation attend sur une eau si noire qu’elle ne reflète presque pas la lumière.</p>
+      <p>À mesure que tu approches du fond, l’air devient plus froid et la lumière plus diffuse.</p>
 
-      <p>Tu détaches la corde et commences à traverser.</p>
+      <p>Tu finis par atteindre une rive de pierre parfaitement lisse.</p>
 
-      <p>À mi-chemin, trois coups résonnent sous la coque.</p>
+      <p>Le lac s’étend devant toi jusqu’à disparaître dans la brume.</p>
+
+      <p>Son eau est si noire qu’elle ne reflète presque rien.</p>
+
+      <p>Une vieille embarcation est attachée à un anneau de pierre.</p>
+
+      <p>Le bois paraît gonflé par l’humidité mais encore solide.</p>
+
+      <p>Tu détaches la corde et pousses la barque sur l’eau.</p>
+
+      <p>Pendant plusieurs minutes, seul le bruit régulier des rames trouble le silence.</p>
+
+      <p>Puis trois coups résonnent sous la coque.</p>
 
       <p><strong>TOC.</strong></p>
-      <p><strong>TOC.</strong></p>
+
       <p><strong>TOC.</strong></p>
 
-      <p>Les mêmes trois temps que le chant impossible entendu dans la forêt de Rochebrume.</p>
+      <p><strong>TOC.</strong></p>
 
-      <p>Puis quelque chose effleure lentement le bois sous tes pieds.</p>
+      <p>Tu te figes.</p>
+
+      <p>Ce rythme.</p>
+
+      <p>Les trois mêmes temps que le chant impossible entendu dans la forêt de Rochebrume.</p>
+
+      <p>Quelque chose effleure lentement le bois sous tes pieds.</p>
     `,
     choices: [
       { label: 'Ne pas regarder et continuer à ramer', to: 'c45' },
-      { label: 'Regarder dans l’eau', to: 'c42' }
+      { label: 'Te pencher et regarder dans l’eau', to: 'c42' }
     ]
   },
 
@@ -2423,27 +2793,45 @@ const STORY = {
     title: 'Un visage sous l’eau',
     image: 'Un visage sous l’eau',
     text: `
-      <p>Tu te penches au-dessus de l’eau.</p>
+      <p>Tu poses les rames et te penches lentement au-dessus du bord.</p>
 
-      <p>Très loin sous la surface, des points lumineux brillent comme des étoiles.</p>
+      <p>Au début, tu ne vois que ton propre reflet déformé.</p>
 
-      <p>Puis un visage apparaît.</p>
+      <p>Puis il disparaît.</p>
+
+      <p>Très loin sous la surface, des points lumineux apparaissent.</p>
+
+      <p>Des dizaines.</p>
+
+      <p>Des centaines peut-être.</p>
+
+      <p>Ils ressemblent à des étoiles vues dans un ciel parfaitement clair.</p>
+
+      <p>Mais elles sont sous toi.</p>
+
+      <p>Tu te penches davantage.</p>
+
+      <p>Un visage surgit soudain dans l’obscurité.</p>
 
       <p><strong>Sir Aldren.</strong></p>
 
-      <p>Plusieurs mètres sous l’eau.</p>
+      <p>Il semble flotter plusieurs mètres sous l’eau.</p>
 
       <p>Ses yeux s’ouvrent.</p>
 
       <p>Sa bouche prononce quelque chose que tu n’entends pas.</p>
 
-      <p>Tu recules brusquement.</p>
+      <p>Tu recules si brusquement que la barque oscille dangereusement.</p>
 
-      <p>Lorsque tu regardes de nouveau, il n’y a plus que l’eau noire.</p>
+      <p>Lorsque tu regardes de nouveau, il n’y a plus rien.</p>
 
-      <p>Tu ne sais pas si Aldren était réellement là, si quelque chose t’a montré son visage… ou si ton esprit commence simplement à céder.</p>
+      <p>Seulement l’eau noire.</p>
+
+      <p>Tu ne sais pas si Aldren était réellement là, si quelque chose a emprunté son visage… ou si ton esprit commence à fabriquer lui-même ce qu’il craint le plus de voir.</p>
 
       <p>Tu reprends les rames.</p>
+
+      <p>Quoi que tu aies vu, rester immobile au milieu de ce lac te paraît soudain une très mauvaise idée.</p>
     `,
     choices: [
       { label: 'Continuer jusqu’à l’autre rive', to: 'c45' }
@@ -2472,36 +2860,50 @@ const STORY = {
     title: 'Les marches des géants',
     image: 'Les marches des géants',
     text: `
-      <p>Tu t’engages sur l’escalier.</p>
+      <p>Tu choisis l’escalier.</p>
 
-      <p>Chaque marche est si haute que tu dois parfois poser une main sur la pierre pour te hisser.</p>
+      <p>Les premières marches suffisent à te faire comprendre qu’il n’a pas été conçu pour des hommes.</p>
 
-      <p>Ce n’est pas un escalier construit pour des hommes.</p>
+      <p>Chacune arrive presque à hauteur de ton genou. Certaines sont si hautes que tu dois poser les mains sur la pierre pour te hisser.</p>
 
-      <p>Après une longue ascension, tu atteins une terrasse où des fresques couvrent la paroi.</p>
+      <p>Tu montes longtemps.</p>
 
-      <p>Tu y vois de petites silhouettes humaines entourant une forme immense.</p>
+      <p>Lorsque tu regardes derrière toi, la fissure par laquelle tu es arrivé n’est déjà plus visible.</p>
 
-      <p>Au-dessus d’elles revient sans cesse le même signe.</p>
+      <p>Au-dessus, la lumière blanche ne change jamais.</p>
+
+      <p>Tu ignores si quelques minutes ou plusieurs heures se sont écoulées lorsque l’escalier débouche enfin sur une terrasse.</p>
+
+      <p>Des fresques couvrent toute la paroi.</p>
+
+      <p>Tu y vois de petites silhouettes humaines disposées autour d’une forme immense, si vaste que l’artiste n’en a représenté qu’une partie.</p>
+
+      <p>Au-dessus d’elles revient sans cesse le même symbole.</p>
 
       <p><strong>Un œil fermé.</strong></p>
 
-      <p>Mais les personnages ne semblent pas l’adorer.</p>
+      <p>Tu observes plus attentivement les scènes.</p>
 
-      <p>Ils construisent quelque chose autour de la grande forme.</p>
+      <p>Les hommes ne semblent pas adorer la forme.</p>
 
-      <p>Des murs.</p>
+      <p>Ils l’entourent de murs.</p>
 
-      <p>Des portes.</p>
+      <p>Ils ferment des portes.</p>
 
-      <p>Une prison.</p>
+      <p>Ils construisent une prison.</p>
 
-      <p>Plus loin, une autre fresque représente une petite lame sombre coupant des filaments qui relient un homme à quelque chose hors du dessin.</p>
+      <p>Un peu plus loin, une autre fresque représente un homme tenant une petite lame noire.</p>
 
-      <p>Tu restes longtemps devant cette image avant de reprendre ta route.</p>
+      <p>Devant lui, de fins traits relient plusieurs personnages à une masse située hors du dessin.</p>
+
+      <p>La lame coupe l’un de ces traits.</p>
+
+      <p>Tu ne comprends pas encore ce que cela signifie.</p>
+
+      <p>Au bout de la terrasse, un passage étroit descend vers une arche monumentale.</p>
     `,
     choices: [
-      { label: 'Continuer jusqu’à la terrasse suivante', to: 'c46' }
+      { label: 'Suivre le passage jusqu’à l’arche', to: 'c46' }
     ]
   },
 
@@ -2510,17 +2912,35 @@ const STORY = {
     title: 'L’autre rive',
     image: 'L’autre rive',
     text: `
-      <p>La barque finit par toucher une rive de pierre.</p>
+      <p>La traversée continue encore un long moment.</p>
 
-      <p>Tu descends sans attendre et attaches rapidement l’embarcation.</p>
+      <p>Peu à peu, une ligne sombre apparaît devant toi.</p>
+
+      <p>L’autre rive.</p>
+
+      <p>La barque finit par grincer contre la pierre.</p>
+
+      <p>Tu descends rapidement et attaches l’embarcation à une colonne naturelle.</p>
 
       <p>Derrière toi, l’eau redevient parfaitement immobile.</p>
 
-      <p>Un sentier monte entre deux colonnes naturelles et rejoint une vaste terrasse.</p>
+      <p>Le silence est si complet que tu pourrais presque croire n’avoir jamais traversé le lac.</p>
 
-      <p>Pour la première fois depuis ton entrée dans ce monde impossible, tu aperçois au loin une construction clairement façonnée par des mains.</p>
+      <p>Devant toi, un sentier monte entre deux parois claires.</p>
 
-      <p>Ou par quelque chose qui possédait des mains.</p>
+      <p>Tu le suis.</p>
+
+      <p>Au sommet, le paysage s’ouvre de nouveau sur le gouffre.</p>
+
+      <p>Pour la première fois depuis ton entrée dans ce monde impossible, tu aperçois au loin une construction aux lignes nettement régulières.</p>
+
+      <p>Une terrasse.</p>
+
+      <p>Une arche.</p>
+
+      <p>Quelque chose qui a été bâti.</p>
+
+      <p>Ou du moins quelque chose qui en donne l’impression.</p>
     `,
     choices: [
       { label: 'Monter vers la terrasse', to: 'c46' }
@@ -2533,25 +2953,41 @@ const STORY = {
     image: 'La terrasse de l’œil fermé',
     onEnter: s => setCheckpoint(s, 'La terrasse de l’œil fermé'),
     text: `
-      <p>Les différentes routes se rejoignent sur une immense terrasse suspendue au-dessus du vide.</p>
+      <p>Après la dernière pente, tu atteins enfin la terrasse.</p>
 
-      <p>Devant toi se dresse une arche de pierre noire.</p>
+      <p>Elle est immense.</p>
 
-      <p>Au centre de sa clé de voûte est gravé le symbole désormais familier :</p>
+      <p>Le sol est composé de dalles noires dont les jointures forment des lignes si régulières qu’elles semblent avoir été tracées hier.</p>
 
-      <p><strong>l’œil fermé.</strong></p>
+      <p>Pourtant, certaines pierres sont fendues par des racines minérales épaisses comme des troncs d’arbres.</p>
 
-      <p>Au-delà de l’arche, un chemin descend encore.</p>
+      <p>Les différentes routes du monde souterrain semblent toutes finir ici.</p>
 
-      <p>Très loin dans les profondeurs, une lumière rouge pulse lentement.</p>
+      <p>Devant toi se dresse une arche de pierre noire, haute de plusieurs dizaines de mètres.</p>
+
+      <p>Au centre de sa clé de voûte est gravé le symbole désormais familier.</p>
+
+      <p><strong>L’œil fermé.</strong></p>
+
+      <p>Au-delà de l’arche, un chemin plonge de nouveau vers les profondeurs.</p>
+
+      <p>Très loin, presque au bord de ta vision, une lueur rouge pulse dans l’obscurité.</p>
 
       <p>Une fois.</p>
 
+      <p>Le silence revient.</p>
+
       <p>Puis une seconde.</p>
 
-      <p>Comme un battement.</p>
+      <p>Comme un battement extrêmement lent.</p>
 
-      <p>Tu comprends que ce que tu as vu jusqu’ici n’était que l’entrée du monde enfoui.</p>
+      <p>Tu restes longtemps immobile à contempler ce passage.</p>
+
+      <p>Tout ce que tu as traversé jusqu’ici — Valombre, Rochebrume, les premières galeries, Anselme, le lac ou les marches — te paraît soudain appartenir à la surface d’un monde beaucoup plus vaste.</p>
+
+      <p>Et quelque part plus bas se trouve encore Sir Aldren.</p>
+
+      <p>Ou quelque chose qui sait parfaitement quel visage lui donner.</p>
 
       <p><strong>Fin de cette version test.</strong></p>
     `,
@@ -2621,12 +3057,10 @@ function syncThrowingBlades(state) {
   }
 }
 
-function rollDie6() {
-  // Tirage uniforme sur 1–6 avec le générateur cryptographique du navigateur.
-  // Les valeurs hors du plus grand multiple de 6 sont rejetées pour éviter tout biais.
+function cryptoDie6() {
   if (window.crypto && window.crypto.getRandomValues) {
     const buffer = new Uint32Array(1);
-    const limit = 4294967292; // plus grand multiple de 6 < 2^32
+    const limit = 4294967292; // largest multiple of 6 below 2^32
     let value;
 
     do {
@@ -2637,16 +3071,20 @@ function rollDie6() {
     return (value % 6) + 1;
   }
 
+  // Fallback only for very old browsers.
   return Math.floor(Math.random() * 6) + 1;
 }
 
 function roll2D6(state, statName, statValue) {
-  const d1 = rollDie6();
-  const d2 = rollDie6();
+  const d1 = cryptoDie6();
+  const d2 = cryptoDie6();
+
+  state.rollCount = (state.rollCount || 0) + 1;
   state.lastDice = [d1, d2];
   state.lastTotal = d1 + d2;
   state.lastStatName = statName;
   state.lastStat = statValue;
+
   return state.lastTotal <= statValue;
 }
 
@@ -2677,6 +3115,7 @@ function diceResultHtml(state) {
 
   return `
     <div class="dice-result">
+      <p class="roll-number">Jet n° ${state.rollCount || 1}</p>
       <div class="dice-faces">
         ${renderDie(d1)}
         ${renderDie(d2)}
@@ -2697,8 +3136,8 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v9_fluidite';
-const CHECKPOINT_KEY = 'valombre_checkpoint_v8';
+const STORAGE_KEY = 'valombre_save_v10_transitions_combats';
+const CHECKPOINT_KEY = 'valombre_checkpoint_v10';
 
 const defaultState = () => ({
   node: 'start',
@@ -2724,6 +3163,7 @@ const defaultState = () => ({
   lastTotal: null,
   lastStat: null,
   lastStatName: '',
+  rollCount: 0,
   lastCombatOutcome: null,
   currentCheckpoint: null
 });
