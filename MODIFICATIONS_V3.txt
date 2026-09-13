@@ -1,8 +1,0 @@
-La Grotte de Valombre — V3 faux livre ancien
-
-- Nouvelle présentation façon page de livre-jeu ancien.
-- Illustration toujours chargée automatiquement en haut de chaque page.
-- Texte placé sous l'illustration.
-- Choix présentés comme des encarts avec renvoi vers la page de destination.
-- Chapitre 10 : rappel de la lettre uniquement si elle a réellement été lue.
-- Histoire et embranchements inchangés.
