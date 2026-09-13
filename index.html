@@ -1018,35 +1018,51 @@ const STORY = {
     number: 'PAGE 5',
     title: 'Le forgeron',
     image: 'Le forgeron de Valombre',
-    text: state => {
-      if (state.weapon === 'light') {
-        return `
-          <p>Le forgeron observe la lame qu’il t’a confiée.</p>
-          <blockquote>« Elle te convient mieux. Ne cherche pas à frapper comme Aldren. Bouge. Observe. Puis frappe. »</blockquote>
-          <p>Avec cette arme, tes valeurs de combat sont <strong>Force 3</strong> et <strong>Dextérité 5</strong>.</p>
-        `;
-      }
+    text: state => `
+      <p>Le forgeron lève immédiatement les yeux lorsque tu entres.</p>
 
-      return `
-        <p>Le forgeron t’accueille avec beaucoup de sympathie. Il connaissait bien Sir Aldren.</p>
-        <blockquote>« J’aimerais pouvoir venir avec toi. Mais je ne te laisserai pas partir avec cette enclume à la ceinture. »</blockquote>
-        <p>Il désigne l’ancienne épée de ton maître, trop lourde pour toi, puis pose sur l’établi une lame plus courte et mieux équilibrée.</p>
+      <blockquote>« Toi ? Où est Aldren ? »</blockquote>
 
-        <div class="weapon-compare">
-          <div><strong>Épée lourde de Sir Aldren</strong><br>Force 5 · Dextérité 3</div>
-          <div><strong>Épée maniable du forgeron</strong><br>Force 3 · Dextérité 5</div>
+      <p>Lorsqu’il apprend ce qui s’est passé, son visage se ferme.</p>
+
+      <p>Il connaissait ton maître depuis des années.</p>
+
+      <blockquote>« J’irais avec toi si je le pouvais. Mais ma jambe ne me mènerait même pas jusqu’au pied de la montagne. »</blockquote>
+
+      <p>Son regard tombe alors sur l’ancienne épée de Sir Aldren.</p>
+
+      <p>Il sourit légèrement.</p>
+
+      <blockquote>« Cette chose ? Aldren maniait ça comme une brindille. Toi, elle va te faire tomber avant ton adversaire. »</blockquote>
+
+      <p>Il disparaît dans l’arrière-boutique et revient avec une lame plus courte, parfaitement équilibrée.</p>
+
+      <blockquote>« Je te propose un échange. Elle frappe moins fort… mais entre de bonnes mains, elle frappe beaucoup plus vite. »</blockquote>
+
+      <div class="weapon-compare">
+        <div>
+          <strong>Garder l’épée lourde</strong><br><br>
+          <strong>Épée de Sir Aldren</strong><br>
+          Force au combat : <strong>5</strong><br>
+          Dextérité au combat : <strong>3</strong>
         </div>
-
-        <p>Aucune n’est meilleure dans toutes les situations. L’une frappe plus fort ; l’autre te permet de combattre avec plus d’agilité.</p>
-      `;
-    },
+        <div>
+          <strong>Accepter l’échange</strong><br><br>
+          <strong>Épée du forgeron</strong><br>
+          Force au combat : <strong>3</strong><br>
+          Dextérité au combat : <strong>5</strong>
+        </div>
+      </div>
+    `,
     choices: state => {
       if (state.weapon === 'light') {
-        return [{ label: 'Remercier le forgeron et retourner sur la place', to: 'c3' }];
+        return [
+          { label: 'Remercier le forgeron et retourner sur la place', to: 'c3' }
+        ];
       }
       return [
         {
-          label: 'Échanger l’épée lourde contre la lame maniable',
+          label: 'Accepter l’échange',
           to: 'c3',
           effect: s => { s.weapon = 'light'; }
         },
@@ -1081,15 +1097,46 @@ const STORY = {
     image: 'Les yeux du fou',
     onEnter: s => { s.flags.avertissementSoufre = true; },
     text: `
-      <p>La silhouette tourne brusquement la tête vers toi.</p>
-      <p>Ses yeux sont grands ouverts, presque fous.</p>
-      <blockquote>« Recule… recule si tu ne veux pas mourir… »</blockquote>
-      <p>Elle regarde derrière toi comme si quelque chose se tenait au milieu de la rue.</p>
-      <blockquote>« Ils arrivent. Vous ne voyez pas ? Ils arrivent… »</blockquote>
-      <p>L’odeur de soufre est désormais si forte qu’elle te brûle la gorge.</p>
+      <p>Tu avances encore.</p>
+
+      <p>La silhouette s’immobilise.</p>
+
+      <p>Puis sa tête se tourne brusquement vers toi.</p>
+
+      <p>Son visage est presque humain.</p>
+
+      <p><em>Presque.</em></p>
+
+      <p>Sa peau semble trop pâle. Ses joues trop creuses.</p>
+
+      <p>Et ses yeux sont si largement ouverts que tu distingues le blanc tout autour de ses pupilles.</p>
+
+      <p>Il recule contre le mur.</p>
+
+      <blockquote>« Recule… »</blockquote>
+
+      <p>Sa voix tremble.</p>
+
+      <blockquote>« Recule si tu ne veux pas mourir… »</blockquote>
+
+      <p>Il fixe quelque chose derrière toi.</p>
+
+      <blockquote>« Ils arrivent. »</blockquote>
+
+      <p>Puis il se met à rire.</p>
+
+      <p>Un rire étouffé, presque douloureux.</p>
+
+      <blockquote>« Vous ne voyez donc pas ? »</blockquote>
+
+      <p>Son regard revient vers toi.</p>
+
+      <blockquote><strong>« Ils arrivent… »</strong></blockquote>
+
+      <p>Et soudain, quelque chose remue sous la peau de son cou.</p>
     `,
     choices: [
-      { label: 'Retourner sur la place', to: 'c3' },
+      { label: 'Reculer lentement et retourner sur la place', to: 'c3' },
       { label: 'Quitter Valombre et partir vers la grotte', to: 'c8' }
     ]
   },

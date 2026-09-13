@@ -27,3 +27,14 @@ Toujours le même système :
 `images/La-Grotte-de-Valombre-01.png`
 `images/La-Grotte-de-Valombre-02.png`
 etc.
+
+## Direction narrative
+
+Le ton doit rester constamment ambigu et inquiétant :
+- ne pas montrer trop vite des monstres clairement identifiables ;
+- laisser planer le doute entre folie, mensonge, maladie, secte et présence surnaturelle ;
+- préférer les signes partiels : odeurs, voix, mouvements sous la peau, silhouettes mal perçues, phrases incomplètes ;
+- les révélations doivent arriver lentement ;
+- même quand le héros voit quelque chose, il ne doit pas toujours être certain de l’avoir compris correctement.
+
+Référence d’esprit : horreur cosmique / inquiétude à la Lovecraft, mais avec un univers, des noms et des créatures originaux.
