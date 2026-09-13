@@ -698,15 +698,16 @@ button { font: inherit; }
 .notebook-delete {
   position:absolute;
   right:4px;
-  bottom:2px;
-  width:22px;
-  height:20px;
+  bottom:1px;
+  width:25px;
+  height:22px;
   border:0;
   background:transparent;
   color:#744333;
-  font-size:16px;
+  font-size:14px;
   line-height:1;
   cursor:pointer;
+  padding:0;
 }
 
 .capture-layer {
@@ -1063,6 +1064,60 @@ button { font: inherit; }
   grid-column: auto;
 }
 
+
+.notebook-clip {
+  cursor: zoom-in;
+}
+.notebook-clip:active {
+  transform: scale(.985) rotate(-.55deg);
+}
+.notebook-clip:nth-child(even):active {
+  transform: scale(.985) rotate(.75deg);
+}
+
+.clip-preview-tools {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  height: 0;
+  overflow: visible;
+}
+
+.clip-preview-close,
+.clip-preview-delete {
+  position: relative;
+  top: 0;
+  float: none;
+  margin: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #856948;
+  border-radius: 0;
+  background: #e5d0a5;
+  color: #2a1d13;
+  font-family: var(--body-font);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(58,39,21,.15);
+}
+
+.clip-preview-delete {
+  color: #6f3329;
+  font-size: 18px;
+}
+
+.clip-preview-content {
+  padding-top: 44px;
+}
+
+.clip-preview-delete:hover {
+  background: #d6b98d;
+}
+
 </style>
 </head>
 <body>
@@ -1143,7 +1198,10 @@ button { font: inherit; }
   <div id="clipPreviewModal" class="clip-preview-modal hidden" aria-hidden="true">
     <div id="clipPreviewBackdrop" class="clip-preview-backdrop"></div>
     <div class="clip-preview-card">
-      <button id="clipPreviewCloseBtn" class="clip-preview-close" type="button" aria-label="Fermer l'aperçu">×</button>
+      <div class="clip-preview-tools">
+        <button id="clipPreviewDeleteBtn" class="clip-preview-delete" type="button" aria-label="Supprimer cet indice" title="Supprimer cet indice">🗑︎</button>
+        <button id="clipPreviewCloseBtn" class="clip-preview-close" type="button" aria-label="Fermer l'aperçu" title="Fermer">×</button>
+      </div>
       <div id="clipPreviewContent" class="clip-preview-content"></div>
     </div>
   </div>
@@ -1470,7 +1528,10 @@ const captureStatus = document.getElementById('captureStatus');
 const clipPreviewModal = document.getElementById('clipPreviewModal');
 const clipPreviewBackdrop = document.getElementById('clipPreviewBackdrop');
 const clipPreviewCloseBtn = document.getElementById('clipPreviewCloseBtn');
+const clipPreviewDeleteBtn = document.getElementById('clipPreviewDeleteBtn');
 const clipPreviewContent = document.getElementById('clipPreviewContent');
+
+let activePreviewClipId = null;
 
 let pageShotCanvas = null;
 let pageCaptureStart = null;
@@ -1536,20 +1597,17 @@ function loadPageImage(pageNumber, title) {
 
 
 
+
 function openClipPreview(clip) {
+  if (!clip) return;
+
+  activePreviewClipId = clip.id;
   clipPreviewContent.innerHTML = '';
 
-  if (clip.type === 'text') {
-    const text = document.createElement('div');
-    text.className = 'clip-preview-text';
-    text.textContent = clip.text || '';
-    clipPreviewContent.appendChild(text);
-  } else {
-    const img = document.createElement('img');
-    img.src = clip.image;
-    img.alt = `Indice agrandi depuis la page ${padPage(clip.page)}`;
-    clipPreviewContent.appendChild(img);
-  }
+  const img = document.createElement('img');
+  img.src = clip.image;
+  img.alt = `Indice agrandi depuis la page ${padPage(clip.page)}`;
+  clipPreviewContent.appendChild(img);
 
   const caption = document.createElement('div');
   caption.className = 'clip-preview-caption';
@@ -1561,14 +1619,27 @@ function openClipPreview(clip) {
 }
 
 function closeClipPreview() {
+  activePreviewClipId = null;
   clipPreviewModal.classList.add('hidden');
   clipPreviewModal.setAttribute('aria-hidden', 'true');
   clipPreviewContent.innerHTML = '';
 }
 
+function deleteActivePreviewClip() {
+  if (!activePreviewClipId) return;
+
+  ensureNotebookState();
+  state.clippings = state.clippings.filter(clip => clip.id !== activePreviewClipId);
+  saveState();
+
+  closeClipPreview();
+  renderNotebook();
+}
+
 function ensureNotebookState() {
   if (!Array.isArray(state.clippings)) state.clippings = [];
 }
+
 
 function renderNotebook() {
   ensureNotebookState();
@@ -1579,9 +1650,13 @@ function renderNotebook() {
     notebookEmpty.style.display = 'block';
   } else {
     notebookEmpty.style.display = 'none';
+
     state.clippings.forEach(clip => {
       const figure = document.createElement('figure');
       figure.className = 'notebook-clip';
+      figure.tabIndex = 0;
+      figure.setAttribute('role', 'button');
+      figure.setAttribute('aria-label', `Agrandir l’indice de la page ${padPage(clip.page)}`);
 
       const img = document.createElement('img');
       img.src = clip.image;
@@ -1596,13 +1671,29 @@ function renderNotebook() {
       del.type = 'button';
       del.className = 'notebook-delete';
       del.setAttribute('aria-label', 'Supprimer cet indice');
-      del.textContent = '×';
-      del.addEventListener('click', () => {
+      del.setAttribute('title', 'Supprimer cet indice');
+      del.textContent = '🗑︎';
+      del.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
         state.clippings = state.clippings.filter(item => item.id !== clip.id);
         saveState();
         renderNotebook();
       });
       figure.appendChild(del);
+
+      // Direct click on the note opens it enlarged.
+      figure.addEventListener('click', event => {
+        if (event.target.closest('.notebook-delete')) return;
+        openClipPreview(clip);
+      });
+
+      figure.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openClipPreview(clip);
+        }
+      });
 
       notebookClips.appendChild(figure);
     });
@@ -1923,6 +2014,7 @@ pageCaptureRetryBtn.addEventListener('click', retryPageSelection);
 pageCaptureSaveBtn.addEventListener('click', savePageSelection);
 clipPreviewBackdrop.addEventListener('click', closeClipPreview);
 clipPreviewCloseBtn.addEventListener('click', closeClipPreview);
+clipPreviewDeleteBtn.addEventListener('click', deleteActivePreviewClip);
 restartBtn.addEventListener('click', restartGame);
 menuBtn.addEventListener('click', openDrawer);
 closeDrawerBtn.addEventListener('click', closeDrawer);
