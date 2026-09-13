@@ -56,3 +56,19 @@ Cette mise à jour ajoute exactement la nouvelle séquence :
 - reconvergence vers la grotte.
 
 Le ton reste volontairement ambigu : les manifestations sont inquiétantes, mais jamais totalement expliquées.
+
+
+## Mise à jour — la grotte (pages 20 à 28)
+
+Cette version ajoute :
+- le chemin escarpé vers la grotte ;
+- le choix entre le passage au soufre et le passage étroit ;
+- la mauvaise branche mortelle du soufre ;
+- la grande salle aux ombres mouvantes ;
+- la fuite qui mène à une fin de folie ;
+- l’attaque du grondement ;
+- l’utilisation possible des lames de jet ;
+- un vrai jet de dé contre la Dextérité ;
+- la poursuite de l’exploration plus loin dans la grotte.
+
+Le ton reste volontairement ambigu et inquiétant.

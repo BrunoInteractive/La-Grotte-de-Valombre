@@ -1677,11 +1677,7 @@ const STORY = {
           effect: s => {
             s.goldCoins -= 1;
             s.throwingBlades += 1;
-            s.inventory.lames_jet = {
-              name: 'Lames de jet',
-              description: 'De petites lames destinées à être lancées au visage pour gagner quelques secondes.',
-              quantity: s.throwingBlades
-            };
+            syncThrowingBlades(s);
           }
         });
       }
@@ -1783,28 +1779,290 @@ const STORY = {
 
   c20: {
     number: 'PAGE 20',
-    title: 'Vers la grotte',
-    image: 'Vers la grotte',
+    title: 'L’entrée de la grotte',
+    image: 'L’entrée de la grotte',
+    text: state => `
+      <p>Tu reprends l’ascension.</p>
+
+      <p>Le chemin devient rapidement escarpé, pierreux, difficile d’accès. Par endroits, il faut presque t’aider des mains pour progresser.</p>
+
+      <p>Le vent semble s’éteindre à mesure que tu montes, comme si même l’air hésitait à venir jusque-là.</p>
+
+      <p>Enfin, la roche s’ouvre devant toi.</p>
+
+      <p>Tu es arrivé à l’entrée de la grotte.</p>
+
+      <p>Tu t’y engages avec prudence. Après quelques pas à peine, deux chemins s’offrent à toi.</p>
+
+      <p>L’un <strong>descend</strong> dans l’obscurité, et de ce passage monte une <strong>forte odeur de soufre</strong>.</p>
+
+      <p>L’autre continue tout droit et semble s’enfoncer dans un passage beaucoup plus étroit.</p>
+
+      ${hasItem(state,'parchemin') ? '<p>En sentant le soufre, tu repenses malgré toi aux mots du parchemin : <em>« Là où le soufre vient empoisonner l’air, détourne tes pas et rebrousse en arrière. »</em></p>' : ''}
+    `,
+    choices: [
+      { label: 'Descendre dans le passage où l’odeur de soufre est la plus forte', to: 'c21' },
+      { label: 'Prendre le passage étroit qui continue tout droit', to: 'c22' }
+    ]
+  },
+
+  c21: {
+    number: 'PAGE 21',
+    title: 'Le souffle acide',
+    image: 'Le souffle acide',
     text: `
-      <p>Tu laisses Rochebrume derrière toi et reprends la direction de la montagne.</p>
+      <p>Tu t’enfonces dans le passage qui descend.</p>
 
-      <p>Plus tu avances, plus le relief se referme autour du chemin.</p>
+      <p>Très vite, l’odeur de soufre augmente. Elle te pique le nez, puis la gorge, puis les yeux.</p>
 
-      <p>Quelque part devant toi, dans la roche noire, se trouve l’entrée de la grotte.</p>
+      <p>L’air devient épais. Presque liquide.</p>
 
-      <p>Et peut-être Sir Aldren.</p>
+      <p>Tu poursuis malgré tout, jusqu’à te retrouver dans une cavité fermée.</p>
+
+      <p>Un cul-de-sac.</p>
+
+      <p>Tu comprends aussitôt ton erreur et fais demi-tour, mais il est déjà trop tard.</p>
+
+      <p>L’air acide a commencé son travail.</p>
+
+      <p>Il te brûle les yeux. Il te ronge la gorge. Chaque inspiration paraît t’arracher quelque chose à l’intérieur de la poitrine.</p>
+
+      <p>Tu tentes de remonter tant bien que mal.</p>
+
+      <p>Mais la force te quitte peu à peu.</p>
+
+      <p>Tu tombes à genoux.</p>
+
+      <p>Puis sur les mains.</p>
+
+      <p>Puis plus rien.</p>
+
+      <p>Personne ne sait où tu es allé.</p>
+
+      <p>Personne ne viendra te chercher.</p>
+    `,
+    choices: [
+      { label: 'Recommencer l’aventure', to: 'start' }
+    ]
+  },
+
+  c22: {
+    number: 'PAGE 22',
+    title: 'La salle aux ombres mouvantes',
+    image: 'La salle aux ombres mouvantes',
+    text: `
+      <p>Tu choisis l’autre passage.</p>
+
+      <p>Tu avances dans un couloir de plus en plus étroit, au point que la roche semble vouloir se refermer sur toi.</p>
+
+      <p>Puis, soudain, l’espace s’ouvre.</p>
+
+      <p>Tu débouches dans une grande pièce sombre, creusée à même la pierre.</p>
+
+      <p>La faible lumière venue de derrière toi n’éclaire la salle qu’à peine. Elle s’épuise avant d’atteindre le fond, et les ombres paraissent s’y mouvoir d’elles-mêmes.</p>
+
+      <p>Tu as l’impression que les murs respirent, ou qu’ils ondulent faiblement, comme si la roche n’était pas tout à fait immobile.</p>
+
+      <p>Tu avances encore de quelques pas dans la pénombre.</p>
+
+      <p>C’est alors qu’un <strong>grondement</strong> retentit sur le côté.</p>
+    `,
+    choices: [
+      { label: 'Retourner en arrière en courant', to: 'c23' },
+      { label: 'Attaquer la source du grondement', to: 'c24' }
+    ]
+  },
+
+  c23: {
+    number: 'PAGE 23',
+    title: 'La fuite',
+    image: 'La fuite',
+    text: `
+      <p>Tu fais demi-tour et détales sans réfléchir.</p>
+
+      <p>Derrière toi, tu sens aussitôt une présence qui te poursuit. Tu n’oses pas te retourner.</p>
+
+      <p>Tu cours de plus en plus vite, trébuchant presque dans le passage étroit, jusqu’à surgir dehors dans l’air glacé de la montagne.</p>
+
+      <p>Là seulement tu t’effondres.</p>
+
+      <p>La peur te fait trembler les jambes pendant de longues heures. Tu restes incapable de repartir.</p>
+
+      <p>À la tombée de la nuit, tes forces reviennent un peu… mais quelque chose en toi s’est déjà brisé.</p>
+
+      <p>Tu te mets à parler à voix basse de monstres, de soufre, d’ombres qui bougent.</p>
+
+      <p>Tu vois des mouvements partout. Tu contrôles mal ton corps. La peur ne te quitte plus.</p>
+
+      <p>Finalement, tu redescends jusqu’au village, te caches dans l’écurie et attends que le temps passe… en espérant que la mort finira par tout faire taire.</p>
+    `,
+    choices: [
+      { label: 'Recommencer l’aventure', to: 'start' }
+    ]
+  },
+
+  c24: {
+    number: 'PAGE 24',
+    title: 'Le grondement dans l’ombre',
+    image: 'Le grondement dans l’ombre',
+    text: state => `
+      <p>Tu te tournes vers le grondement, l’épée prête.</p>
+
+      <p>Quelque chose bouge dans l’obscurité.</p>
+
+      <p>Pas seulement quelque chose de vivant.</p>
+
+      <p>Quelque chose de massif. De mal défini. Comme si sa forme refusait de se laisser saisir complètement par le regard.</p>
+
+      ${state.throwingBlades > 0
+        ? `<p>Tu sens contre toi le poids léger de tes <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
+        : '<p>Tu n’as rien d’autre que ton épée pour faire face à ce qui s’approche.</p>'}
+    `,
+    choices: state => {
+      const list = [];
+      if (state.throwingBlades > 0) {
+        list.push({
+          label: 'Lancer une lame dans l’ombre',
+          to: 'c25',
+          effect: s => {
+            s.throwingBlades -= 1;
+            syncThrowingBlades(s);
+          }
+        });
+      }
+      list.push({
+        label: 'Te jeter en avant, l’épée levée',
+        to: 'c26'
+      });
+      return list;
+    }
+  },
+
+  c25: {
+    number: 'PAGE 25',
+    title: 'La lame de jet',
+    image: 'La lame de jet',
+    text: `
+      <p>Tu lances la lame en direction du grondement.</p>
+
+      <p>Un choc sourd résonne aussitôt.</p>
+
+      <p>Puis un corps massif s’effondre dans l’obscurité.</p>
+
+      <p>Tu n’approches pas.</p>
+
+      <p>Trop dangereux.</p>
+
+      <p>Dans la pénombre, tu distingues seulement une masse difforme, bien trop large pour être humaine.</p>
+
+      <p>Tu n’as aucune envie d’en voir davantage.</p>
+
+      <p>Tu contournes la silhouette et poursuis ton avancée dans la grotte.</p>
+    `,
+    choices: [
+      { label: 'Continuer plus loin dans la grotte', to: 'c28' }
+    ]
+  },
+
+  c26: {
+    number: 'PAGE 26',
+    title: 'Le choc',
+    image: 'Le choc',
+    text: state => `
+      <p>Tu bondis vers le grondement, l’épée à deux mains.</p>
+
+      <p>Au même instant, une masse difforme et imposante se détache de l’ombre et se jette sur toi.</p>
+
+      <p>Tu n’en distingues que des lignes brisées, une gueule trop large, et la sensation insupportable d’une chair qui ne devrait pas avoir cette forme.</p>
+
+      <p>Tu frappes en aveugle.</p>
+
+      <p><strong>Lance un dé :</strong> si le résultat est <strong>inférieur ou égal à ta Dextérité (${currentDexterity(state)})</strong>, tu tues la créature net. Sinon, elle te blesse avant de s’écrouler.</p>
+    `,
+    choices: [
+      {
+        label: 'Lancer le dé',
+        to: 'c27',
+        effect: s => {
+          const roll = 1 + Math.floor(Math.random() * 6);
+          s.lastRoll = roll;
+          if (roll <= currentDexterity(s)) {
+            s.lastCombatOutcome = 'clean';
+          } else {
+            s.lastCombatOutcome = 'wounded';
+            s.hp = Math.max(0, s.hp - 1);
+          }
+        }
+      }
+    ]
+  },
+
+  c27: {
+    number: 'PAGE 27',
+    title: 'Le résultat du combat',
+    image: 'Le résultat du combat',
+    text: state => {
+      if (state.lastCombatOutcome === 'clean') {
+        return `
+          <p><strong>Résultat du dé : ${state.lastRoll}</strong></p>
+
+          <p>Ton coup part au bon moment.</p>
+
+          <p>La lame traverse net le haut du cou de la bête.</p>
+
+          <p>La tête roule loin sur la pierre.</p>
+
+          <p>Tu refuses pourtant de t’en approcher. Tu ne veux pas savoir davantage ce que tu viens de tuer.</p>
+
+          <p>Le corps s’effondre lourdement derrière toi, tandis que tu reprends ta marche dans la pénombre.</p>
+        `;
+      }
+
+      return `
+        <p><strong>Résultat du dé : ${state.lastRoll}</strong></p>
+
+        <p>Ton coup touche la gorge du monstre, mais ne le tue pas sur le coup.</p>
+
+        <p>Avant de s’écrouler, il a encore le temps de t’envoyer un coup de son poing démesuré.</p>
+
+        <p>La violence du choc t’arrache un morceau de peau au visage.</p>
+
+        <p><strong>Tu perds 1 point de Vie.</strong></p>
+
+        <p>La bête finit néanmoins par s’affaisser dans une gerbe de sang.</p>
+
+        <p>Tu n’en examines pas la forme. Tu continues d’avancer sans un regard de plus.</p>
+      `;
+    },
+    choices: [
+      { label: 'Continuer plus loin dans la grotte', to: 'c28' }
+    ]
+  },
+
+  c28: {
+    number: 'PAGE 28',
+    title: 'Toujours plus bas',
+    image: 'Toujours plus bas',
+    text: `
+      <p>Tu poursuis ton avancée dans les profondeurs de la grotte.</p>
+
+      <p>Derrière toi, la lumière du dehors n’est plus qu’un souvenir. Devant toi, les ténèbres semblent attendre depuis bien plus longtemps que les hommes n’existent.</p>
+
+      <p>Quelque part plus loin, peut-être, se trouve encore Sir Aldren.</p>
+
+      <p>Ou ce qu’il est devenu.</p>
 
       <p><strong>La suite commencera ici.</strong></p>
     `,
     choices: [
-      { label: 'Retourner à l’intersection pour continuer à tester cette partie', to: 'c8' }
+      { label: 'Revenir à l’entrée de la grotte pour continuer les tests', to: 'c20' }
     ]
   }
 };
 
 // Numérotation façon livre-jeu : 1 page = 1 nœud narratif.
 // Le prologue est la page 01, puis les anciens chapitres 1 à 30 deviennent les pages 02 à 31.
-const PAGE_ORDER = Array.from({ length: 20 }, (_, i) => `c${i + 1}`);
+const PAGE_ORDER = Array.from({ length: 28 }, (_, i) => `c${i + 1}`);
 const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
 const padPage = n => String(n).padStart(2, '0');
 const imageBaseForPage = n => `La-Grotte-de-Valombre-${padPage(n)}`;
@@ -1837,6 +2095,18 @@ function weaponLabel(state) {
   if (state.weapon === 'light') return 'Épée maniable du forgeron';
   return 'Aucune';
 }
+
+function syncThrowingBlades(state) {
+  if ((state.throwingBlades || 0) > 0) {
+    state.inventory.lames_jet = {
+      name: 'Lames de jet',
+      description: 'De petites lames destinées à être lancées au visage pour gagner quelques secondes.',
+      quantity: state.throwingBlades
+    };
+  } else {
+    delete state.inventory.lames_jet;
+  }
+}
 function escapeHtml(value) {
   return String(value || '')
     .replaceAll('&','&amp;')
@@ -1846,7 +2116,7 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v4_chemin_foret';
+const STORAGE_KEY = 'valombre_save_v5_grotte';
 
 const defaultState = () => ({
   node: 'start',
@@ -1865,7 +2135,9 @@ const defaultState = () => ({
   weapon: 'none',
   silver: 0,
   goldCoins: 0,
-  throwingBlades: 0
+  throwingBlades: 0,
+  lastRoll: null,
+  lastCombatOutcome: null
 });
 
 let state = loadState();
