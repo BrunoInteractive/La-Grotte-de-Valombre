@@ -788,6 +788,26 @@ button { font: inherit; }
 .combat-result p {
   margin: 3px 0;
 }
+
+.dice-result {
+  margin:16px 0 20px;
+  padding:12px 14px;
+  border-top:1px solid #927653;
+  border-bottom:1px solid #927653;
+  text-align:center;
+  background:rgba(255,255,255,.07);
+}
+.dice-faces {
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:8px;
+}
+.dice-faces span {
+  font-size:44px;
+  line-height:1;
+}
+.dice-result p { margin:3px 0; }
 </style>
 </head>
 <body>
@@ -881,9 +901,10 @@ const STORY = {
 
         <div class="hero-sheet-grid">
           <div class="hero-stat"><strong>Vie</strong><span>${state.hp} / ${state.maxHp}</span></div>
-          <div class="hero-stat"><strong>Chance</strong><span>${state.chance} / 6</span></div>
-          <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)} / 6</span></div>
-          <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)} / 6</span></div>
+          <div class="hero-stat"><strong>Chance</strong><span>${state.chance} / 12</span></div>
+          <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)} / 12</span></div>
+          <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)} / 12</span></div>
+          <div class="hero-stat"><strong>Puissance</strong><span>${combatPower(state)}</span></div>
         </div>
 
         <div class="hero-weapon">Au départ, tu ne portes encore aucune arme.</div>
@@ -1055,14 +1076,14 @@ const STORY = {
         <div>
           <strong>Garder l’épée lourde</strong><br><br>
           <strong>Épée de Sir Aldren</strong><br>
-          Force au combat : <strong>5</strong><br>
-          Dextérité au combat : <strong>3</strong>
+          Puissance : <strong>10</strong><br>
+          Dextérité : <strong>6</strong>
         </div>
         <div>
           <strong>Accepter l’échange</strong><br><br>
           <strong>Épée du forgeron</strong><br>
-          Force au combat : <strong>3</strong><br>
-          Dextérité au combat : <strong>5</strong>
+          Puissance : <strong>4</strong><br>
+          Dextérité : <strong>11</strong>
         </div>
       </div>
     `,
@@ -1918,16 +1939,11 @@ const STORY = {
     image: 'Le grondement dans l’ombre',
     text: state => `
       <p>Tu te tournes vers le grondement, l’épée prête.</p>
-
       <p>Quelque chose bouge dans l’obscurité.</p>
-
-      <p>Pas seulement quelque chose de vivant.</p>
-
-      <p>Quelque chose de massif. De mal défini. Comme si sa forme refusait de se laisser saisir complètement par le regard.</p>
-
+      <p>Quelque chose de massif, de mal défini.</p>
       ${state.throwingBlades > 0
-        ? `<p>Tu sens contre toi le poids léger de tes <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
-        : '<p>Tu n’as rien d’autre que ton épée pour faire face à ce qui s’approche.</p>'}
+        ? `<p>Tu possèdes encore <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
+        : '<p>Tu n’as rien d’autre que ton épée.</p>'}
     `,
     choices: state => {
       const list = [];
@@ -1938,13 +1954,12 @@ const STORY = {
           effect: s => {
             s.throwingBlades -= 1;
             syncThrowingBlades(s);
+            s.lastCombatOutcome = roll2D6(s, 'Dextérité', currentDexterity(s))
+              ? 'blade_kill' : 'blade_fail';
           }
         });
       }
-      list.push({
-        label: 'Te jeter en avant, l’épée levée',
-        to: 'c26'
-      });
+      list.push({ label: 'Te jeter en avant, l’épée levée', to: 'c26' });
       return list;
     }
   },
@@ -1953,26 +1968,24 @@ const STORY = {
     number: 'PAGE 25',
     title: 'La lame de jet',
     image: 'La lame de jet',
-    text: `
-      <p>Tu lances la lame en direction du grondement.</p>
-
-      <p>Un choc sourd résonne aussitôt.</p>
-
-      <p>Puis un corps massif s’effondre dans l’obscurité.</p>
-
-      <p>Tu n’approches pas.</p>
-
-      <p>Trop dangereux.</p>
-
-      <p>Dans la pénombre, tu distingues seulement une masse difforme, bien trop large pour être humaine.</p>
-
-      <p>Tu n’as aucune envie d’en voir davantage.</p>
-
-      <p>Tu contournes la silhouette et poursuis ton avancée dans la grotte.</p>
-    `,
-    choices: [
-      { label: 'Continuer plus loin dans la grotte', to: 'c28' }
-    ]
+    text: state => {
+      const r = diceResultHtml(state);
+      if (state.lastCombatOutcome === 'blade_kill') {
+        return r + `
+          <p>La lame disparaît dans l’ombre.</p>
+          <p>Un choc sourd. Puis un corps massif s’effondre.</p>
+          <p>Tu refuses de t’approcher davantage.</p>
+        `;
+      }
+      return r + `
+        <p>La lame frappe quelque chose sans l’abattre.</p>
+        <p>Le grondement devient un hurlement.</p>
+        <p>La masse bondit vers toi.</p>
+      `;
+    },
+    choices: state => state.lastCombatOutcome === 'blade_kill'
+      ? [{ label: 'Continuer plus loin dans la grotte', to: 'c28' }]
+      : [{ label: 'Lever ton épée et combattre', to: 'c26' }]
   },
 
   c26: {
@@ -1980,33 +1993,24 @@ const STORY = {
     title: 'Le choc',
     image: 'Le choc',
     text: `
-      <p>Tu bondis vers le grondement, l’épée à deux mains.</p>
-
-      <p>Au même instant, une masse difforme et imposante se détache de l’ombre et se jette sur toi.</p>
-
-      <p>Tu n’en distingues que des lignes brisées, une gueule trop large, et la sensation insupportable d’une chair qui ne devrait pas avoir cette forme.</p>
-
-      <p>Tu frappes en aveugle.</p>
+      <p>La masse se jette sur toi.</p>
+      <p>Tu frappes.</p>
     `,
-    choices: [
-      {
-        label: 'Lancer le dé',
-        to: 'c27',
-        effect: s => {
-          const roll = rollDie6();
-          const dex = currentDexterity(s);
-          s.lastRoll = roll;
-          s.lastDexterity = dex;
-
-          if (roll <= dex) {
-            s.lastCombatOutcome = 'clean';
-          } else {
-            s.lastCombatOutcome = 'wounded';
-            s.hp = Math.max(0, s.hp - 1);
-          }
+    choices: [{
+      label: 'Lancer les deux dés',
+      to: 'c27',
+      effect: s => {
+        const hit = roll2D6(s, 'Dextérité', currentDexterity(s));
+        if (!hit) {
+          s.lastCombatOutcome = 'miss';
+          s.hp = Math.max(0, s.hp - 1);
+        } else if (combatPower(s) >= 8) {
+          s.lastCombatOutcome = 'one_hit';
+        } else {
+          s.lastCombatOutcome = 'needs_second_round';
         }
       }
-    ]
+    }]
   },
 
   c27: {
@@ -2014,70 +2018,336 @@ const STORY = {
     title: 'Le résultat du combat',
     image: 'Le résultat du combat',
     text: state => {
-      const header = `
-        <div class="combat-result">
-          <p><strong>Résultat du dé : ${state.lastRoll}</strong></p>
-          <p><strong>Ta Dextérité : ${state.lastDexterity ?? currentDexterity(state)}</strong></p>
-        </div>
-      `;
-
-      if (state.lastCombatOutcome === 'clean') {
-        return header + `
-          <p>Ton coup part au bon moment.</p>
-
-          <p>La lame traverse net le haut du cou de la bête.</p>
-
-          <p>La tête roule loin sur la pierre.</p>
-
-          <p>Tu refuses pourtant de t’en approcher. Tu ne veux pas savoir davantage ce que tu viens de tuer.</p>
-
-          <p>Le corps s’effondre lourdement derrière toi, tandis que tu reprends ta marche dans la pénombre.</p>
-        `;
+      const r = diceResultHtml(state);
+      if (state.lastCombatOutcome === 'one_hit') {
+        return r + `<p>Ton coup porte. La puissance de ton arme suffit : la masse s’effondre.</p>`;
       }
-
-      return header + `
-        <p>Ton coup touche la gorge du monstre, mais ne le tue pas sur le coup.</p>
-
-        <p>Avant de s’écrouler, il a encore le temps de t’envoyer un coup de son poing démesuré.</p>
-
-        <p>La violence du choc t’arrache un morceau de peau au visage.</p>
-
-        <p><strong>Tu perds 1 point de Vie.</strong></p>
-
-        <p>La bête finit néanmoins par s’affaisser dans une gerbe de sang.</p>
-
-        <p>Tu n’en examines pas la forme. Tu continues d’avancer sans un regard de plus.</p>
-      `;
+      if (state.lastCombatOutcome === 'needs_second_round') {
+        return r + `<p>Ton coup porte, mais ne suffit pas à l’abattre. La créature se redresse.</p>`;
+      }
+      return r + `<p>Tu rates ton attaque. La créature t’atteint. <strong>Tu perds 1 point de Vie.</strong></p>`;
     },
-    choices: [
-      { label: 'Continuer plus loin dans la grotte', to: 'c28' }
-    ]
+    choices: state => state.lastCombatOutcome === 'one_hit'
+      ? [{ label: 'Continuer', to: 'c28' }]
+      : [{ label: 'Reprendre le combat', to: 'c29' }]
   },
 
   c28: {
     number: 'PAGE 28',
-    title: 'Toujours plus bas',
-    image: 'Toujours plus bas',
+    title: 'Le camp sous la roche',
+    image: 'Le camp sous la roche',
+    onEnter: s => setCheckpoint(s, 'Le camp sous la roche'),
     text: `
-      <p>Tu poursuis ton avancée dans les profondeurs de la grotte.</p>
-
-      <p>Derrière toi, la lumière du dehors n’est plus qu’un souvenir. Devant toi, les ténèbres semblent attendre depuis bien plus longtemps que les hommes n’existent.</p>
-
-      <p>Quelque part plus loin, peut-être, se trouve encore Sir Aldren.</p>
-
-      <p>Ou ce qu’il est devenu.</p>
-
-      <p><strong>La suite commencera ici.</strong></p>
+      <p>Au-delà de la salle, une lueur orange apparaît.</p>
+      <p>Un homme blessé est adossé à la roche, près d’un feu presque éteint.</p>
+      <p>Il dit s’appeler <strong>Anselme Varn</strong>.</p>
+      <blockquote>« Deux jours… peut-être trois. »</blockquote>
+      <p>Il regarde ses mains.</p>
+      <blockquote>« Non… des mois. »</blockquote>
+      <blockquote>« Ce n’est pas une grotte. Pas vraiment. »</blockquote>
+      <blockquote>« Ceux qui disparaissent… personne ne les enlève. Ils viennent ici. »</blockquote>
+      <blockquote>« La terre noire… ne la laisse pas entrer en toi. »</blockquote>
+      <blockquote>« Et si tu entends Aldren… assure-toi d’abord que c’est bien lui. »</blockquote>
+      <p>Puis il fixe quelque chose derrière toi.</p>
+      <blockquote>« Tu l’as amené avec toi. »</blockquote>
+      <p>Il n’y a personne.</p>
     `,
     choices: [
-      { label: 'Revenir à l’entrée de la grotte pour continuer les tests', to: 'c20' }
+      { label: 'Examiner le vieux campement', to: 'c30' },
+      { label: 'Explorer la galerie bloquée par une pierre', to: 'c31' },
+      { label: 'Suivre les sanglots dans le tunnel voisin', to: 'c34' }
+    ]
+  },
+
+  c29: {
+    number: 'PAGE 29',
+    title: 'Le deuxième échange',
+    image: 'Le deuxième échange',
+    text: `<p>La créature revient à la charge.</p>`,
+    choices: [{
+      label: 'Lancer les deux dés',
+      to: 'c33',
+      effect: s => {
+        if (roll2D6(s, 'Dextérité', currentDexterity(s))) {
+          s.lastCombatOutcome = 'second_round_win';
+        } else {
+          s.lastCombatOutcome = 'second_round_hit';
+          s.hp = Math.max(0, s.hp - 1);
+        }
+      }
+    }]
+  },
+
+  c30: {
+    number: 'PAGE 30',
+    title: 'Le journal d’Anselme',
+    image: 'Le journal d’Anselme',
+    text: `
+      <p>À quelques mètres du feu, tu trouves un ancien campement.</p>
+      <p>Un petit carnet repose sous une tasse.</p>
+      <blockquote>Troisième jour. J’ai encore entendu ma femme cette nuit.</blockquote>
+      <blockquote>Septième jour. Elle est morte depuis onze ans.</blockquote>
+      <p>La dernière ligne dit :</p>
+      <blockquote>J’entends quelqu’un arriver. Peut-être enfin un autre vivant.</blockquote>
+      <p>Sur la couverture : <strong>ANSELME VARN.</strong></p>
+      <p>Il t’a pourtant dit être arrivé il y a deux ou trois jours.</p>
+    `,
+    choices: [
+      { label: 'Continuer vers les profondeurs', to: 'c37' },
+      { label: 'Explorer la galerie bloquée', to: 'c31' },
+      { label: 'Suivre les sanglots', to: 'c34' }
+    ]
+  },
+
+  c31: {
+    number: 'PAGE 31',
+    title: 'La galerie condamnée',
+    image: 'La galerie condamnée',
+    text: state => `
+      <p>Un énorme bloc de pierre obstrue presque tout le passage.</p>
+      <p>Il semble possible de le faire pivoter.</p>
+      <p><strong>Ta Force : ${currentForce(state)}</strong></p>
+    `,
+    choices: [
+      {
+        label: 'Tenter de déplacer le bloc — lancer les deux dés',
+        to: 'c32',
+        effect: s => {
+          s.lastCombatOutcome = roll2D6(s, 'Force', currentForce(s))
+            ? 'force_success' : 'force_fail';
+        }
+      },
+      { label: 'Renoncer', to: 'c28' }
+    ]
+  },
+
+  c32: {
+    number: 'PAGE 32',
+    title: 'Le brassard',
+    image: 'Le brassard',
+    onEnter: s => {
+      if (s.lastCombatOutcome === 'force_success' && !s.flags.brassardPris) {
+        s.flags.brassardPris = true;
+        s.forceBonus += 1;
+        addItem(s, 'brassard_veilleurs', 'Brassard des Veilleurs',
+          'Un brassard sombre étonnamment léger une fois porté. +1 Force.');
+      }
+    },
+    text: state => {
+      const r = diceResultHtml(state);
+      if (state.lastCombatOutcome === 'force_success') {
+        return r + `
+          <p>La pierre pivote lentement.</p>
+          <p>Derrière, sur un squelette, repose un brassard de métal sombre.</p>
+          <p>Une fois porté, son poids disparaît presque.</p>
+          <p><strong>+1 Force.</strong></p>`;
+      }
+      return r + `<p>La pierre ne bouge presque pas. Tu finis par renoncer.</p>`;
+    },
+    choices: [
+      { label: 'Revenir au camp', to: 'c28' },
+      { label: 'Continuer vers les profondeurs', to: 'c37' }
+    ]
+  },
+
+  c33: {
+    number: 'PAGE 33',
+    title: 'La fin du combat',
+    image: 'La fin du combat',
+    text: state => {
+      const r = diceResultHtml(state);
+      if (state.lastCombatOutcome === 'second_round_win') {
+        return r + `
+          <p>Cette fois, ton coup atteint sa cible.</p>
+          <p>Dans sa chute, tu crois distinguer sous la terre noire une manche de chemise.</p>
+          <p>Tu n’es plus certain de vouloir savoir ce que tu viens de tuer.</p>`;
+      }
+      return r + `
+        <p>Tu rates de nouveau.</p>
+        <p><strong>Tu perds encore 1 point de Vie.</strong></p>
+        <p>La créature s’enfuit finalement dans une fissure.</p>`;
+    },
+    choices: [{ label: 'Continuer jusqu’au camp', to: 'c28' }]
+  },
+
+  c34: {
+    number: 'PAGE 34',
+    title: 'Les sanglots',
+    image: 'Les sanglots',
+    text: `
+      <p>Une silhouette est recroquevillée contre la roche.</p>
+      <blockquote>« Ne me regarde pas… »</blockquote>
+      <blockquote>« S’il te plaît. Ne me regarde pas. »</blockquote>
+    `,
+    choices: [
+      { label: 'Lui parler sans t’approcher', to: 'c35' },
+      { label: 'T’approcher pour l’aider', to: 'c36' },
+      { label: 'Repartir', to: 'c37' }
+    ]
+  },
+
+  c35: {
+    number: 'PAGE 35',
+    title: 'Une voix humaine',
+    image: 'Une voix humaine',
+    text: `
+      <p>Tu restes à distance.</p>
+      <blockquote>« Rochebrume… »</blockquote>
+      <blockquote>« Ils ont dit que ma fille m’appelait. »</blockquote>
+      <p>Un silence.</p>
+      <blockquote>« Je n’ai pas de fille. »</blockquote>
+      <p>Elle recommence à rire. Ou à pleurer.</p>
+    `,
+    choices: [{ label: 'Continuer vers les profondeurs', to: 'c37' }]
+  },
+
+  c36: {
+    number: 'PAGE 36',
+    title: 'Sous la terre noire',
+    image: 'Sous la terre noire',
+    text: `
+      <p>La silhouette se retourne et bondit.</p>
+      <p>Sous la boue noire, tu aperçois un morceau de tissu bleu.</p>
+      <p>Sur la poitrine : <strong>ROCHEBRUME.</strong></p>
+      <p>Humain ou non, tu dois réagir.</p>
+    `,
+    choices: [{
+      label: 'Lancer les deux dés',
+      to: 'c38',
+      effect: s => {
+        const hit = roll2D6(s, 'Dextérité', currentDexterity(s));
+        if (!hit) {
+          s.lastCombatOutcome = 'crying_miss';
+          s.hp = Math.max(0, s.hp - 1);
+        } else if (combatPower(s) >= 5) {
+          s.lastCombatOutcome = 'crying_kill';
+        } else {
+          s.lastCombatOutcome = 'crying_wound';
+        }
+      }
+    }]
+  },
+
+  c37: {
+    number: 'PAGE 37',
+    title: 'La fissure',
+    image: 'La fissure',
+    text: `
+      <p>La galerie devient si étroite que tu dois avancer de profil.</p>
+      <p>Puis la roche s’ouvre brutalement.</p>
+    `,
+    choices: [{ label: 'Regarder ce qui se trouve au-delà', to: 'c40' }]
+  },
+
+  c38: {
+    number: 'PAGE 38',
+    title: 'Ce qui restait de lui',
+    image: 'Ce qui restait de lui',
+    text: state => {
+      const r = diceResultHtml(state);
+      if (state.lastCombatOutcome === 'crying_kill') {
+        return r + `
+          <p>Ton coup l’abat.</p>
+          <p>Sous les plaques noires, tu distingues encore un visage humain.</p>`;
+      }
+      if (state.lastCombatOutcome === 'crying_wound') {
+        return r + `
+          <p>Tu le blesses, mais il s’enfuit à quatre pattes.</p>
+          <p>Tu restes seul avec une question que tu aurais préféré ne jamais te poser.</p>`;
+      }
+      return r + `
+        <p>Ses ongles labourent ton bras.</p>
+        <p><strong>Tu perds 1 point de Vie.</strong></p>
+        <p>Au sol reste l’écusson de Rochebrume.</p>`;
+    },
+    choices: [{ label: 'Continuer', to: 'c37' }]
+  },
+
+  c39: {
+    number: 'PAGE 39',
+    title: 'La lame noire',
+    image: 'La lame noire',
+    onEnter: s => {
+      if (!s.flags.blackBladeFound) {
+        s.flags.blackBladeFound = true;
+        addItem(s, 'lame_noire', 'Lame noire',
+          'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.');
+      }
+    },
+    text: `
+      <p>Dans une anfractuosité, une petite dague repose sur la pierre.</p>
+      <p>Son métal est parfaitement noir.</p>
+      <p>Pas de lumière, pas de chaleur, aucun signe évident de magie.</p>
+      <p>Pourtant, en la tenant, tu as l’impression absurde que certaines choses plus bas savent déjà que tu l’as trouvée.</p>
+    `,
+    choices: [
+      { label: 'Équiper la lame noire', to: 'c40', effect: s => { s.weapon = 'black_blade'; } },
+      { label: 'La garder dans ton inventaire', to: 'c40' }
+    ]
+  },
+
+  c40: {
+    number: 'PAGE 40',
+    title: 'Le monde sous la montagne',
+    image: 'Le monde sous la montagne',
+    onEnter: s => setCheckpoint(s, 'Le monde sous la montagne'),
+    text: `
+      <p>Devant toi s’ouvre un espace si vaste que ton esprit refuse d’abord de l’accepter.</p>
+      <p>Le plafond disparaît dans une brume lumineuse, peut-être à plusieurs kilomètres au-dessus.</p>
+      <p>Une clarté blanc-bleu vient de nulle part.</p>
+      <p>Très loin sous toi, des formations rocheuses ressemblent à des montagnes.</p>
+      <p>Tu regardes la fissure dont tu viens de sortir.</p>
+      <p>La montagne ne pourrait pas contenir cet endroit.</p>
+      <p>Peut-être que le soufre t’a brûlé le cerveau.</p>
+      <p>Ou peut-être que tout cela existe réellement.</p>
+    `,
+    choices: [
+      { label: 'Descendre vers le lac noir', to: 'c41' },
+      { label: 'Prendre les marches gigantesques', to: 'c42' },
+      { label: 'Longer la corniche vers un pont', to: 'c39' }
+    ]
+  },
+
+  c41: {
+    number: 'PAGE 41',
+    title: 'Le lac noir',
+    image: 'Le lac noir',
+    text: `
+      <p>Une vieille embarcation attend sur une eau parfaitement noire.</p>
+      <p>À mi-chemin, trois coups résonnent sous la coque.</p>
+      <p><strong>TOC.</strong></p><p><strong>TOC.</strong></p><p><strong>TOC.</strong></p>
+      <p>Les mêmes trois temps que le chant impossible de Rochebrume.</p>
+    `,
+    choices: [
+      { label: 'Continuer sans regarder', to: 'c40' },
+      { label: 'Regarder dans l’eau', to: 'c42' }
+    ]
+  },
+
+  c42: {
+    number: 'PAGE 42',
+    title: 'Un visage sous l’eau',
+    image: 'Un visage sous l’eau',
+    text: `
+      <p>Très loin sous la surface, des points brillent comme des étoiles.</p>
+      <p>Puis un visage apparaît.</p>
+      <p><strong>Sir Aldren.</strong></p>
+      <p>Plusieurs mètres sous l’eau.</p>
+      <p>Ses yeux s’ouvrent.</p>
+      <p>Sa bouche prononce quelque chose que tu n’entends pas.</p>
+      <p>Puis il disparaît.</p>
+      <p><strong>Fin de cette version test.</strong></p>
+    `,
+    choices: [
+      { label: 'Reprendre au dernier point de sauvegarde', action: 'checkpoint' },
+      { label: 'Recommencer depuis le début', action: 'restart' }
     ]
   }
 };
 
 // Numérotation façon livre-jeu : 1 page = 1 nœud narratif.
 // Le prologue est la page 01, puis les anciens chapitres 1 à 30 deviennent les pages 02 à 31.
-const PAGE_ORDER = Array.from({ length: 28 }, (_, i) => `c${i + 1}`);
+const PAGE_ORDER = Array.from({ length: 42 }, (_, i) => `c${i + 1}`);
 const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
 const padPage = n => String(n).padStart(2, '0');
 const imageBaseForPage = n => `La-Grotte-de-Valombre-${padPage(n)}`;
@@ -2096,18 +2366,29 @@ function equipHeavySword(state) {
   if (state.weapon === 'none') state.weapon = 'heavy';
 }
 function currentForce(state) {
-  if (state.weapon === 'heavy') return Math.min(6, state.baseForce + 2);
-  return state.baseForce;
+  return Math.max(2, Math.min(12, state.baseForce + (state.forceBonus || 0)));
 }
 function currentDexterity(state) {
-  const weaponDex = state.weapon === 'heavy'
-    ? state.baseDexterity - 2
-    : state.baseDexterity;
-  return Math.max(1, weaponDex - (state.dexPenalty || 0));
+  const weaponModifier =
+    state.weapon === 'heavy' ? -3 :
+    state.weapon === 'light' ? 2 : 0;
+  return Math.max(2, Math.min(12,
+    state.baseDexterity +
+    (state.dexBonus || 0) -
+    (state.dexPenalty || 0) +
+    weaponModifier
+  ));
+}
+function combatPower(state) {
+  if (state.weapon === 'heavy') return 10;
+  if (state.weapon === 'light') return 4;
+  if (state.weapon === 'black_blade') return 6;
+  return 2;
 }
 function weaponLabel(state) {
   if (state.weapon === 'heavy') return 'Épée lourde de Sir Aldren';
-  if (state.weapon === 'light') return 'Épée maniable du forgeron';
+  if (state.weapon === 'light') return 'Épée du forgeron';
+  if (state.weapon === 'black_blade') return 'Lame noire';
   return 'Aucune';
 }
 
@@ -2124,9 +2405,6 @@ function syncThrowingBlades(state) {
 }
 
 function rollDie6() {
-  // Vrai tirage uniforme parmi 1, 2, 3, 4, 5 et 6 à partir du générateur
-  // cryptographique du navigateur. Rejet des valeurs >= 252 pour éviter
-  // tout biais de modulo (252 est divisible par 6).
   if (window.crypto && window.crypto.getRandomValues) {
     const buffer = new Uint8Array(1);
     let value;
@@ -2136,9 +2414,37 @@ function rollDie6() {
     } while (value >= 252);
     return (value % 6) + 1;
   }
-
-  // Secours pour de très vieux navigateurs.
   return Math.floor(Math.random() * 6) + 1;
+}
+
+function roll2D6(state, statName, statValue) {
+  const d1 = rollDie6();
+  const d2 = rollDie6();
+  state.lastDice = [d1, d2];
+  state.lastTotal = d1 + d2;
+  state.lastStatName = statName;
+  state.lastStat = statValue;
+  return state.lastTotal <= statValue;
+}
+
+function dieFace(value) {
+  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  return faces[Math.max(1, Math.min(6, value)) - 1];
+}
+
+function diceResultHtml(state) {
+  if (!state.lastDice) return '';
+  const [d1,d2] = state.lastDice;
+  return `
+    <div class="dice-result">
+      <div class="dice-faces">
+        <span>${dieFace(d1)}</span>
+        <span>${dieFace(d2)}</span>
+      </div>
+      <p><strong>Total : ${state.lastTotal}</strong></p>
+      <p><strong>${state.lastStatName} : ${state.lastStat}</strong></p>
+    </div>
+  `;
 }
 function escapeHtml(value) {
   return String(value || '')
@@ -2149,8 +2455,8 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v7_rochebrume_random';
-const CHECKPOINT_KEY = 'valombre_checkpoint_sortie_village';
+const STORAGE_KEY = 'valombre_save_v8_systeme_aventure';
+const CHECKPOINT_KEY = 'valombre_checkpoint_v8';
 
 const defaultState = () => ({
   node: 'start',
@@ -2162,17 +2468,22 @@ const defaultState = () => ({
   journal: '',
   hp: 10,
   maxHp: 10,
-  chance: 4,
-  baseForce: 3,
-  baseDexterity: 5,
+  chance: 8,
+  baseForce: 6,
+  baseDexterity: 9,
+  forceBonus: 0,
+  dexBonus: 0,
   dexPenalty: 0,
   weapon: 'none',
   silver: 0,
   goldCoins: 0,
   throwingBlades: 0,
-  lastRoll: null,
-  lastDexterity: null,
-  lastCombatOutcome: null
+  lastDice: null,
+  lastTotal: null,
+  lastStat: null,
+  lastStatName: '',
+  lastCombatOutcome: null,
+  currentCheckpoint: null
 });
 
 let state = loadState();
@@ -2224,40 +2535,33 @@ function saveState() {
 }
 
 
-function saveVillageCheckpoint() {
+function setCheckpoint(state, label) {
+  state.currentCheckpoint = label;
   try {
     localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(state));
   } catch (e) {}
 }
 
-function hasVillageCheckpoint() {
-  try {
-    return !!localStorage.getItem(CHECKPOINT_KEY);
-  } catch (e) {
-    return false;
-  }
+function hasCheckpoint() {
+  try { return !!localStorage.getItem(CHECKPOINT_KEY); }
+  catch (e) { return false; }
 }
 
-function restartFromVillageCheckpoint() {
+function restartFromCheckpoint() {
   try {
     const saved = localStorage.getItem(CHECKPOINT_KEY);
-    if (!saved) {
-      restartGame();
-      return;
-    }
+    if (!saved) return restartGame();
 
+    const journalBackup = state.journal || '';
     state = { ...defaultState(), ...JSON.parse(saved) };
+    state.journal = journalBackup || state.journal || '';
+
     saveState();
     closeDrawer();
     closeModal();
     closeJournal();
     render();
-
-    try {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (e) {
-      window.scrollTo(0, 0);
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (e) {
     restartGame();
   }
@@ -2276,9 +2580,8 @@ function enterNode(id) {
 
   state.history.push(id);
 
-  // Point de sauvegarde unique : au départ de Valombre, avant les dangers du chemin.
-  if (id === 'c8' && !hasVillageCheckpoint()) {
-    saveVillageCheckpoint();
+  if (id === 'c8' && !hasCheckpoint()) {
+    setCheckpoint(state, 'Sortie de Valombre');
   }
 
   saveState();
@@ -2379,9 +2682,10 @@ function render() {
   if (!node.sheet) {
     const labels = [
       `♥ ${state.hp}/${state.maxHp}`,
-      `Chance ${state.chance}/6`,
-      `Force ${currentForce(state)}/6`,
-      `Dextérité ${currentDexterity(state)}/6`
+      `Chance ${state.chance}/12`,
+      `Force ${currentForce(state)}/12`,
+      `Dextérité ${currentDexterity(state)}/12`,
+      `Puissance ${combatPower(state)}`
     ];
 
     if (state.silver > 0) labels.push(`${state.silver} argent`);
@@ -2415,7 +2719,7 @@ function render() {
 
     btn.addEventListener('click', () => {
       if (choice.action === 'checkpoint') {
-        restartFromVillageCheckpoint();
+        restartFromCheckpoint();
         return;
       }
 
@@ -2527,6 +2831,15 @@ function openInventory() {
             </div>`;
         }
 
+        if (id === 'lame_noire') {
+          action = `
+            <div class="inventory-actions">
+              <button class="inventory-action-btn" data-action="equip-black-blade">
+                Équiper la lame noire
+              </button>
+            </div>`;
+        }
+
         return `
           <div class="inventory-item">
             <strong>${item.name}${item.quantity ? ` × ${item.quantity}` : ''}</strong>
@@ -2566,6 +2879,11 @@ modalContent.addEventListener('click', event => {
     openInventory();
   } else if (button.dataset.action === 'use-potion') {
     useHealingPotion();
+  } else if (button.dataset.action === 'equip-black-blade') {
+    state.weapon = 'black_blade';
+    saveState();
+    render();
+    openInventory();
   }
 });
 
