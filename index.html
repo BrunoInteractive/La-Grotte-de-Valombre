@@ -906,7 +906,7 @@ const STORY = {
     onEnter: s => {
       if (!s.flags.sacocheFouillee) {
         s.flags.sacocheFouillee = true;
-        s.gold += 3;
+        s.silver += 3;
         addItem(
           s,
           'parchemin',
@@ -979,7 +979,7 @@ const STORY = {
           <blockquote>« Garde-la pour le moment où tu en auras vraiment besoin. »</blockquote>
         `;
       }
-      if (state.gold >= 3) {
+      if (state.silver >= 3) {
         return `
           <p>Le marchand t’écoute raconter le retour du cheval. Son visage devient grave.</p>
           <p>Il sort alors d’une petite caisse une fiole soigneusement bouchée.</p>
@@ -992,13 +992,13 @@ const STORY = {
       `;
     },
     choices: state => {
-      if (!hasItem(state,'potion_guerison') && state.gold >= 3) {
+      if (!hasItem(state,'potion_guerison') && state.silver >= 3) {
         return [
           {
             label: 'Acheter la potion de guérison',
             to: 'c3',
             effect: s => {
-              s.gold -= 3;
+              s.silver -= 3;
               addItem(
                 s,
                 'potion_guerison',
@@ -1143,26 +1143,668 @@ const STORY = {
 
   c8: {
     number: 'PAGE 8',
-    title: 'Le chemin de la grotte',
-    image: 'Le chemin de la grotte',
-    text: state => `
-      <p>Tu quittes Valombre. Les dernières lumières du village disparaissent derrière toi.</p>
-      <p>Devant toi, quelque part dans l’obscurité, se trouve la grotte. Et Sir Aldren.</p>
-      <p>Ton arme est <strong>${weaponLabel(state)}</strong>. Tu possèdes <strong>${state.hp} points de vie</strong> et <strong>${state.gold} pièce${state.gold > 1 ? 's' : ''} d’argent</strong>.</p>
-      ${hasItem(state,'parchemin')
-        ? '<p>Le vieux parchemin repose dans ton inventaire. Tu pourras le consulter à tout moment pendant la suite de l’aventure.</p>'
-        : '<p>Tu es parti sans connaître le contenu de la sacoche de ton maître.</p>'}
-      <p><strong>Fin de cette courte version de test.</strong> La prochaine étape commencera réellement sur le chemin de la montagne.</p>
+    title: 'Le chemin de la montagne',
+    image: 'Le chemin de la montagne',
+    text: `
+      <p>Tu quittes Valombre.</p>
+
+      <p>À mesure que tu t’éloignes du village, les dernières lumières disparaissent derrière les arbres.</p>
+
+      <p>Le chemin monte lentement vers les collines.</p>
+
+      <p>Au bout d’une demi-heure, la lune apparaît entre deux masses de nuages et éclaire brièvement le sentier.</p>
+
+      <p>C’est alors que tu aperçois quelque chose sur le bas-côté.</p>
+
+      <p>Un homme est étendu dans l’herbe.</p>
+
+      <p>Quelques mètres plus loin, le chemin se divise.</p>
+
+      <p>Le sentier principal continue de monter vers la montagne et l’entrée des grottes.</p>
+
+      <p>L’autre chemin descend vers la forêt.</p>
+
+      <p>Dans la boue, plusieurs <strong>traces de bottes</strong> s’éloignent dans cette direction.</p>
     `,
     choices: [
-      { label: 'Retourner au village pour continuer à tester', to: 'c3' }
+      { label: 'T’approcher du cadavre', to: 'c9' },
+      { label: 'Continuer directement vers la grotte', to: 'c20' },
+      { label: 'Suivre les traces de bottes vers la forêt', to: 'c14' }
+    ]
+  },
+
+  c9: {
+    number: 'PAGE 9',
+    title: 'L’homme au bord du chemin',
+    image: 'L’homme au bord du chemin',
+    text: `
+      <p>Tu t’approches lentement.</p>
+
+      <p>À quelques pas du corps, tu reconnais les vêtements.</p>
+
+      <p>Puis le visage.</p>
+
+      <p>Ou plutôt ce qu’il en reste.</p>
+
+      <p>C’est <strong>Gaspard Vellin</strong>, un marchand de Rochebrume, le village situé de l’autre côté de la forêt.</p>
+
+      <p>Tu l’as déjà croisé plusieurs fois sur les marchés de Valombre. Un homme bruyant, toujours souriant, qui vendait aussi bien des étoffes que des outils ou des remèdes.</p>
+
+      <p>Il est presque méconnaissable.</p>
+
+      <p>Quelque chose semble avoir tiré ses traits vers le bas.</p>
+
+      <p>Sa peau ne paraît ni brûlée, ni véritablement blessée. Pourtant son visage donne l’impression étrange d’avoir <strong>coulé autour de ses os</strong>, comme de la cire trop longtemps exposée à une flamme.</p>
+
+      <p>Ses joues pendent mollement.</p>
+
+      <p>Ses lèvres sont distendues.</p>
+
+      <p>Et ses yeux, à demi ouverts, ne semblent plus regarder dans la même direction.</p>
+
+      <p>Une odeur te parvient.</p>
+
+      <p><strong>Du soufre.</strong></p>
+
+      <p>Elle n’est pas seulement présente dans l’air.</p>
+
+      <p>Elle paraît venir de lui.</p>
+
+      <p>De ses vêtements.</p>
+
+      <p>De sa peau.</p>
+
+      <p>Peut-être même de l’intérieur de son corps.</p>
+
+      <p>Tu te penches légèrement.</p>
+
+      <p>Sa bouche est entrouverte.</p>
+
+      <p>Quelque chose de noir emplit sa gorge.</p>
+
+      <p>De la terre.</p>
+
+      <p>Une terre sombre et humide, tassée entre ses dents jusque derrière sa langue.</p>
+
+      <p>Pendant un instant, une pensée absurde te traverse : ce n’est peut-être pas de la terre qu’on lui a mise dans la bouche.</p>
+
+      <p>Peut-être qu’elle est remontée de l’intérieur.</p>
+
+      <p>Tu chasses immédiatement cette idée.</p>
+
+      <p>Puis tu remarques sa main droite.</p>
+
+      <p>Ses ongles sont cassés.</p>
+
+      <p>Sous chacun d’eux se trouve la même terre noire.</p>
+
+      <p>Comme s’il avait essayé de creuser quelque chose.</p>
+
+      <p>Ou d’en sortir.</p>
+
+      <p>Tu restes immobile.</p>
+
+      <p>Tu ne saurais dire pourquoi, mais tu as soudain la certitude désagréable que <strong>Gaspard Vellin n’est peut-être pas mort</strong>.</p>
+    `,
+    choices: [
+      { label: 'T’approcher encore et l’examiner', to: 'c10' },
+      { label: 'T’éloigner et continuer vers la grotte', to: 'c20' },
+      { label: 'Partir vers la forêt', to: 'c14' }
+    ]
+  },
+
+  c10: {
+    number: 'PAGE 10',
+    title: 'Le dernier réflexe',
+    image: 'Le dernier réflexe',
+    text: `
+      <p>Tu t’accroupis à côté de lui.</p>
+
+      <p>Rien.</p>
+
+      <p>Pas de respiration.</p>
+
+      <p>Pas de mouvement.</p>
+
+      <p>Tu avances lentement une main vers son cou.</p>
+
+      <p>Ses doigts se referment brutalement autour de ton poignet.</p>
+
+      <p>Tu étouffes un cri.</p>
+
+      <p>Les yeux de Gaspard s’ouvrent entièrement.</p>
+
+      <p>Ils sont injectés de sang.</p>
+
+      <p>Mais ce n’est pas la douleur que tu y vois.</p>
+
+      <p>C’est de la <strong>terreur</strong>.</p>
+
+      <p>Une terreur si entière que, pendant une seconde, tu oublies même de dégager ton bras.</p>
+
+      <p>Sa bouche s’entrouvre.</p>
+
+      <p>La terre noire craque entre ses dents.</p>
+    `,
+    choices: [
+      { label: 'Lui asséner un coup de pommeau avec ton épée', to: 'c11' },
+      { label: 'Essayer de lui parler', to: 'c12' }
+    ]
+  },
+
+  c11: {
+    number: 'PAGE 11',
+    title: 'Le coup',
+    image: 'Le coup',
+    text: `
+      <p>Tu tires brusquement ton bras et frappes.</p>
+
+      <p>Le pommeau de ton épée heurte sa tempe.</p>
+
+      <p>Le son qui accompagne le choc n’est pas celui auquel tu t’attendais.</p>
+
+      <p>Ce n’est pas véritablement le craquement d’un os.</p>
+
+      <p>C’est un bruit mat et sec.</p>
+
+      <p>Comme une branche morte que l’on brise contre une pierre.</p>
+
+      <p>Le crâne de Gaspard heurte le sol.</p>
+
+      <p>Son corps se détend immédiatement.</p>
+
+      <p>Quelque chose s’écoule lentement de son nez.</p>
+
+      <p>Ce n’est pas du sang.</p>
+
+      <p>La matière est noire, granuleuse.</p>
+
+      <p>Elle ressemble encore à de la terre.</p>
+
+      <p>Tu recules d’un pas.</p>
+
+      <p>Il ne bouge plus.</p>
+    `,
+    choices: [
+      { label: 'Fouiller le corps de Gaspard Vellin', to: 'c13' },
+      { label: 'Continuer vers la grotte', to: 'c20' },
+      { label: 'Partir vers la forêt', to: 'c14' }
+    ]
+  },
+
+  c12: {
+    number: 'PAGE 12',
+    title: 'Une voix sous la terre',
+    image: 'Une voix sous la terre',
+    onEnter: s => {
+      s.hp = Math.max(0, s.hp - 1);
+      s.dexPenalty = Math.min(4, (s.dexPenalty || 0) + 1);
+    },
+    text: `
+      <p>Tu maintiens son poignet.</p>
+
+      <blockquote>« Gaspard ? »</blockquote>
+
+      <p>Ses yeux bougent vers toi.</p>
+
+      <blockquote>« Tu m’entends ? »</blockquote>
+
+      <p>Ses lèvres tremblent.</p>
+
+      <p>Pendant un instant, tu crois qu’il essaie réellement de répondre.</p>
+
+      <p>Puis sa bouche s’ouvre brutalement.</p>
+
+      <p>Un cri rauque et impossible s’en échappe.</p>
+
+      <p>Avec lui, une gerbe de terre noire te frappe au visage.</p>
+
+      <p>Tu lâches immédiatement son bras.</p>
+
+      <p>La matière brûle ta peau.</p>
+
+      <p>Tu fermes les yeux, mais trop tard.</p>
+
+      <p>Des grains s’y sont glissés.</p>
+
+      <p>La douleur est vive.</p>
+
+      <p><strong>Tu perds 1 point de Vie.</strong></p>
+
+      <p><strong>Ta Dextérité diminue de 1 point.</strong></p>
+
+      <p>Lorsque tu parviens enfin à rouvrir les yeux, Gaspard ne bouge plus.</p>
+
+      <p>Sa tête est retombée lourdement en arrière.</p>
+
+      <p>Son crâne a heurté un rocher.</p>
+
+      <p>Cette fois, tu sais qu’il est mort.</p>
+
+      <p>Ou du moins…</p>
+
+      <p>tu ne vois plus rien qui ressemble encore à de la vie.</p>
+    `,
+    choices: [
+      { label: 'Fouiller le corps', to: 'c13' },
+      { label: 'Continuer vers la grotte', to: 'c20' },
+      { label: 'Partir vers la forêt', to: 'c14' }
+    ]
+  },
+
+  c13: {
+    number: 'PAGE 13',
+    title: 'Les affaires de Gaspard Vellin',
+    image: 'Les affaires de Gaspard Vellin',
+    onEnter: s => {
+      if (!s.flags.gaspardFouille) {
+        s.flags.gaspardFouille = true;
+        s.goldCoins += 3;
+        addItem(
+          s,
+          'potion_sombre',
+          'Potion de guérison sombre',
+          'Une potion de guérison dont le liquide paraît presque noir. Quelque chose semble parfois flotter à l’intérieur.'
+        );
+      }
+    },
+    text: `
+      <p>Tu fouilles rapidement ses vêtements.</p>
+
+      <p>Dans une bourse, tu trouves :</p>
+
+      <p><strong>3 pièces d’or.</strong></p>
+
+      <p>Puis ta main rencontre une petite bouteille dans la doublure de son manteau.</p>
+
+      <p>Tu la retires.</p>
+
+      <p>C’est une potion de guérison.</p>
+
+      <p>Tu en as déjà vu auparavant.</p>
+
+      <p>Mais quelque chose t’inquiète.</p>
+
+      <p>Le liquide devrait être rouge clair.</p>
+
+      <p>Celui-ci est presque noir.</p>
+
+      <p>Lorsque tu inclines la fiole, quelque chose semble flotter à l’intérieur.</p>
+
+      <p>Tu regardes de plus près.</p>
+
+      <p>Plus rien.</p>
+
+      <p>Peut-être simplement un dépôt.</p>
+
+      <p>Tu ranges néanmoins la fiole.</p>
+    `,
+    choices: [
+      { label: 'Continuer vers la grotte', to: 'c20' },
+      { label: 'Suivre les traces vers la forêt', to: 'c14' }
+    ]
+  },
+
+  c14: {
+    number: 'PAGE 14',
+    title: 'La forêt de Rochebrume',
+    image: 'La forêt de Rochebrume',
+    text: `
+      <p>Tu suis les traces de bottes.</p>
+
+      <p>Le sentier descend rapidement entre les arbres.</p>
+
+      <p>Tu connais cette forêt.</p>
+
+      <p>Ou du moins, tu croyais la connaître.</p>
+
+      <p>Lorsque tu étais enfant, tu l’as traversée plusieurs fois pour rejoindre Rochebrume.</p>
+
+      <p>Elle n’avait rien de remarquable.</p>
+
+      <p>Des chênes.</p>
+
+      <p>Des hêtres.</p>
+
+      <p>Quelques chemins de chasse.</p>
+
+      <p>Pourtant, ce soir, quelque chose ne correspond pas à ton souvenir.</p>
+
+      <p>Les arbres paraissent trop proches les uns des autres.</p>
+
+      <p>Leurs troncs poussent selon des angles étranges, comme s’ils s’étaient lentement courbés pour éviter quelque chose situé sous la terre.</p>
+
+      <p>Certaines branches s’entrecroisent si étroitement au-dessus de toi qu’elles dissimulent presque entièrement le ciel.</p>
+
+      <p>Même les distances semblent fausses.</p>
+
+      <p>Un arbre que tu pensais à quelques pas demande une minute entière de marche pour être atteint.</p>
+
+      <p>Puis tu entends un oiseau.</p>
+
+      <p>Trois notes.</p>
+
+      <p>Toujours les mêmes.</p>
+
+      <p>Trois notes espacées exactement de la même manière.</p>
+
+      <p>Encore.</p>
+
+      <p>Encore.</p>
+
+      <p>Encore.</p>
+
+      <p>Tu t’arrêtes.</p>
+
+      <p>Le chant continue.</p>
+
+      <p>Mais tu réalises alors quelque chose qui te glace.</p>
+
+      <p>Le son ne vient jamais du même endroit.</p>
+
+      <p>Il se déplace autour de toi sans que rien ne vole entre les branches.</p>
+
+      <p>Tu reprends ta marche.</p>
+
+      <p>Tu ne regardes plus derrière toi.</p>
+
+      <p>Quelques minutes plus tard, les premières maisons de Rochebrume apparaissent enfin.</p>
+
+      <p>Et là encore…</p>
+
+      <p>quelque chose ne va pas.</p>
+    `,
+    choices: [
+      { label: 'Entrer dans Rochebrume', to: 'c15' }
+    ]
+  },
+
+  c15: {
+    number: 'PAGE 15',
+    title: 'Rochebrume',
+    image: 'Rochebrume',
+    text: `
+      <p>Le village est désert.</p>
+
+      <p>Pas silencieux.</p>
+
+      <p><strong>Désert.</strong></p>
+
+      <p>Une porte est ouverte.</p>
+
+      <p>Une brouette a été abandonnée au milieu de la rue.</p>
+
+      <p>Du linge pend encore entre deux maisons.</p>
+
+      <p>Sur une table, devant une habitation, une miche de pain a été laissée à moitié coupée.</p>
+
+      <p>Comme si tous les habitants avaient simplement cessé ce qu’ils faisaient.</p>
+
+      <p>Tu aperçois cependant deux signes de vie.</p>
+
+      <p>La taverne de Gaspard Vellin est encore ouverte.</p>
+
+      <p>Et plus loin, une personne se tient seule au milieu de la rue.</p>
+    `,
+    choices: [
+      { label: 'Entrer dans la taverne de Gaspard', to: 'c16' },
+      { label: 'Parler à la personne dans la rue', to: 'c19' }
+    ]
+  },
+
+  c16: {
+    number: 'PAGE 16',
+    title: 'La taverne',
+    image: 'La taverne de Rochebrume',
+    text: `
+      <p>Tu pousses la porte.</p>
+
+      <p>Un jeune homme lève immédiatement les yeux.</p>
+
+      <p>Tu le reconnais vaguement.</p>
+
+      <p>C’est <strong>Élias</strong>, l’assistant de Gaspard.</p>
+
+      <p>Il sourit en te voyant.</p>
+
+      <blockquote>« Ah ! Tu viens de Valombre ? »</blockquote>
+
+      <p>Il regarde derrière toi.</p>
+
+      <blockquote>« Tu n’aurais pas croisé Gaspard par hasard ? »</blockquote>
+
+      <p>Ton estomac se noue.</p>
+
+      <blockquote>« Il devait rentrer hier soir. »</blockquote>
+
+      <p>Il hausse les épaules avec un sourire gêné.</p>
+
+      <blockquote>« Avec lui, ça ne veut pas forcément dire grand-chose. Quand il trouve quelqu’un avec qui boire, il oublie parfois jusqu’au chemin de sa propre maison. »</blockquote>
+    `,
+    choices: [
+      { label: 'Lui annoncer que Gaspard est mort', to: 'c17' },
+      { label: 'Ne rien lui dire', to: 'c18' }
+    ]
+  },
+
+  c17: {
+    number: 'PAGE 17',
+    title: 'La nouvelle',
+    image: 'La nouvelle',
+    text: `
+      <p>Tu lui expliques ce que tu as trouvé sur le chemin.</p>
+
+      <p>À mesure que tu parles, le visage d’Élias se décompose.</p>
+
+      <p>Il ne pose aucune question.</p>
+
+      <p>Pas même sur la manière dont Gaspard est mort.</p>
+
+      <p>Il s’assoit.</p>
+
+      <p>Ses mains tremblent.</p>
+
+      <blockquote>« Non… »</blockquote>
+
+      <p>Puis plus bas :</p>
+
+      <blockquote>« Pas lui aussi. »</blockquote>
+
+      <p>Tu t’arrêtes.</p>
+
+      <blockquote>« Lui aussi ? »</blockquote>
+
+      <p>Élias relève brusquement les yeux.</p>
+
+      <p>Pendant une fraction de seconde, tu crois voir autre chose que du chagrin.</p>
+
+      <p>De la peur.</p>
+
+      <blockquote>« Va-t’en. »</blockquote>
+
+      <p>Tu hésites.</p>
+
+      <blockquote>« Élias… »</blockquote>
+
+      <blockquote>« S’il te plaît. Va-t’en. »</blockquote>
+
+      <p>Il refuse désormais de répondre.</p>
+    `,
+    choices: [
+      { label: 'Aller parler à la personne dans la rue', to: 'c19' },
+      { label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' }
+    ]
+  },
+
+  c18: {
+    number: 'PAGE 18',
+    title: 'Les lames d’Élias',
+    image: 'Les lames d’Élias',
+    text: state => `
+      <p>Tu ne lui dis rien.</p>
+
+      <p>Élias soupire.</p>
+
+      <blockquote>« Enfin… il reviendra bien. »</blockquote>
+
+      <p>Son regard tombe sur ton épée.</p>
+
+      <blockquote>« Tu vas vers la montagne ? »</blockquote>
+
+      <p>Sans attendre ta réponse, il ouvre un tiroir sous le comptoir.</p>
+
+      <p>Plusieurs petites lames sont soigneusement alignées à l’intérieur.</p>
+
+      <blockquote>« Gaspard vend ça aux voyageurs. Ça ne tue pas grand-chose, mais lancé au visage, ça peut te donner quelques secondes. »</blockquote>
+
+      <p>Il en pose une devant toi.</p>
+
+      <blockquote>« Une pièce d’or la lame. »</blockquote>
+
+      <p><strong>Tu possèdes ${state.goldCoins} pièce${state.goldCoins > 1 ? 's' : ''} d’or.</strong></p>
+
+      ${state.throwingBlades > 0
+        ? `<p>Tu as déjà acheté <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
+        : ''}
+    `,
+    choices: state => {
+      const list = [];
+
+      if (state.goldCoins > 0) {
+        list.push({
+          label: 'Acheter une lame de jet — 1 pièce d’or',
+          to: 'c18',
+          effect: s => {
+            s.goldCoins -= 1;
+            s.throwingBlades += 1;
+            s.inventory.lames_jet = {
+              name: 'Lames de jet',
+              description: 'De petites lames destinées à être lancées au visage pour gagner quelques secondes.',
+              quantity: s.throwingBlades
+            };
+          }
+        });
+      }
+
+      list.push(
+        { label: 'Aller voir la personne dans la rue', to: 'c19' },
+        { label: 'Quitter le village et repartir vers la grotte', to: 'c20' }
+      );
+
+      return list;
+    }
+  },
+
+  c19: {
+    number: 'PAGE 19',
+    title: 'L’étranger',
+    image: 'L’étranger de Rochebrume',
+    text: `
+      <p>La personne se tient toujours au milieu de la rue.</p>
+
+      <p>En t’approchant, tu éprouves immédiatement une sensation étrange.</p>
+
+      <p>Tu connais cet homme.</p>
+
+      <p>Tu en es presque certain.</p>
+
+      <p>Pourtant, impossible de te souvenir d’où.</p>
+
+      <p>Son visage ne possède rien de remarquable.</p>
+
+      <p>Une quarantaine d’années.</p>
+
+      <p>Des cheveux sombres.</p>
+
+      <p>Une barbe de quelques jours.</p>
+
+      <p>Un manteau poussiéreux.</p>
+
+      <p>Et pourtant chaque fois que tu détournes légèrement les yeux, tu es incapable de te rappeler précisément ses traits.</p>
+
+      <p>Lui te regarde avec méfiance.</p>
+
+      <p>Tu lui demandes où sont passés les habitants.</p>
+
+      <p>Il hausse les épaules.</p>
+
+      <blockquote>« Je n’en sais rien. »</blockquote>
+
+      <p>Puis il observe les maisons.</p>
+
+      <blockquote>« Ça a commencé il y a quelques jours. »</blockquote>
+
+      <blockquote>« Les gens partent. Un par un. »</blockquote>
+
+      <p>Tu lui demandes pourquoi.</p>
+
+      <blockquote>« Certains disent qu’ils vont voir de la famille. D’autres ne disent rien du tout. »</blockquote>
+
+      <p>Il hésite.</p>
+
+      <blockquote>« Le plus étrange, c’est que personne ne semble vraiment s’en inquiéter. »</blockquote>
+
+      <p>Tu regardes autour de toi.</p>
+
+      <blockquote>« Et toi ? »</blockquote>
+
+      <p>Il sourit faiblement.</p>
+
+      <blockquote>« Moi ? Je ne suis que de passage. »</blockquote>
+
+      <p>Puis son sourire disparaît.</p>
+
+      <blockquote>« Mais je crois que je vais repartir plus tôt que prévu. »</blockquote>
+
+      <p>Tu observes encore son visage.</p>
+
+      <p>Cette impression de déjà-vu ne disparaît pas.</p>
+
+      <p>Au contraire.</p>
+
+      <p>Elle devient presque douloureuse.</p>
+
+      <p>Comme un souvenir que ton esprit refuse obstinément de laisser remonter.</p>
+
+      <p>L’homme te salue et s’éloigne.</p>
+
+      <p>Tu le regardes tourner au coin d’une maison.</p>
+
+      <p>Une seconde plus tard, tu avances jusqu’au croisement.</p>
+
+      <p>Il n’y a personne.</p>
+
+      <p>Seulement la route vide.</p>
+    `,
+    choices: [
+      { label: 'Repartir vers la grotte', to: 'c20' }
+    ]
+  },
+
+  c20: {
+    number: 'PAGE 20',
+    title: 'Vers la grotte',
+    image: 'Vers la grotte',
+    text: `
+      <p>Tu laisses Rochebrume derrière toi et reprends la direction de la montagne.</p>
+
+      <p>Plus tu avances, plus le relief se referme autour du chemin.</p>
+
+      <p>Quelque part devant toi, dans la roche noire, se trouve l’entrée de la grotte.</p>
+
+      <p>Et peut-être Sir Aldren.</p>
+
+      <p><strong>La suite commencera ici.</strong></p>
+    `,
+    choices: [
+      { label: 'Retourner à l’intersection pour continuer à tester cette partie', to: 'c8' }
     ]
   }
 };
 
 // Numérotation façon livre-jeu : 1 page = 1 nœud narratif.
 // Le prologue est la page 01, puis les anciens chapitres 1 à 30 deviennent les pages 02 à 31.
-const PAGE_ORDER = ['c1','c2','c3','c4','c5','c6','c7','c8'];
+const PAGE_ORDER = Array.from({ length: 20 }, (_, i) => `c${i + 1}`);
 const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
 const padPage = n => String(n).padStart(2, '0');
 const imageBaseForPage = n => `La-Grotte-de-Valombre-${padPage(n)}`;
@@ -1185,8 +1827,10 @@ function currentForce(state) {
   return state.baseForce;
 }
 function currentDexterity(state) {
-  if (state.weapon === 'heavy') return Math.max(1, state.baseDexterity - 2);
-  return state.baseDexterity;
+  const weaponDex = state.weapon === 'heavy'
+    ? state.baseDexterity - 2
+    : state.baseDexterity;
+  return Math.max(1, weaponDex - (state.dexPenalty || 0));
 }
 function weaponLabel(state) {
   if (state.weapon === 'heavy') return 'Épée lourde de Sir Aldren';
@@ -1202,7 +1846,7 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v3_design_restaure';
+const STORAGE_KEY = 'valombre_save_v4_chemin_foret';
 
 const defaultState = () => ({
   node: 'start',
@@ -1217,8 +1861,11 @@ const defaultState = () => ({
   chance: 4,
   baseForce: 3,
   baseDexterity: 5,
+  dexPenalty: 0,
   weapon: 'none',
-  gold: 0
+  silver: 0,
+  goldCoins: 0,
+  throwingBlades: 0
 });
 
 let state = loadState();
@@ -1381,7 +2028,8 @@ function render() {
       `Dextérité ${currentDexterity(state)}/6`
     ];
 
-    if (state.gold > 0) labels.push(`${state.gold} pièce${state.gold > 1 ? 's' : ''}`);
+    if (state.silver > 0) labels.push(`${state.silver} argent`);
+    if (state.goldCoins > 0) labels.push(`${state.goldCoins} or`);
 
     labels.forEach(label => {
       const tag = document.createElement('span');
@@ -1487,7 +2135,7 @@ function openInventory() {
   const items = Object.entries(state.inventory);
 
   const moneyLine =
-    `<div class="inventory-topline">Argent : ${state.gold} pièce${state.gold > 1 ? 's' : ''} · Arme : ${weaponLabel(state)}</div>`;
+    `<div class="inventory-topline">Argent : ${state.silver} · Or : ${state.goldCoins} · Arme : ${weaponLabel(state)}</div>`;
 
   const list = items.length
     ? `<div class="inventory-list">${items.map(([id,item]) => {
@@ -1514,7 +2162,7 @@ function openInventory() {
 
         return `
           <div class="inventory-item">
-            <strong>${item.name}</strong>
+            <strong>${item.name}${item.quantity ? ` × ${item.quantity}` : ''}</strong>
             <p>${item.description}</p>
             ${action}
           </div>`;

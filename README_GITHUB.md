@@ -38,3 +38,21 @@ Le ton doit rester constamment ambigu et inquiétant :
 - même quand le héros voit quelque chose, il ne doit pas toujours être certain de l’avoir compris correctement.
 
 Référence d’esprit : horreur cosmique / inquiétude à la Lovecraft, mais avec un univers, des noms et des créatures originaux.
+
+
+## Branche ajoutée — pages 8 à 20
+
+Cette mise à jour ajoute exactement la nouvelle séquence :
+- intersection sur le chemin ;
+- cadavre de Gaspard Vellin ;
+- choix du coup de pommeau ou de la parole ;
+- perte de 1 PV et 1 Dextérité sur la branche de la terre noire ;
+- fouille : potion sombre + 3 pièces d’or ;
+- forêt de Rochebrume ;
+- village désert ;
+- Élias à la taverne ;
+- possibilité d’acheter plusieurs lames de jet ;
+- étranger familier mais impossible à replacer ;
+- reconvergence vers la grotte.
+
+Le ton reste volontairement ambigu : les manifestations sont inquiétantes, mais jamais totalement expliquées.
