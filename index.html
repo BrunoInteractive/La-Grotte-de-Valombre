@@ -776,6 +776,18 @@ button { font: inherit; }
   }
 }
 
+
+.combat-result {
+  margin: 14px 0 18px;
+  padding: 10px 14px;
+  border-top: 1px solid #927653;
+  border-bottom: 1px solid #927653;
+  text-align: center;
+  background: rgba(255,255,255,.07);
+}
+.combat-result p {
+  margin: 3px 0;
+}
 </style>
 </head>
 <body>
@@ -1798,7 +1810,6 @@ const STORY = {
 
       <p>L’autre continue tout droit et semble s’enfoncer dans un passage beaucoup plus étroit.</p>
 
-      ${hasItem(state,'parchemin') ? '<p>En sentant le soufre, tu repenses malgré toi aux mots du parchemin : <em>« Là où le soufre vient empoisonner l’air, détourne tes pas et rebrousse en arrière. »</em></p>' : ''}
     `,
     choices: [
       { label: 'Descendre dans le passage où l’odeur de soufre est la plus forte', to: 'c21' },
@@ -1840,9 +1851,9 @@ const STORY = {
       <p>Personne ne sait où tu es allé.</p>
 
       <p>Personne ne viendra te chercher.</p>
-    `,
-    choices: [
-      { label: 'Recommencer l’aventure', to: 'start' }
+    `,    choices: [
+      { label: 'Reprendre à la sortie du village', action: 'checkpoint' },
+      { label: 'Recommencer depuis le début', action: 'restart' }
     ]
   },
 
@@ -1895,9 +1906,9 @@ const STORY = {
       <p>Tu vois des mouvements partout. Tu contrôles mal ton corps. La peur ne te quitte plus.</p>
 
       <p>Finalement, tu redescends jusqu’au village, te caches dans l’écurie et attends que le temps passe… en espérant que la mort finira par tout faire taire.</p>
-    `,
-    choices: [
-      { label: 'Recommencer l’aventure', to: 'start' }
+    `,    choices: [
+      { label: 'Reprendre à la sortie du village', action: 'checkpoint' },
+      { label: 'Recommencer depuis le début', action: 'restart' }
     ]
   },
 
@@ -1968,7 +1979,7 @@ const STORY = {
     number: 'PAGE 26',
     title: 'Le choc',
     image: 'Le choc',
-    text: state => `
+    text: `
       <p>Tu bondis vers le grondement, l’épée à deux mains.</p>
 
       <p>Au même instant, une masse difforme et imposante se détache de l’ombre et se jette sur toi.</p>
@@ -1976,8 +1987,6 @@ const STORY = {
       <p>Tu n’en distingues que des lignes brisées, une gueule trop large, et la sensation insupportable d’une chair qui ne devrait pas avoir cette forme.</p>
 
       <p>Tu frappes en aveugle.</p>
-
-      <p><strong>Lance un dé :</strong> si le résultat est <strong>inférieur ou égal à ta Dextérité (${currentDexterity(state)})</strong>, tu tues la créature net. Sinon, elle te blesse avant de s’écrouler.</p>
     `,
     choices: [
       {
@@ -1985,8 +1994,11 @@ const STORY = {
         to: 'c27',
         effect: s => {
           const roll = 1 + Math.floor(Math.random() * 6);
+          const dex = currentDexterity(s);
           s.lastRoll = roll;
-          if (roll <= currentDexterity(s)) {
+          s.lastDexterity = dex;
+
+          if (roll <= dex) {
             s.lastCombatOutcome = 'clean';
           } else {
             s.lastCombatOutcome = 'wounded';
@@ -2002,10 +2014,15 @@ const STORY = {
     title: 'Le résultat du combat',
     image: 'Le résultat du combat',
     text: state => {
-      if (state.lastCombatOutcome === 'clean') {
-        return `
+      const header = `
+        <div class="combat-result">
           <p><strong>Résultat du dé : ${state.lastRoll}</strong></p>
+          <p><strong>Ta Dextérité : ${state.lastDexterity ?? currentDexterity(state)}</strong></p>
+        </div>
+      `;
 
+      if (state.lastCombatOutcome === 'clean') {
+        return header + `
           <p>Ton coup part au bon moment.</p>
 
           <p>La lame traverse net le haut du cou de la bête.</p>
@@ -2018,9 +2035,7 @@ const STORY = {
         `;
       }
 
-      return `
-        <p><strong>Résultat du dé : ${state.lastRoll}</strong></p>
-
+      return header + `
         <p>Ton coup touche la gorge du monstre, mais ne le tue pas sur le coup.</p>
 
         <p>Avant de s’écrouler, il a encore le temps de t’envoyer un coup de son poing démesuré.</p>
@@ -2116,7 +2131,8 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v5_grotte';
+const STORAGE_KEY = 'valombre_save_v6_checkpoint';
+const CHECKPOINT_KEY = 'valombre_checkpoint_sortie_village';
 
 const defaultState = () => ({
   node: 'start',
@@ -2137,6 +2153,7 @@ const defaultState = () => ({
   goldCoins: 0,
   throwingBlades: 0,
   lastRoll: null,
+  lastDexterity: null,
   lastCombatOutcome: null
 });
 
@@ -2188,15 +2205,64 @@ function saveState() {
   }
 }
 
+
+function saveVillageCheckpoint() {
+  try {
+    localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(state));
+  } catch (e) {}
+}
+
+function hasVillageCheckpoint() {
+  try {
+    return !!localStorage.getItem(CHECKPOINT_KEY);
+  } catch (e) {
+    return false;
+  }
+}
+
+function restartFromVillageCheckpoint() {
+  try {
+    const saved = localStorage.getItem(CHECKPOINT_KEY);
+    if (!saved) {
+      restartGame();
+      return;
+    }
+
+    state = { ...defaultState(), ...JSON.parse(saved) };
+    saveState();
+    closeDrawer();
+    closeModal();
+    closeJournal();
+    render();
+
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      window.scrollTo(0, 0);
+    }
+  } catch (e) {
+    restartGame();
+  }
+}
+
 function enterNode(id) {
   const node = STORY[id];
   if (!node) return;
+
   state.node = id;
+
   if (!state.visited[id]) {
     state.visited[id] = true;
     if (typeof node.onEnter === 'function') node.onEnter(state);
   }
+
   state.history.push(id);
+
+  // Point de sauvegarde unique : au départ de Valombre, avant les dangers du chemin.
+  if (id === 'c8' && !hasVillageCheckpoint()) {
+    saveVillageCheckpoint();
+  }
+
   saveState();
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2330,6 +2396,16 @@ function render() {
       `<span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
 
     btn.addEventListener('click', () => {
+      if (choice.action === 'checkpoint') {
+        restartFromVillageCheckpoint();
+        return;
+      }
+
+      if (choice.action === 'restart') {
+        restartGame();
+        return;
+      }
+
       if (typeof choice.effect === 'function') choice.effect(state);
       enterNode(choice.to);
     });
@@ -2343,6 +2419,7 @@ function restartGame() {
   state = defaultState();
   try {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CHECKPOINT_KEY);
   } catch (e) {}
   saveState();
   closeDrawer();

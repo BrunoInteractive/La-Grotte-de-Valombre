@@ -72,3 +72,16 @@ Cette version ajoute :
 - la poursuite de l’exploration plus loin dans la grotte.
 
 Le ton reste volontairement ambigu et inquiétant.
+
+
+## Ajustements V4
+
+- Le jeu ne rappelle plus automatiquement l’indice du soufre : c’est au joueur de se souvenir du parchemin ou de le consulter.
+- Le lancer de dé ne révèle plus à l’avance ce qui constitue une réussite ou un échec.
+- Le résultat affiche clairement :
+  - Résultat du dé
+  - Dextérité du personnage
+- Un point de sauvegarde est créé automatiquement lorsque le héros quitte Valombre.
+- En cas de fin mortelle/folie, le joueur peut choisir :
+  - Reprendre à la sortie du village
+  - Recommencer depuis le début
