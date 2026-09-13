@@ -1,7 +1,0 @@
-Version plus proche de la référence utilisateur :
-- typo et hiérarchie plus inspirées des vieux livres-jeux
-- texte non justifié, sans lettrine
-- image encadrée en haut
-- cartouches de choix plus proches d'une mise en page imprimée
-- page unique partout
-- histoire inchangée
