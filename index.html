@@ -813,6 +813,160 @@ button { font: inherit; }
   }
 }
 
+
+/* ===== CAPTURE D'UNE ZONE QUELCONQUE DE LA PAGE ===== */
+.page-capture-workspace {
+  position:fixed;
+  inset:0;
+  z-index:120;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  background:#17120e;
+  color:#efe0bd;
+  font-family:var(--body-font);
+}
+
+.page-capture-workspace.hidden {
+  display:none !important;
+}
+
+.page-capture-toolbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-bottom:1px solid #735a3b;
+  background:linear-gradient(180deg,#453225,#2b2018);
+}
+
+.page-capture-toolbar > div {
+  min-width:0;
+}
+
+.page-capture-toolbar strong {
+  display:block;
+  font-family:var(--display-font);
+  font-size:21px;
+  line-height:1;
+}
+
+.page-capture-toolbar span {
+  display:block;
+  margin-top:3px;
+  color:#cdb889;
+  font-size:12px;
+}
+
+.page-capture-toolbar button,
+.page-capture-bottom button {
+  border:1px solid #a18356;
+  border-radius:0;
+  min-height:38px;
+  padding:7px 12px;
+  background:#e5d0a5;
+  color:#2b1e14;
+  font-family:var(--body-font);
+  font-size:14px;
+  cursor:pointer;
+}
+
+.page-capture-scroller {
+  min-height:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+  padding:16px;
+  background:
+    radial-gradient(ellipse at center, rgba(116,84,48,.12), transparent 55%),
+    #17120e;
+}
+
+.page-capture-stage {
+  position:relative;
+  width:min(900px,100%);
+  margin:0 auto;
+  line-height:0;
+  box-shadow:0 10px 34px rgba(0,0,0,.55);
+}
+
+.page-capture-stage > img {
+  display:block;
+  width:100%;
+  height:auto;
+  user-select:none;
+  -webkit-user-drag:none;
+  background:#e8d8b5;
+}
+
+.page-capture-selector {
+  position:absolute;
+  inset:0;
+  cursor:crosshair;
+  touch-action:none;
+  user-select:none;
+}
+
+.page-capture-selector.hidden {
+  display:none !important;
+}
+
+.page-capture-selection {
+  position:absolute;
+  display:none;
+  border:2px solid #f3de98;
+  outline:1px solid #2a1b0f;
+  background:rgba(244,220,145,.08);
+  box-shadow:0 0 0 9999px rgba(15,11,8,.48);
+  pointer-events:none;
+}
+
+.page-capture-bottom {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top:1px solid #735a3b;
+  background:linear-gradient(180deg,#2b2018,#211812);
+}
+
+.page-capture-bottom button:first-child:last-child {
+  grid-column:1 / -1;
+}
+
+.page-capture-bottom #pageCaptureSelectBtn {
+  grid-column:1 / -1;
+  background:#473326;
+  color:#efdfb8;
+  border-color:#94744d;
+}
+
+.page-capture-bottom #pageCaptureSaveBtn {
+  background:#473326;
+  color:#efdfb8;
+}
+
+.page-capture-loading {
+  padding:40px;
+  text-align:center;
+  color:#d8c394;
+}
+
+@media (max-width:620px) {
+  .page-capture-scroller {
+    padding:8px;
+  }
+  .page-capture-toolbar {
+    padding:8px 9px;
+  }
+  .page-capture-toolbar strong {
+    font-size:18px;
+  }
+  .page-capture-toolbar button,
+  .page-capture-bottom button {
+    font-size:13px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -831,15 +985,6 @@ button { font: inherit; }
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
           <small id="imageLabel">La-Grotte-de-Valombre-01</small>
-        </div>
-
-        <div id="captureLayer" class="capture-layer hidden" aria-hidden="true">
-          <div class="capture-help">Glisse sur l’image pour choisir l’indice à conserver.</div>
-          <div id="captureSelection" class="capture-selection"></div>
-          <div id="captureActions" class="capture-actions hidden">
-            <button id="captureCancelBtn" class="capture-cancel" type="button">Annuler</button>
-            <button id="captureSaveBtn" class="capture-save" type="button">Coller dans le cahier</button>
-          </div>
         </div>
       </section>
 
@@ -866,12 +1011,38 @@ button { font: inherit; }
       <button id="notebookCloseBtn" class="notebook-close" type="button" aria-label="Fermer le cahier">×</button>
     </div>
     <div class="notebook-body">
-      <p id="notebookHint" class="notebook-hint">Conserve les détails qui te semblent importants.</p>
-      <button id="clipImageBtn" class="notebook-action" type="button">Découper un indice dans l’image</button>
+      <p id="notebookHint" class="notebook-hint">Capture n’importe quel détail de la page : image, phrase, symbole ou choix.</p>
+      <button id="clipImageBtn" class="notebook-action" type="button">Capturer un indice sur la page</button>
       <div id="notebookClips" class="notebook-clips"></div>
       <div id="notebookEmpty" class="notebook-empty">Ton cahier est encore vide.</div>
     </div>
   </aside>
+
+
+  <div id="pageCaptureWorkspace" class="page-capture-workspace hidden" aria-hidden="true">
+    <div class="page-capture-toolbar">
+      <div>
+        <strong>Capture d’indice</strong>
+        <span id="captureStatus">Préparation de la page…</span>
+      </div>
+      <button id="pageCaptureCloseBtn" type="button">Annuler</button>
+    </div>
+
+    <div id="pageCaptureScroller" class="page-capture-scroller">
+      <div id="pageCaptureStage" class="page-capture-stage">
+        <img id="pageCaptureImage" alt="Instantané de la page" draggable="false" />
+        <div id="pageCaptureSelector" class="page-capture-selector hidden">
+          <div id="pageCaptureSelection" class="page-capture-selection"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-capture-bottom">
+      <button id="pageCaptureSelectBtn" type="button">Sélectionner une zone</button>
+      <button id="pageCaptureRetryBtn" type="button" class="hidden">Recommencer</button>
+      <button id="pageCaptureSaveBtn" type="button" class="hidden">Coller dans le cahier</button>
+    </div>
+  </div>
 
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer" aria-hidden="true">
@@ -1133,6 +1304,7 @@ function addItem(state, id, name, description) {
 function hasItem(state, id) { return !!state.inventory[id]; }
 
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
 const STORAGE_KEY = 'valombre_save_v1';
 
@@ -1180,15 +1352,22 @@ const notebookEmpty = document.getElementById('notebookEmpty');
 const notebookHint = document.getElementById('notebookHint');
 const clipImageBtn = document.getElementById('clipImageBtn');
 
-const captureLayer = document.getElementById('captureLayer');
-const captureSelection = document.getElementById('captureSelection');
-const captureActions = document.getElementById('captureActions');
-const captureCancelBtn = document.getElementById('captureCancelBtn');
-const captureSaveBtn = document.getElementById('captureSaveBtn');
+const pageCaptureWorkspace = document.getElementById('pageCaptureWorkspace');
+const pageCaptureCloseBtn = document.getElementById('pageCaptureCloseBtn');
+const pageCaptureScroller = document.getElementById('pageCaptureScroller');
+const pageCaptureStage = document.getElementById('pageCaptureStage');
+const pageCaptureImage = document.getElementById('pageCaptureImage');
+const pageCaptureSelector = document.getElementById('pageCaptureSelector');
+const pageCaptureSelection = document.getElementById('pageCaptureSelection');
+const pageCaptureSelectBtn = document.getElementById('pageCaptureSelectBtn');
+const pageCaptureRetryBtn = document.getElementById('pageCaptureRetryBtn');
+const pageCaptureSaveBtn = document.getElementById('pageCaptureSaveBtn');
+const captureStatus = document.getElementById('captureStatus');
 
-let captureStart = null;
-let captureRect = null;
-let capturePointerId = null;
+let pageShotCanvas = null;
+let pageCaptureStart = null;
+let pageCaptureRect = null;
+let pageCapturePointerId = null;
 
 function loadState() {
   try {
@@ -1290,11 +1469,8 @@ function renderNotebook() {
     });
   }
 
-  const canCapture = !storyImage.classList.contains('hidden') && !!storyImage.naturalWidth;
-  clipImageBtn.disabled = !canCapture;
-  notebookHint.textContent = canCapture
-    ? 'Conserve les détails qui te semblent importants.'
-    : 'Cette page ne contient pas encore d’image à découper.';
+  clipImageBtn.disabled = false;
+  notebookHint.textContent = 'Capture n’importe quel détail de la page : image, phrase, symbole ou choix.';
 }
 
 function openNotebook() {
@@ -1308,129 +1484,191 @@ function closeNotebook() {
   notebookPanel.setAttribute('aria-hidden', 'true');
 }
 
-function resetCaptureSelection() {
-  captureStart = null;
-  captureRect = null;
-  capturePointerId = null;
-  captureSelection.style.display = 'none';
-  captureActions.classList.add('hidden');
+
+function resetPageCaptureSelection() {
+  pageCaptureStart = null;
+  pageCaptureRect = null;
+  pageCapturePointerId = null;
+  pageCaptureSelection.style.display = 'none';
+  pageCaptureRetryBtn.classList.add('hidden');
+  pageCaptureSaveBtn.classList.add('hidden');
 }
 
-function startImageCapture() {
-  if (storyImage.classList.contains('hidden') || !storyImage.naturalWidth) {
-    renderNotebook();
+function closePageCapture({ reopenNotebook = false } = {}) {
+  resetPageCaptureSelection();
+  pageCaptureSelector.classList.add('hidden');
+  pageCaptureWorkspace.classList.add('hidden');
+  pageCaptureWorkspace.setAttribute('aria-hidden', 'true');
+  pageCaptureSelectBtn.classList.remove('hidden');
+  pageShotCanvas = null;
+  pageCaptureImage.removeAttribute('src');
+  if (reopenNotebook) openNotebook();
+}
+
+async function startImageCapture() {
+  closeNotebook();
+
+  pageCaptureWorkspace.classList.remove('hidden');
+  pageCaptureWorkspace.setAttribute('aria-hidden', 'false');
+  pageCaptureSelector.classList.add('hidden');
+  pageCaptureSelectBtn.classList.add('hidden');
+  pageCaptureRetryBtn.classList.add('hidden');
+  pageCaptureSaveBtn.classList.add('hidden');
+  captureStatus.textContent = 'Création de l’instantané de la page…';
+  pageCaptureStage.classList.add('page-capture-loading');
+  pageCaptureStage.textContent = 'Création de l’instantané…';
+
+  if (typeof window.html2canvas !== 'function') {
+    pageCaptureStage.classList.remove('page-capture-loading');
+    pageCaptureStage.textContent = '';
+    captureStatus.textContent = 'Le module de capture n’a pas pu être chargé. Recharge la page puis réessaie.';
+    pageCaptureSelectBtn.classList.remove('hidden');
+    pageCaptureSelectBtn.disabled = true;
     return;
   }
-  closeNotebook();
-  resetCaptureSelection();
-  captureLayer.classList.remove('hidden');
-  captureLayer.setAttribute('aria-hidden', 'false');
+
+  try {
+    const game = document.getElementById('game');
+
+    const canvas = await window.html2canvas(game, {
+      backgroundColor: null,
+      scale: Math.min(2, Math.max(1, window.devicePixelRatio || 1)),
+      useCORS: true,
+      allowTaint: false,
+      logging: false,
+      imageTimeout: 5000,
+      removeContainer: true
+    });
+
+    pageShotCanvas = canvas;
+
+    pageCaptureStage.classList.remove('page-capture-loading');
+    pageCaptureStage.textContent = '';
+    pageCaptureStage.appendChild(pageCaptureImage);
+    pageCaptureStage.appendChild(pageCaptureSelector);
+
+    pageCaptureImage.src = canvas.toDataURL('image/jpeg', .92);
+    captureStatus.textContent = 'Fais défiler l’instantané jusqu’à l’indice, puis choisis « Sélectionner une zone ».';
+    pageCaptureSelectBtn.disabled = false;
+    pageCaptureSelectBtn.classList.remove('hidden');
+
+    // Start near the part of the book that was visible before opening the notebook.
+    const gameRect = game.getBoundingClientRect();
+    const viewportYInsideGame = Math.max(0, -gameRect.top);
+    requestAnimationFrame(() => {
+      const ratio = pageCaptureImage.clientWidth / Math.max(1, game.offsetWidth);
+      pageCaptureScroller.scrollTop = viewportYInsideGame * ratio;
+    });
+
+  } catch (error) {
+    console.error(error);
+    pageCaptureStage.classList.remove('page-capture-loading');
+    pageCaptureStage.textContent = '';
+    captureStatus.textContent = 'Impossible de créer l’instantané dans cet aperçu.';
+    pageCaptureSelectBtn.classList.remove('hidden');
+    pageCaptureSelectBtn.disabled = true;
+  }
 }
 
-function cancelImageCapture() {
-  resetCaptureSelection();
-  captureLayer.classList.add('hidden');
-  captureLayer.setAttribute('aria-hidden', 'true');
-  openNotebook();
+function enterPageSelectionMode() {
+  if (!pageShotCanvas) return;
+  resetPageCaptureSelection();
+  pageCaptureSelector.classList.remove('hidden');
+  pageCaptureSelectBtn.classList.add('hidden');
+  captureStatus.textContent = 'Trace un rectangle autour de l’indice.';
 }
 
-function pointInCaptureLayer(event) {
-  const rect = captureLayer.getBoundingClientRect();
+function pointInPageCapture(event) {
+  const rect = pageCaptureSelector.getBoundingClientRect();
   return {
     x: Math.max(0, Math.min(rect.width, event.clientX - rect.left)),
     y: Math.max(0, Math.min(rect.height, event.clientY - rect.top))
   };
 }
 
-function updateSelectionRect(a, b) {
+function updatePageCaptureSelection(a, b) {
   const x = Math.min(a.x, b.x);
   const y = Math.min(a.y, b.y);
   const w = Math.abs(a.x - b.x);
   const h = Math.abs(a.y - b.y);
 
-  captureRect = { x, y, w, h };
-  captureSelection.style.display = 'block';
-  captureSelection.style.left = `${x}px`;
-  captureSelection.style.top = `${y}px`;
-  captureSelection.style.width = `${w}px`;
-  captureSelection.style.height = `${h}px`;
+  pageCaptureRect = { x, y, w, h };
+  pageCaptureSelection.style.display = 'block';
+  pageCaptureSelection.style.left = `${x}px`;
+  pageCaptureSelection.style.top = `${y}px`;
+  pageCaptureSelection.style.width = `${w}px`;
+  pageCaptureSelection.style.height = `${h}px`;
 }
 
-captureLayer.addEventListener('pointerdown', event => {
-  if (event.target.closest('button')) return;
-  capturePointerId = event.pointerId;
-  captureLayer.setPointerCapture?.(event.pointerId);
-  captureStart = pointInCaptureLayer(event);
-  updateSelectionRect(captureStart, captureStart);
-  captureActions.classList.add('hidden');
+pageCaptureSelector.addEventListener('pointerdown', event => {
+  pageCapturePointerId = event.pointerId;
+  pageCaptureSelector.setPointerCapture?.(event.pointerId);
+  pageCaptureStart = pointInPageCapture(event);
+  updatePageCaptureSelection(pageCaptureStart, pageCaptureStart);
   event.preventDefault();
 });
 
-captureLayer.addEventListener('pointermove', event => {
-  if (capturePointerId !== event.pointerId || !captureStart) return;
-  updateSelectionRect(captureStart, pointInCaptureLayer(event));
+pageCaptureSelector.addEventListener('pointermove', event => {
+  if (pageCapturePointerId !== event.pointerId || !pageCaptureStart) return;
+  updatePageCaptureSelection(pageCaptureStart, pointInPageCapture(event));
   event.preventDefault();
 });
 
-captureLayer.addEventListener('pointerup', event => {
-  if (capturePointerId !== event.pointerId || !captureStart) return;
-  updateSelectionRect(captureStart, pointInCaptureLayer(event));
-  captureLayer.releasePointerCapture?.(event.pointerId);
-  capturePointerId = null;
-  captureStart = null;
+pageCaptureSelector.addEventListener('pointerup', event => {
+  if (pageCapturePointerId !== event.pointerId || !pageCaptureStart) return;
 
-  if (captureRect && captureRect.w >= 18 && captureRect.h >= 18) {
-    captureActions.classList.remove('hidden');
+  updatePageCaptureSelection(pageCaptureStart, pointInPageCapture(event));
+  pageCaptureSelector.releasePointerCapture?.(event.pointerId);
+  pageCapturePointerId = null;
+  pageCaptureStart = null;
+
+  if (pageCaptureRect && pageCaptureRect.w >= 18 && pageCaptureRect.h >= 18) {
+    pageCaptureRetryBtn.classList.remove('hidden');
+    pageCaptureSaveBtn.classList.remove('hidden');
+    captureStatus.textContent = 'La zone est prête à être collée dans le cahier.';
   } else {
-    resetCaptureSelection();
+    resetPageCaptureSelection();
+    captureStatus.textContent = 'Trace un rectangle un peu plus grand.';
   }
+
   event.preventDefault();
 });
 
-function saveCurrentSelection() {
-  if (!captureRect || captureRect.w < 18 || captureRect.h < 18) return;
-  if (!storyImage.naturalWidth || !storyImage.naturalHeight) return;
+function retryPageSelection() {
+  resetPageCaptureSelection();
+  pageCaptureSelector.classList.remove('hidden');
+  pageCaptureSelectBtn.classList.add('hidden');
+  captureStatus.textContent = 'Trace un nouveau rectangle autour de l’indice.';
+}
 
-  const frame = storyImage.getBoundingClientRect();
-  const naturalW = storyImage.naturalWidth;
-  const naturalH = storyImage.naturalHeight;
+function savePageSelection() {
+  if (!pageShotCanvas || !pageCaptureRect) return;
 
-  // storyImage utilise object-fit: cover. On reconstitue donc la zone réellement visible.
-  const scale = Math.max(frame.width / naturalW, frame.height / naturalH);
-  const renderedW = naturalW * scale;
-  const renderedH = naturalH * scale;
-  const offsetX = (frame.width - renderedW) / 2;
-  const offsetY = (frame.height - renderedH) / 2;
+  const shownW = pageCaptureImage.clientWidth;
+  const shownH = pageCaptureImage.clientHeight;
+  if (!shownW || !shownH) return;
 
-  let sx = (captureRect.x - offsetX) / scale;
-  let sy = (captureRect.y - offsetY) / scale;
-  let sw = captureRect.w / scale;
-  let sh = captureRect.h / scale;
+  const scaleX = pageShotCanvas.width / shownW;
+  const scaleY = pageShotCanvas.height / shownH;
 
-  sx = Math.max(0, Math.min(naturalW, sx));
-  sy = Math.max(0, Math.min(naturalH, sy));
-  sw = Math.max(1, Math.min(naturalW - sx, sw));
-  sh = Math.max(1, Math.min(naturalH - sy, sh));
+  const sx = Math.max(0, Math.round(pageCaptureRect.x * scaleX));
+  const sy = Math.max(0, Math.round(pageCaptureRect.y * scaleY));
+  const sw = Math.max(1, Math.min(pageShotCanvas.width - sx, Math.round(pageCaptureRect.w * scaleX)));
+  const sh = Math.max(1, Math.min(pageShotCanvas.height - sy, Math.round(pageCaptureRect.h * scaleY)));
 
-  const maxSide = 520;
-  const outputScale = Math.min(1, maxSide / Math.max(sw, sh));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(sw * outputScale));
-  canvas.height = Math.max(1, Math.round(sh * outputScale));
+  const maxSide = 560;
+  const outScale = Math.min(1, maxSide / Math.max(sw, sh));
 
-  const ctx = canvas.getContext('2d');
+  const out = document.createElement('canvas');
+  out.width = Math.max(1, Math.round(sw * outScale));
+  out.height = Math.max(1, Math.round(sh * outScale));
+
+  const ctx = out.getContext('2d');
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(storyImage, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(pageShotCanvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
 
-  let dataUrl;
-  try {
-    dataUrl = canvas.toDataURL('image/jpeg', 0.82);
-  } catch (error) {
-    notebookHint.textContent = "Cette image ne peut pas être découpée dans cet aperçu.";
-    cancelImageCapture();
-    return;
-  }
+  const dataUrl = out.toDataURL('image/jpeg', .86);
 
   ensureNotebookState();
   state.clippings.push({
@@ -1440,10 +1678,8 @@ function saveCurrentSelection() {
   });
 
   saveState();
-  resetCaptureSelection();
-  captureLayer.classList.add('hidden');
-  captureLayer.setAttribute('aria-hidden', 'true');
-  openNotebook();
+  closePageCapture({ reopenNotebook: true });
+  renderNotebook();
 }
 
 
@@ -1509,8 +1745,7 @@ function restartGame() {
   closeDrawer();
   closeModal();
   closeNotebook();
-  captureLayer.classList.add('hidden');
-  resetCaptureSelection();
+  closePageCapture({ reopenNotebook: false });
   render();
   try {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1547,8 +1782,10 @@ inventoryBtn.addEventListener('click', openInventory);
 notebookBtn.addEventListener('click', openNotebook);
 notebookCloseBtn.addEventListener('click', closeNotebook);
 clipImageBtn.addEventListener('click', startImageCapture);
-captureCancelBtn.addEventListener('click', cancelImageCapture);
-captureSaveBtn.addEventListener('click', saveCurrentSelection);
+pageCaptureCloseBtn.addEventListener('click', () => closePageCapture({ reopenNotebook: true }));
+pageCaptureSelectBtn.addEventListener('click', enterPageSelectionMode);
+pageCaptureRetryBtn.addEventListener('click', retryPageSelection);
+pageCaptureSaveBtn.addEventListener('click', savePageSelection);
 restartBtn.addEventListener('click', restartGame);
 menuBtn.addEventListener('click', openDrawer);
 closeDrawerBtn.addEventListener('click', closeDrawer);
@@ -1564,10 +1801,8 @@ document.addEventListener('keydown', e => {
     closeDrawer();
     closeModal();
     closeNotebook();
-    if (!captureLayer.classList.contains('hidden')) {
-      resetCaptureSelection();
-      captureLayer.classList.add('hidden');
-      captureLayer.setAttribute('aria-hidden', 'true');
+    if (!pageCaptureWorkspace.classList.contains('hidden')) {
+      closePageCapture({ reopenNotebook: false });
     }
   }
 });

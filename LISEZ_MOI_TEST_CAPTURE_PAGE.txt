@@ -1,0 +1,22 @@
+TEST — CAPTURE DE N'IMPORTE QUEL ENDROIT DE LA PAGE
+
+Principe :
+1. Ouvre « Cahier ».
+2. Clique « Capturer un indice sur la page ».
+3. Le jeu crée un véritable instantané visuel de toute la page.
+4. Fais défiler cet instantané jusqu'à l'endroit voulu.
+5. Clique « Sélectionner une zone ».
+6. Trace un rectangle autour de ce que tu veux garder :
+   - illustration
+   - phrase
+   - titre
+   - symbole
+   - choix
+   - mélange texte + image
+7. Clique « Coller dans le cahier ».
+
+Le morceau est enregistré comme une image dans le cahier avec son numéro de page.
+
+NOTE DU TEST :
+Cette version charge html2canvas depuis un CDN uniquement pour valider le fonctionnement.
+Dans la version finale de la PWA, la bibliothèque pourra être intégrée localement afin de fonctionner hors ligne.
