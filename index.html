@@ -873,7 +873,7 @@ button { font: inherit; }
         <img id="storyImage" class="story-image hidden" alt="" />
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
-          <small id="imageLabel">La-Grotte-de-Valombre-01</small>
+          <small id="imageLabel">La-Grotte-de-Valombre-001</small>
         </div>
       </section>
 
@@ -2999,10 +2999,10 @@ const STORY = {
 };
 
 // Numérotation façon livre-jeu : 1 page = 1 nœud narratif.
-// Le prologue est la page 01, puis les anciens chapitres 1 à 30 deviennent les pages 02 à 31.
+// La numérotation utilise désormais trois chiffres : 001, 002, 003… afin de rester cohérente au-delà de 100 pages.
 const PAGE_ORDER = Array.from({ length: 46 }, (_, i) => `c${i + 1}`);
 const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
-const padPage = n => String(n).padStart(2, '0');
+const padPage = n => String(n).padStart(3, '0');
 const imageBaseForPage = n => `La-Grotte-de-Valombre-${padPage(n)}`;
 const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg'];
 
@@ -3136,8 +3136,8 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v10_transitions_combats';
-const CHECKPOINT_KEY = 'valombre_checkpoint_v10';
+const STORAGE_KEY = 'valombre_save_v11_aquarelle_3digits';
+const CHECKPOINT_KEY = 'valombre_checkpoint_v11';
 
 const defaultState = () => ({
   node: 'start',
