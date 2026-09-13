@@ -1783,8 +1783,8 @@ const STORY = {
       <p>Il n’y a personne.</p>
 
       <p>Seulement la route vide.</p>
-    `,
-    choices: [
+    `,    choices: [
+      { label: 'Entrer dans la taverne de Gaspard avant de repartir', to: 'c16' },
       { label: 'Repartir vers la grotte', to: 'c20' }
     ]
   },
@@ -1993,7 +1993,7 @@ const STORY = {
         label: 'Lancer le dé',
         to: 'c27',
         effect: s => {
-          const roll = 1 + Math.floor(Math.random() * 6);
+          const roll = rollDie6();
           const dex = currentDexterity(s);
           s.lastRoll = roll;
           s.lastDexterity = dex;
@@ -2122,6 +2122,24 @@ function syncThrowingBlades(state) {
     delete state.inventory.lames_jet;
   }
 }
+
+function rollDie6() {
+  // Vrai tirage uniforme parmi 1, 2, 3, 4, 5 et 6 à partir du générateur
+  // cryptographique du navigateur. Rejet des valeurs >= 252 pour éviter
+  // tout biais de modulo (252 est divisible par 6).
+  if (window.crypto && window.crypto.getRandomValues) {
+    const buffer = new Uint8Array(1);
+    let value;
+    do {
+      window.crypto.getRandomValues(buffer);
+      value = buffer[0];
+    } while (value >= 252);
+    return (value % 6) + 1;
+  }
+
+  // Secours pour de très vieux navigateurs.
+  return Math.floor(Math.random() * 6) + 1;
+}
 function escapeHtml(value) {
   return String(value || '')
     .replaceAll('&','&amp;')
@@ -2131,7 +2149,7 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v6_checkpoint';
+const STORAGE_KEY = 'valombre_save_v7_rochebrume_random';
 const CHECKPOINT_KEY = 'valombre_checkpoint_sortie_village';
 
 const defaultState = () => ({

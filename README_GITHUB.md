@@ -85,3 +85,14 @@ Le ton reste volontairement ambigu et inquiétant.
 - En cas de fin mortelle/folie, le joueur peut choisir :
   - Reprendre à la sortie du village
   - Recommencer depuis le début
+
+
+## Ajustements V5
+
+- À Rochebrume, après avoir parlé à l’étranger dans la rue, le joueur peut maintenant :
+  - entrer dans la taverne de Gaspard ;
+  - ou repartir directement vers la grotte.
+- Le dé utilise désormais `crypto.getRandomValues()` avec rejet des valeurs biaisées,
+  afin d’obtenir un tirage uniforme réel entre 1 et 6.
+- Deux résultats identiques de suite restent naturellement possibles : par exemple,
+  faire deux 5 de suite a une probabilité de 1 sur 36.
