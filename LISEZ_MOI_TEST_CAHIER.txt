@@ -1,11 +1,16 @@
-TEST — CAHIER COLLAGE
+TEST — CAHIER / CAPTURE DE N'IMPORTE QUELLE ZONE DE LA PAGE
 
-1. Ouvrir la page 01 : une image de démonstration est déjà installée.
-2. Cliquer sur « Cahier ».
-3. Cliquer sur « Découper un indice dans l’image ».
-4. Faire glisser le doigt ou la souris sur une zone de l’image.
-5. Cliquer sur « Coller dans le cahier ».
-6. Le morceau sélectionné apparaît comme un collage, avec le numéro de page.
-7. Les collages sont sauvegardés avec la partie dans le stockage local du navigateur.
+1. Place-toi sur la partie de la page que tu veux conserver.
+2. Clique sur « Cahier ».
+3. Clique sur « Découper un indice sur la page ».
+4. Fais glisser la souris ou le doigt sur n'importe quelle zone :
+   - illustration
+   - titre
+   - phrase
+   - symbole
+   - choix
+5. Clique sur « Coller dans le cahier ».
+6. La sélection apparaît comme un petit collage dans le cahier.
+7. Le collage conserve le numéro de la page.
 
-Cette version est uniquement un test du principe. L’histoire n’a pas été modifiée.
+L'histoire n'a pas été modifiée : cette version sert uniquement à tester le principe du carnet visuel.
