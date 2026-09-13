@@ -1,22 +1,17 @@
-TEST — CAPTURE DE N'IMPORTE QUEL ENDROIT DE LA PAGE
+TEST — CAPTURE DE PAGE, VERSION PLUS DIRECTE
 
-Principe :
-1. Ouvre « Cahier ».
-2. Clique « Capturer un indice sur la page ».
-3. Le jeu crée un véritable instantané visuel de toute la page.
-4. Fais défiler cet instantané jusqu'à l'endroit voulu.
-5. Clique « Sélectionner une zone ».
-6. Trace un rectangle autour de ce que tu veux garder :
-   - illustration
-   - phrase
-   - titre
-   - symbole
-   - choix
-   - mélange texte + image
-7. Clique « Coller dans le cahier ».
+Nouveautés :
+1. Quand tu cliques sur « Capturer un indice sur la page », l’instantané se prépare puis
+   tu peux directement tracer ta sélection : il n’y a plus de bouton « Sélectionner une zone ».
+2. Une fois un indice enregistré dans le cahier, tu peux cliquer dessus pour l’ouvrir
+   en grand, au centre de l’écran.
 
-Le morceau est enregistré comme une image dans le cahier avec son numéro de page.
+Fonctionnement :
+- Cahier
+- Capturer un indice sur la page
+- attendre l’instantané
+- tracer directement un rectangle autour de ce que tu veux garder
+- Coller dans le cahier
+- cliquer ensuite sur un indice pour l’agrandir
 
-NOTE DU TEST :
-Cette version charge html2canvas depuis un CDN uniquement pour valider le fonctionnement.
-Dans la version finale de la PWA, la bibliothèque pourra être intégrée localement afin de fonctionner hors ligne.
+Le test sert uniquement à valider ce geste et cet affichage.

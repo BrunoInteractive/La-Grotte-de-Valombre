@@ -967,6 +967,102 @@ button { font: inherit; }
   }
 }
 
+
+.notebook-clip,
+.notebook-text-clip {
+  cursor: zoom-in;
+}
+
+.clip-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.clip-preview-modal.hidden {
+  display: none !important;
+}
+
+.clip-preview-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 11, 8, .74);
+}
+
+.clip-preview-card {
+  position: relative;
+  z-index: 1;
+  width: min(900px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid #836746;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(122,90,50,.05) 0 1px, transparent 1.8px),
+    linear-gradient(180deg, #efe1be, #e1cb9c);
+  box-shadow: 0 18px 50px rgba(0,0,0,.44);
+}
+
+.clip-preview-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  margin-left: 10px;
+  border: 1px solid #856948;
+  border-radius: 0;
+  background: #e5d0a5;
+  color: #2a1d13;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.clip-preview-content {
+  clear: both;
+}
+
+.clip-preview-content img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 8px;
+  border: 1px solid #6f5737;
+  background: #cbb58b;
+  box-shadow: 0 6px 16px rgba(55, 38, 20, .24);
+}
+
+.clip-preview-text {
+  padding: 18px;
+  border: 1px solid #aa8a59;
+  background: rgba(255,255,255,.14);
+  color: #241910;
+  font-family: var(--body-font);
+  font-size: clamp(19px, 2.3vw, 27px);
+  line-height: 1.28;
+  white-space: pre-wrap;
+}
+
+.clip-preview-caption {
+  margin-top: 8px;
+  text-align: center;
+  color: #6c5439;
+  font-family: var(--body-font);
+  font-size: 13px;
+}
+
+.page-capture-bottom {
+  grid-template-columns: 1fr 1fr;
+}
+
+.page-capture-bottom button:first-child:last-child {
+  grid-column: auto;
+}
+
 </style>
 </head>
 <body>
@@ -1038,9 +1134,17 @@ button { font: inherit; }
     </div>
 
     <div class="page-capture-bottom">
-      <button id="pageCaptureSelectBtn" type="button">Sélectionner une zone</button>
       <button id="pageCaptureRetryBtn" type="button" class="hidden">Recommencer</button>
       <button id="pageCaptureSaveBtn" type="button" class="hidden">Coller dans le cahier</button>
+    </div>
+  </div>
+
+
+  <div id="clipPreviewModal" class="clip-preview-modal hidden" aria-hidden="true">
+    <div id="clipPreviewBackdrop" class="clip-preview-backdrop"></div>
+    <div class="clip-preview-card">
+      <button id="clipPreviewCloseBtn" class="clip-preview-close" type="button" aria-label="Fermer l'aperçu">×</button>
+      <div id="clipPreviewContent" class="clip-preview-content"></div>
     </div>
   </div>
 
@@ -1359,10 +1463,14 @@ const pageCaptureStage = document.getElementById('pageCaptureStage');
 const pageCaptureImage = document.getElementById('pageCaptureImage');
 const pageCaptureSelector = document.getElementById('pageCaptureSelector');
 const pageCaptureSelection = document.getElementById('pageCaptureSelection');
-const pageCaptureSelectBtn = document.getElementById('pageCaptureSelectBtn');
 const pageCaptureRetryBtn = document.getElementById('pageCaptureRetryBtn');
 const pageCaptureSaveBtn = document.getElementById('pageCaptureSaveBtn');
 const captureStatus = document.getElementById('captureStatus');
+
+const clipPreviewModal = document.getElementById('clipPreviewModal');
+const clipPreviewBackdrop = document.getElementById('clipPreviewBackdrop');
+const clipPreviewCloseBtn = document.getElementById('clipPreviewCloseBtn');
+const clipPreviewContent = document.getElementById('clipPreviewContent');
 
 let pageShotCanvas = null;
 let pageCaptureStart = null;
@@ -1426,6 +1534,37 @@ function loadPageImage(pageNumber, title) {
   tryNext();
 }
 
+
+
+function openClipPreview(clip) {
+  clipPreviewContent.innerHTML = '';
+
+  if (clip.type === 'text') {
+    const text = document.createElement('div');
+    text.className = 'clip-preview-text';
+    text.textContent = clip.text || '';
+    clipPreviewContent.appendChild(text);
+  } else {
+    const img = document.createElement('img');
+    img.src = clip.image;
+    img.alt = `Indice agrandi depuis la page ${padPage(clip.page)}`;
+    clipPreviewContent.appendChild(img);
+  }
+
+  const caption = document.createElement('div');
+  caption.className = 'clip-preview-caption';
+  caption.textContent = `Page ${padPage(clip.page)}`;
+  clipPreviewContent.appendChild(caption);
+
+  clipPreviewModal.classList.remove('hidden');
+  clipPreviewModal.setAttribute('aria-hidden', 'false');
+}
+
+function closeClipPreview() {
+  clipPreviewModal.classList.add('hidden');
+  clipPreviewModal.setAttribute('aria-hidden', 'true');
+  clipPreviewContent.innerHTML = '';
+}
 
 function ensureNotebookState() {
   if (!Array.isArray(state.clippings)) state.clippings = [];
@@ -1499,7 +1638,6 @@ function closePageCapture({ reopenNotebook = false } = {}) {
   pageCaptureSelector.classList.add('hidden');
   pageCaptureWorkspace.classList.add('hidden');
   pageCaptureWorkspace.setAttribute('aria-hidden', 'true');
-  pageCaptureSelectBtn.classList.remove('hidden');
   pageShotCanvas = null;
   pageCaptureImage.removeAttribute('src');
   if (reopenNotebook) openNotebook();
@@ -1511,7 +1649,6 @@ async function startImageCapture() {
   pageCaptureWorkspace.classList.remove('hidden');
   pageCaptureWorkspace.setAttribute('aria-hidden', 'false');
   pageCaptureSelector.classList.add('hidden');
-  pageCaptureSelectBtn.classList.add('hidden');
   pageCaptureRetryBtn.classList.add('hidden');
   pageCaptureSaveBtn.classList.add('hidden');
   captureStatus.textContent = 'Création de l’instantané de la page…';
@@ -1522,8 +1659,8 @@ async function startImageCapture() {
     pageCaptureStage.classList.remove('page-capture-loading');
     pageCaptureStage.textContent = '';
     captureStatus.textContent = 'Le module de capture n’a pas pu être chargé. Recharge la page puis réessaie.';
-    pageCaptureSelectBtn.classList.remove('hidden');
-    pageCaptureSelectBtn.disabled = true;
+    pageCaptureRetryBtn.classList.add('hidden');
+    pageCaptureSaveBtn.classList.add('hidden');
     return;
   }
 
@@ -1548,9 +1685,8 @@ async function startImageCapture() {
     pageCaptureStage.appendChild(pageCaptureSelector);
 
     pageCaptureImage.src = canvas.toDataURL('image/jpeg', .92);
-    captureStatus.textContent = 'Fais défiler l’instantané jusqu’à l’indice, puis choisis « Sélectionner une zone ».';
-    pageCaptureSelectBtn.disabled = false;
-    pageCaptureSelectBtn.classList.remove('hidden');
+    captureStatus.textContent = 'Fais défiler l’instantané si besoin, puis trace directement un rectangle autour de l’indice.';
+    pageCaptureSelector.classList.remove('hidden');
 
     // Start near the part of the book that was visible before opening the notebook.
     const gameRect = game.getBoundingClientRect();
@@ -1558,6 +1694,7 @@ async function startImageCapture() {
     requestAnimationFrame(() => {
       const ratio = pageCaptureImage.clientWidth / Math.max(1, game.offsetWidth);
       pageCaptureScroller.scrollTop = viewportYInsideGame * ratio;
+      enterPageSelectionMode();
     });
 
   } catch (error) {
@@ -1565,8 +1702,8 @@ async function startImageCapture() {
     pageCaptureStage.classList.remove('page-capture-loading');
     pageCaptureStage.textContent = '';
     captureStatus.textContent = 'Impossible de créer l’instantané dans cet aperçu.';
-    pageCaptureSelectBtn.classList.remove('hidden');
-    pageCaptureSelectBtn.disabled = true;
+    pageCaptureRetryBtn.classList.add('hidden');
+    pageCaptureSaveBtn.classList.add('hidden');
   }
 }
 
@@ -1574,7 +1711,6 @@ function enterPageSelectionMode() {
   if (!pageShotCanvas) return;
   resetPageCaptureSelection();
   pageCaptureSelector.classList.remove('hidden');
-  pageCaptureSelectBtn.classList.add('hidden');
   captureStatus.textContent = 'Trace un rectangle autour de l’indice.';
 }
 
@@ -1637,7 +1773,6 @@ pageCaptureSelector.addEventListener('pointerup', event => {
 function retryPageSelection() {
   resetPageCaptureSelection();
   pageCaptureSelector.classList.remove('hidden');
-  pageCaptureSelectBtn.classList.add('hidden');
   captureStatus.textContent = 'Trace un nouveau rectangle autour de l’indice.';
 }
 
@@ -1745,6 +1880,7 @@ function restartGame() {
   closeDrawer();
   closeModal();
   closeNotebook();
+  closeClipPreview();
   closePageCapture({ reopenNotebook: false });
   render();
   try {
@@ -1783,9 +1919,10 @@ notebookBtn.addEventListener('click', openNotebook);
 notebookCloseBtn.addEventListener('click', closeNotebook);
 clipImageBtn.addEventListener('click', startImageCapture);
 pageCaptureCloseBtn.addEventListener('click', () => closePageCapture({ reopenNotebook: true }));
-pageCaptureSelectBtn.addEventListener('click', enterPageSelectionMode);
 pageCaptureRetryBtn.addEventListener('click', retryPageSelection);
 pageCaptureSaveBtn.addEventListener('click', savePageSelection);
+clipPreviewBackdrop.addEventListener('click', closeClipPreview);
+clipPreviewCloseBtn.addEventListener('click', closeClipPreview);
 restartBtn.addEventListener('click', restartGame);
 menuBtn.addEventListener('click', openDrawer);
 closeDrawerBtn.addEventListener('click', closeDrawer);
@@ -1801,6 +1938,7 @@ document.addEventListener('keydown', e => {
     closeDrawer();
     closeModal();
     closeNotebook();
+    closeClipPreview();
     if (!pageCaptureWorkspace.classList.contains('hidden')) {
       closePageCapture({ reopenNotebook: false });
     }
