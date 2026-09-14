@@ -1,5 +1,9 @@
-# Déploiement GitHub Pages — V12
+# Déploiement GitHub Pages — V13
 
-Téléverse le contenu de ce dossier en conservant les sous-dossiers `engine/`, `app/` et `books/`. `index.html` doit rester à la racine.
+Téléverse le contenu de ce dossier en conservant exactement les sous-dossiers `engine/`, `app/` et `books/`. `index.html` doit rester à la racine.
 
-Cette V12 sépare désormais le moteur commun du Livre 01.
+Le Livre 01 est maintenant rangé sous :
+
+`books/ecuyer/01-la-grotte-de-valombre/`
+
+Son ID permanent est `ecuyer-01`. Le numéro V13 correspond uniquement à notre archive de développement et ne doit pas être ajouté au nom du dossier interne du livre.
