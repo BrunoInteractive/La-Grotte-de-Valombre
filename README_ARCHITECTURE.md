@@ -86,3 +86,15 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - La Vie est décrite simplement comme la santé du héros ; la phrase sur ce qui le rend humain est retirée.
 - La Dextérité précise désormais qu’elle peut être affectée par l’équipement porté, notamment une arme lourde.
 - Le rappel général des tests en 3D6 est retiré de la page d’introduction ; les règles apparaîtront au moment où les tests surviennent dans le jeu.
+
+
+## V17 TEST — nouvel équilibrage Force / armes
+- Héros au départ : Vie 18, Chance 12, Force 8, Dextérité 13, Puissance de l’arme 0.
+- Épée lourde de Sir Aldren : Dextérité -4 (DEX 9 au départ), Puissance 4.
+- Épée du forgeron : Dextérité -1 (DEX 12 au départ), Puissance 1.
+- Combat opposé inchangé : Dextérité + 2D6 contre Dextérité + 2D6.
+- Dégâts : bonus de Force + Puissance de l’arme ; bonus de Force = ⌊Force / 4⌋, minimum 1.
+- Masse dans l’ombre : Vie 6, Force 8, Dextérité 5, dégâts 2.
+- Disparu de Rochebrume : Vie 3, Force 3, Dextérité 8, dégâts 1.
+- La mini-fiche adversaire affiche aussi les dégâts.
+- Aucun fichier d’illustration n’est inclus ; le dossier images reste vide.

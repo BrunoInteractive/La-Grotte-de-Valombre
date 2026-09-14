@@ -7,15 +7,15 @@
 const ENEMIES = {
   shadowMass: {
     name: 'MASSE DANS L’OMBRE',
-    maxHp: 14,
-    force: 3,
-    dexterity: 4
+    maxHp: 6,
+    force: 8,
+    dexterity: 5
   },
   rochebrumeMissing: {
     name: 'DISPARU DE ROCHEBRUME',
-    maxHp: 6,
+    maxHp: 3,
     force: 3,
-    dexterity: 5
+    dexterity: 8
   }
 };
 
@@ -39,6 +39,10 @@ function combatState(state, key, enemy) {
   return combat;
 }
 
+function forceDamageBonus(force) {
+  return Math.max(1, Math.floor(Math.max(0, Number(force) || 0) / 4));
+}
+
 function fightRound(state, key, enemy) {
   const combat = combatState(state, key, enemy);
   const heroDice = roll2D6();
@@ -48,9 +52,11 @@ function fightRound(state, key, enemy) {
   const heroAttack = heroDexterity + heroDice[0] + heroDice[1];
   const enemyAttack = enemyDexterity + enemyDice[0] + enemyDice[1];
   const heroWeaponPower = state.weapon && state.weapon !== 'none' ? combatPower(state) : 0;
-  const heroDamage = currentForce(state) + heroWeaponPower;
+  const heroForceBonus = forceDamageBonus(currentForce(state));
+  const heroDamage = heroForceBonus + heroWeaponPower;
   const enemyWeaponPower = Number.isFinite(enemy.weaponPower) ? enemy.weaponPower : 0;
-  const enemyDamage = enemy.force + enemyWeaponPower;
+  const enemyForceBonus = forceDamageBonus(enemy.force);
+  const enemyDamage = enemyForceBonus + enemyWeaponPower;
 
   let outcome = 'tie';
   let damage = 0;
@@ -75,9 +81,11 @@ function fightRound(state, key, enemy) {
     heroAttack,
     enemyAttack,
     heroForce: currentForce(state),
+    heroForceBonus,
     heroWeaponPower,
     heroDamage,
     enemyForce: enemy.force,
+    enemyForceBonus,
     enemyWeaponPower,
     enemyDamage,
     damage,
@@ -99,6 +107,7 @@ function enemyCardHtml(state, key, enemy) {
         <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${combat.hp} / ${enemy.maxHp}</strong></div>
         <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${enemy.force}</strong></div>
         <div><span class="enemy-icon">◆</span><span>Dextérité</span><strong>${enemy.dexterity}</strong></div>
+        <div><span class="enemy-icon">✦</span><span>Dégâts</span><strong>${forceDamageBonus(enemy.force) + (Number.isFinite(enemy.weaponPower) ? enemy.weaponPower : 0)}</strong></div>
       </div>
     </div>`;
 }
@@ -109,11 +118,11 @@ function combatRoundHtml(state, key, enemy) {
   if (!r) return '';
 
   const heroDamageDetail = r.heroWeaponPower > 0
-    ? `Force ${r.heroForce} + Puissance de l’arme ${r.heroWeaponPower}`
-    : `Force ${r.heroForce}`;
+    ? `Bonus de Force ${r.heroForceBonus} + Puissance de l’arme ${r.heroWeaponPower}`
+    : `Bonus de Force ${r.heroForceBonus}`;
   const enemyDamageDetail = r.enemyWeaponPower > 0
-    ? `Force ${r.enemyForce} + Puissance de l’arme ${r.enemyWeaponPower}`
-    : `Force ${r.enemyForce}`;
+    ? `Bonus de Force ${r.enemyForceBonus} + Puissance de l’arme ${r.enemyWeaponPower}`
+    : `Bonus de Force ${r.enemyForceBonus}`;
 
   const outcomeText = r.outcome === 'hero'
     ? `<strong>Tu remportes l’échange.</strong><br>Tu infliges <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de dégâts <span class="combat-detail">(${heroDamageDetail})</span>.`
@@ -172,14 +181,14 @@ const STORY = {
           <div class="hero-info-title">Tes caractéristiques</div>
           <p><strong>Vie :</strong> indique la santé du héros. Lorsqu’elle atteint zéro, ses forces le quittent.</p>
           <p><strong>Chance :</strong> permet de se sortir habilement d’un mauvais tour ou d’une situation qui semblait mal engagée.</p>
-          <p><strong>Force :</strong> représente la puissance physique du héros. Elle renforce ses coups et lui permet de forcer, retenir ou briser ce qui lui barre la route.</p>
+          <p><strong>Force :</strong> représente la puissance physique du héros. Elle contribue aux dégâts qu’il inflige et lui permet de forcer, retenir ou briser ce qui lui barre la route.</p>
           <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. La Dextérité du héros peut être affectée par ce qu’il porte, par exemple une arme lourde.</p>
-          <p><strong>Puissance de l’arme :</strong> valeur propre à l’arme équipée. Elle s’ajoute à la Force lorsque le héros remporte un échange.</p>
+          <p><strong>Puissance de l’arme :</strong> valeur propre à l’arme équipée. Elle s’ajoute au bonus de Force lorsque le héros remporte un échange.</p>
         </div>
 
         <div class="combat-rules-card">
           <div class="combat-rules-title">Règles des combats</div>
-          <p><strong>Combats :</strong> héros et adversaire lancent chacun 2 dés et ajoutent leur Dextérité.<br>Le meilleur score remporte l’échange.<br>En cas d’égalité, personne n’est blessé.<br>Le gagnant inflige sa <strong>Force + la Puissance de son arme</strong> s’il en possède une.</p>
+          <p><strong>Combats :</strong> héros et adversaire lancent chacun 2 dés et ajoutent leur Dextérité.<br>Le meilleur score remporte l’échange.<br>En cas d’égalité, personne n’est blessé.<br>Le gagnant inflige son <strong>bonus de Force + la Puissance de son arme</strong> s’il en possède une.<br><span class="combat-detail">Bonus de Force = Force ÷ 4, arrondi à l’inférieur, avec un minimum de 1.</span></p>
         </div>
 
         <div class="hero-weapon">Au départ, tu ne portes encore aucune arme.</div>
@@ -362,14 +371,14 @@ const STORY = {
         <div>
           <strong>Garder l’épée lourde</strong><br><br>
           <strong>Épée de Sir Aldren</strong><br>
-          Puissance de l’arme : <strong>10</strong><br>
+          Puissance de l’arme : <strong>4</strong><br>
           Dextérité : <strong>9</strong>
         </div>
         <div>
           <strong>Accepter l’échange</strong><br><br>
           <strong>Épée du forgeron</strong><br>
-          Puissance de l’arme : <strong>4</strong><br>
-          Dextérité : <strong>15</strong>
+          Puissance de l’arme : <strong>1</strong><br>
+          Dextérité : <strong>12</strong>
         </div>
       </div>
     `,
@@ -2265,7 +2274,7 @@ const STORY = {
   function currentDexterity(state) {
     const weaponModifier =
       state.weapon === 'heavy' ? -4 :
-      state.weapon === 'light' ? 2 : 0;
+      state.weapon === 'light' ? -1 : 0;
     return Math.max(3,
       state.baseDexterity +
       (state.dexBonus || 0) -
@@ -2275,8 +2284,8 @@ const STORY = {
   }
 
   function combatPower(state) {
-    if (state.weapon === 'heavy') return 10;
-    if (state.weapon === 'light') return 4;
+    if (state.weapon === 'heavy') return 4;
+    if (state.weapon === 'light') return 1;
     if (state.weapon === 'black_blade') return 6;
     return 0;
   }
@@ -2313,7 +2322,7 @@ const STORY = {
       hp: base.maxHp || 18,
       maxHp: base.maxHp || 18,
       chance: base.chance || 12,
-      baseForce: base.force || 9,
+      baseForce: base.force || 8,
       baseDexterity: base.dexterity || 13,
       forceBonus: 0,
       dexBonus: 0,
@@ -2408,8 +2417,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 4,
-    saveVersion: 3,
+    contentVersion: 5,
+    saveVersion: 4,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,

@@ -12,7 +12,7 @@ const PAGE_BY_NODE = BOOK.pageByNode;
 const padPage = BOOK.padPage;
 const STORAGE_KEY = `ldveh.book.${BOOK.id}.save.v${BOOK.saveVersion || 1}`;
 const CHECKPOINT_KEY = `ldveh.book.${BOOK.id}.checkpoint.v${BOOK.saveVersion || 1}`;
-const SERIES_KEY = `ldveh.series.${BOOK.seriesId}.profile.v1`;
+const SERIES_KEY = `ldveh.series.${BOOK.seriesId}.profile.v2`;
 
 const chapterNumber = document.getElementById('chapterNumber');
 const chapterTitle = document.getElementById('chapterTitle');
@@ -52,10 +52,10 @@ document.title = `${BOOK.title} — Livre-jeu`;
 
 function defaultSeriesProfile() {
   return {
-    version: 1,
+    version: 2,
     seriesId: BOOK.seriesId,
     heroName: '',
-    baseStats: { maxHp: 18, chance: 12, force: 9, dexterity: 13 },
+    baseStats: { maxHp: 18, chance: 12, force: 8, dexterity: 13 },
     memory: {},
     completedBooks: []
   };
