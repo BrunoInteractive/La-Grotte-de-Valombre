@@ -170,10 +170,10 @@ const STORY = {
 
         <div class="hero-characteristics">
           <div class="hero-info-title">Tes caractéristiques</div>
-          <p><strong>Vie :</strong> indique la santé du héros. Lorsqu’elle atteint zéro, ses forces le quittent… et peut-être aussi quelque chose de ce qui faisait encore de lui un humain.</p>
+          <p><strong>Vie :</strong> indique la santé du héros. Lorsqu’elle atteint zéro, ses forces le quittent.</p>
           <p><strong>Chance :</strong> permet de se sortir habilement d’un mauvais tour ou d’une situation qui semblait mal engagée.</p>
           <p><strong>Force :</strong> représente la puissance physique du héros. Elle renforce ses coups et lui permet de forcer, retenir ou briser ce qui lui barre la route.</p>
-          <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers.</p>
+          <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. La Dextérité du héros peut être affectée par ce qu’il porte, par exemple une arme lourde.</p>
           <p><strong>Puissance de l’arme :</strong> valeur propre à l’arme équipée. Elle s’ajoute à la Force lorsque le héros remporte un échange.</p>
         </div>
 
@@ -182,7 +182,6 @@ const STORY = {
           <p><strong>Combats :</strong> héros et adversaire lancent chacun 2 dés et ajoutent leur Dextérité.<br>Le meilleur score remporte l’échange.<br>En cas d’égalité, personne n’est blessé.<br>Le gagnant inflige sa <strong>Force + la Puissance de son arme</strong> s’il en possède une.</p>
         </div>
 
-        <div class="tests-rules-card"><strong>Tests :</strong> lance 3 dés. Si le total est inférieur ou égal à la caractéristique testée, le test est réussi.</div>
         <div class="hero-weapon">Au départ, tu ne portes encore aucune arme.</div>
       </div>
       <p>Sir Aldren t’a ordonné de rester au village. Pourtant, la nuit est tombée depuis longtemps et son cheval vient de revenir seul.</p>

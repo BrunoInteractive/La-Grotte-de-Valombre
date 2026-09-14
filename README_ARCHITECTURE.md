@@ -80,3 +80,9 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - Les tests hors combat restent en 3D6 ≤ caractéristique.
 - Ajout d’une bulle « Règles des combats » et d’un rappel clair de chaque caractéristique au début.
 - Les illustrations sont désormais gérées séparément et ne sont plus incluses dans les ZIP de développement.
+
+
+## V16 TEST — textes de présentation
+- La Vie est décrite simplement comme la santé du héros ; la phrase sur ce qui le rend humain est retirée.
+- La Dextérité précise désormais qu’elle peut être affectée par l’équipement porté, notamment une arme lourde.
+- Le rappel général des tests en 3D6 est retiré de la page d’introduction ; les règles apparaîtront au moment où les tests surviennent dans le jeu.
