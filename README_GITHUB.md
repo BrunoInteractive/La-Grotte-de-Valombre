@@ -1,21 +1,18 @@
-# La Grotte de Valombre — V8 transitions et combats
+# La Grotte de Valombre — V11 / système 3D6
 
-Corrections principales :
+Cette version introduit le nouveau système de caractéristiques sur 18.
 
-- La galerie condamnée ne peut être tentée qu’une seule fois.
-  Après l’essai, réussi ou raté, elle disparaît des choix du camp.
-- Le tunnel voisin n’annonce plus les sanglots à l’avance :
-  le joueur les entend seulement après s’y être engagé.
-- La lame noire n’est plus ajoutée automatiquement à l’inventaire en entrant
-  sur sa page. Elle est obtenue uniquement au moment où le joueur choisit
-  réellement de la prendre.
-- Nouvelles clés de sauvegarde/checkpoint pour éviter qu’un ancien état bugué
-  ne transporte la lame noire dans une nouvelle partie.
-- Chaque lancer de 2D6 incrémente maintenant un compteur visible
-  (« Jet n°… »), afin de confirmer qu’un nouveau tirage est effectué.
-- Le tirage reste uniforme avec `crypto.getRandomValues()` et rejet de biais.
-- Lors d’un deuxième échange raté en combat, le héros est blessé mais finit
-  tout de même par tuer son adversaire : plus de boucle de jets sans fin.
-- Les pages du camp, de la descente, du tunnel, du monde impossible,
-  du lac, des marches et de la terrasse ont été enrichies avec davantage
-  de déplacement, de paysage et de transitions narratives.
+- Vie : 18 / 18
+- Chance : 12 / 18
+- Force : 9 / 18
+- Dextérité : 13 / 18
+- Tous les tests de caractéristique utilisent 3 dés à 6 faces.
+- Réussite si le total des 3 dés est inférieur ou égal à la caractéristique testée.
+- Les trois faces de dés et le total sont affichés à l'écran.
+- Lorsqu'une blessure survient, un dé à 6 faces est lancé séparément : son résultat est le nombre de points de Vie perdus.
+- Une potion de guérison rend désormais 1D6 points de Vie.
+- La progression par bonus de Force / Dextérité reste active.
+- Les sauvegardes utilisent une nouvelle clé pour éviter de mélanger cette version avec les anciennes règles.
+- Les images utilisent toujours la numérotation à trois chiffres : 001, 002, 003…
+
+Les dernières illustrations 007, 008, 009 et 010 ont également été intégrées à ce paquet.

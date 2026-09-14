@@ -949,9 +949,9 @@ const STORY = {
 
         <div class="hero-sheet-grid">
           <div class="hero-stat"><strong>Vie</strong><span>${state.hp} / ${state.maxHp}</span></div>
-          <div class="hero-stat"><strong>Chance</strong><span>${state.chance} / 12</span></div>
-          <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)} / 12</span></div>
-          <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)} / 12</span></div>
+          <div class="hero-stat"><strong>Chance</strong><span>${state.chance} / 18</span></div>
+          <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)} / 18</span></div>
+          <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)} / 18</span></div>
           <div class="hero-stat"><strong>Puissance</strong><span>${combatPower(state)}</span></div>
         </div>
 
@@ -1084,7 +1084,7 @@ const STORY = {
                 s,
                 'potion_guerison',
                 'Potion de guérison',
-                'Une potion achetée au marchand. Elle peut être utilisée à tout moment pour récupérer 2 points de vie.'
+                'Une potion achetée au marchand. Elle peut être utilisée à tout moment : lance un dé pour savoir combien de points de Vie tu récupères.'
               );
             }
           },
@@ -1125,13 +1125,13 @@ const STORY = {
           <strong>Garder l’épée lourde</strong><br><br>
           <strong>Épée de Sir Aldren</strong><br>
           Puissance : <strong>10</strong><br>
-          Dextérité : <strong>6</strong>
+          Dextérité : <strong>9</strong>
         </div>
         <div>
           <strong>Accepter l’échange</strong><br><br>
           <strong>Épée du forgeron</strong><br>
           Puissance : <strong>4</strong><br>
-          Dextérité : <strong>11</strong>
+          Dextérité : <strong>15</strong>
         </div>
       </div>
     `,
@@ -1418,10 +1418,9 @@ const STORY = {
     title: 'Une voix sous la terre',
     image: 'Une voix sous la terre',
     onEnter: s => {
-      s.hp = Math.max(0, s.hp - 1);
-      s.dexPenalty = Math.min(4, (s.dexPenalty || 0) + 1);
+      s.dexPenalty = Math.min(6, (s.dexPenalty || 0) + 1);
     },
-    text: `
+    text: state => `
       <p>Tu maintiens son poignet.</p>
 
       <blockquote>« Gaspard ? »</blockquote>
@@ -1450,8 +1449,6 @@ const STORY = {
 
       <p>La douleur est vive.</p>
 
-      <p><strong>Tu perds 1 point de Vie.</strong></p>
-
       <p><strong>Ta Dextérité diminue de 1 point.</strong></p>
 
       <p>Lorsque tu parviens enfin à rouvrir les yeux, Gaspard ne bouge plus.</p>
@@ -1465,12 +1462,20 @@ const STORY = {
       <p>Ou du moins…</p>
 
       <p>tu ne vois plus rien qui ressemble encore à de la vie.</p>
+
+      ${damageResultHtml(state, 'c12')}
     `,
-    choices: [
-      { label: 'Fouiller le corps', to: 'c13' },
-      { label: 'Continuer vers la grotte', to: 'c20' },
-      { label: 'Partir vers la forêt', to: 'c14' }
-    ]
+    choices: state => {
+      if (!hasDamageRoll(state, 'c12')) {
+        return [{ label: 'Lancer le dé de blessure', action: 'damage', damageKey: 'c12' }];
+      }
+      if (state.hp <= 0) return fatalChoices();
+      return [
+        { label: 'Fouiller le corps', to: 'c13' },
+        { label: 'Continuer vers la grotte', to: 'c20' },
+        { label: 'Partir vers la forêt', to: 'c14' }
+      ];
+    }
   },
 
   c13: {
@@ -1997,7 +2002,7 @@ const STORY = {
           effect: s => {
             s.throwingBlades -= 1;
             syncThrowingBlades(s);
-            s.lastCombatOutcome = roll2D6(s, 'Dextérité', currentDexterity(s))
+            s.lastCombatOutcome = roll3D6(s, 'Dextérité', currentDexterity(s))
               ? 'blade_kill' : 'blade_fail';
           }
         });
@@ -2040,13 +2045,12 @@ const STORY = {
       <p>Tu frappes.</p>
     `,
     choices: [{
-      label: 'Lancer les deux dés',
+      label: 'Lancer les trois dés',
       to: 'c27',
       effect: s => {
-        const hit = roll2D6(s, 'Dextérité', currentDexterity(s));
+        const hit = roll3D6(s, 'Dextérité', currentDexterity(s));
         if (!hit) {
           s.lastCombatOutcome = 'miss';
-          s.hp = Math.max(0, s.hp - 1);
         } else if (combatPower(s) >= 8) {
           s.lastCombatOutcome = 'one_hit';
         } else {
@@ -2068,11 +2072,20 @@ const STORY = {
       if (state.lastCombatOutcome === 'needs_second_round') {
         return r + `<p>Ton coup porte, mais ne suffit pas à l’abattre. La créature se redresse.</p>`;
       }
-      return r + `<p>Tu rates ton attaque. La créature t’atteint. <strong>Tu perds 1 point de Vie.</strong></p>`;
+      return r + `
+        <p>Tu rates ton attaque. La créature t’atteint.</p>
+        ${damageResultHtml(state, 'c27')}
+      `;
     },
-    choices: state => state.lastCombatOutcome === 'one_hit'
-      ? [{ label: 'Continuer', to: 'c28' }]
-      : [{ label: 'Reprendre le combat', to: 'c29' }]
+    choices: state => {
+      if (state.lastCombatOutcome === 'one_hit') return [{ label: 'Continuer', to: 'c28' }];
+      if (state.lastCombatOutcome === 'needs_second_round') return [{ label: 'Reprendre le combat', to: 'c29' }];
+      if (!hasDamageRoll(state, 'c27')) {
+        return [{ label: 'Lancer le dé de blessure', action: 'damage', damageKey: 'c27' }];
+      }
+      if (state.hp <= 0) return fatalChoices();
+      return [{ label: 'Reprendre le combat', to: 'c29' }];
+    }
   },
 
   c28: {
@@ -2165,14 +2178,13 @@ const STORY = {
       <p>Tu n’as plus l’espace nécessaire pour esquiver longtemps. Le prochain échange se fera presque au corps à corps.</p>
     `,
     choices: [{
-      label: 'Lancer les deux dés',
+      label: 'Lancer les trois dés',
       to: 'c33',
       effect: s => {
-        if (roll2D6(s, 'Dextérité', currentDexterity(s))) {
+        if (roll3D6(s, 'Dextérité', currentDexterity(s))) {
           s.lastCombatOutcome = 'second_round_win';
         } else {
           s.lastCombatOutcome = 'second_round_wounded_win';
-          s.hp = Math.max(0, s.hp - 1);
         }
       }
     }]
@@ -2242,11 +2254,11 @@ const STORY = {
     `,
     choices: [
       {
-        label: 'Tenter de déplacer le bloc — lancer les deux dés',
+        label: 'Tenter de déplacer le bloc — lancer les trois dés',
         to: 'c32',
         effect: s => {
           s.flags.galleryAttempted = true;
-          s.lastCombatOutcome = roll2D6(s, 'Force', currentForce(s))
+          s.lastCombatOutcome = roll3D6(s, 'Force', currentForce(s))
             ? 'force_success'
             : 'force_fail';
         }
@@ -2346,8 +2358,6 @@ const STORY = {
 
         <p>La créature te percute et une douleur vive traverse ton épaule.</p>
 
-        <p><strong>Tu perds 1 point de Vie.</strong></p>
-
         <p>Vous tombez tous les deux contre la paroi.</p>
 
         <p>Pendant quelques secondes, il n’y a plus ni technique ni distance : seulement son poids contre toi, son souffle humide, et ta main qui cherche désespérément la garde de ton arme.</p>
@@ -2367,11 +2377,20 @@ const STORY = {
         <p>Tu viens de gagner.</p>
 
         <p>Mais tu n’es plus certain d’avoir combattu un monstre.</p>
+
+        ${damageResultHtml(state, 'c33')}
       `;
     },
-    choices: [
-      { label: 'Quitter la salle et poursuivre dans la grotte', to: 'c28' }
-    ]
+    choices: state => {
+      if (state.lastCombatOutcome !== 'second_round_wounded_win') {
+        return [{ label: 'Quitter la salle et poursuivre dans la grotte', to: 'c28' }];
+      }
+      if (!hasDamageRoll(state, 'c33')) {
+        return [{ label: 'Lancer le dé de blessure', action: 'damage', damageKey: 'c33' }];
+      }
+      if (state.hp <= 0) return fatalChoices();
+      return [{ label: 'Quitter la salle et poursuivre dans la grotte', to: 'c28' }];
+    }
   },
 
   c34: {
@@ -2484,14 +2503,13 @@ const STORY = {
       <p>Humain ou non, tu dois réagir.</p>
     `,
     choices: [{
-      label: 'Lancer les deux dés',
+      label: 'Lancer les trois dés',
       to: 'c38',
       effect: s => {
-        const hit = roll2D6(s, 'Dextérité', currentDexterity(s));
+        const hit = roll3D6(s, 'Dextérité', currentDexterity(s));
 
         if (!hit) {
           s.lastCombatOutcome = 'crying_wounded_win';
-          s.hp = Math.max(0, s.hp - 1);
         } else if (combatPower(s) >= 5) {
           s.lastCombatOutcome = 'crying_kill';
         } else {
@@ -2583,8 +2601,6 @@ const STORY = {
 
         <p>La silhouette te percute et ses ongles labourent ton bras.</p>
 
-        <p><strong>Tu perds 1 point de Vie.</strong></p>
-
         <p>Vous tombez ensemble dans la poussière.</p>
 
         <p>Son visage est maintenant à quelques centimètres du tien.</p>
@@ -2602,11 +2618,20 @@ const STORY = {
         <p>Il est mort.</p>
 
         <p>Sur sa poitrine, l’écusson de Rochebrume est maintenant parfaitement visible.</p>
+
+        ${damageResultHtml(state, 'c38')}
       `;
     },
-    choices: [
-      { label: 'Reprendre ton souffle et poursuivre', to: 'c37' }
-    ]
+    choices: state => {
+      if (state.lastCombatOutcome !== 'crying_wounded_win') {
+        return [{ label: 'Reprendre ton souffle et poursuivre', to: 'c37' }];
+      }
+      if (!hasDamageRoll(state, 'c38')) {
+        return [{ label: 'Lancer le dé de blessure', action: 'damage', damageKey: 'c38' }];
+      }
+      if (state.hp <= 0) return fatalChoices();
+      return [{ label: 'Reprendre ton souffle et poursuivre', to: 'c37' }];
+    }
   },
 
   c39: {
@@ -3019,13 +3044,13 @@ function equipHeavySword(state) {
   if (state.weapon === 'none') state.weapon = 'heavy';
 }
 function currentForce(state) {
-  return Math.max(2, Math.min(12, state.baseForce + (state.forceBonus || 0)));
+  return Math.max(3, Math.min(18, state.baseForce + (state.forceBonus || 0)));
 }
 function currentDexterity(state) {
   const weaponModifier =
-    state.weapon === 'heavy' ? -3 :
+    state.weapon === 'heavy' ? -4 :
     state.weapon === 'light' ? 2 : 0;
-  return Math.max(2, Math.min(12,
+  return Math.max(3, Math.min(18,
     state.baseDexterity +
     (state.dexBonus || 0) -
     (state.dexPenalty || 0) +
@@ -3075,17 +3100,67 @@ function cryptoDie6() {
   return Math.floor(Math.random() * 6) + 1;
 }
 
-function roll2D6(state, statName, statValue) {
+function roll3D6(state, statName, statValue) {
   const d1 = cryptoDie6();
   const d2 = cryptoDie6();
+  const d3 = cryptoDie6();
 
   state.rollCount = (state.rollCount || 0) + 1;
-  state.lastDice = [d1, d2];
-  state.lastTotal = d1 + d2;
+  state.lastDice = [d1, d2, d3];
+  state.lastTotal = d1 + d2 + d3;
   state.lastStatName = statName;
   state.lastStat = statValue;
 
   return state.lastTotal <= statValue;
+}
+
+function ensureDamageRolls(state) {
+  if (!state.damageRolls || typeof state.damageRolls !== 'object') state.damageRolls = {};
+}
+
+function hasDamageRoll(state, key) {
+  ensureDamageRolls(state);
+  return Number.isInteger(state.damageRolls[key]);
+}
+
+function rollDamage(state, key) {
+  ensureDamageRolls(state);
+  if (hasDamageRoll(state, key)) return state.damageRolls[key];
+
+  const damage = cryptoDie6();
+  state.damageRolls[key] = damage;
+  state.lastDamageDie = damage;
+  state.lastDamageKey = key;
+  state.hp = Math.max(0, state.hp - damage);
+  return damage;
+}
+
+function damageResultHtml(state, key) {
+  ensureDamageRolls(state);
+  const damage = state.damageRolls[key];
+  if (!Number.isInteger(damage)) {
+    return `<div class="dice-result"><p><strong>Tu es blessé.</strong></p><p>Lance un dé pour déterminer la gravité de la blessure.</p></div>`;
+  }
+
+  const pointWord = damage === 1 ? 'point' : 'points';
+  const fatal = state.hp <= 0 ? `<p><strong>Ta Vie tombe à 0.</strong></p>` : '';
+  return `
+    <div class="dice-result">
+      <p class="roll-number">Dé de blessure</p>
+      <div class="dice-faces">${renderDie(damage)}</div>
+      <p><strong>Résultat : ${damage}</strong></p>
+      <p><strong>Tu perds ${damage} ${pointWord} de Vie.</strong></p>
+      <p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p>
+      ${fatal}
+    </div>
+  `;
+}
+
+function fatalChoices() {
+  return [
+    { label: 'Reprendre au dernier point de sauvegarde', action: 'checkpoint' },
+    { label: 'Recommencer depuis le début', action: 'restart' }
+  ];
 }
 
 function renderDie(value) {
@@ -3111,7 +3186,7 @@ function renderDie(value) {
 function diceResultHtml(state) {
   if (!state.lastDice) return '';
 
-  const [d1,d2] = state.lastDice;
+  const [d1,d2,d3] = state.lastDice;
 
   return `
     <div class="dice-result">
@@ -3119,8 +3194,9 @@ function diceResultHtml(state) {
       <div class="dice-faces">
         ${renderDie(d1)}
         ${renderDie(d2)}
+        ${renderDie(d3)}
       </div>
-      <p class="dice-values">Dé 1 : <strong>${d1}</strong> &nbsp;·&nbsp; Dé 2 : <strong>${d2}</strong></p>
+      <p class="dice-values">Dé 1 : <strong>${d1}</strong> &nbsp;·&nbsp; Dé 2 : <strong>${d2}</strong> &nbsp;·&nbsp; Dé 3 : <strong>${d3}</strong></p>
       <p><strong>Total : ${state.lastTotal}</strong></p>
       <p><strong>${state.lastStatName} : ${state.lastStat}</strong></p>
     </div>
@@ -3136,8 +3212,8 @@ function escapeHtml(value) {
 }
 
 
-const STORAGE_KEY = 'valombre_save_v11_aquarelle_3digits';
-const CHECKPOINT_KEY = 'valombre_checkpoint_v11';
+const STORAGE_KEY = 'valombre_save_v12_3d6_stats18';
+const CHECKPOINT_KEY = 'valombre_checkpoint_v12_3d6_stats18';
 
 const defaultState = () => ({
   node: 'start',
@@ -3147,11 +3223,11 @@ const defaultState = () => ({
   visited: {},
   history: [],
   journal: '',
-  hp: 10,
-  maxHp: 10,
-  chance: 8,
-  baseForce: 6,
-  baseDexterity: 9,
+  hp: 18,
+  maxHp: 18,
+  chance: 12,
+  baseForce: 9,
+  baseDexterity: 13,
   forceBonus: 0,
   dexBonus: 0,
   dexPenalty: 0,
@@ -3165,6 +3241,10 @@ const defaultState = () => ({
   lastStatName: '',
   rollCount: 0,
   lastCombatOutcome: null,
+  damageRolls: {},
+  lastDamageDie: null,
+  lastDamageKey: null,
+  lastHealingDie: null,
   currentCheckpoint: null
 });
 
@@ -3364,9 +3444,9 @@ function render() {
   if (!node.sheet) {
     const labels = [
       `♥ ${state.hp}/${state.maxHp}`,
-      `Chance ${state.chance}/12`,
-      `Force ${currentForce(state)}/12`,
-      `Dextérité ${currentDexterity(state)}/12`,
+      `Chance ${state.chance}/18`,
+      `Force ${currentForce(state)}/18`,
+      `Dextérité ${currentDexterity(state)}/18`,
       `Puissance ${combatPower(state)}`
     ];
 
@@ -3410,6 +3490,13 @@ function render() {
         return;
       }
 
+      if (choice.action === 'damage') {
+        rollDamage(state, choice.damageKey || state.node);
+        saveState();
+        render();
+        return;
+      }
+
       if (typeof choice.effect === 'function') choice.effect(state);
       enterNode(choice.to);
     });
@@ -3445,7 +3532,9 @@ function useHealingPotion() {
     return;
   }
 
-  state.hp = Math.min(state.maxHp, state.hp + 2);
+  const healing = cryptoDie6();
+  state.lastHealingDie = healing;
+  state.hp = Math.min(state.maxHp, state.hp + healing);
   removeItem(state,'potion_guerison');
   saveState();
   render();
@@ -3490,6 +3579,10 @@ function openInventory() {
   const moneyLine =
     `<div class="inventory-topline">Argent : ${state.silver} · Or : ${state.goldCoins} · Arme : ${weaponLabel(state)}</div>`;
 
+  const healingLine = Number.isInteger(state.lastHealingDie)
+    ? `<div class="dice-result"><p class="roll-number">Dernière potion</p><div class="dice-faces">${renderDie(state.lastHealingDie)}</div><p><strong>+${state.lastHealingDie} point${state.lastHealingDie > 1 ? 's' : ''} de Vie</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p></div>`
+    : '';
+
   const list = items.length
     ? `<div class="inventory-list">${items.map(([id,item]) => {
         let action = '';
@@ -3508,7 +3601,7 @@ function openInventory() {
             <div class="inventory-actions">
               <button class="inventory-action-btn" data-action="use-potion"
                 ${state.hp >= state.maxHp ? 'disabled' : ''}>
-                Boire la potion (+2 PV)
+                Boire la potion (1 dé de Vie)
               </button>
             </div>`;
         }
@@ -3531,7 +3624,7 @@ function openInventory() {
       }).join('')}</div>`
     : `<div class="inventory-empty">Tu ne transportes encore aucun objet particulier.</div>`;
 
-  modalContent.innerHTML = moneyLine + list;
+  modalContent.innerHTML = moneyLine + healingLine + list;
   modal.classList.remove('hidden');
   modalBackdrop.classList.remove('hidden');
 }
