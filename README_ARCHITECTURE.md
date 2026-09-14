@@ -67,3 +67,16 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - Victoire de l’adversaire : dégâts = Force de l’adversaire.
 - Fiches adversaires intégrées : Masse dans l’ombre (Vie 6, Force 3, Dextérité 4) ; Disparu de Rochebrume (Vie 3, Force 3, Dextérité 5).
 - Les tests hors combat restent en 3D6 ≤ caractéristique.
+
+
+## V15 TEST — Force + puissance de l’arme
+- Combat : Dextérité + 2D6 contre Dextérité + 2D6.
+- Égalité : aucun dégât.
+- Le gagnant inflige : Force + Puissance de l’arme s’il en possède une.
+- Masse dans l’ombre : Vie 14, Force 3, Dextérité 4.
+- Disparu de Rochebrume : Vie 6, Force 3, Dextérité 5.
+- Les caractéristiques Chance, Force et Dextérité n’affichent plus `/18` et n’ont plus de plafond à 18.
+- Seule la Vie conserve un maximum affiché.
+- Les tests hors combat restent en 3D6 ≤ caractéristique.
+- Ajout d’une bulle « Règles des combats » et d’un rappel clair de chaque caractéristique au début.
+- Les illustrations sont désormais gérées séparément et ne sont plus incluses dans les ZIP de développement.

@@ -571,6 +571,58 @@ button { font: inherit; }
   font-style:italic;
 }
 
+.hero-stat-wide {
+  grid-column: 1 / -1;
+}
+
+.hero-characteristics,
+.combat-rules-card,
+.tests-rules-card {
+  margin-top:14px;
+  padding:12px 14px;
+  border:1px solid #927653;
+  background:rgba(255,255,255,.07);
+  color:#3d2a1c;
+}
+
+.hero-characteristics p {
+  margin:.42em 0;
+  line-height:1.34;
+}
+
+.hero-info-title,
+.combat-rules-title {
+  margin-bottom:8px;
+  font-family:var(--display-font);
+  text-transform:uppercase;
+  letter-spacing:.065em;
+  font-weight:700;
+  color:#4c3221;
+}
+
+.combat-rules-card {
+  border:2px solid #765335;
+  box-shadow:inset 0 0 0 3px rgba(124,91,52,.08);
+  background:rgba(103,72,43,.10);
+}
+
+.combat-rules-title {
+  font-size:20px;
+  text-align:center;
+  padding-bottom:7px;
+  border-bottom:1px solid rgba(110,79,46,.36);
+}
+
+.combat-rules-card p,
+.tests-rules-card {
+  line-height:1.42;
+}
+
+.combat-detail {
+  color:#6a5037;
+  font-size:.9em;
+}
+
 .parchment-verse {
   max-width:650px;
   margin:18px auto;
@@ -859,7 +911,7 @@ button { font: inherit; }
 
 
 /* =========================================================
-   COMBATS OPPOSÉS — V14 TEST
+   COMBATS OPPOSÉS — V15 TEST
    ========================================================= */
 .enemy-card {
   max-width: 560px;

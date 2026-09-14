@@ -214,7 +214,7 @@ function render() {
   inventoryCount.textContent = Object.keys(state.inventory).length;
   statusTags.innerHTML = '';
   if (!node.sheet) {
-    const labels = [`♥ ${state.hp}/${state.maxHp}`, `Chance ${state.chance}/18`, `Force ${currentForce(state)}/18`, `Dextérité ${currentDexterity(state)}/18`, `Puissance ${combatPower(state)}`];
+    const labels = [`♥ ${state.hp}/${state.maxHp}`, `Chance ${state.chance}`, `Force ${currentForce(state)}`, `Dextérité ${currentDexterity(state)}`, `Puissance de l’arme ${state.weapon === 'none' ? 0 : combatPower(state)}`];
     if (state.silver > 0) labels.push(`${state.silver} argent`);
     if (state.goldCoins > 0) labels.push(`${state.goldCoins} or`);
     labels.forEach(label => { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = label; statusTags.appendChild(tag); });
