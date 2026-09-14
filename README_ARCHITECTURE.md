@@ -58,3 +58,12 @@ books/
 ```
 
 Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V14.zip`, etc. Cela ne change jamais les IDs ni les chemins internes.
+
+
+## V14 TEST — combats opposés
+- Combat : Dextérité + 2D6 contre Dextérité + 2D6.
+- Égalité : aucun dégât.
+- Victoire du héros : dégâts = Puissance de l’arme.
+- Victoire de l’adversaire : dégâts = Force de l’adversaire.
+- Fiches adversaires intégrées : Masse dans l’ombre (Vie 6, Force 3, Dextérité 4) ; Disparu de Rochebrume (Vie 3, Force 3, Dextérité 5).
+- Les tests hors combat restent en 3D6 ≤ caractéristique.

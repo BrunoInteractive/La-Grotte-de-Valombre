@@ -4,6 +4,133 @@
 (function () {
   'use strict';
 
+const ENEMIES = {
+  shadowMass: {
+    name: 'MASSE DANS L’OMBRE',
+    maxHp: 6,
+    force: 3,
+    dexterity: 4
+  },
+  rochebrumeMissing: {
+    name: 'DISPARU DE ROCHEBRUME',
+    maxHp: 3,
+    force: 3,
+    dexterity: 5
+  }
+};
+
+function roll2D6() {
+  return [cryptoDie6(), cryptoDie6()];
+}
+
+function ensureCombats(state) {
+  if (!state.combats || typeof state.combats !== 'object') state.combats = {};
+}
+
+function combatState(state, key, enemy) {
+  ensureCombats(state);
+  if (!state.combats[key] || typeof state.combats[key] !== 'object') {
+    state.combats[key] = { hp: enemy.maxHp, round: 0, last: null };
+  }
+  const combat = state.combats[key];
+  if (!Number.isFinite(combat.hp)) combat.hp = enemy.maxHp;
+  combat.hp = Math.max(0, Math.min(enemy.maxHp, combat.hp));
+  if (!Number.isInteger(combat.round)) combat.round = 0;
+  return combat;
+}
+
+function fightRound(state, key, enemy) {
+  const combat = combatState(state, key, enemy);
+  const heroDice = roll2D6();
+  const enemyDice = roll2D6();
+  const heroDexterity = currentDexterity(state);
+  const enemyDexterity = enemy.dexterity;
+  const heroAttack = heroDexterity + heroDice[0] + heroDice[1];
+  const enemyAttack = enemyDexterity + enemyDice[0] + enemyDice[1];
+  const heroDamage = combatPower(state);
+  const enemyDamage = enemy.force;
+
+  let outcome = 'tie';
+  let damage = 0;
+
+  if (heroAttack > enemyAttack) {
+    outcome = 'hero';
+    damage = heroDamage;
+    combat.hp = Math.max(0, combat.hp - damage);
+  } else if (heroAttack < enemyAttack) {
+    outcome = 'enemy';
+    damage = enemyDamage;
+    state.hp = Math.max(0, state.hp - damage);
+  }
+
+  combat.round += 1;
+  combat.last = {
+    round: combat.round,
+    heroDice,
+    enemyDice,
+    heroDexterity,
+    enemyDexterity,
+    heroAttack,
+    enemyAttack,
+    heroDamage,
+    enemyDamage,
+    damage,
+    outcome,
+    heroHp: state.hp,
+    enemyHp: combat.hp
+  };
+  state.lastCombatKey = key;
+  state.lastCombatOutcome = outcome;
+  return combat.last;
+}
+
+function enemyCardHtml(state, key, enemy) {
+  const combat = combatState(state, key, enemy);
+  return `
+    <div class="enemy-card" aria-label="Fiche de l’adversaire">
+      <div class="enemy-card-title">${enemy.name}</div>
+      <div class="enemy-card-stats">
+        <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${combat.hp} / ${enemy.maxHp}</strong></div>
+        <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${enemy.force}</strong></div>
+        <div><span class="enemy-icon">◆</span><span>Dextérité</span><strong>${enemy.dexterity}</strong></div>
+      </div>
+    </div>`;
+}
+
+function combatRoundHtml(state, key, enemy) {
+  const combat = combatState(state, key, enemy);
+  const r = combat.last;
+  if (!r) return '';
+
+  const outcomeText = r.outcome === 'hero'
+    ? `<strong>Tu remportes l’échange.</strong><br>Ton arme inflige <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de dégâts.`
+    : r.outcome === 'enemy'
+      ? `<strong>${enemy.name} remporte l’échange.</strong><br>Tu perds <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de Vie.`
+      : `<strong>Égalité.</strong><br>Les deux attaques se neutralisent. Aucun dégât.`;
+
+  return `
+    <div class="combat-roll-result">
+      <div class="combat-roll-title">Échange n° ${r.round}</div>
+      <div class="combat-roll-grid">
+        <div class="combat-side">
+          <strong>TOI</strong>
+          <div class="combat-dice">${renderDie(r.heroDice[0])}${renderDie(r.heroDice[1])}</div>
+          <p>Dextérité ${r.heroDexterity} + dés ${r.heroDice[0] + r.heroDice[1]}</p>
+          <p class="combat-total">Attaque : <strong>${r.heroAttack}</strong></p>
+        </div>
+        <div class="combat-versus">VS</div>
+        <div class="combat-side">
+          <strong>${enemy.name}</strong>
+          <div class="combat-dice">${renderDie(r.enemyDice[0])}${renderDie(r.enemyDice[1])}</div>
+          <p>Dextérité ${r.enemyDexterity} + dés ${r.enemyDice[0] + r.enemyDice[1]}</p>
+          <p class="combat-total">Attaque : <strong>${r.enemyAttack}</strong></p>
+        </div>
+      </div>
+      <div class="combat-outcome">${outcomeText}</div>
+      <div class="combat-life-line">Ta Vie : <strong>${state.hp} / ${state.maxHp}</strong> · Vie adverse : <strong>${combat.hp} / ${enemy.maxHp}</strong></div>
+    </div>`;
+}
+
 const STORY = {
   start: {
     sheet: true,
@@ -29,7 +156,7 @@ const STORY = {
         </div>
 
         <div class="hero-weapon">Au départ, tu ne portes encore aucune arme.</div>
-        <div class="hero-weapon"><strong>Tests :</strong> lance 3 dés. Si le total est inférieur ou égal à la caractéristique, le test est réussi.<br><strong>Blessures :</strong> lance 1 dé. Son résultat indique directement le nombre de points de Vie perdus.</div>
+        <div class="hero-weapon"><strong>Tests :</strong> lance 3 dés. Si le total est inférieur ou égal à la caractéristique, le test est réussi.<br><strong>Combats :</strong> héros et adversaire lancent chacun 2 dés et ajoutent leur Dextérité. Le meilleur score remporte l’échange. En cas d’égalité, personne n’est blessé. Si le héros gagne, il inflige la Puissance de son arme ; si l’adversaire gagne, il inflige sa Force.</div>
       </div>
       <p>Sir Aldren t’a ordonné de rester au village. Pourtant, la nuit est tombée depuis longtemps et son cheval vient de revenir seul.</p>
     `,
@@ -1125,23 +1252,15 @@ const STORY = {
     number: 'PAGE 26',
     title: 'Le choc',
     image: 'Le choc',
-    text: `
+    text: state => `
       <p>La masse se jette sur toi.</p>
-      <p>Tu frappes.</p>
+      <p>Tu raffermis ta prise sur ton épée et cherches l’ouverture.</p>
+      ${enemyCardHtml(state, 'shadowMass', ENEMIES.shadowMass)}
     `,
     choices: [{
-      label: 'Lancer les trois dés',
+      label: 'Lancer les dés de combat',
       to: 'c27',
-      effect: s => {
-        const hit = roll3D6(s, 'Dextérité', currentDexterity(s));
-        if (!hit) {
-          s.lastCombatOutcome = 'miss';
-        } else if (combatPower(s) >= 8) {
-          s.lastCombatOutcome = 'one_hit';
-        } else {
-          s.lastCombatOutcome = 'needs_second_round';
-        }
-      }
+      effect: s => fightRound(s, 'shadowMass', ENEMIES.shadowMass)
     }]
   },
 
@@ -1150,26 +1269,52 @@ const STORY = {
     title: 'Le résultat du combat',
     image: 'Le résultat du combat',
     text: state => {
-      const r = diceResultHtml(state);
-      if (state.lastCombatOutcome === 'one_hit') {
-        return r + `<p>Ton coup porte. La puissance de ton arme suffit : la masse s’effondre.</p>`;
+      const combat = combatState(state, 'shadowMass', ENEMIES.shadowMass);
+      const result = combatRoundHtml(state, 'shadowMass', ENEMIES.shadowMass);
+      const card = enemyCardHtml(state, 'shadowMass', ENEMIES.shadowMass);
+
+      if (combat.hp <= 0) {
+        return card + result + `
+          <p>Ton coup porte avec assez de force pour mettre fin au combat.</p>
+          <p>La masse se raidit puis s’effondre contre la pierre.</p>
+          <p>Dans sa chute, son bras passe dans la faible lumière.</p>
+          <p>Sous la terre noire et la peau déformée, tu crois distinguer une manche de chemise.</p>
+          <p>Quelque chose de parfaitement humain.</p>
+          <p>Tu détournes les yeux avant d’en voir davantage.</p>
+        `;
       }
-      if (state.lastCombatOutcome === 'needs_second_round') {
-        return r + `<p>Ton coup porte, mais ne suffit pas à l’abattre. La créature se redresse.</p>`;
+
+      if (state.hp <= 0) {
+        return card + result + `
+          <p>Le choc te fait perdre pied.</p>
+          <p>Ta vision se brouille tandis que la masse revient sur toi.</p>
+        `;
       }
-      return r + `
-        <p>Tu rates ton attaque. La créature t’atteint.</p>
-        ${damageResultHtml(state, 'c27')}
+
+      if (combat.last && combat.last.outcome === 'enemy') {
+        return card + result + `
+          <p>La créature te percute. Tu recules contre la paroi, mais tu parviens à conserver ton arme.</p>
+          <p>Elle revient immédiatement sur toi.</p>
+        `;
+      }
+
+      if (combat.last && combat.last.outcome === 'tie') {
+        return card + result + `
+          <p>Vos mouvements se heurtent sans qu’aucun de vous ne trouve l’ouverture.</p>
+          <p>La masse gronde et se ramasse pour un nouvel assaut.</p>
+        `;
+      }
+
+      return card + result + `
+        <p>Ton coup porte, mais la créature tient encore debout.</p>
+        <p>Elle recule d’un pas puis revient vers toi.</p>
       `;
     },
     choices: state => {
-      if (state.lastCombatOutcome === 'one_hit') return [{ label: 'Continuer', to: 'c28' }];
-      if (state.lastCombatOutcome === 'needs_second_round') return [{ label: 'Reprendre le combat', to: 'c29' }];
-      if (!hasDamageRoll(state, 'c27')) {
-        return [{ label: 'Lancer le dé de blessure', action: 'damage', damageKey: 'c27' }];
-      }
+      const combat = combatState(state, 'shadowMass', ENEMIES.shadowMass);
+      if (combat.hp <= 0) return [{ label: 'Quitter la salle et poursuivre dans la grotte', to: 'c28' }];
       if (state.hp <= 0) return fatalChoices();
-      return [{ label: 'Reprendre le combat', to: 'c29' }];
+      return [{ label: 'Continuer le combat', to: 'c26' }];
     }
   },
 
@@ -1564,7 +1709,7 @@ const STORY = {
     number: 'PAGE 36',
     title: 'Sous la terre noire',
     image: 'Sous la terre noire',
-    text: `
+    text: state => `
       <p>Tu avances lentement, les mains bien visibles.</p>
 
       <blockquote>« Je veux seulement t’aider. »</blockquote>
@@ -1586,21 +1731,13 @@ const STORY = {
       <p><strong>ROCHEBRUME.</strong></p>
 
       <p>Humain ou non, tu dois réagir.</p>
+
+      ${enemyCardHtml(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing)}
     `,
     choices: [{
-      label: 'Lancer les trois dés',
+      label: 'Lancer les dés de combat',
       to: 'c38',
-      effect: s => {
-        const hit = roll3D6(s, 'Dextérité', currentDexterity(s));
-
-        if (!hit) {
-          s.lastCombatOutcome = 'crying_wounded_win';
-        } else if (combatPower(s) >= 5) {
-          s.lastCombatOutcome = 'crying_kill';
-        } else {
-          s.lastCombatOutcome = 'crying_wound';
-        }
-      }
+      effect: s => fightRound(s, 'rochebrumeMissing', ENEMIES.rochebrumeMissing)
     }]
   },
 
@@ -1647,75 +1784,54 @@ const STORY = {
     title: 'Ce qui restait de lui',
     image: 'Ce qui restait de lui',
     text: state => {
-      const r = diceResultHtml(state);
+      const combat = combatState(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing);
+      const result = combatRoundHtml(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing);
+      const card = enemyCardHtml(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing);
 
-      if (state.lastCombatOutcome === 'crying_kill') {
-        return r + `
+      if (combat.hp <= 0) {
+        return card + result + `
           <p>Tu te décales au dernier moment et ton coup l’atteint avant qu’il puisse refermer ses mains sur toi.</p>
-
           <p>La silhouette s’effondre lourdement.</p>
-
           <p>Pendant quelques secondes, tu restes immobile, l’arme levée.</p>
-
           <p>Elle ne bouge plus.</p>
-
           <p>Sous les plaques de terre noire, tu distingues encore un visage humain.</p>
-
+          <p>Sur sa poitrine, l’écusson de Rochebrume est maintenant parfaitement visible.</p>
           <p>Tu préfères ne pas chercher à savoir depuis combien de temps il ne l’était plus tout à fait.</p>
         `;
       }
 
-      if (state.lastCombatOutcome === 'crying_wound') {
-        return r + `
-          <p>Ton coup porte, mais ton arme manque de puissance pour l’abattre immédiatement.</p>
-
-          <p>La silhouette hurle et recule en titubant.</p>
-
-          <p>Pendant une seconde, tu crois qu’elle va revenir sur toi.</p>
-
-          <p>Au lieu de cela, elle se retourne et s’enfuit à quatre pattes dans une fissure latérale.</p>
-
-          <p>Tu l’entends encore quelques instants racler la pierre, puis plus rien.</p>
-
-          <p>Au sol reste un lambeau de tissu bleu portant l’écusson de Rochebrume.</p>
+      if (state.hp <= 0) {
+        return card + result + `
+          <p>La silhouette te percute et tu t’effondres dans la poussière.</p>
+          <p>Le monde disparaît derrière son visage couvert de terre noire.</p>
         `;
       }
 
-      return r + `
-        <p>Tu réagis trop tard.</p>
+      if (combat.last && combat.last.outcome === 'enemy') {
+        return card + result + `
+          <p>La silhouette te percute et ses ongles labourent ton bras.</p>
+          <p>Tu la repousses juste assez pour retrouver la garde de ton arme.</p>
+          <p>Elle se ramasse déjà pour bondir de nouveau.</p>
+        `;
+      }
 
-        <p>La silhouette te percute et ses ongles labourent ton bras.</p>
+      if (combat.last && combat.last.outcome === 'tie') {
+        return card + result + `
+          <p>Tu bloques son mouvement au dernier instant.</p>
+          <p>Vous vous séparez d’un pas, sans quitter l’autre des yeux.</p>
+        `;
+      }
 
-        <p>Vous tombez ensemble dans la poussière.</p>
-
-        <p>Son visage est maintenant à quelques centimètres du tien.</p>
-
-        <p>Derrière la terre noire, tu aperçois une expression qui ressemble moins à de la rage qu’à de la terreur.</p>
-
-        <p>Tu réussis enfin à dégager ton arme.</p>
-
-        <p>Tu frappes à bout portant.</p>
-
-        <p>Le corps se contracte puis retombe contre toi.</p>
-
-        <p>Tu le repousses lentement.</p>
-
-        <p>Il est mort.</p>
-
-        <p>Sur sa poitrine, l’écusson de Rochebrume est maintenant parfaitement visible.</p>
-
-        ${damageResultHtml(state, 'c38')}
+      return card + result + `
+        <p>Ton coup porte, mais il est encore capable de se battre.</p>
+        <p>La silhouette chancelle puis revient vers toi.</p>
       `;
     },
     choices: state => {
-      if (state.lastCombatOutcome !== 'crying_wounded_win') {
-        return [{ label: 'Reprendre ton souffle et poursuivre', to: 'c37' }];
-      }
-      if (!hasDamageRoll(state, 'c38')) {
-        return [{ label: 'Lancer le dé de blessure', action: 'damage', damageKey: 'c38' }];
-      }
+      const combat = combatState(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing);
+      if (combat.hp <= 0) return [{ label: 'Reprendre ton souffle et poursuivre', to: 'c37' }];
       if (state.hp <= 0) return fatalChoices();
-      return [{ label: 'Reprendre ton souffle et poursuivre', to: 'c37' }];
+      return [{ label: 'Continuer le combat', to: 'c36' }];
     }
   },
 
@@ -2186,6 +2302,8 @@ const STORY = {
       lastStatName: '',
       rollCount: 0,
       lastCombatOutcome: null,
+      lastCombatKey: null,
+      combats: {},
       damageRolls: {},
       lastDamageDie: null,
       lastDamageKey: null,
@@ -2264,8 +2382,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 2,
-    saveVersion: 1,
+    contentVersion: 3,
+    saveVersion: 2,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,
@@ -2279,8 +2397,8 @@ const STORY = {
     checkpoints: [
       { node: 'c8', label: 'Sortie de Valombre', onlyIfNone: true }
     ],
-    legacyStorageKeys: ['ldveh.book.ecuyer-01-valombre.save.v1', 'valombre_save_v12_3d6_stats18'],
-    legacyCheckpointKeys: ['ldveh.book.ecuyer-01-valombre.checkpoint.v1', 'valombre_checkpoint_v12_3d6_stats18'],
+    legacyStorageKeys: ['ldveh.book.ecuyer-01.save.v1', 'ldveh.book.ecuyer-01-valombre.save.v1', 'valombre_save_v12_3d6_stats18'],
+    legacyCheckpointKeys: ['ldveh.book.ecuyer-01.checkpoint.v1', 'ldveh.book.ecuyer-01-valombre.checkpoint.v1', 'valombre_checkpoint_v12_3d6_stats18'],
     exportSeriesMemory(state) {
       // Les décisions durables seront explicitement ajoutées ici lorsqu’elles
       // seront validées comme conséquences inter-livres. Rien n’est exporté
