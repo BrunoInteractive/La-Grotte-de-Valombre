@@ -16,6 +16,12 @@ const ENEMIES = {
     maxHp: 3,
     force: 3,
     dexterity: 8
+  },
+  bridgeWalker: {
+    name: 'MARCHEUR SOUS LE PONT',
+    maxHp: 5,
+    force: 8,
+    dexterity: 10
   }
 };
 
@@ -1778,40 +1784,50 @@ const STORY = {
 
   c37: {
     number: 'PAGE 37',
-    title: 'Toujours plus bas',
-    image: 'Toujours plus bas',
-    text: `
-      <p>Tu quittes finalement les galeries proches du camp.</p>
+    title: 'Le passage des fissures',
+    image: 'Le passage des fissures',
+    text: state => `
+      <p>Tu quittes enfin le camp d’Anselme et reprends la descente.</p>
 
-      <p>Le chemin descend désormais sans interruption.</p>
+      <p>Le tunnel se resserre peu à peu jusqu’à ne plus être qu’une fente dans la roche.</p>
 
-      <p>Par endroits, les murs portent encore des traces d’outils : entailles régulières, anciennes niches pour des torches, marches grossièrement taillées.</p>
+      <p>Tu dois avancer de profil, une épaule contre chaque paroi.</p>
 
-      <p>Puis ces marques disparaissent.</p>
+      <p>Ton souffle te revient au visage.</p>
 
-      <p>La roche devient lisse.</p>
+      <p>Puis tu entends un frottement.</p>
 
-      <p>Presque trop lisse.</p>
+      <p>Pas devant toi.</p>
 
-      <p>Tu marches longtemps sans savoir combien de temps s’écoule. Une demi-heure peut-être. Davantage.</p>
+      <p><strong>Dans la pierre.</strong></p>
 
-      <p>Le tunnel se resserre peu à peu jusqu’à t’obliger à avancer de profil.</p>
+      <p>Quelque chose gratte derrière la paroi, très près de ton oreille.</p>
 
-      <p>Ton épaule frotte contre la pierre. Ton souffle te revient au visage.</p>
+      <p>Quelques mètres plus loin, une fissure noire coupe la roche à hauteur de ton visage.</p>
 
-      <p>Devant toi, pourtant, un courant d’air froid commence à se faire sentir.</p>
+      <p>Un œil s’y ouvre.</p>
 
-      <p>Encore quelques pas.</p>
+      <p>Petit. Pâle. Presque humain.</p>
 
-      <p>La fissure s’élargit.</p>
+      <p>Il disparaît aussitôt.</p>
 
-      <p>Tu avances.</p>
+      <p>D’autres frottements lui répondent plus loin.</p>
 
-      <p>Et le monde s’ouvre devant toi.</p>
+      <p>Tu comprends alors que le passage n’est peut-être pas vide.</p>
+
+      <p>Il est simplement trop étroit pour que ce qui vit dans ses parois puisse en sortir complètement.</p>
+
+      <p><strong>Ta Dextérité actuelle : ${currentDexterity(state)}</strong></p>
     `,
-    choices: [
-      { label: 'Sortir de la fissure', to: 'c40' }
-    ]
+    choices: [{
+      label: 'Te glisser entre les fissures — lancer les trois dés de Dextérité',
+      to: 'c39',
+      effect: s => {
+        const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
+        s.flags.fissurePass = ok ? 'success' : 'fail';
+        if (!ok) s.hp = Math.max(0, s.hp - 1);
+      }
+    }]
   },
 
   c38: {
@@ -1872,82 +1888,59 @@ const STORY = {
 
   c39: {
     number: 'PAGE 39',
-    title: 'La corniche',
-    image: 'La corniche',
+    title: 'Ce qui vit entre les pierres',
+    image: 'Ce qui vit entre les pierres',
     text: state => {
-      if (hasItem(state, 'lame_noire')) {
-        return `
-          <p>Tu retrouves la corniche suspendue au-dessus du gouffre.</p>
+      const r = diceResultHtml(state);
+      if (state.flags.fissurePass === 'success') {
+        return r + `
+          <p>Tu avances lentement, sans jamais t’arracher à la paroi.</p>
 
-          <p>Le vide s’étend à ta gauche, noyé dans une brume bleuâtre.</p>
+          <p>À plusieurs reprises, de très longs doigts apparaissent dans les fentes puis se retirent avant de te toucher.</p>
 
-          <p>Tu passes devant l’anfractuosité où reposait la petite lame noire.</p>
+          <p>Tu ne vois jamais davantage qu’un œil, une phalange, parfois quelque chose qui ressemble à des dents beaucoup trop petites.</p>
 
-          <p>La niche est vide.</p>
+          <p>Le plus difficile est de ne pas accélérer.</p>
 
-          <p>Plus loin, la corniche rejoint les premières pierres d’un pont ancien.</p>
+          <p>Tu sens qu’elles attendent précisément cela.</p>
+
+          <p>Enfin, la roche s’écarte.</p>
+
+          <p>Tu fais encore trois pas avant d’oser respirer normalement.</p>
+
+          <p>Derrière toi, plusieurs petits coups secs répondent dans la pierre.</p>
+
+          <p>Comme si quelque chose te suivait encore, de l’autre côté du mur.</p>
         `;
       }
 
-      return `
-        <p>Tu t’engages sur une corniche étroite qui longe la falaise.</p>
+      const weaponLine = state.weapon === 'heavy'
+        ? `<p>La garde de la lourde épée accroche brutalement la roche et te bloque une fraction de seconde.</p>`
+        : `<p>Ton équipement accroche la roche et te bloque une fraction de seconde.</p>`;
 
-        <p>À ta gauche, le vide descend si profondément que la brume finit par en masquer le fond.</p>
+      return r + `
+        ${weaponLine}
 
-        <p>Tu avances lentement, une main contre la roche.</p>
+        <p>C’est suffisant.</p>
 
-        <p>Après plusieurs dizaines de mètres, quelque chose attire ton regard dans une petite anfractuosité.</p>
+        <p>Une main grisâtre jaillit d’une fente et se referme sur ton avant-bras.</p>
 
-        <p>Une dague.</p>
+        <p>Les doigts sont si fins que tu les sens presque se croiser autour de toi.</p>
 
-        <p>Elle repose seule sur la pierre, comme si quelqu’un venait de la déposer.</p>
+        <p>Tu arraches ton bras et te jettes en avant.</p>
 
-        <p>Son métal est parfaitement noir.</p>
+        <p>Quelque chose griffe ta peau avant de disparaître dans la pierre.</p>
 
-        <p>Pas sombre. Pas terni.</p>
+        <p><strong>Tu perds 1 point de Vie.</strong></p>
 
-        <p>Noir au point de sembler absorber la faible lumière qui l’entoure.</p>
+        <p>Lorsque le passage s’élargit enfin, tu ne t’arrêtes pas.</p>
 
-        <p>Tu ne ressens pourtant ni chaleur, ni froid, ni vibration.</p>
-
-        <p>Rien qui ressemble à de la magie.</p>
+        <p>Les petits frottements continuent derrière toi pendant encore longtemps.</p>
       `;
     },
-    choices: state => {
-      if (hasItem(state, 'lame_noire')) {
-        return [{ label: 'Continuer vers le pont', to: 'c46' }];
-      }
-
-      return [
-        {
-          label: 'Prendre la lame noire et l’équiper',
-          to: 'c46',
-          effect: s => {
-            s.flags.blackBladeFound = true;
-            addItem(
-              s,
-              'lame_noire',
-              'Lame noire',
-              'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.'
-            );
-            s.weapon = 'black_blade';
-          }
-        },
-        {
-          label: 'Prendre la lame noire et garder ton arme actuelle',
-          to: 'c46',
-          effect: s => {
-            s.flags.blackBladeFound = true;
-            addItem(
-              s,
-              'lame_noire',
-              'Lame noire',
-              'Une petite dague d’un métal noir, presque sans reflet. Son effet reste inconnu.'
-            );
-          }
-        }
-      ];
-    }
+    choices: state => state.hp <= 0
+      ? fatalChoices()
+      : [{ label: 'Poursuivre vers le courant d’air froid', to: 'c40' }]
   },
 
   c40: {
@@ -1956,11 +1949,11 @@ const STORY = {
     image: 'Le monde sous la montagne',
     onEnter: s => setCheckpoint(s, 'Le monde sous la montagne'),
     text: `
-      <p>Tu sors de la fissure.</p>
+      <p>La fissure s’élargit brusquement.</p>
 
-      <p>Et tu t’arrêtes aussitôt.</p>
+      <p>Tu fais encore quelques pas.</p>
 
-      <p>Devant toi s’ouvre un espace si vaste que ton esprit refuse d’abord de lui donner une forme.</p>
+      <p>Et le monde s’ouvre devant toi.</p>
 
       <p>Tu avais cru atteindre une grande caverne.</p>
 
@@ -1974,11 +1967,11 @@ const STORY = {
 
       <p>Pas de soleil.</p>
 
-      <p>Très loin en contrebas, des masses rocheuses émergent de la brume comme des chaînes de montagnes.</p>
+      <p>Très loin en contrebas, des falaises émergent de la brume comme des chaînes de montagnes.</p>
 
       <p>Tu te retournes.</p>
 
-      <p>La fissure dont tu viens de sortir n’est plus qu’une fente minuscule dans une falaise gigantesque.</p>
+      <p>La fissure dont tu viens de sortir n’est plus qu’une ligne noire dans une paroi gigantesque.</p>
 
       <p>La montagne de Valombre ne pourrait pas contenir cet endroit.</p>
 
@@ -1990,17 +1983,22 @@ const STORY = {
 
       <p>Et cette seconde possibilité te paraît soudain bien pire.</p>
 
-      <p>Trois voies s’enfoncent dans ce monde impossible : un sentier vers un lac parfaitement noir, un escalier monumental taillé dans la falaise, et une corniche qui disparaît derrière un éperon rocheux.</p>
+      <p>Trois voies s’enfoncent dans ce monde impossible.</p>
+
+      <p>À gauche, un sentier descend vers une étendue d’eau parfaitement noire.</p>
+
+      <p>Face à toi, un escalier monumental grimpe le long de la falaise.</p>
+
+      <p>À droite, une corniche étroite rejoint un pont suspendu au-dessus d’un gouffre sans fond visible.</p>
+
+      <p>Tu ne pourras pas explorer les trois.</p>
+
+      <p>Il faut choisir.</p>
     `,
-    choices: state => [
+    choices: [
       { label: 'Descendre vers le lac noir', to: 'c41' },
       { label: 'Prendre les marches gigantesques', to: 'c44' },
-      {
-        label: hasItem(state, 'lame_noire')
-          ? 'Reprendre la corniche vers le pont'
-          : 'Longer la corniche',
-        to: hasItem(state, 'lame_noire') ? 'c46' : 'c39'
-      }
+      { label: 'Longer la corniche vers le pont', to: 'c55' }
     ]
   },
 
@@ -2008,44 +2006,59 @@ const STORY = {
     number: 'PAGE 41',
     title: 'Le lac noir',
     image: 'Le lac noir',
+    onEnter: s => { s.flags.worldRoute = 'lake'; },
     text: `
       <p>Le sentier descend longtemps en lacets.</p>
 
-      <p>À mesure que tu approches du fond, l’air devient plus froid et la lumière plus diffuse.</p>
+      <p>Plus tu approches du fond, plus l’air devient froid.</p>
 
-      <p>Tu finis par atteindre une rive de pierre parfaitement lisse.</p>
+      <p>La lumière blanche du monde souterrain s’affaiblit jusqu’à ne plus former qu’un halo au-dessus des falaises.</p>
 
-      <p>Le lac s’étend devant toi jusqu’à disparaître dans la brume.</p>
+      <p>Puis tu atteins la rive.</p>
 
-      <p>Son eau est si noire qu’elle ne reflète presque rien.</p>
+      <p>Le lac s’étend devant toi jusqu’à disparaître dans une brume noire.</p>
 
-      <p>Une vieille embarcation est attachée à un anneau de pierre.</p>
+      <p>Il n’y a pas une vague.</p>
 
-      <p>Le bois paraît gonflé par l’humidité mais encore solide.</p>
+      <p>Pas même un frémissement.</p>
 
-      <p>Tu détaches la corde et pousses la barque sur l’eau.</p>
+      <p>Tu approches la main de la surface.</p>
 
-      <p>Pendant plusieurs minutes, seul le bruit régulier des rames trouble le silence.</p>
+      <p>Ton reflet apparaît.</p>
 
-      <p>Puis trois coups résonnent sous la coque.</p>
+      <p>Une seconde trop tard.</p>
+
+      <p>Tu retires immédiatement ta main.</p>
+
+      <p>Un peu plus loin, une vieille barque est attachée à un anneau de pierre.</p>
+
+      <p>Le bois est gonflé par l’humidité, mais la corde paraît étonnamment solide.</p>
+
+      <p>Tu embarques.</p>
+
+      <p>Au bout de plusieurs minutes, la rive disparaît derrière toi.</p>
+
+      <p>Il n’y a plus que l’eau.</p>
+
+      <p>Puis quelque chose frappe sous la coque.</p>
 
       <p><strong>TOC.</strong></p>
 
-      <p><strong>TOC.</strong></p>
+      <p>Tu cesses de ramer.</p>
+
+      <p>Un second coup répond beaucoup plus loin.</p>
 
       <p><strong>TOC.</strong></p>
 
-      <p>Tu te figes.</p>
+      <p>Puis un troisième, directement sous tes pieds.</p>
 
-      <p>Ce rythme.</p>
+      <p><strong>TOC.</strong></p>
 
-      <p>Les trois mêmes temps que le chant impossible entendu dans la forêt de Rochebrume.</p>
-
-      <p>Quelque chose effleure lentement le bois sous tes pieds.</p>
+      <p>Le même rythme que les trois notes entendues dans la forêt de Rochebrume.</p>
     `,
     choices: [
-      { label: 'Ne pas regarder et continuer à ramer', to: 'c45' },
-      { label: 'Te pencher et regarder dans l’eau', to: 'c42' }
+      { label: 'Te pencher et regarder sous l’eau', to: 'c42' },
+      { label: 'Ne surtout pas regarder et recommencer à ramer', to: 'c45' }
     ]
   },
 
@@ -2053,49 +2066,50 @@ const STORY = {
     number: 'PAGE 42',
     title: 'Un visage sous l’eau',
     image: 'Un visage sous l’eau',
+    onEnter: s => { s.flags.lookedIntoLake = true; },
     text: `
       <p>Tu poses les rames et te penches lentement au-dessus du bord.</p>
 
-      <p>Au début, tu ne vois que ton propre reflet déformé.</p>
+      <p>La surface est si sombre qu’elle ressemble davantage à une ouverture qu’à de l’eau.</p>
 
-      <p>Puis il disparaît.</p>
-
-      <p>Très loin sous la surface, des points lumineux apparaissent.</p>
+      <p>Puis des points lumineux apparaissent très loin sous toi.</p>
 
       <p>Des dizaines.</p>
 
-      <p>Des centaines peut-être.</p>
+      <p>Des centaines.</p>
 
-      <p>Ils ressemblent à des étoiles vues dans un ciel parfaitement clair.</p>
+      <p>Ils ressemblent à des étoiles dans un ciel nocturne.</p>
 
-      <p>Mais elles sont sous toi.</p>
+      <p>Mais elles sont sous le bateau.</p>
+
+      <p>Et beaucoup trop loin.</p>
 
       <p>Tu te penches davantage.</p>
 
-      <p>Un visage surgit soudain dans l’obscurité.</p>
+      <p>Un visage apparaît entre les lumières.</p>
 
       <p><strong>Sir Aldren.</strong></p>
 
-      <p>Il semble flotter plusieurs mètres sous l’eau.</p>
+      <p>Il flotte plusieurs mètres sous la surface, parfaitement immobile.</p>
 
       <p>Ses yeux s’ouvrent.</p>
 
-      <p>Sa bouche prononce quelque chose que tu n’entends pas.</p>
+      <p>Sa bouche prononce quelque chose.</p>
 
-      <p>Tu recules si brusquement que la barque oscille dangereusement.</p>
+      <p>Tu n’entends rien.</p>
 
-      <p>Lorsque tu regardes de nouveau, il n’y a plus rien.</p>
+      <p>Puis le visage recule dans l’obscurité.</p>
 
-      <p>Seulement l’eau noire.</p>
+      <p>Trop vite.</p>
 
-      <p>Tu ne sais pas si Aldren était réellement là, si quelque chose a emprunté son visage… ou si ton esprit commence à fabriquer lui-même ce qu’il craint le plus de voir.</p>
+      <p>Comme s’il n’avait jamais appartenu à un corps.</p>
 
-      <p>Tu reprends les rames.</p>
+      <p>Tu te redresses.</p>
 
-      <p>Quoi que tu aies vu, rester immobile au milieu de ce lac te paraît soudain une très mauvaise idée.</p>
+      <p>Au même instant, la barque cesse de flotter normalement.</p>
     `,
     choices: [
-      { label: 'Continuer jusqu’à l’autre rive', to: 'c45' }
+      { label: 'Reprendre les rames', to: 'c45' }
     ]
   },
 
@@ -2120,135 +2134,949 @@ const STORY = {
     number: 'PAGE 44',
     title: 'Les marches des géants',
     image: 'Les marches des géants',
+    onEnter: s => { s.flags.worldRoute = 'stairs'; },
     text: `
       <p>Tu choisis l’escalier.</p>
 
       <p>Les premières marches suffisent à te faire comprendre qu’il n’a pas été conçu pour des hommes.</p>
 
-      <p>Chacune arrive presque à hauteur de ton genou. Certaines sont si hautes que tu dois poser les mains sur la pierre pour te hisser.</p>
+      <p>Chacune t’arrive presque à la poitrine.</p>
 
-      <p>Tu montes longtemps.</p>
+      <p>Tu dois parfois poser les deux mains sur la pierre et te hisser comme sur un mur.</p>
 
-      <p>Lorsque tu regardes derrière toi, la fissure par laquelle tu es arrivé n’est déjà plus visible.</p>
+      <p>Pourtant, le long de l’escalier principal, de petites entailles ont été ajoutées plus tard.</p>
 
-      <p>Au-dessus, la lumière blanche ne change jamais.</p>
+      <p>Des prises.</p>
 
-      <p>Tu ignores si quelques minutes ou plusieurs heures se sont écoulées lorsque l’escalier débouche enfin sur une terrasse.</p>
+      <p>Des marches humaines taillées dans les marches gigantesques.</p>
 
-      <p>Des fresques couvrent toute la paroi.</p>
+      <p>Quelqu’un est donc venu ici après les bâtisseurs.</p>
 
-      <p>Tu y vois de petites silhouettes humaines disposées autour d’une forme immense, si vaste que l’artiste n’en a représenté qu’une partie.</p>
+      <p>Tu montes.</p>
 
-      <p>Au-dessus d’elles revient sans cesse le même symbole.</p>
+      <p>La lumière blanche ne change jamais.</p>
 
-      <p><strong>Un œil fermé.</strong></p>
+      <p>Au bout d’un temps impossible à mesurer, ton pied s’enfonce légèrement dans une dalle.</p>
 
-      <p>Tu observes plus attentivement les scènes.</p>
+      <p>Un grondement répond dans toute la falaise.</p>
 
-      <p>Les hommes ne semblent pas adorer la forme.</p>
+      <p>Une marche située plusieurs mètres plus haut coulisse lentement dans la paroi.</p>
 
-      <p>Ils l’entourent de murs.</p>
+      <p>Puis une autre.</p>
 
-      <p>Ils ferment des portes.</p>
-
-      <p>Ils construisent une prison.</p>
-
-      <p>Un peu plus loin, une autre fresque représente un homme tenant une petite lame noire.</p>
-
-      <p>Devant lui, de fins traits relient plusieurs personnages à une masse située hors du dessin.</p>
-
-      <p>La lame coupe l’un de ces traits.</p>
-
-      <p>Tu ne comprends pas encore ce que cela signifie.</p>
-
-      <p>Au bout de la terrasse, un passage étroit descend vers une arche monumentale.</p>
+      <p>L’escalier entier est un mécanisme.</p>
     `,
     choices: [
-      { label: 'Suivre le passage jusqu’à l’arche', to: 'c46' }
+      { label: 'T’arrêter et observer avant de faire un pas de plus', to: 'c49', effect: s => { s.flags.stairsApproach = 'observe'; } },
+      { label: 'Profiter de l’ouverture et grimper vite', to: 'c49', effect: s => {
+          s.flags.stairsApproach = 'rush';
+          const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
+          s.flags.stairsRush = ok ? 'success' : 'fail';
+          if (!ok) s.hp = Math.max(0, s.hp - 2);
+        }
+      }
     ]
   },
 
   c45: {
     number: 'PAGE 45',
-    title: 'L’autre rive',
-    image: 'L’autre rive',
-    text: `
-      <p>La traversée continue encore un long moment.</p>
+    title: 'Quelque chose sous la coque',
+    image: 'Quelque chose sous la coque',
+    text: state => `
+      <p>Tu reprends les rames.</p>
 
-      <p>Peu à peu, une ligne sombre apparaît devant toi.</p>
+      <p>Tu essaies de ne plus regarder l’eau.</p>
 
-      <p>L’autre rive.</p>
+      <p>Alors le lac change de forme.</p>
 
-      <p>La barque finit par grincer contre la pierre.</p>
+      <p>À une dizaine de mètres devant toi, la surface se soulève lentement.</p>
 
-      <p>Tu descends rapidement et attaches l’embarcation à une colonne naturelle.</p>
+      <p>Pas une vague.</p>
 
-      <p>Derrière toi, l’eau redevient parfaitement immobile.</p>
+      <p>Une bosse immense.</p>
 
-      <p>Le silence est si complet que tu pourrais presque croire n’avoir jamais traversé le lac.</p>
+      <p>Elle avance sous l’eau sans produire le moindre bruit.</p>
 
-      <p>Devant toi, un sentier monte entre deux parois claires.</p>
+      <p>Elle passe sous la barque.</p>
 
-      <p>Tu le suis.</p>
+      <p>Le bois monte de presque un mètre.</p>
 
-      <p>Au sommet, le paysage s’ouvre de nouveau sur le gouffre.</p>
+      <p>Pendant une seconde, tu distingues sous tes pieds une masse plus sombre encore que l’eau.</p>
 
-      <p>Pour la première fois depuis ton entrée dans ce monde impossible, tu aperçois au loin une construction aux lignes nettement régulières.</p>
+      <p>Elle est beaucoup plus large que le bateau.</p>
 
-      <p>Une terrasse.</p>
+      <p>Beaucoup plus large que la maison d’Aldren.</p>
 
-      <p>Une arche.</p>
+      <p>Peut-être plus large que la place de Valombre.</p>
 
-      <p>Quelque chose qui a été bâti.</p>
+      <p>Puis elle continue sa route.</p>
 
-      <p>Ou du moins quelque chose qui en donne l’impression.</p>
+      <p>La barque retombe brutalement.</p>
+
+      <p><strong>Ta Dextérité actuelle : ${currentDexterity(state)}</strong></p>
     `,
-    choices: [
-      { label: 'Monter vers la terrasse', to: 'c46' }
-    ]
+    choices: [{
+      label: 'T’agripper et garder l’équilibre — lancer les trois dés de Dextérité',
+      to: 'c46',
+      effect: s => {
+        const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
+        s.flags.lakeBalance = ok ? 'success' : 'fail';
+        if (!ok) s.hp = Math.max(0, s.hp - 2);
+      }
+    }]
   },
 
   c46: {
     number: 'PAGE 46',
-    title: 'La terrasse de l’œil fermé',
-    image: 'La terrasse de l’œil fermé',
-    onEnter: s => setCheckpoint(s, 'La terrasse de l’œil fermé'),
+    title: 'Le lac se referme',
+    image: 'Le lac se referme',
+    text: state => {
+      const r = diceResultHtml(state);
+      if (state.flags.lakeBalance === 'success') {
+        return r + `
+          <p>Tu te jettes au fond de la barque et agrippes les deux bords.</p>
+
+          <p>L’embarcation retombe dans un claquement violent.</p>
+
+          <p>De l’eau noire passe par-dessus le plat-bord, mais tu conserves l’équilibre.</p>
+
+          <p>La masse continue sa route sous la surface.</p>
+
+          <p>Puis elle disparaît.</p>
+
+          <p>En quelques secondes, le lac redevient parfaitement plat.</p>
+
+          <p>Comme si rien n’avait jamais bougé.</p>
+        `;
+      }
+      return r + `
+        <p>Tu cherches un appui trop tard.</p>
+
+        <p>La barque retombe et tu es projeté contre un banc de bois.</p>
+
+        <p>La douleur te coupe le souffle.</p>
+
+        <p><strong>Tu perds 2 points de Vie.</strong></p>
+
+        <p>Lorsque tu parviens à te relever, la masse a déjà disparu.</p>
+
+        <p>Le lac est redevenu parfaitement lisse.</p>
+
+        <p>Cette immobilité te paraît désormais plus effrayante que le mouvement.</p>
+      `;
+    },
+    choices: state => {
+      if (state.hp <= 0) return fatalChoices();
+      return [
+        { label: 'Accoster le petit îlot de pierre aperçu dans la brume', to: 'c47' },
+        { label: 'Ne plus t’arrêter avant l’autre rive', to: 'c48' }
+      ];
+    }
+  },
+
+  c47: {
+    number: 'PAGE 47',
+    title: 'L’îlot de l’œil fermé',
+    image: 'L’îlot de l’œil fermé',
+    text: state => `
+      <p>L’îlot n’est guère plus grand qu’une chambre.</p>
+
+      <p>Quatre piliers brisés entourent une dalle de pierre blanche.</p>
+
+      <p>Au centre est gravé un œil fermé.</p>
+
+      <p>Dans une petite cavité repose un anneau métallique couvert de dépôts gris.</p>
+
+      <p>Il est étonnamment léger.</p>
+
+      <p>Rien ne brille. Rien ne vibre.</p>
+
+      <p>Pourtant, lorsque tu le prends entre deux doigts, tes mouvements te semblent immédiatement plus précis.</p>
+
+      ${hasItem(state, 'anneau_veilleurs')
+        ? '<p>La cavité est désormais vide.</p>'
+        : '<p>Tu peux l’emporter, ou laisser cet objet là où les Veilleurs l’ont placé.</p>'}
+    `,
+    choices: state => hasItem(state, 'anneau_veilleurs')
+      ? [{ label: 'Reprendre la barque', to: 'c48' }]
+      : [
+          {
+            label: 'Prendre l’Anneau des Veilleurs (+1 Dextérité)',
+            to: 'c48',
+            effect: s => {
+              if (!s.flags.anneauVeilleursPris) {
+                s.flags.anneauVeilleursPris = true;
+                s.dexBonus += 1;
+                addItem(s, 'anneau_veilleurs', 'Anneau des Veilleurs', 'Un anneau ancien et très léger. +1 Dextérité.');
+              }
+            }
+          },
+          { label: 'Le laisser et repartir', to: 'c48' }
+        ]
+  },
+
+  c48: {
+    number: 'PAGE 48',
+    title: 'La rive basse',
+    image: 'La rive basse',
     text: `
-      <p>Après la dernière pente, tu atteins enfin la terrasse.</p>
+      <p>La traversée continue encore longtemps.</p>
 
-      <p>Elle est immense.</p>
+      <p>Tu n’entends plus aucun coup sous la coque.</p>
 
-      <p>Le sol est composé de dalles noires dont les jointures forment des lignes si régulières qu’elles semblent avoir été tracées hier.</p>
+      <p>Tu aurais presque préféré.</p>
 
-      <p>Pourtant, certaines pierres sont fendues par des racines minérales épaisses comme des troncs d’arbres.</p>
+      <p>Enfin, une ligne de pierre apparaît dans la brume.</p>
 
-      <p>Les différentes routes du monde souterrain semblent toutes finir ici.</p>
+      <p>La barque heurte une marche noyée.</p>
 
-      <p>Devant toi se dresse une arche de pierre noire, haute de plusieurs dizaines de mètres.</p>
+      <p>Tu descends dans quelques centimètres d’eau noire et tires l’embarcation derrière toi.</p>
 
-      <p>Au centre de sa clé de voûte est gravé le symbole désormais familier.</p>
+      <p>Devant toi s’ouvre une série d’arches basses.</p>
 
-      <p><strong>L’œil fermé.</strong></p>
+      <p>Au-delà, tu aperçois des murs.</p>
 
-      <p>Au-delà de l’arche, un chemin plonge de nouveau vers les profondeurs.</p>
+      <p>Des angles droits.</p>
 
-      <p>Très loin, presque au bord de ta vision, une lueur rouge pulse dans l’obscurité.</p>
+      <p>Des escaliers.</p>
 
-      <p>Une fois.</p>
+      <p>Une architecture entière surgit de l’ombre.</p>
 
-      <p>Le silence revient.</p>
+      <p>Pour la première fois depuis ton arrivée dans ce monde impossible, tu as devant toi quelque chose qui ressemble à une ville.</p>
+    `,
+    choices: [
+      { label: 'Entrer par les arches noyées', to: 'c63' }
+    ]
+  },
 
-      <p>Puis une seconde.</p>
+  c49: {
+    number: 'PAGE 49',
+    title: 'L’escalier qui bouge',
+    image: 'L’escalier qui bouge',
+    text: state => {
+      if (state.flags.stairsApproach === 'observe') {
+        return `
+          <p>Tu ne bouges plus.</p>
 
-      <p>Comme un battement extrêmement lent.</p>
+          <p>Le grondement continue au-dessus de toi.</p>
 
-      <p>Tu restes longtemps immobile à contempler ce passage.</p>
+          <p>Puis tu remarques quelque chose sur les petites marches ajoutées par les hommes.</p>
 
-      <p>Tout ce que tu as traversé jusqu’ici — Valombre, Rochebrume, les premières galeries, Anselme, le lac ou les marches — te paraît soudain appartenir à la surface d’un monde beaucoup plus vaste.</p>
+          <p>À intervalles réguliers, un minuscule œil fermé a été gravé près de certaines prises.</p>
 
-      <p>Et quelque part plus bas se trouve encore Sir Aldren.</p>
+          <p>Toujours du même côté.</p>
 
-      <p>Ou quelque chose qui sait parfaitement quel visage lui donner.</p>
+          <p>Tu attends que la pierre se stabilise, puis tu suis ces marques.</p>
+
+          <p>À chaque fois que tu poses le pied sur une marche non marquée, un bloc se déplace quelque part dans la falaise.</p>
+
+          <p>Tu n’essaies pas une seconde fois.</p>
+
+          <p>Les symboles forment un chemin.</p>
+
+          <p>Les Veilleurs sont passés ici avant toi.</p>
+        `;
+      }
+
+      const r = diceResultHtml(state);
+      if (state.flags.stairsRush === 'success') {
+        return r + `
+          <p>Tu grimpes avant que le mécanisme ait fini de se mettre en mouvement.</p>
+
+          <p>Une dalle se referme derrière ton pied.</p>
+
+          <p>Une autre glisse au-dessus de ta tête.</p>
+
+          <p>Tu sautes sur la marche suivante et te hisses juste avant qu’un bloc ne vienne écraser l’endroit où tu te trouvais.</p>
+
+          <p>Lorsque l’escalier se fige, tu es encore debout.</p>
+        `;
+      }
+
+      return r + `
+        <p>Tu essaies de profiter du mouvement pour gagner de la hauteur.</p>
+
+        <p>Une marche disparaît sous ton pied.</p>
+
+        <p>Tu chutes lourdement sur la pierre inférieure avant de réussir à t’agripper à une prise.</p>
+
+        <p>Un bloc passe au-dessus de toi dans un grondement assourdissant.</p>
+
+        <p><strong>Tu perds 2 points de Vie.</strong></p>
+
+        <p>Quand tout s’immobilise enfin, tu restes suspendu plusieurs secondes avant d’oser reprendre l’ascension.</p>
+      `;
+    },
+    choices: state => state.hp <= 0
+      ? fatalChoices()
+      : [{ label: 'Continuer l’ascension', to: 'c50' }]
+  },
+
+  c50: {
+    number: 'PAGE 50',
+    title: 'Les bâtisseurs',
+    image: 'Les bâtisseurs',
+    text: `
+      <p>L’escalier débouche sur une terrasse verticale taillée dans la falaise.</p>
+
+      <p>Des fresques couvrent la paroi sur plusieurs dizaines de mètres.</p>
+
+      <p>Tu distingues de minuscules silhouettes humaines disposées autour d’une forme immense.</p>
+
+      <p>Au premier regard, tu crois assister à une cérémonie.</p>
+
+      <p>Des fidèles autour de leur dieu.</p>
+
+      <p>Puis tu remarques les outils.</p>
+
+      <p>Les cordes.</p>
+
+      <p>Les blocs de pierre.</p>
+
+      <p>Les hommes ne sont pas agenouillés.</p>
+
+      <p>Ils travaillent.</p>
+
+      <p>Ils élèvent des murs autour de la forme.</p>
+
+      <p>Ils ferment des passages.</p>
+
+      <p>Ils construisent quelque chose d’énorme autour d’elle.</p>
+
+      <p><strong>Une prison.</strong></p>
+
+      <p>Au-dessus de chaque scène revient le même symbole.</p>
+
+      <p>L’œil fermé.</p>
+
+      <p>Pour la première fois, une idée simple s’impose à toi.</p>
+
+      <p>Ce symbole n’est peut-être pas celui de ce qui dort sous la montagne.</p>
+
+      <p>Il pourrait être celui de ceux qui ont essayé de l’empêcher de se réveiller.</p>
+    `,
+    choices: [
+      { label: 'Examiner la fresque suivante', to: 'c51' }
+    ]
+  },
+
+  c51: {
+    number: 'PAGE 51',
+    title: 'La petite lame noire',
+    image: 'La petite lame noire',
+    text: `
+      <p>La fresque suivante est beaucoup plus petite.</p>
+
+      <p>Un homme y est représenté de profil.</p>
+
+      <p>Dans sa main : une lame courte, entièrement noire.</p>
+
+      <p>Devant lui, plusieurs silhouettes humaines sont reliées à une masse immense par de minces traits gravés dans la pierre.</p>
+
+      <p>L’homme approche la lame de l’un de ces traits.</p>
+
+      <p>Sur l’image suivante, le trait est coupé.</p>
+
+      <p>La silhouette humaine tombe à genoux.</p>
+
+      <p>Mais elle est toujours humaine.</p>
+
+      <p>Tu repenses au parchemin trouvé dans la sacoche d’Aldren.</p>
+
+      <blockquote>« Lorsque les liens ne pourront plus céder,<br>Cherche la lame noire : elle seule peut libérer. »</blockquote>
+
+      <p>Tu avais imaginé une arme capable de tuer.</p>
+
+      <p>La fresque suggère autre chose.</p>
+
+      <p>Quelque chose qui <strong>coupe un lien</strong>.</p>
+    `,
+    choices: [
+      { label: 'Reprendre l’ascension', to: 'c52' }
+    ]
+  },
+
+  c52: {
+    number: 'PAGE 52',
+    title: 'La silhouette au sommet',
+    image: 'La silhouette au sommet',
+    text: `
+      <p>Tu quittes les fresques et retrouves les marches.</p>
+
+      <p>C’est alors que tu la vois.</p>
+
+      <p>Très haut au-dessus de toi, une silhouette se tient sur une marche.</p>
+
+      <p>Immobile.</p>
+
+      <p>Trop loin pour distinguer un visage.</p>
+
+      <p>Tu continues à monter.</p>
+
+      <p>Cent marches.</p>
+
+      <p>Peut-être davantage.</p>
+
+      <p>La silhouette est toujours là.</p>
+
+      <p>À exactement la même distance.</p>
+
+      <p>Tu accélères.</p>
+
+      <p>Elle ne se rapproche pas.</p>
+
+      <p>Tu t’arrêtes.</p>
+
+      <p>Elle aussi semble s’arrêter, alors qu’elle n’avait pas bougé.</p>
+
+      <p>Tu lèves lentement une main.</p>
+
+      <p>Très loin, la silhouette lève la sienne.</p>
+
+      <p>Du même côté.</p>
+
+      <p>Tu baisses le bras.</p>
+
+      <p>Elle disparaît.</p>
+
+      <p>Il n’y a aucun endroit où elle aurait pu se cacher.</p>
+    `,
+    choices: [
+      { label: 'Continuer sans regarder en arrière', to: 'c53' }
+    ]
+  },
+
+  c53: {
+    number: 'PAGE 53',
+    title: 'Au-dessus de la cité',
+    image: 'Au-dessus de la cité',
+    text: `
+      <p>Les dernières marches débouchent sur une immense plateforme.</p>
+
+      <p>Le vide s’ouvre devant toi.</p>
+
+      <p>Et, très loin en contrebas, tu vois enfin où mènent les constructions.</p>
+
+      <p>Une cité entière occupe la vallée de pierre.</p>
+
+      <p>Des rues droites disparaissent sous des arches gigantesques.</p>
+
+      <p>Des escaliers montent vers des murs sans porte.</p>
+
+      <p>Des portes isolées se dressent au milieu de places vides.</p>
+
+      <p>Certaines structures semblent continuer jusque sur les parois verticales.</p>
+
+      <p>D’autres paraissent suspendues au plafond invisible.</p>
+
+      <p>Tu restes longtemps à regarder.</p>
+
+      <p>Ce n’est pas une ville abandonnée.</p>
+
+      <p>C’est une ville dont tu n’es même pas certain qu’elle ait été conçue pour être habitée.</p>
+
+      <p>Un ancien escalier humain descend vers ses niveaux supérieurs.</p>
+    `,
+    choices: [
+      { label: 'Descendre vers la cité', to: 'c54' }
+    ]
+  },
+
+  c54: {
+    number: 'PAGE 54',
+    title: 'La porte haute',
+    image: 'La porte haute',
+    text: `
+      <p>Tu descends le petit escalier pendant de longues minutes.</p>
+
+      <p>À mesure que tu approches, les proportions deviennent plus difficiles à comprendre.</p>
+
+      <p>Une arche que tu croyais haute comme une maison est en réalité assez grande pour contenir le clocher de Valombre.</p>
+
+      <p>À sa base, presque invisible depuis la plateforme, une porte de taille humaine a été creusée plus tard.</p>
+
+      <p>Le symbole de l’œil fermé est gravé juste au-dessus.</p>
+
+      <p>Tu passes dessous.</p>
+
+      <p>Pour la première fois, les parois de la Cité morte t’entourent.</p>
+    `,
+    choices: [
+      { label: 'Entrer dans les quartiers hauts', to: 'c64' }
+    ]
+  },
+
+  c55: {
+    number: 'PAGE 55',
+    title: 'La corniche du vide',
+    image: 'La corniche du vide',
+    onEnter: s => { s.flags.worldRoute = 'bridge'; },
+    text: `
+      <p>Tu choisis la corniche.</p>
+
+      <p>Elle ne fait parfois pas plus de deux pieds de large.</p>
+
+      <p>À ta droite, la falaise.</p>
+
+      <p>À ta gauche, un vide rempli d’une brume bleuâtre dont tu ne vois pas le fond.</p>
+
+      <p>De vieux pitons sont encore plantés dans la roche.</p>
+
+      <p>Certains portent des fragments de corde rouge durcie par le temps.</p>
+
+      <p>La corniche contourne un éperon.</p>
+
+      <p>Le pont apparaît.</p>
+
+      <p>Long. Étroit. Suspendu entre deux masses de pierre.</p>
+
+      <p>Ses planches sont noires et ses cordes presque minérales.</p>
+
+      <p>De l’autre côté, une porte se devine dans la falaise.</p>
+
+      <p>Tu poses un pied sur la première planche.</p>
+
+      <p>Elle tient.</p>
+
+      <p>Tu commences la traversée.</p>
+    `,
+    choices: [
+      { label: 'Avancer sur le pont', to: 'c56' }
+    ]
+  },
+
+  c56: {
+    number: 'PAGE 56',
+    title: 'Les pas sous tes pieds',
+    image: 'Les pas sous tes pieds',
+    text: state => `
+      <p>Tu as parcouru presque un tiers du pont lorsque tu entends un pas.</p>
+
+      <p>Pas derrière toi.</p>
+
+      <p><strong>Sous toi.</strong></p>
+
+      <p>Tu t’arrêtes.</p>
+
+      <p>Le bruit s’arrête.</p>
+
+      <p>Tu avances d’une planche.</p>
+
+      <p>Un autre pas répond sous le bois.</p>
+
+      <p>Tu regardes entre deux lattes.</p>
+
+      <p>Quelque chose se déplace sur la face inférieure du pont.</p>
+
+      <p>Comme si le vide était son ciel et les planches son sol.</p>
+
+      <p>Tu ne distingues qu’un dos maigre, des membres trop longs et des doigts refermés autour des cordes.</p>
+
+      <p>Il avance exactement à ton rythme.</p>
+
+      ${state.throwingBlades > 0
+        ? `<p>Tu as encore <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
+        : ''}
+    `,
+    choices: state => {
+      const list = [
+        { label: 'Garder ton calme et continuer lentement', to: 'c60', effect: s => { s.flags.bridgeSolution = 'calm'; } }
+      ];
+      if (state.throwingBlades > 0) {
+        list.push({
+          label: 'Lancer une lame dans le vide pour l’attirer ailleurs',
+          to: 'c60',
+          effect: s => {
+            s.throwingBlades -= 1;
+            syncThrowingBlades(s);
+            s.flags.bridgeSolution = 'blade';
+          }
+        });
+      }
+      list.push(
+        {
+          label: 'Courir jusqu’à l’autre côté — tester ta Dextérité',
+          to: 'c57',
+          effect: s => {
+            const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
+            s.flags.bridgeRun = ok ? 'success' : 'fail';
+            if (!ok) s.hp = Math.max(0, s.hp - 1);
+          }
+        },
+        { label: 'Frapper la chose à travers les planches', to: 'c58' }
+      );
+      return list;
+    }
+  },
+
+  c57: {
+    number: 'PAGE 57',
+    title: 'La course sur le pont',
+    image: 'La course sur le pont',
+    text: state => {
+      const r = diceResultHtml(state);
+      if (state.flags.bridgeRun === 'success') {
+        return r + `
+          <p>Tu pars d’un seul coup.</p>
+
+          <p>Le pont se balance sous tes pas.</p>
+
+          <p>La chose accélère immédiatement sous toi.</p>
+
+          <p>Ses doigts frappent le bois comme une pluie sèche.</p>
+
+          <p>Une planche cède derrière ton talon.</p>
+
+          <p>Tu sautes la dernière longueur et t’écrases sur la pierre de l’autre côté.</p>
+
+          <p>Lorsque tu te retournes, la créature est restée sous le pont.</p>
+
+          <p>Elle ne te suit pas sur la roche.</p>
+        `;
+      }
+      return r + `
+        <p>Tu te mets à courir.</p>
+
+        <p>Le pont se balance violemment.</p>
+
+        <p>Ton pied traverse une planche pourrie.</p>
+
+        <p>Tu t’effondres sur un genou.</p>
+
+        <p><strong>Tu perds 1 point de Vie.</strong></p>
+
+        <p>Avant que tu puisses te relever, deux longs doigts passent entre les lattes et se referment sur le bord.</p>
+
+        <p>La chose remonte.</p>
+      `;
+    },
+    choices: state => {
+      if (state.hp <= 0) return fatalChoices();
+      return state.flags.bridgeRun === 'success'
+        ? [{ label: 'Reprendre ton souffle', to: 'c60' }]
+        : [{ label: 'Te défendre', to: 'c58' }];
+    }
+  },
+
+  c58: {
+    number: 'PAGE 58',
+    title: 'Le marcheur sous le pont',
+    image: 'Le marcheur sous le pont',
+    text: state => `
+      <p>La créature pivote autour d’une corde avec une facilité écœurante.</p>
+
+      <p>Elle apparaît enfin à hauteur du tablier.</p>
+
+      <p>Son corps est maigre au point de sembler presque plat.</p>
+
+      <p>Ses bras sont beaucoup trop longs.</p>
+
+      <p>Ses pieds se referment sur le bois comme des mains.</p>
+
+      <p>Elle n’a pas de terre noire sur le visage.</p>
+
+      <p>Pourtant, lorsqu’elle ouvre la bouche, tu entends les trois petits coups secs du lac.</p>
+
+      <p><strong>TOC. TOC. TOC.</strong></p>
+
+      <p>Cette fois, il n’y a plus de place pour l’éviter.</p>
+
+      ${enemyCardHtml(state, 'bridgeWalker', ENEMIES.bridgeWalker)}
+    `,
+    choices: [{
+      label: 'Lancer les dés de combat',
+      to: 'c59',
+      effect: s => fightRound(s, 'bridgeWalker', ENEMIES.bridgeWalker)
+    }]
+  },
+
+  c59: {
+    number: 'PAGE 59',
+    title: 'Le combat au-dessus du vide',
+    image: 'Le combat au-dessus du vide',
+    text: state => {
+      const combat = combatState(state, 'bridgeWalker', ENEMIES.bridgeWalker);
+      const result = combatRoundHtml(state, 'bridgeWalker', ENEMIES.bridgeWalker);
+      const card = enemyCardHtml(state, 'bridgeWalker', ENEMIES.bridgeWalker);
+
+      if (combat.hp <= 0) {
+        return card + result + `
+          <p>Ton coup le décroche du pont.</p>
+
+          <p>Ses doigts cherchent une dernière prise.</p>
+
+          <p>Puis son corps bascule dans le vide.</p>
+
+          <p>Tu attends le bruit de sa chute.</p>
+
+          <p>Il ne vient jamais.</p>
+        `;
+      }
+
+      if (state.hp <= 0) {
+        return card + result + `
+          <p>Le choc te fait perdre l’équilibre.</p>
+
+          <p>La dernière chose que tu vois est la créature qui se replie sous le pont pendant que le vide t’emporte.</p>
+        `;
+      }
+
+      if (combat.last && combat.last.outcome === 'enemy') {
+        return card + result + `
+          <p>La créature te heurte puis disparaît sous le tablier avant que tu puisses riposter.</p>
+
+          <p>Une seconde plus tard, ses doigts réapparaissent entre deux planches.</p>
+        `;
+      }
+
+      if (combat.last && combat.last.outcome === 'tie') {
+        return card + result + `
+          <p>Tu frappes au moment où elle se jette sur toi.</p>
+
+          <p>Vous vous séparez sans parvenir à prendre l’avantage.</p>
+
+          <p>Le pont continue de se balancer sous vos mouvements.</p>
+        `;
+      }
+
+      return card + result + `
+        <p>Ton coup porte, mais la créature se replie autour d’une corde et revient aussitôt.</p>
+      `;
+    },
+    choices: state => {
+      const combat = combatState(state, 'bridgeWalker', ENEMIES.bridgeWalker);
+      if (combat.hp <= 0) return [{ label: 'Achever la traversée', to: 'c60' }];
+      if (state.hp <= 0) return fatalChoices();
+      return [{ label: 'Continuer le combat', to: 'c58' }];
+    }
+  },
+
+  c60: {
+    number: 'PAGE 60',
+    title: 'L’autre extrémité du pont',
+    image: 'L’autre extrémité du pont',
+    text: state => {
+      const intro = state.flags.bridgeSolution === 'blade'
+        ? `<p>La lame de jet tinte contre une pierre très loin sous le pont.</p><p>La chose se détache aussitôt du tablier et disparaît dans la brume à sa poursuite.</p>`
+        : state.flags.bridgeSolution === 'calm'
+          ? `<p>Tu continues à avancer sans accélérer.</p><p>La chose reste sous toi jusqu’aux dernières planches, puis s’arrête exactement à la limite de la roche.</p><p>Elle ne franchit pas le bord.</p>`
+          : '';
+      return `
+        ${intro}
+
+        <p>Tu atteins enfin l’autre extrémité du pont.</p>
+
+        <p>Près d’un ancien point d’ancrage, un squelette est assis contre la pierre.</p>
+
+        <p>Il porte encore autour de la taille une étrange ceinture faite de corde rouge tressée.</p>
+
+        <p>Elle ressemble aux fragments aperçus sur les pitons de la corniche.</p>
+
+        <p>Le nœud est intact malgré l’âge.</p>
+
+        <p>Sur une petite plaque de cuivre est gravé l’œil fermé.</p>
+      `;
+    },
+    choices: state => hasItem(state, 'ceinture_rouge')
+      ? [{ label: 'Continuer vers la porte', to: 'c61' }]
+      : [
+          {
+            label: 'Prendre la Ceinture de corde rouge',
+            to: 'c61',
+            effect: s => {
+              addItem(
+                s,
+                'ceinture_rouge',
+                'Ceinture de corde rouge',
+                'Une ceinture des Veilleurs. Elle accorde +1 Force lors des tests pour grimper, retenir ou se suspendre.'
+              );
+            }
+          },
+          { label: 'La laisser', to: 'c61' }
+        ]
+  },
+
+  c61: {
+    number: 'PAGE 61',
+    title: 'La porte suspendue',
+    image: 'La porte suspendue',
+    text: `
+      <p>La porte creusée dans la falaise est beaucoup plus petite que les structures alentour.</p>
+
+      <p>Elle a manifestement été ajoutée plus tard.</p>
+
+      <p>À l’intérieur, un couloir descend en spirale.</p>
+
+      <p>De longues ouvertures donnent parfois sur le vide.</p>
+
+      <p>À travers elles, tu aperçois peu à peu des toits qui ne sont pas des toits, des rues verticales et des arches empilées les unes sur les autres.</p>
+
+      <p>La cité se rapproche.</p>
+
+      <p>Puis le couloir s’interrompt devant une passerelle de pierre qui rejoint une construction latérale.</p>
+    `,
+    choices: [
+      { label: 'Traverser la passerelle', to: 'c62' }
+    ]
+  },
+
+  c62: {
+    number: 'PAGE 62',
+    title: 'La rue suspendue',
+    image: 'La rue suspendue',
+    text: `
+      <p>Tu débouches dans ce qui ressemble à une rue.</p>
+
+      <p>Mais elle longe une paroi verticale à plusieurs centaines de mètres au-dessus du fond.</p>
+
+      <p>Des portes s’ouvrent sur le vide.</p>
+
+      <p>D’autres sont couchées à plat dans le sol.</p>
+
+      <p>Tu progresses entre ces ouvertures impossibles jusqu’à trouver un escalier plus récent, taillé à taille humaine.</p>
+
+      <p>Il descend vers les niveaux centraux.</p>
+
+      <p>Le silence de la ville commence à t’envelopper.</p>
+    `,
+    choices: [
+      { label: 'Descendre vers le centre', to: 'c65' }
+    ]
+  },
+
+  c63: {
+    number: 'PAGE 63',
+    title: 'Les quartiers noyés',
+    image: 'Les quartiers noyés',
+    text: `
+      <p>Tu passes sous les arches basses.</p>
+
+      <p>L’eau noire recouvre encore le sol par endroits.</p>
+
+      <p>Des escaliers descendent dans des bassins sans fond visible.</p>
+
+      <p>Des portes sont à moitié immergées dans les murs.</p>
+
+      <p>Tu marches dans ce quartier noyé en suivant les parties sèches.</p>
+
+      <p>À plusieurs reprises, tu crois voir des lumières très loin sous l’eau des rues.</p>
+
+      <p>Les mêmes étoiles impossibles que dans le lac.</p>
+
+      <p>Tu refuses de regarder longtemps.</p>
+
+      <p>Une rampe de pierre finit par remonter vers un niveau plus élevé.</p>
+
+      <p>Au sommet, les rues deviennent sèches.</p>
+    `,
+    choices: [
+      { label: 'Suivre la grande rue', to: 'c66' }
+    ]
+  },
+
+  c64: {
+    number: 'PAGE 64',
+    title: 'Les quartiers hauts',
+    image: 'Les quartiers hauts',
+    text: `
+      <p>Tu entres dans la cité par le haut.</p>
+
+      <p>D’ici, les rues ressemblent à des tranchées géométriques creusées entre des blocs noirs.</p>
+
+      <p>Tu descends plusieurs rampes.</p>
+
+      <p>À chaque niveau, les proportions changent.</p>
+
+      <p>Une porte minuscule mène à une salle gigantesque.</p>
+
+      <p>Un escalier assez large pour cinquante hommes se termine contre un mur parfaitement lisse.</p>
+
+      <p>Plus bas, tu retrouves enfin des traces humaines : marques de craie, anciennes cordes, petits symboles de l’œil fermé gravés près des passages praticables.</p>
+
+      <p>Les Veilleurs ont parcouru cette ville.</p>
+
+      <p>Tu suis leurs marques jusqu’à une grande rue centrale.</p>
+    `,
+    choices: [
+      { label: 'Suivre la grande rue', to: 'c66' }
+    ]
+  },
+
+  c65: {
+    number: 'PAGE 65',
+    title: 'La porte latérale',
+    image: 'La porte latérale',
+    text: `
+      <p>L’escalier humain t’amène devant une ouverture étroite percée dans un mur gigantesque.</p>
+
+      <p>Tu la franchis.</p>
+
+      <p>De l’autre côté, une avenue s’étend dans les deux directions.</p>
+
+      <p>Des colonnes apparaissent puis disparaissent dans la brume.</p>
+
+      <p>Au-dessus de toi, une seconde rue traverse l’espace à angle droit.</p>
+
+      <p>Elle est construite sur le plafond d’une arche.</p>
+
+      <p>Tu ne sais plus exactement ce qui est en haut ou en bas dans cette ville.</p>
+
+      <p>Pourtant, au sol, tu retrouves un petit œil fermé gravé dans une dalle.</p>
+
+      <p>Une flèche grossière pointe vers le centre.</p>
+
+      <p>Tu la suis.</p>
+    `,
+    choices: [
+      { label: 'Atteindre le centre de la cité', to: 'c66' }
+    ]
+  },
+
+  c66: {
+    number: 'PAGE 66',
+    title: 'La Cité morte',
+    image: 'La Cité morte',
+    onEnter: s => setCheckpoint(s, 'La Cité morte'),
+    text: state => `
+      <p>Quelle que soit la route qui t’a conduit jusqu’ici, elle finit par rejoindre la même avenue.</p>
+
+      <p>Tu avances entre deux façades si hautes que leurs sommets disparaissent dans la lumière blanche.</p>
+
+      <p>Il n’y a aucune fenêtre.</p>
+
+      <p>Seulement des portes.</p>
+
+      <p>Des centaines.</p>
+
+      <p>Certaines sont trop petites pour un enfant.</p>
+
+      <p>D’autres assez hautes pour laisser passer une tour.</p>
+
+      <p>Au bout de l’avenue, l’espace s’ouvre sur une place circulaire.</p>
+
+      <p>En son centre se dresse une structure qui ressemble à une fontaine sèche.</p>
+
+      <p>De la poussière noire repose au fond de la vasque.</p>
+
+      <p>Tu t’approches.</p>
+
+      <p>Un grain se soulève.</p>
+
+      <p>Puis un autre.</p>
+
+      <p>Ils montent lentement dans l’air au lieu de retomber.</p>
+
+      <p>Tu recules.</p>
+
+      <p>Autour de la place, plusieurs passages attendent dans le silence.</p>
+
+      <p>L’un d’eux est couvert de noms gravés dans la pierre.</p>
+
+      <p>Un autre est fermé par une suite de portes étroites.</p>
+
+      <p>Plus loin, une faible lumière blanche filtre sous une arche marquée de l’œil fermé.</p>
+
+      <p>Tu comprends que la véritable exploration de la Cité morte commence ici.</p>
 
       <p><strong>Fin de cette version test.</strong></p>
     `,
@@ -2257,9 +3085,10 @@ const STORY = {
       { label: 'Recommencer depuis le début', action: 'restart' }
     ]
   }
+
 };
 
-  const PAGE_ORDER = Array.from({ length: 46 }, (_, i) => `c${i + 1}`);
+  const PAGE_ORDER = Array.from({ length: 66 }, (_, i) => `c${i + 1}`);
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -2417,8 +3246,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 5,
-    saveVersion: 4,
+    contentVersion: 6,
+    saveVersion: 5,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,
