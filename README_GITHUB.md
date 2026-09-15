@@ -14,7 +14,7 @@ Les illustrations ne sont pas incluses dans cette archive : elles sont gérées 
 V17 TEST : nouvel équilibrage des armes et dégâts (bonus de Force = Force ÷ 4, minimum 1). Illustrations non incluses.
 
 
-V19 TEST : le bouton ☰ ouvre désormais une liste déroulante de toutes les pages (001–066) avec leur titre. Un clic permet d’aller directement à une page sans rejouer les choix précédents.
+V19 TEST : le bouton ☰ ouvre désormais une liste déroulante de toutes les pages (001–088) avec leur titre. Un clic permet d’aller directement à une page sans rejouer les choix précédents.
 
 
 ### V21 TEST
@@ -24,3 +24,13 @@ Inventaire de test complet avec activation/désactivation des objets et sélecti
 V23 TEST : descriptions des créatures rendues volontairement difficiles à fixer ou à catégoriser ; aucune réaction de peur aux blessures. Correction du Marcheur sous le pont (plus de « tablier » / plus d'hésitation après un coup). La fissure des Grandes Marches inflige désormais 2 dégâts et une pénalité persistante de -1 Dextérité avec contamination à la terre noire.
 
 V23 TEST : style descriptif ténébreux uniformisé pour les créatures ; page 53 réécrite comme une fuite arrachée de justesse ; protections détruites conservées et marquées inutilisables.
+
+
+## V24 — Cité morte et combats
+- Navigation test étendue jusqu’à la page 088.
+- Lames de jet désormais disponibles automatiquement dans tous les combats : 1 lame = 2 dégâts directs.
+- Page 53 : sortie de la fissure réécrite comme une échappée in extremis par le héros.
+- Messages de Protection reformulés au passé après résolution des dégâts.
+- Cité morte développée : Salle des noms, Couloir des voix, Laboratoire des Veilleurs, perte de repères temporels, exploration commune et descente sous la cité.
+- Nouveaux objets : Plaque du Veilleur et Ampoule blanche.
+- Le Gantelet de Veilleur se récupère page 54 sur la route des Grandes Marches.

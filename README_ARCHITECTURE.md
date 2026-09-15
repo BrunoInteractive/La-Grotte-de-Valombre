@@ -101,13 +101,13 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 
 
 ## V18 TEST — trois routes vers la Cité morte
-- Suite développée jusqu’au point de convergence dans la Cité morte (page 66).
+- Suite développée jusqu’au point de convergence dans la Cité morte (page 88).
 - Trois routes majeures : Lac noir, Grandes Marches, Pont.
 - Illustrations toujours gérées séparément.
 
 ## V19 TEST — navigation directe entre les pages
 - Le bouton ☰ en haut à droite devient un navigateur de test.
-- Il affiche toutes les pages 001 à 066, triées par numéro, avec leur titre.
+- Il affiche toutes les pages 001 à 088, triées par numéro, avec leur titre.
 - La page courante est surlignée et automatiquement centrée à l’ouverture.
 - Cliquer sur une page y va directement sans exécuter les effets des choix ou des pages précédentes.
 - L’état courant (inventaire, caractéristiques, objets, blessures) est conservé pendant ce saut de test.
@@ -116,7 +116,7 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 
 ## V21 — Inventaire de test
 
-- L’inventaire affiche dès le départ tous les objets déjà introduits jusqu’à la page 66.
+- L’inventaire affiche dès le départ tous les objets déjà introduits jusqu’à la page 88.
 - Chaque objet peut être coché/décoché pour simuler sa possession.
 - Le Brassard et l’Anneau appliquent leurs bonus uniquement lorsqu’ils sont cochés.
 - Les lames de jet passent à 3 lorsqu’elles sont cochées et à 0 lorsqu’elles sont décochées.
@@ -133,3 +133,13 @@ Les créatures sont décrites par impressions contradictoires et détails diffic
 - Le Rampant de l'îlot reprend la formulation validée : la comparaison rassurante avec un reptile se défait à mesure qu'il approche.
 - La page 53 devient une véritable échappée de justesse : le héros se débat et s'arrache lui-même à la fissure ; aucune ressource d'eau n'est supposée. L'épreuve conserve 2 dégâts (Protection avant Vie), -1 Dextérité et la contamination à la terre noire.
 - Une pièce de protection arrivée à 0 reste dans l'inventaire mais est marquée « endommagée — désormais inutilisable ». Le message apparaît aussi lors du coup qui la détruit.
+
+
+## V24 — Cité morte et combats
+- Navigation test étendue jusqu’à la page 088.
+- Lames de jet désormais disponibles automatiquement dans tous les combats : 1 lame = 2 dégâts directs.
+- Page 53 : sortie de la fissure réécrite comme une échappée in extremis par le héros.
+- Messages de Protection reformulés au passé après résolution des dégâts.
+- Cité morte développée : Salle des noms, Couloir des voix, Laboratoire des Veilleurs, perte de repères temporels, exploration commune et descente sous la cité.
+- Nouveaux objets : Plaque du Veilleur et Ampoule blanche.
+- Le Gantelet de Veilleur se récupère page 54 sur la route des Grandes Marches.
