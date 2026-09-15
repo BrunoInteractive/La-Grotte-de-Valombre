@@ -39,3 +39,7 @@ V23 TEST : style descriptif ténébreux uniformisé pour les créatures ; page 5
 ## V25 — Cité morte, exploration plus concrète
 
 La fin de la Cité morte a été réécrite pour privilégier l'aventure physique : décombres, passage ancien, descente dans un puits, indices des Veilleurs et progression sous la ville. Les anomalies trop démonstratives ont été retirées au profit d'un fantastique plus discret.
+
+## V26 — Cité morte : compréhension scénaristique
+
+La Cité morte raconte désormais une véritable histoire en trois branches complémentaires : les appelés, les voix qui les attirent et les tentatives des Veilleurs pour les sauver. Une salle de veille commune synthétise clairement le mécanisme pour qu'une seule route suffise à comprendre l'essentiel, tandis que les trois routes donnent toute sa profondeur au mystère lors des relectures.

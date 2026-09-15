@@ -3473,27 +3473,33 @@ const STORY = {
     title: 'La salle des noms',
     image: 'La salle des noms',
     text: `
-      <p>Le passage se rétrécit, puis s’ouvre brusquement sur une galerie aux murs parfaitement lisses.</p>
+      <p>Le passage se rétrécit, puis s’ouvre sur une longue galerie aux murs parfaitement lisses.</p>
 
-      <p>Ils sont couverts d’inscriptions.</p>
+      <p>Ils sont couverts de noms.</p>
 
-      <p>Des noms.</p>
+      <p>Des centaines d’abord.</p>
 
-      <p>Des milliers.</p>
+      <p>Puis des milliers.</p>
 
-      <p>Certains sont taillés profondément. D’autres ne sont que de fines rayures dans la pierre.</p>
+      <p>Certains sont presque effacés. D’autres paraissent beaucoup plus récents.</p>
 
-      <p>Quelques-uns semblent si anciens que leurs lettres ont presque disparu.</p>
+      <p>À côté de plusieurs inscriptions, tu remarques de petits signes répétés : un œil fermé, trois traits courts, parfois une ligne interrompue.</p>
 
-      <p>D’autres paraissent avoir été gravés hier.</p>
+      <p>Ce n’est pas un monument funéraire.</p>
 
-      <p>Tu avances lentement.</p>
+      <p>Les noms ont été classés.</p>
 
-      <p>Le bruit de tes pas s’éteint ici d’une manière étrange. Il ne résonne pas. Il ne semble même pas atteindre les murs.</p>
+      <p>Notés.</p>
 
-      <p>Tu lis des noms que tu ne connais pas.</p>
+      <p>Suivis.</p>
 
-      <p>Puis l’un d’eux arrête ton regard.</p>
+      <p>Plus loin, une inscription plus grande a été gravée au-dessus d’une série de colonnes.</p>
+
+      <blockquote>CEUX QUI ENTENDENT L’APPEL DOIVENT ÊTRE INSCRITS AVANT LA DESCENTE.</blockquote>
+
+      <p>Tu relis lentement.</p>
+
+      <p>Puis un nom familier attire ton regard.</p>
     `,
     choices: [{ label: 'T’approcher', to: 'c68' }]
   },
@@ -3505,33 +3511,35 @@ const STORY = {
     text: `
       <p><strong>GASPARD VELLIN.</strong></p>
 
-      <p>Le nom est gravé à hauteur de tes yeux.</p>
+      <p>À côté de son nom, trois traits courts ont été gravés dans la pierre.</p>
 
       <p>Un peu plus loin :</p>
 
       <p><strong>ANSELME VARN.</strong></p>
 
-      <p>Tu recules d’un pas.</p>
+      <p>Le même signe.</p>
 
-      <p>Tu cherches presque malgré toi.</p>
-
-      <p>Il te faut moins d’une minute pour le trouver.</p>
+      <p>Tu poursuis le long du mur.</p>
 
       <p><strong>ALDREN DE ROCHEBRUNE.</strong></p>
 
-      <p>Tu passes les doigts à quelques centimètres de la pierre sans la toucher.</p>
+      <p>Cette fois, l’œil fermé accompagne son nom.</p>
 
-      <p>Les lettres d’Aldren sont émoussées. De la poussière s’est logée au fond des traits. La gravure paraît plus ancienne que celles de Gaspard et d’Anselme.</p>
+      <p>La gravure est plus usée que celles de Gaspard et d’Anselme.</p>
 
-      <p>Beaucoup plus ancienne.</p>
+      <p>Tu ne sais pas ce que signifient encore ces marques, mais une chose devient difficile à ignorer :</p>
 
-      <p>Tu essaies de te convaincre que la pierre s’use différemment selon les endroits.</p>
+      <p>Gaspard, Anselme et Aldren ne sont pas arrivés ici par hasard.</p>
 
-      <p>Puis tu remarques un espace vide entre deux noms.</p>
+      <p>Les Veilleurs connaissaient les gens qui entendaient cet appel.</p>
 
-      <p>Tu n’aurais pas dû le regarder.</p>
+      <p>Ils inscrivaient leurs noms avant qu’ils ne descendent plus profondément sous la montagne.</p>
+
+      <p>Tu continues malgré toi à parcourir la liste.</p>
+
+      <p>Et tu trouves le tien.</p>
     `,
-    choices: [{ label: 'Lire ce qui est gravé', to: 'c69' }]
+    choices: [{ label: 'Lire ton nom', to: 'c69' }]
   },
 
   c69: {
@@ -3541,25 +3549,31 @@ const STORY = {
     text: state => {
       const hero = escapeHtml((state.heroName || 'ÉCUYER').trim() || 'ÉCUYER').toUpperCase();
       return `
-        <p>Il y a bien quelque chose dans l’espace vide.</p>
-
-        <p>Ton regard avait simplement refusé de le lire.</p>
-
         <p><strong>${hero}.</strong></p>
 
-        <p>Ton nom est gravé dans la pierre.</p>
+        <p>Ton nom est déjà gravé dans la pierre.</p>
 
         <p>Tu restes immobile.</p>
 
-        <p>Tu pourrais jurer que cet emplacement était vide une seconde plus tôt.</p>
+        <p>Les traits ne sont pas frais. Une fine poussière s’est déposée au fond des lettres.</p>
 
-        <p>Mais plus tu essaies de retrouver cette seconde dans ta mémoire, moins tu en es certain.</p>
+        <p>Personne ici ne devrait connaître ton nom.</p>
 
-        <p>Les lettres ne sont ni fraîches ni anciennes.</p>
+        <p>Personne ne t’a vu entrer dans la montagne.</p>
 
-        <p>Elles ont exactement l’âge qu’elles devraient avoir pour être là depuis toujours.</p>
+        <p>Et pourtant il est là, parmi ceux de Gaspard, d’Anselme et d’Aldren.</p>
 
-        <p>Une poussière noire très fine repose au fond du dernier trait.</p>
+        <p>À côté, le même signe que près du nom de Gaspard : trois entailles courtes.</p>
+
+        <p>Tu repenses à la poussière noire de la place.</p>
+
+        <p>À la terre sous les ongles.</p>
+
+        <p>Aux voix qui semblent parfois savoir plus de choses qu’elles ne devraient.</p>
+
+        <p>Pour la première fois, l’idée te vient que tu n’es peut-être plus seulement à la recherche d’Aldren.</p>
+
+        <p>Quelque chose, ici, t’a peut-être déjà reconnu.</p>
       `;
     },
     choices: [
@@ -3570,32 +3584,38 @@ const STORY = {
 
   c70: {
     number: 'PAGE 70',
-    title: 'Le Veilleur sans visage',
-    image: 'Le Veilleur sans visage',
+    title: 'Le dernier Veilleur',
+    image: 'Le dernier Veilleur',
     text: state => `
       ${state.flags.touchedOwnName ? `
-        <p>La pierre est tiède.</p>
-
-        <p>Pas chauffée par l’air.</p>
-
-        <p>Tiède comme une peau qui vient d’être quittée.</p>
+        <p>La pierre est tiède sous tes doigts.</p>
 
         <p>Tu retires aussitôt la main.</p>
       ` : ''}
 
-      <p>Au bout de la galerie, un corps est assis contre le mur.</p>
+      <p>Au bout de la galerie, un squelette est assis contre le mur.</p>
 
-      <p>Il ne reste de lui que des os pris dans une cotte de mailles devenue presque noire.</p>
+      <p>Une cotte de mailles noircie recouvre encore ses épaules.</p>
 
-      <p>Le crâne est tourné vers la pierre, si près qu’il semble avoir passé ses derniers instants à lire un nom.</p>
+      <p>Autour de son cou pend une petite plaque de bronze portant l’œil fermé.</p>
 
-      <p>Autour de son cou pend une petite plaque de bronze.</p>
+      <p>À côté de lui, une tablette de pierre a glissé au sol.</p>
 
-      <p>Un œil fermé y est gravé.</p>
+      <p>Quelques lignes restent lisibles :</p>
 
-      <p>Au revers, trois entailles forment un signe que tu ne comprends pas.</p>
+      <blockquote>NE PAS LES LAISSER DESCENDRE APRÈS L’APPEL.</blockquote>
 
-      <p>L’objet tient dans la paume.</p>
+      <blockquote>LES CONDUIRE AUX SALLES BLANCHES.</blockquote>
+
+      <blockquote>SI LA TERRE PARAÎT DANS LA BOUCHE OU SOUS LES ONGLES, COMMENCER L’EXTRACTION.</blockquote>
+
+      <p>Tu regardes de nouveau les milliers de noms.</p>
+
+      <p>Les Veilleurs ne se contentaient pas de surveiller la montagne.</p>
+
+      <p>Ils attendaient ceux qu’elle attirait.</p>
+
+      <p>Et ils essayaient de les arrêter avant qu’ils ne descendent plus bas.</p>
     `,
     choices: state => hasItem(state, 'plaque_veilleur')
       ? [{ label: 'Quitter la salle des noms', to: 'c71' }]
@@ -3603,7 +3623,7 @@ const STORY = {
           {
             label: 'Prendre la Plaque du Veilleur',
             to: 'c71',
-            effect: s => addItem(s, 'plaque_veilleur', 'Plaque du Veilleur', 'Une petite plaque de bronze portant l’œil fermé. Son usage reste inconnu.')
+            effect: s => addItem(s, 'plaque_veilleur', 'Plaque du Veilleur', 'Une petite plaque de bronze portant l’œil fermé. Elle appartenait à l’un des Veilleurs qui recensait les personnes attirées sous la montagne.')
           },
           { label: 'La laisser', to: 'c71' }
         ]
@@ -3611,36 +3631,32 @@ const STORY = {
 
   c71: {
     number: 'PAGE 71',
-    title: 'La rue des noms',
-    image: 'La rue des noms',
+    title: 'Les appelés',
+    image: 'Les appelés',
     text: `
-      <p>La galerie débouche sur une rue étroite.</p>
+      <p>Avant de quitter la galerie, tu regardes une dernière fois les murs.</p>
 
-      <p>Les noms continuent encore quelques mètres sur les façades.</p>
+      <p>Tu comprends maintenant ce que représente cette liste.</p>
 
-      <p>Puis ils cessent tous au même endroit.</p>
+      <p>Ce ne sont pas les noms des morts.</p>
 
-      <p>Pas progressivement.</p>
+      <p>Ce sont les noms de ceux qui ont entendu quelque chose.</p>
 
-      <p>Comme si ceux qui les gravaient n’avaient jamais dépassé cette ligne.</p>
+      <p>De ceux qui ont commencé à venir vers la montagne.</p>
 
-      <p>Tu la franchis.</p>
+      <p>Les Veilleurs les recensaient, puis tentaient de les conduire vers leurs salles de soin avant qu’ils n’aillent plus loin.</p>
 
-      <p>Un bruit de pas résonne devant toi.</p>
+      <p>Gaspard en faisait partie.</p>
 
-      <p>Un seul.</p>
+      <p>Anselme aussi.</p>
 
-      <p>Tu t’arrêtes.</p>
+      <p>Aldren également.</p>
 
-      <p>Ton propre pied, encore levé, n’a pas touché le sol.</p>
+      <p>Et désormais, ton nom figure parmi les leurs.</p>
 
-      <p>Tu le poses lentement.</p>
+      <p>La question n’est plus seulement de savoir ce qui se trouve sous la montagne.</p>
 
-      <p>Le même bruit se produit de nouveau.</p>
-
-      <p>Cette fois exactement en même temps.</p>
-
-      <p>Tu continues sans vérifier une troisième fois.</p>
+      <p>Il faut aussi comprendre pourquoi elle connaît déjà ton nom.</p>
     `,
     choices: [{ label: 'Poursuivre dans la cité', to: 'c82' }]
   },
@@ -3652,25 +3668,29 @@ const STORY = {
     text: state => `
       <p>Les portes sont toutes à taille humaine.</p>
 
-      <p>C’est presque un soulagement.</p>
+      <p>C’est presque rassurant après les proportions de la cité.</p>
 
-      <p>Tu en comptes d’abord neuf.</p>
+      <p>Entre deux portes, des phrases ont été gravées directement dans la pierre.</p>
 
-      <p>Puis onze.</p>
+      <p>La première est maladroite, comme tracée par une main tremblante :</p>
 
-      <p>Lorsque tu regardes derrière toi, il n’y en a plus que huit.</p>
+      <blockquote>J’ENTENDS LÉONIE DEPUIS TROIS NUITS.</blockquote>
 
-      <p>Tu cesses de compter.</p>
+      <p>Plus bas :</p>
 
-      <p>Derrière la première, une femme parle très doucement.</p>
+      <blockquote>JE SAIS QU’ELLE EST MORTE.</blockquote>
 
-      <p>Derrière la suivante, un enfant rit.</p>
+      <p>Une autre phrase a été ajoutée plus tard.</p>
 
-      <p>Plus loin, quelqu’un sanglote.</p>
+      <blockquote>QUAND ELLE M’APPELLE, JE ME LÈVE AVANT MÊME D’AVOIR DÉCIDÉ DE LE FAIRE.</blockquote>
 
-      <p>Tu n’entends aucun mouvement. Seulement des voix.</p>
+      <p>Tu continues.</p>
 
-      <p>Puis, derrière une porte à ta droite :</p>
+      <p>Derrière une porte, une femme murmure un prénom.</p>
+
+      <p>Derrière une autre, un enfant rit.</p>
+
+      <p>Puis, à ta droite :</p>
 
       <blockquote>« ${escapeHtml(state.heroName || 'Écuyer')} ? »</blockquote>
 
@@ -3701,15 +3721,13 @@ const STORY = {
         return r + `
           <p>Tu soulèves le loquet.</p>
 
-          <p>La porte s’ouvre sans résistance.</p>
+          <p>La porte s’ouvre brusquement.</p>
 
-          <p>Ton pied allait avancer lorsque quelque chose en toi refuse le mouvement.</p>
+          <p>Ton pied allait avancer lorsque tu aperçois le vide.</p>
 
           <p>Il n’y a pas de pièce derrière la porte.</p>
 
-          <p>Seulement un puits vertical.</p>
-
-          <p>La pierre disparaît dans une obscurité si profonde que ta vue ne parvient pas à lui donner de fond.</p>
+          <p>Seulement un puits vertical qui plonge dans l’obscurité.</p>
 
           <p>Tu recules juste avant que ton poids ne passe le seuil.</p>
 
@@ -3717,17 +3735,17 @@ const STORY = {
 
           <blockquote>« Tu m’as trouvé. »</blockquote>
 
-          <p>Elle est parfaitement calme.</p>
+          <p>Le ton n’a pas changé.</p>
+
+          <p>Ni peur. Ni soulagement.</p>
+
+          <p>Seulement cette voix parfaitement reconnaissable.</p>
         `;
       }
       return r + `
         <p>Tu soulèves le loquet.</p>
 
         <p>La porte s’ouvre plus vite que prévu.</p>
-
-        <p>Tu avances d’un demi-pas.</p>
-
-        <p>Il n’y a pas de sol derrière.</p>
 
         <p>Ton pied plonge dans le vide.</p>
 
@@ -3747,44 +3765,36 @@ const STORY = {
 
   c74: {
     number: 'PAGE 74',
-    title: 'La chambre absente',
-    image: 'La chambre absente',
+    title: 'Ceux qui ont répondu',
+    image: 'Ceux qui ont répondu',
     text: `
-      <p>Tu refermes la porte et recules jusqu’au mur opposé.</p>
+      <p>Tu t’éloignes de la porte jusqu’à ne plus voir sa poignée.</p>
 
-      <p>Quelque chose te gêne dans la disposition du couloir.</p>
+      <p>Dans une alcôve, tu découvres un paquet de vêtements, une gourde vide et un morceau de charbon.</p>
 
-      <p>Tu regardes la porte.</p>
+      <p>Le mur est couvert de phrases courtes.</p>
 
-      <p>Puis l’épaisseur du mur qui l’entoure.</p>
+      <blockquote>ELLE M’A DIT DE VENIR.</blockquote>
 
-      <p>Il n’y a pas assez de pierre derrière elle pour contenir une pièce.</p>
+      <blockquote>LES VEILLEURS DISENT QUE CE N’EST PAS ELLE.</blockquote>
 
-      <p>Encore moins un puits.</p>
+      <blockquote>JE LE SAIS.</blockquote>
 
-      <p>Tu avances de quelques pas jusqu’au prochain angle et regardes le flanc extérieur du mur.</p>
+      <blockquote>JE L’ENTENDS QUAND MÊME.</blockquote>
 
-      <p>La paroi y est pleine.</p>
+      <p>La dernière phrase est presque effacée à force d’avoir été frottée :</p>
 
-      <p>Continue.</p>
+      <blockquote>NOUS NE SOMMES PAS ENLEVÉS. NOUS VENONS.</blockquote>
 
-      <p>Sans ouverture.</p>
+      <p>Tu restes un instant devant ces mots.</p>
 
-      <p>Lorsque tu reviens vers la porte, la poignée est encore là.</p>
+      <p>À Rochebrume, les gens disparaissaient sans que personne sache pourquoi.</p>
 
-      <p>Tu n’essaies pas une seconde fois.</p>
+      <p>Peut-être qu’aucune force ne les traînait jusqu’ici.</p>
 
-      <p>Au moment où tu t’éloignes, la voix d’Aldren reprend derrière le bois.</p>
-
-      <blockquote>« Tu étais presque arrivé. »</blockquote>
-
-      <p>Cette fois, elle ne semble plus venir d’en bas.</p>
-
-      <p>Elle semble venir de l’autre côté de ta propre épaule.</p>
-
-      <p>Tu ne te retournes pas.</p>
+      <p>Peut-être qu’on leur donnait simplement une voix qu’ils ne pouvaient pas se résoudre à abandonner.</p>
     `,
-    choices: [{ label: 'Continuer sans te retourner', to: 'c76' }]
+    choices: [{ label: 'Continuer dans le couloir', to: 'c76' }]
   },
 
   c75: {
@@ -3798,25 +3808,31 @@ const STORY = {
 
       <p>La voix d’Aldren reste derrière toi.</p>
 
-      <p>Puis elle change.</p>
+      <p>Puis elle devient celle d’Élias.</p>
 
-      <p>Elle devient celle d’Élias.</p>
+      <p>Plus loin, elle prend le timbre rauque de Gaspard.</p>
 
-      <p>Puis celle de Gaspard.</p>
+      <p>Tu accélères.</p>
 
-      <p>Puis une voix que tu ne reconnais pas.</p>
+      <p>Dans une alcôve, tu aperçois un paquet de vêtements et plusieurs phrases écrites au charbon.</p>
 
-      <p>La dernière est la tienne.</p>
+      <blockquote>ELLE M’A DIT DE VENIR.</blockquote>
 
-      <blockquote>« N’ouvre pas. »</blockquote>
+      <blockquote>LES VEILLEURS DISENT QUE CE N’EST PAS ELLE.</blockquote>
 
-      <p>Tu t’arrêtes malgré toi.</p>
+      <blockquote>JE LE SAIS.</blockquote>
 
-      <p>La même voix ajoute, plus bas :</p>
+      <blockquote>JE L’ENTENDS QUAND MÊME.</blockquote>
 
-      <blockquote>« Il sait que tu es là. »</blockquote>
+      <p>La dernière phrase est plus profonde que les autres :</p>
 
-      <p>Tu reprends ta marche.</p>
+      <blockquote>NOUS NE SOMMES PAS ENLEVÉS. NOUS VENONS.</blockquote>
+
+      <p>Tu comprends alors quelque chose de simple et de terrible.</p>
+
+      <p>Les disparus ne sont peut-être pas conduits de force jusqu’à la montagne.</p>
+
+      <p>Quelque chose leur donne une raison d’y venir.</p>
     `,
     choices: [{ label: 'Atteindre le bout du couloir', to: 'c76' }]
   },
@@ -3826,27 +3842,31 @@ const STORY = {
     title: 'L’avertissement',
     image: 'L’avertissement',
     text: `
-      <p>Le couloir se termine sur une arche basse.</p>
+      <p>Le couloir se termine sous une arche basse.</p>
 
-      <p>Juste avant de la franchir, tu remarques des mots taillés dans la pierre.</p>
-
-      <p>Les entailles sont claires.</p>
-
-      <p>Récentes.</p>
+      <p>Juste avant de la franchir, tu remarques une inscription plus nette que les autres.</p>
 
       <blockquote>NE CROIS PAS UNE VOIX QUI CONNAÎT TON NOM AVANT QUE TU LE LUI AIES DONNÉ.</blockquote>
 
       <p>Tu relis la phrase.</p>
 
-      <p>Tu penses à l’étranger de Rochebrume, à son visage impossible à retenir.</p>
+      <p>Les fragments s’assemblent.</p>
 
-      <p>Puis à la voix derrière la porte.</p>
+      <p>Quelque chose sous la montagne apprend les noms, les voix et les souvenirs de ceux qu’il atteint.</p>
 
-      <p>Quelqu’un est passé ici avant toi.</p>
+      <p>Puis il s’en sert pour les attirer.</p>
 
-      <p>Quelqu’un qui savait déjà ce que la cité pouvait faire.</p>
+      <p>Les disparus de Rochebrume n’ont peut-être jamais été poursuivis.</p>
 
-      <p>Tu ne sais pas si cette idée te rassure.</p>
+      <p>Ils ont entendu quelqu’un qu’ils voulaient retrouver.</p>
+
+      <p>Ou quelqu’un qu’ils croyaient pouvoir sauver.</p>
+
+      <p>Et ils ont suivi la voix.</p>
+
+      <p>Tu penses à Aldren.</p>
+
+      <p>S’il t’appelle plus bas, il faudra d’abord t’assurer que c’est bien lui.</p>
     `,
     choices: [{ label: 'Franchir l’arche', to: 'c82' }]
   },
@@ -3858,13 +3878,9 @@ const STORY = {
     text: `
       <p>La lumière vient de petites plaques pâles incrustées dans les murs.</p>
 
-      <p>Elles ne brillent pas vraiment.</p>
-
-      <p>Elles rendent simplement l’obscurité moins complète autour d’elles.</p>
-
       <p>Le passage débouche dans une grande salle.</p>
 
-      <p>Des tables de pierre sont alignées contre les murs.</p>
+      <p>Des tables de pierre sont alignées contre les parois.</p>
 
       <p>Des sangles desséchées pendent encore à certaines.</p>
 
@@ -3872,17 +3888,17 @@ const STORY = {
 
       <p>Tu penses d’abord à une salle de torture.</p>
 
-      <p>Puis tu remarques les bassins.</p>
+      <p>Puis tu remarques les bassins, les rigoles et les récipients soigneusement rangés.</p>
 
-      <p>Les rigoles.</p>
+      <p>Sur plusieurs tables, les sangles sont accompagnées de coussins de cuir pour maintenir la tête et les épaules.</p>
 
-      <p>Les récipients soigneusement numérotés.</p>
+      <p>Dans une cuve fermée, une matière noire a séché en une couche épaisse.</p>
 
-      <p>Et surtout les traces noires qui partent des tables pour rejoindre de petites cuves fermées.</p>
+      <p>Le même dépôt apparaît au bout de certaines aiguilles.</p>
 
       <p>Ce lieu n’a pas été construit pour faire souffrir.</p>
 
-      <p>Il a été construit pour retirer quelque chose.</p>
+      <p>Les Veilleurs cherchaient à retirer quelque chose du corps de ceux qu’ils attachaient ici.</p>
     `,
     choices: [{ label: 'Examiner les appareils', to: 'c78' }]
   },
@@ -3891,10 +3907,10 @@ const STORY = {
     number: 'PAGE 78',
     title: 'Les aiguilles de pierre',
     image: 'Les aiguilles de pierre',
-    text: state => `
+    text: `
       <p>Tu t’approches d’une des tables.</p>
 
-      <p>Les aiguilles convergent vers les bras, la poitrine, la gorge.</p>
+      <p>Les aiguilles convergent vers les bras, la poitrine et la gorge.</p>
 
       <p>Au bout de chacune, une matière noire a séché en croûtes très fines.</p>
 
@@ -3939,11 +3955,9 @@ const STORY = {
 
           <p>L’aiguille traverse l’endroit où se trouvait ta gorge et s’arrête dans un claquement sec.</p>
 
-          <p>Le mécanisme essaie de revenir à sa position initiale.</p>
+          <p>Le mécanisme essaie de revenir à sa position initiale, puis se bloque.</p>
 
-          <p>Il n’y parvient qu’à moitié.</p>
-
-          <p>Après quelques secondes, il s’immobilise.</p>
+          <p>Après quelques secondes, le silence revient.</p>
         `;
       }
       return r + `
@@ -3988,7 +4002,7 @@ const STORY = {
           {
             label: 'Prendre l’Ampoule blanche',
             to: 'c81',
-            effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Une ampoule des Veilleurs contenant un liquide blanc. Elle semble liée au traitement de la terre noire.')
+            effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Une ampoule des Veilleurs contenant un liquide blanc. Elle semble avoir servi au traitement de ceux que la montagne avait atteints.')
           },
           { label: 'La laisser', to: 'c81' }
         ]
@@ -3999,69 +4013,107 @@ const STORY = {
     title: 'Ce qu’ils essayaient de sauver',
     image: 'Ce qu’ils essayaient de sauver',
     text: `
-      <p>Sur le mur du fond, une série de silhouettes est gravée dans la pierre.</p>
+      <p>Sur le mur du fond, une série de silhouettes raconte ce qui se passait ici.</p>
 
-      <p>La première représente un homme debout.</p>
+      <p>La première représente un homme tourné vers une montagne.</p>
 
-      <p>Dans la seconde, de fines lignes noires envahissent sa poitrine et sa tête.</p>
+      <p>Trois traits partent de sa tête, comme s’il écoutait quelque chose.</p>
 
-      <p>Dans la troisième, l’homme est attaché sur une table semblable à celles qui t’entourent.</p>
+      <p>Dans la seconde, une matière sombre apparaît autour de sa bouche, de ses mains et de sa poitrine.</p>
+
+      <p>Dans la troisième, il est attaché sur une table semblable à celles qui t’entourent.</p>
 
       <p>Les aiguilles entrent dans son corps.</p>
 
-      <p>Les lignes noires en ressortent.</p>
+      <p>La matière noire en ressort et coule vers un récipient.</p>
 
-      <p>Dans la dernière image, l’homme est de nouveau debout.</p>
+      <p>Dans la dernière image, l’homme est debout. L’œil fermé est gravé au-dessus de lui.</p>
 
-      <p>Plus petit.</p>
+      <p>Sous les dessins, quelques mots sont encore lisibles :</p>
 
-      <p>Seul.</p>
+      <blockquote>À L’APPEL, RETENIR.</blockquote>
 
-      <p>Mais entier.</p>
+      <blockquote>EXTRAIRE AVANT LA DESCENTE.</blockquote>
+
+      <blockquote>APRÈS L’EXTRACTION, LE SILENCE REVIENT CHEZ CERTAINS.</blockquote>
+
+      <p>Une dernière ligne a été ajoutée plus tard :</p>
+
+      <blockquote>S’ILS ENTENDENT ENCORE, NE PAS LES LAISSER DESCENDRE.</blockquote>
 
       <p>Tu regardes les sangles avec un malaise nouveau.</p>
 
-      <p>Les Veilleurs n’attachaient peut-être pas des prisonniers.</p>
+      <p>Les Veilleurs ne torturaient pas les gens attirés sous la montagne.</p>
 
-      <p>Peut-être attachaient-ils des gens qu’ils essayaient encore de sauver.</p>
+      <p>Ils tentaient de les sauver.</p>
+
+      <p>Ils avaient compris que l’appel et la terre noire faisaient partie du même mal.</p>
+
+      <p>Et parfois, ils parvenaient à faire taire la voix.</p>
     `,
     choices: [{ label: 'Quitter le laboratoire', to: 'c82' }]
   },
 
   c82: {
     number: 'PAGE 82',
-    title: 'Le carrefour qui n’était pas là',
-    image: 'Le carrefour qui n’était pas là',
-    text: state => `
-      <p>Tu débouches sur une petite place triangulaire.</p>
+    title: 'La salle de veille',
+    image: 'La salle de veille',
+    text: state => {
+      let routeMemory = '';
+      if (state.flags.cityRoute === 'names') {
+        routeMemory = '<p>La liste des appelés te revient en mémoire. Ton propre nom parmi les leurs rend cette histoire beaucoup trop proche.</p>';
+      } else if (state.flags.cityRoute === 'voices') {
+        routeMemory = '<p>Tu repenses aux voix derrière les portes. Tu sais maintenant qu’une partie de l’appel consiste à donner aux victimes une raison de continuer.</p>';
+      } else if (state.flags.cityRoute === 'laboratory') {
+        routeMemory = '<p>Les tables et les aiguilles du laboratoire te reviennent en mémoire. Les Veilleurs avaient trouvé un moyen d’arracher au moins une partie du mal.</p>';
+      }
+      return `
+        <p>Le passage débouche dans une salle ronde.</p>
 
-      <p>Trois rues y arrivent.</p>
+        <p>Trois accès y arrivent.</p>
 
-      <p>Tu reconnais celle que tu viens de quitter.</p>
+        <p>Sur l’un, tu reconnais les noms gravés.</p>
 
-      <p>Les deux autres t’inquiètent davantage.</p>
+        <p>Un autre mène au couloir des portes.</p>
 
-      <p>L’une porte encore des noms gravés sur ses murs.</p>
+        <p>Le troisième est marqué par les plaques blanches du laboratoire.</p>
 
-      <p>L’autre aligne des portes étroites dans l’ombre.</p>
+        <p>Les trois chemins se rejoignent ici.</p>
 
-      <p>Plus loin, une lueur blanche filtre sous une arche.</p>
+        <p>Au centre, une grande dalle dressée porte quatre scènes simples.</p>
 
-      <p>Tu restes longtemps à regarder ces trois accès.</p>
+        <p>Un homme entend quelque chose depuis la montagne.</p>
 
-      <p>Tu n’en as suivi qu’un.</p>
+        <p>Dans la scène suivante, de la matière noire apparaît autour de sa bouche et de ses mains.</p>
 
-      <p>Pourtant, la disposition de la cité donne l’impression très nette que tu viens de sortir des trois.</p>
+        <p>Puis des Veilleurs le retiennent et tentent d’extraire cette matière.</p>
 
-      <p>Tu essaies de reconstruire ton trajet.</p>
+        <p>Enfin, un œil fermé se dresse devant un passage qui descend sous terre.</p>
 
-      <p>Au troisième virage, tout cesse de correspondre.</p>
+        <p>Cette fois, tu n’as plus besoin de deviner l’essentiel.</p>
 
-      <p>Tu abandonnes.</p>
+        <p>Les disparus entendent un appel.</p>
 
-      ${state.flags.cityRoute === 'names' && hasItem(state, 'plaque_veilleur') ? '<p>La petite plaque de bronze paraît plus lourde qu’au moment où tu l’as ramassée.</p>' : ''}
-    `,
-    choices: [{ label: 'Quitter le carrefour', to: 'c83' }]
+        <p>Quelque chose utilise leurs souvenirs, leurs voix ou leurs désirs pour les attirer jusqu’à la montagne.</p>
+
+        <p>La terre noire apparaît chez certains d’entre eux à mesure que le mal progresse.</p>
+
+        <p>Les Veilleurs les recensaient, les interceptaient ici et tentaient de les soigner avant qu’ils ne descendent plus profondément.</p>
+
+        ${routeMemory}
+
+        <p>Tu ne sais toujours pas ce qui appelle.</p>
+
+        <p>Mais tu sais désormais ce que les Veilleurs essayaient d’empêcher.</p>
+
+        <p>Au bas de la dalle, une dernière gravure montre une petite lame noire coupant plusieurs traits qui relient un homme à quelque chose laissé hors du dessin.</p>
+
+        <p>À côté, une flèche pointe vers les niveaux inférieurs de la cité.</p>
+
+        <p>Si Aldren a continué, c’est probablement par là.</p>
+      `;
+    },
+    choices: [{ label: 'Suivre la direction indiquée par les Veilleurs', to: 'c83' }]
   },
 
   c83: {
@@ -4694,7 +4746,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 11,
+    contentVersion: 12,
     saveVersion: 10,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,

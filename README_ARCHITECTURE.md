@@ -152,3 +152,16 @@ Les créatures sont décrites par impressions contradictoires et détails diffic
 - Page 80 : formulation volontairement plus mystérieuse sur le mal extrait par les machines.
 - Pages 83–88 : suppression des aberrations trop explicites (craie, empreintes impossibles, fenêtre de Valombre). La progression devient plus physique : éboulement, passage de service, escalade, puits des Veilleurs, descente sécurisable avec la Ceinture de corde rouge, galerie de chantier et traces concrètes d'un passage récent vers les niveaux inférieurs.
 - Direction : horreur lovecraftienne par le sous-entendu et l'ancienneté des lieux, mais aventure concrète et racontable, avec exploration physique dans un esprit archéologique.
+
+## V26 — Cité morte : une histoire en trois chemins
+
+- La Cité morte devient une zone de compréhension scénaristique, pas une simple succession de descriptions.
+- Les trois chemins racontent trois facettes complémentaires du même phénomène :
+  - Salle des noms : qui est touché et pourquoi les Veilleurs tenaient un registre des « appelés ».
+  - Couloir des voix : comment l'appel utilise les morts, les proches, les souvenirs et les désirs pour faire venir les victimes d'elles-mêmes.
+  - Laboratoire : comment les Veilleurs tentaient de retirer la terre noire et de faire taire l'appel.
+- Chaque route contient assez d'indices pour que l'histoire principale soit compréhensible dès une première partie.
+- La salle de veille (page 82) rassemble clairement les éléments essentiels sans exiger que le lecteur reconstitue seul l'intrigue.
+- Les autres routes enrichissent ensuite la compréhension lors des parties suivantes, sans être obligatoires.
+- Le nom du héros reste gravé dans la Salle des noms : il indique que le lien avec ce qui appelle sous la montagne a déjà commencé, sans expliquer encore son mécanisme.
+- La dernière gravure de la Salle de veille prépare la recherche de la Lame noire et la descente vers la prochaine zone, destinée à être plus orientée action et combat.
