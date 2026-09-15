@@ -1352,7 +1352,9 @@ const STORY = {
     text: state => `
       <p>Tu te tournes vers le grondement, l’épée prête.</p>
       <p>Quelque chose bouge dans l’obscurité.</p>
-      <p>Quelque chose de massif, de mal défini.</p>
+      <p>Tu essaies d’en suivre la forme, mais ton regard n’arrive pas à la fixer.</p>
+      <p>Il y a une masse, certainement. Une présence assez lourde pour faire vibrer la pierre.</p>
+      <p>Pour le reste, chaque détail que tu crois distinguer cesse de correspondre au suivant.</p>
       ${state.throwingBlades > 0
         ? `<p>Tu possèdes encore <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
         : '<p>Tu n’as rien d’autre que ton épée.</p>'}
@@ -1428,11 +1430,11 @@ const STORY = {
       if (combat.hp <= 0) {
         return card + result + `
           <p>Ton coup porte avec assez de force pour mettre fin au combat.</p>
-          <p>La masse se raidit puis s’effondre contre la pierre.</p>
-          <p>Dans sa chute, son bras passe dans la faible lumière.</p>
-          <p>Sous la terre noire et la peau déformée, tu crois distinguer une manche de chemise.</p>
-          <p>Quelque chose de parfaitement humain.</p>
-          <p>Tu détournes les yeux avant d’en voir davantage.</p>
+          <p>La masse se contracte d’un seul bloc puis s’effondre contre la pierre.</p>
+          <p>Dans sa chute, une partie de ce corps passe dans la faible lumière.</p>
+          <p>Tu crois voir du tissu sous la terre noire.</p>
+          <p>Une manche, peut-être.</p>
+          <p>Lorsque tu regardes de nouveau, tu n’es déjà plus certain de ce que tu as vu.</p>
         `;
       }
 
@@ -1446,20 +1448,22 @@ const STORY = {
       if (combat.last && combat.last.outcome === 'enemy') {
         return card + result + `
           <p>La créature te percute. Tu recules contre la paroi, mais tu parviens à conserver ton arme.</p>
-          <p>Elle revient immédiatement sur toi.</p>
+          <p>Elle ne marque aucune pause.</p>
+          <p>Son mouvement se poursuit vers toi comme si le choc n’avait jamais eu lieu.</p>
         `;
       }
 
       if (combat.last && combat.last.outcome === 'tie') {
         return card + result + `
           <p>Vos mouvements se heurtent sans qu’aucun de vous ne trouve l’ouverture.</p>
-          <p>La masse gronde et se ramasse pour un nouvel assaut.</p>
+          <p>La chose reprend aussitôt son mouvement, sans recul, sans hésitation.</p>
         `;
       }
 
       return card + result + `
-        <p>Ton coup porte, mais la créature tient encore debout.</p>
-        <p>Elle recule d’un pas puis revient vers toi.</p>
+        <p>Ton coup porte.</p>
+        <p>Le corps plie sous l’impact d’une façon que tu ne parviens pas à comprendre, puis reprend immédiatement sa progression.</p>
+        <p>Aucun geste de protection. Aucun recul volontaire. Rien qui ressemble à la peur.</p>
       `;
     },
     choices: state => {
@@ -1879,9 +1883,13 @@ const STORY = {
 
       <p>Elle bondit.</p>
 
-      <p>Tu n’as qu’un instant pour distinguer un visage couvert de plaques sombres, des yeux injectés de sang et une bouche déformée par la terre noire.</p>
+      <p>Tu n’as qu’un instant pour regarder ce qui devrait être son visage.</p>
 
-      <p>Mais sous toute cette saleté, il y a autre chose.</p>
+      <p>La terre noire y dessine des reliefs que ton esprit transforme malgré lui en traits humains, puis défait aussitôt.</p>
+
+      <p>Tu ne sais pas si tu vois encore un homme, ou seulement ce qu’il en reste.</p>
+
+      <p>Mais sous cette masse sombre, il y a autre chose.</p>
 
       <p>Un morceau de tissu bleu.</p>
 
@@ -1923,11 +1931,13 @@ const STORY = {
 
       <p>Quelques mètres plus loin, une fissure noire coupe la roche à hauteur de ton visage.</p>
 
-      <p>Un œil s’y ouvre.</p>
+      <p>Quelque chose de pâle apparaît dans la fente.</p>
 
-      <p>Petit. Pâle. Presque humain.</p>
+      <p>Ton premier réflexe est d’y voir un œil.</p>
 
-      <p>Il disparaît aussitôt.</p>
+      <p>Mais lorsque tu cherches une paupière, une pupille, quoi que ce soit qui confirmerait cette idée, la chose se retire.</p>
+
+      <p>Tu n’es plus certain d’avoir vu un œil du tout.</p>
 
       <p>D’autres frottements lui répondent plus loin.</p>
 
@@ -2328,15 +2338,17 @@ const STORY = {
 
       <p>Le bois monte de presque un mètre.</p>
 
-      <p>Pendant une seconde, tu distingues sous tes pieds une masse plus sombre encore que l’eau.</p>
+      <p>Pendant une seconde, tu distingues sous tes pieds quelque chose de plus sombre encore que l’eau.</p>
 
-      <p>Elle est beaucoup plus large que le bateau.</p>
+      <p>Ton esprit cherche aussitôt une taille à lui donner.</p>
 
-      <p>Beaucoup plus large que la maison d’Aldren.</p>
+      <p>Plus large que la barque. Puis qu’une maison. Puis davantage encore.</p>
 
-      <p>Peut-être plus large que la place de Valombre.</p>
+      <p>Mais aucune comparaison ne tient : la courbure aperçue sous l’eau ne semble jamais appartenir au même volume.</p>
 
-      <p>Puis elle continue sa route.</p>
+      <p>Tu renonces à comprendre ce qui vient de passer sous toi.</p>
+
+      <p>Puis la présence continue sa route.</p>
 
       <p>La barque retombe brutalement.</p>
 
@@ -2426,17 +2438,25 @@ const STORY = {
 
           <p>Une forme basse apparaît.</p>
 
-          <p>De loin, elle évoque un énorme alligator. Mais plus elle avance, moins cette comparaison tient.</p>
+          <p>De loin, ton esprit lui donne immédiatement un nom : un énorme alligator.</p>
 
-          <p>Ses pattes avant se plient comme des bras. Au bout, cinq doigts trop longs s’écartent sur la dalle.</p>
+          <p>Cette certitude ne dure que quelques secondes.</p>
 
-          <p>Sa peau est nue par endroits, presque humaine. Sa mâchoire est trop large, mais la ligne de ses pommettes te rappelle malgré toi un visage.</p>
+          <p>À mesure qu’elle approche, rien ne devient plus clair. Au contraire.</p>
+
+          <p>Ce que tu prenais pour des pattes ne se pose jamais tout à fait comme des pattes. Ce que tu croyais être une tête change de proportion chaque fois que la forme tourne.</p>
+
+          <p>Tu pourrais décrire séparément certains détails. Ensemble, ils ne composent rien que tu connaisses.</p>
+
+          <p>Ce n’est plus un alligator.</p>
+
+          <p>Mais tu serais incapable de dire ce que c’est à la place.</p>
 
           <p>La chose rampe entre toi et la barque.</p>
 
-          <p>Elle est lente.</p>
+          <p>Elle avance lentement, sans jamais détourner sa trajectoire.</p>
 
-          <p>Mais lorsqu’elle referme ses mâchoires, la pierre elle-même résonne.</p>
+          <p>Lorsqu’une partie de sa gueule — si c’en est bien une — se referme, la dalle résonne sous tes pieds.</p>
 
           ${card}
         `;
@@ -2449,7 +2469,11 @@ const STORY = {
 
           <p>La créature s’affaisse contre la dalle et reste immobile.</p>
 
-          <p>De profil, sa tête paraît moins animale encore. Sous la mâchoire déformée, tu distingues l’implantation d’une oreille humaine.</p>
+          <p>Tu la regardes quelques secondes, certain que l’immobilité finira par lui rendre une forme compréhensible.</p>
+
+          <p>C’est l’inverse.</p>
+
+          <p>Sans le mouvement pour relier ses volumes entre eux, tu ne sais même plus quelle partie de ce corps tu avais prise pour une tête.</p>
 
           <p>Tu détournes les yeux.</p>
 
@@ -2470,20 +2494,22 @@ const STORY = {
 
       if (combat.last && combat.last.outcome === 'enemy') {
         return card + result + `
-          <p>La créature referme ses mâchoires là où tu te trouvais une fraction de seconde plus tôt.</p>
-          <p>Elle pivote lourdement et se remet entre toi et la barque.</p>
+          <p>La créature te heurte et poursuit son mouvement jusqu’au bord de la dalle.</p>
+          <p>Elle pivote sans pause et revient sur la même trajectoire, comme si rien ne pouvait modifier ce qu’elle a commencé.</p>
         `;
       }
 
       if (combat.last && combat.last.outcome === 'tie') {
         return card + result + `
-          <p>Ton arme rencontre son crâne dans un choc sec, mais elle dévie au même instant.</p>
-          <p>Vous vous retrouvez de nouveau face à face autour de la dalle.</p>
+          <p>Ton arme rencontre une partie dure de son corps dans un choc sec, mais elle dévie au même instant.</p>
+          <p>La chose continue de ramper autour de la dalle. Tu ignores même si elle a compris qu’elle venait d’être frappée.</p>
         `;
       }
 
       return card + result + `
-        <p>Ton coup l’atteint. La créature s’aplatit contre la pierre, blessée, puis recommence lentement à ramper vers toi.</p>
+        <p>Ton coup l’atteint.</p>
+        <p>Une partie de son corps s’écrase contre la pierre sous l’impact.</p>
+        <p>Elle ne cherche ni à fuir ni à protéger la blessure. Le mouvement reprend simplement, au même rythme, dans ta direction.</p>
         <p>Elle n’est pas morte.</p>
       `;
     },
@@ -2720,7 +2746,7 @@ const STORY = {
       <p>Et, très loin à l’intérieur, quelque chose gratte doucement la pierre.</p>
     `,
     choices: [
-      { label: 'T’aventurer dans la fissure', to: 'c53', effect: s => { if (!s.flags.stairsCrackEntered) { s.flags.stairsCrackEntered = true; s.flags.stairsCrackDamage = applyDamage(s, 2); } } },
+      { label: 'T’aventurer dans la fissure', to: 'c53', effect: s => { if (!s.flags.stairsCrackEntered) { s.flags.stairsCrackEntered = true; s.flags.stairsCrackDamage = applyDamage(s, 2); s.dexPenalty = (s.dexPenalty || 0) + 1; s.flags.blackEarthContamination = true; } } },
       { label: 'Ne pas t’y aventurer et poursuivre l’ascension', to: 'c54' }
     ]
   },
@@ -2766,11 +2792,21 @@ const STORY = {
 
       <p>Tu n’as aucun souvenir d’être sorti de la fissure.</p>
 
-      <p>Sous les ongles de ta main droite, une poussière noire s’est logée profondément.</p>
+      <p>De la terre noire est tassée sous tes ongles, jusque dans les chairs.</p>
 
-      <p>Tu la grattes aussitôt.</p>
+      <p>Tu en sens aussi dans le coin de tes yeux.</p>
 
-      <p>Une partie de toi regrette presque de la voir disparaître.</p>
+      <p>Lorsque tu tousses, un goût de poussière humide remonte du fond de ta gorge.</p>
+
+      <p>Tu frottes. Tu craches. Tu rinces tes yeux avec le peu d’eau que tu peux épargner.</p>
+
+      <p>Elle ne part pas complètement.</p>
+
+      <p><strong>Tu perds 1 point de Dextérité.</strong></p>
+
+      <p>Et lorsque tu cesses enfin d’essayer de l’enlever, tu ressens une seconde de soulagement.</p>
+
+      <p>Presque comme si tu venais d’arrêter de lutter contre quelque chose qui voulait rester.</p>
     `,
     choices: state => state.hp <= 0
       ? fatalChoices()
@@ -2977,17 +3013,21 @@ const STORY = {
     text: state => `
       <p>La créature pivote autour d’une corde avec une facilité déconcertante.</p>
 
-      <p>Elle apparaît enfin à hauteur du tablier.</p>
+      <p>Elle remonte jusqu’au bord du pont.</p>
 
-      <p>Son corps est maigre au point de sembler presque plat.</p>
+      <p>De loin, sous les planches, tu avais cru voir un corps très maigre muni de membres trop longs.</p>
 
-      <p>Ses bras sont beaucoup trop longs.</p>
+      <p>À cette distance, cette description ne tient plus.</p>
 
-      <p>Ses pieds se referment sur le bois comme des mains.</p>
+      <p>Tu vois bien des articulations, des extrémités qui prennent appui sur le bois, une masse centrale qui devrait permettre de comprendre le reste.</p>
 
-      <p>Elle n’a pas de terre noire sur le visage.</p>
+      <p>Mais chaque fois que ton regard passe d’une partie à l’autre, leur disposition semble avoir changé.</p>
 
-      <p>Pourtant, lorsqu’elle ouvre la bouche, trois coups secs résonnent dans toute la caverne.</p>
+      <p>Tu ne saurais pas dire comment elle tient sous le pont.</p>
+
+      <p>Tu ne saurais même pas affirmer de quel côté elle te regarde.</p>
+
+      <p>Puis trois coups secs résonnent dans toute la caverne.</p>
 
       <p><strong>TOC. TOC. TOC.</strong></p>
 
@@ -3043,11 +3083,11 @@ const STORY = {
 
       if (combat.last && combat.last.outcome === 'enemy') {
         return card + result + `
-          <p>La créature te heurte puis se replie sous le tablier.</p>
+          <p>La créature te heurte puis disparaît sous le pont.</p>
 
-          <p>Tu n’as pas le temps de souffler : quelques planches plus loin, ses doigts réapparaissent déjà.</p>
+          <p>Tu n’as pas le temps de souffler : quelques planches plus loin, une prise se referme déjà sur le bois.</p>
 
-          <p>Elle cherche un nouvel angle pour revenir sur toi.</p>
+          <p>Elle revient immédiatement, sans ralentir, sans protéger quoi que ce soit de son propre corps.</p>
         `;
       }
 
@@ -3057,18 +3097,20 @@ const STORY = {
 
           <p>Vos mouvements se neutralisent et vous vous séparez sans parvenir à prendre l’avantage.</p>
 
-          <p>Le pont continue de se balancer sous vos pieds et ses doigts.</p>
+          <p>Le pont continue de se balancer tandis que la chose reprend prise sous les planches.</p>
         `;
       }
 
       return card + result + `
         <p>Ton coup porte.</p>
 
-        <p>La créature se replie autour d’une corde, blessée. Pendant un instant, elle pend sous le pont par un seul bras.</p>
+        <p>L’impact tord la créature autour d’une corde et une partie de son corps pend un instant dans le vide.</p>
 
         <p>Puis elle se hisse de nouveau vers toi.</p>
 
-        <p>Elle revient, mais pas tout à fait avec la même assurance.</p>
+        <p>Ni plus lentement, ni plus prudemment.</p>
+
+        <p>La blessure existe. Elle ne semble simplement avoir aucune importance pour elle.</p>
       `;
     },
     choices: state => {
@@ -3089,7 +3131,7 @@ const STORY = {
     image: 'L’autre extrémité du pont',
     text: state => {
       const intro = state.flags.bridgeSolution === 'blade'
-        ? `<p>La lame de jet tinte contre une pierre très loin sous le pont.</p><p>La chose se détache aussitôt du tablier et disparaît dans la brume à sa poursuite.</p>`
+        ? `<p>La lame de jet tinte contre une pierre très loin sous le pont.</p><p>La chose lâche aussitôt la face inférieure du pont et disparaît dans la brume à sa poursuite.</p>`
         : state.flags.bridgeSolution === 'calm'
           ? `<p>Tu continues à avancer sans accélérer.</p><p>La chose reste sous toi jusqu’aux dernières planches, puis s’arrête exactement à la limite de la roche.</p><p>Elle ne franchit pas le bord.</p>`
           : '';
@@ -3688,8 +3730,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 8,
-    saveVersion: 7,
+    contentVersion: 9,
+    saveVersion: 8,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,

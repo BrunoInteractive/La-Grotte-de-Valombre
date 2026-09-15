@@ -19,3 +19,6 @@ V19 TEST : le bouton ☰ ouvre désormais une liste déroulante de toutes les pa
 
 ### V21 TEST
 Inventaire de test complet avec activation/désactivation des objets et sélection rapide de l’arme équipée.
+
+
+V22 TEST : descriptions des créatures rendues volontairement difficiles à fixer ou à catégoriser ; aucune réaction de peur aux blessures. Correction du Marcheur sous le pont (plus de « tablier » / plus d'hésitation après un coup). La fissure des Grandes Marches inflige désormais 2 dégâts et une pénalité persistante de -1 Dextérité avec contamination à la terre noire.

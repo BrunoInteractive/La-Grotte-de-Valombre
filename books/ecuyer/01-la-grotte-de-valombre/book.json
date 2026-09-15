@@ -4,10 +4,10 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 8,
+  "contentVersion": 9,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
-  "saveVersion": 7
+  "saveVersion": 8
 }

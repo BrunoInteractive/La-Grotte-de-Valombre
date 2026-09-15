@@ -122,3 +122,7 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - Les lames de jet passent à 3 lorsqu’elles sont cochées et à 0 lorsqu’elles sont décochées.
 - Un sélecteur permet d’équiper Aucune arme / Grosse épée / Petite épée depuis l’inventaire.
 - Cette interface est destinée uniquement aux versions TEST.
+
+
+## V22 — direction créatures
+Les créatures sont décrites par impressions contradictoires et détails difficiles à relier plutôt que par une anatomie exhaustive. Une créature blessée ne montre pas de peur : elle peut être physiquement repoussée ou ralentie, mais ne doute pas et ne protège pas instinctivement sa blessure. La fissure des Grandes Marches applique 2 dégâts (Protection puis Vie) et -1 Dextérité persistant.
