@@ -258,11 +258,11 @@ function openInventory() {
   const moneyLine = topText ? `<div class="inventory-topline">${topText}</div>` : '';
   const extraLine = BOOK.inventory && BOOK.inventory.extraHtml ? BOOK.inventory.extraHtml(state) : '';
   const list = items.length
-    ? `<div class="inventory-list">${items.map(([id,item]) => {
+    ? `<div class="inventory-owned-section"><div class="inventory-owned-title">Objets actuellement actifs</div><div class="inventory-list">${items.map(([id,item]) => {
         const action = BOOK.inventory && BOOK.inventory.actionHtml ? BOOK.inventory.actionHtml(id,item,state) : '';
         return `<div class="inventory-item"><strong>${item.name}${item.quantity ? ` × ${item.quantity}` : ''}</strong><p>${item.description}</p>${action}</div>`;
-      }).join('')}</div>`
-    : `<div class="inventory-empty">Tu ne transportes encore aucun objet particulier.</div>`;
+      }).join('')}</div></div>`
+    : `<div class="inventory-empty">Aucun objet n’est actuellement coché.</div>`;
   modalContent.innerHTML = moneyLine + extraLine + list;
   modal.classList.remove('hidden'); modalBackdrop.classList.remove('hidden');
 }

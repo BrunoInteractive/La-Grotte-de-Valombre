@@ -112,3 +112,13 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - Cliquer sur une page y va directement sans exécuter les effets des choix ou des pages précédentes.
 - L’état courant (inventaire, caractéristiques, objets, blessures) est conservé pendant ce saut de test.
 - Le menu ne contient plus les anciens boutons Continuer / Inventaire / Recommencer ; ces fonctions restent accessibles ailleurs dans l’interface.
+
+
+## V20 — Inventaire de test
+
+- L’inventaire affiche dès le départ tous les objets déjà introduits jusqu’à la page 66.
+- Chaque objet peut être coché/décoché pour simuler sa possession.
+- Le Brassard et l’Anneau appliquent leurs bonus uniquement lorsqu’ils sont cochés.
+- Les lames de jet passent à 3 lorsqu’elles sont cochées et à 0 lorsqu’elles sont décochées.
+- Un sélecteur permet d’équiper Aucune arme / Grosse épée / Petite épée depuis l’inventaire.
+- Cette interface est destinée uniquement aux versions TEST.

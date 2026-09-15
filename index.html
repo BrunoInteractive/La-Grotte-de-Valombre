@@ -1091,6 +1091,80 @@ button { font: inherit; }
   .combat-versus { line-height: 1; }
   .combat-side > strong { min-height: auto; }
 }
+
+
+/* Mode test : inventaire complet et activable */
+.test-inventory-panel {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #8f714d;
+  background: rgba(70, 49, 31, .055);
+}
+.test-inventory-title {
+  font-family: var(--display-font);
+  font-size: 21px;
+  font-weight: 700;
+  color: #4c3422;
+  margin-bottom: 4px;
+}
+.test-inventory-note {
+  margin: 0 0 12px;
+  color: #65513d;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.test-item-list { display: grid; gap: 7px; }
+.test-item-row {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 9px;
+  align-items: start;
+  padding: 9px 10px;
+  border: 1px solid rgba(120, 91, 57, .38);
+  background: rgba(255,255,255,.13);
+  cursor: pointer;
+}
+.test-item-row input { position: absolute; opacity: 0; pointer-events: none; }
+.test-item-box {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #765b3a;
+  background: rgba(255,255,255,.28);
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+}
+.test-item-row input:checked + .test-item-box::after {
+  content: '✓';
+  font-weight: 700;
+  color: #51351f;
+  line-height: 1;
+}
+.test-item-copy strong { display: block; color: #5d3d27; margin-bottom: 2px; }
+.test-item-copy small { display: block; color: #6a5845; line-height: 1.25; }
+.test-weapon-panel {
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(118,91,58,.45);
+}
+.test-weapon-panel > strong { color: #4f3725; }
+.test-weapon-list { display: grid; gap: 5px; margin-top: 7px; }
+.test-weapon-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #5b4736;
+}
+.test-weapon-option input { accent-color: #725536; }
+.inventory-owned-section { margin-top: 16px; }
+.inventory-owned-title {
+  font-family: var(--display-font);
+  font-size: 18px;
+  font-weight: 700;
+  color: #4f3725;
+  margin-bottom: 8px;
+}
 </style>
 </head>
 <body>

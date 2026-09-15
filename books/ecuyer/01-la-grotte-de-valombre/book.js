@@ -1545,7 +1545,6 @@ const STORY = {
     onEnter: s => {
       if (s.lastCombatOutcome === 'force_success' && !s.flags.brassardPris) {
         s.flags.brassardPris = true;
-        s.forceBonus += 1;
         addItem(
           s,
           'brassard_veilleurs',
@@ -2306,7 +2305,6 @@ const STORY = {
             effect: s => {
               if (!s.flags.anneauVeilleursPris) {
                 s.flags.anneauVeilleursPris = true;
-                s.dexBonus += 1;
                 addItem(s, 'anneau_veilleurs', 'Anneau des Veilleurs', 'Un anneau ancien et très léger. +1 Dextérité.');
               }
             }
@@ -3097,16 +3095,19 @@ const STORY = {
   }
 
   function currentForce(state) {
-    return Math.max(3, state.baseForce + (state.forceBonus || 0));
+    const itemBonus = hasItem(state, 'brassard_veilleurs') ? 1 : 0;
+    return Math.max(3, state.baseForce + (state.forceBonus || 0) + itemBonus);
   }
 
   function currentDexterity(state) {
     const weaponModifier =
       state.weapon === 'heavy' ? -4 :
       state.weapon === 'light' ? -1 : 0;
+    const itemBonus = hasItem(state, 'anneau_veilleurs') ? 1 : 0;
     return Math.max(3,
       state.baseDexterity +
-      (state.dexBonus || 0) -
+      (state.dexBonus || 0) +
+      itemBonus -
       (state.dexPenalty || 0) +
       weaponModifier
     );
@@ -3176,14 +3177,110 @@ const STORY = {
     };
   }
 
+  const TEST_ITEM_CATALOG = [
+    {
+      id: 'parchemin',
+      name: 'Parchemin ancien',
+      description: 'Un fragment ancien découvert dans les affaires de Sir Aldren. Il peut être relu quand tu veux.'
+    },
+    {
+      id: 'fiole_rouge',
+      name: 'Fiole rouge',
+      description: 'Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'
+    },
+    {
+      id: 'potion_guerison',
+      name: 'Potion de guérison',
+      description: 'Une potion du marchand. Elle rend 1 dé de Vie lorsqu’elle est bue.'
+    },
+    {
+      id: 'potion_sombre',
+      name: 'Potion de guérison sombre',
+      description: 'La fiole trouvée sur Gaspard. Son liquide est presque noir.'
+    },
+    {
+      id: 'brassard_veilleurs',
+      name: 'Brassard des Veilleurs',
+      description: 'Un brassard sombre étonnamment léger. Tant qu’il est coché : +1 Force.'
+    },
+    {
+      id: 'anneau_veilleurs',
+      name: 'Anneau des Veilleurs',
+      description: 'Un anneau ancien et très léger. Tant qu’il est coché : +1 Dextérité.'
+    },
+    {
+      id: 'lames_jet',
+      name: 'Lames de jet',
+      description: 'Petites lames vendues par Élias. En mode test, les cocher en donne 3.',
+      special: 'throwingBlades'
+    },
+    {
+      id: 'ceinture_rouge',
+      name: 'Ceinture de corde rouge',
+      description: 'Une ceinture des Veilleurs : +1 Force lors des tests pour grimper, retenir ou se suspendre.'
+    }
+  ];
+
+  function testItemOwned(state, entry) {
+    if (entry.special === 'throwingBlades') return (state.throwingBlades || 0) > 0;
+    return hasItem(state, entry.id);
+  }
+
+  function setTestItem(state, entry, enabled) {
+    if (entry.special === 'throwingBlades') {
+      state.throwingBlades = enabled ? Math.max(3, state.throwingBlades || 0) : 0;
+      syncThrowingBlades(state);
+      return;
+    }
+    if (enabled) addItem(state, entry.id, entry.name, entry.description);
+    else removeItem(state, entry.id);
+  }
+
+  function testInventoryHtml(state) {
+    const itemRows = TEST_ITEM_CATALOG.map(entry => {
+      const checked = testItemOwned(state, entry);
+      const quantity = entry.special === 'throwingBlades' && checked ? ` × ${state.throwingBlades}` : '';
+      return `
+        <label class="test-item-row">
+          <input type="checkbox" data-action="test-toggle-item:${entry.id}" ${checked ? 'checked' : ''}>
+          <span class="test-item-box" aria-hidden="true"></span>
+          <span class="test-item-copy"><strong>${entry.name}${quantity}</strong><small>${entry.description}</small></span>
+        </label>`;
+    }).join('');
+
+    const weaponOptions = [
+      ['none', 'Aucune'],
+      ['heavy', 'Grosse épée · DEX −4 · Puissance 4'],
+      ['light', 'Petite épée · DEX −1 · Puissance 1']
+    ].map(([value, label]) => `
+      <label class="test-weapon-option">
+        <input type="radio" name="testWeapon" data-action="test-equip-weapon:${value}" ${state.weapon === value ? 'checked' : ''}>
+        <span>${label}</span>
+      </label>`).join('');
+
+    return `
+      <div class="test-inventory-panel">
+        <div class="test-inventory-title">Mode test · objets disponibles</div>
+        <p class="test-inventory-note">Tous les objets déjà introduits dans cette version sont visibles ici. Coche ou décoche un objet pour simuler immédiatement sa présence dans ton inventaire.</p>
+        <div class="test-item-list">${itemRows}</div>
+        <div class="test-weapon-panel">
+          <strong>Arme équipée</strong>
+          <div class="test-weapon-list">${weaponOptions}</div>
+        </div>
+      </div>`;
+  }
+
   const inventory = {
     topLine(state) {
       return `Argent : ${state.silver} · Or : ${state.goldCoins} · Arme : ${weaponLabel(state)}`;
     },
 
     extraHtml(state) {
-      if (!Number.isInteger(state.lastHealingDie)) return '';
-      return `<div class="dice-result"><p class="roll-number">Dernière potion</p><div class="dice-faces">${renderDie(state.lastHealingDie)}</div><p><strong>+${state.lastHealingDie} point${state.lastHealingDie > 1 ? 's' : ''} de Vie</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p></div>`;
+      const testPanel = testInventoryHtml(state);
+      const healing = Number.isInteger(state.lastHealingDie)
+        ? `<div class="dice-result"><p class="roll-number">Dernière potion</p><div class="dice-faces">${renderDie(state.lastHealingDie)}</div><p><strong>+${state.lastHealingDie} point${state.lastHealingDie > 1 ? 's' : ''} de Vie</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p></div>`
+        : '';
+      return testPanel + healing;
     },
 
     actionHtml(id, item, state) {
@@ -3200,6 +3297,29 @@ const STORY = {
     },
 
     handleAction(action, state, api) {
+      if (action.startsWith('test-toggle-item:')) {
+        const id = action.slice('test-toggle-item:'.length);
+        const entry = TEST_ITEM_CATALOG.find(item => item.id === id);
+        if (entry) {
+          setTestItem(state, entry, !testItemOwned(state, entry));
+          api.saveState();
+          api.render();
+          api.openInventory();
+        }
+        return true;
+      }
+
+      if (action.startsWith('test-equip-weapon:')) {
+        const weapon = action.slice('test-equip-weapon:'.length);
+        if (['none', 'heavy', 'light'].includes(weapon)) {
+          state.weapon = weapon;
+          api.saveState();
+          api.render();
+          api.openInventory();
+        }
+        return true;
+      }
+
       if (action === 'read-parchment') {
         api.showModal('Parchemin ancien', `
           <img class="inventory-parchment-image" src="${api.book.assetBase}/objets/La-Grotte-de-Valombre-Parchemin.png" alt="Parchemin ancien" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -3246,8 +3366,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 6,
-    saveVersion: 5,
+    contentVersion: 7,
+    saveVersion: 6,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,
