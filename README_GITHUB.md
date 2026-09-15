@@ -34,3 +34,8 @@ V23 TEST : style descriptif ténébreux uniformisé pour les créatures ; page 5
 - Cité morte développée : Salle des noms, Couloir des voix, Laboratoire des Veilleurs, perte de repères temporels, exploration commune et descente sous la cité.
 - Nouveaux objets : Plaque du Veilleur et Ampoule blanche.
 - Le Gantelet de Veilleur se récupère page 54 sur la route des Grandes Marches.
+
+
+## V25 — Cité morte, exploration plus concrète
+
+La fin de la Cité morte a été réécrite pour privilégier l'aventure physique : décombres, passage ancien, descente dans un puits, indices des Veilleurs et progression sous la ville. Les anomalies trop démonstratives ont été retirées au profit d'un fantastique plus discret.

@@ -143,3 +143,12 @@ Les créatures sont décrites par impressions contradictoires et détails diffic
 - Cité morte développée : Salle des noms, Couloir des voix, Laboratoire des Veilleurs, perte de repères temporels, exploration commune et descente sous la cité.
 - Nouveaux objets : Plaque du Veilleur et Ampoule blanche.
 - Le Gantelet de Veilleur se récupère page 54 sur la route des Grandes Marches.
+
+
+## V25 — Cité morte : aventure et exploration
+
+- Page 66 : convergence des routes rendue plus discrète ; retrait de la phrase sur la poussière immobile ; le couloir des voix n'annonce plus les murmures avant d'y entrer.
+- Page 78 : déclencheur du piège reformulé clairement (dalle qui s'abaisse + déclic).
+- Page 80 : formulation volontairement plus mystérieuse sur le mal extrait par les machines.
+- Pages 83–88 : suppression des aberrations trop explicites (craie, empreintes impossibles, fenêtre de Valombre). La progression devient plus physique : éboulement, passage de service, escalade, puits des Veilleurs, descente sécurisable avec la Ceinture de corde rouge, galerie de chantier et traces concrètes d'un passage récent vers les niveaux inférieurs.
+- Direction : horreur lovecraftienne par le sous-entendu et l'ancienneté des lieux, mais aventure concrète et racontable, avec exploration physique dans un esprit archéologique.

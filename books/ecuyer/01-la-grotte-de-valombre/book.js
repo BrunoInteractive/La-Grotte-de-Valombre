@@ -3398,7 +3398,7 @@ const STORY = {
       if (state.flags.worldRoute !== 'stairs') otherWays.push('un escalier étroit descend des niveaux supérieurs');
       if (state.flags.worldRoute !== 'bridge') otherWays.push('une porte latérale s’ouvre vers le vide et laisse entrevoir, très loin, la ligne d’un pont');
       const routesLine = otherWays.length
-        ? `<p>Un peu plus loin, d’autres ouvertures rejoignent l’avenue. ${otherWays.join(' ; ')}.</p><p>Tu ne les avais jamais vues, et pourtant chacune donne l’impression d’avoir toujours débouché ici.</p>`
+        ? `<p>Un peu plus loin, d’autres ouvertures rejoignent l’avenue. ${otherWays.join(' ; ')}.</p><p>Au sol, d’anciennes traces de passage convergent depuis chacune d’elles vers la place.</p>`
         : '';
       const contamination = state.flags.blackEarthContamination
         ? `<p>Le goût de terre resté au fond de ta gorge te paraît soudain moins étranger.</p><p>Cette pensée te vient sans raison. Tu la chasses aussitôt.</p>`
@@ -3447,7 +3447,6 @@ const STORY = {
 
         <p>Tu la rabats contre toi.</p>
 
-        <p>La poussière n’a pas bougé.</p>
 
         <p>En reculant, tu éprouves un bref regret.</p>
 
@@ -3457,7 +3456,7 @@ const STORY = {
 
         <p>Le premier est couvert de noms gravés dans la pierre.</p>
 
-        <p>Le second aligne une suite de portes étroites derrière lesquelles quelque chose murmure.</p>
+        <p>Le second aligne une suite de portes étroites, toutes fermées.</p>
 
         <p>Le dernier laisse filtrer une lumière blanche sous une arche marquée de l’œil fermé.</p>
       `;
@@ -3909,9 +3908,11 @@ const STORY = {
 
       <p>Tu avances la main.</p>
 
-      <p>Sous ta botte, quelque chose s’enfonce d’un souffle.</p>
+      <p>La dalle sous ta botte s’abaisse de quelques millimètres.</p>
 
-      <p>Un mécanisme ancien se réveille dans le mur.</p>
+      <p>Un déclic sec répond dans le mur.</p>
+
+      <p>Un mécanisme ancien se réveille.</p>
 
       <p>Un bras de pierre pivote vers toi.</p>
     `,
@@ -3979,7 +3980,7 @@ const STORY = {
 
       <p>Tu ne sais pas ce que celle-ci peut encore soigner.</p>
 
-      <p>Tu sais seulement ce que les machines de cette salle cherchaient à extraire.</p>
+      <p>Tu sais seulement que les machines de cette salle cherchaient à extraire un mal inconnu.</p>
     `,
     choices: state => hasItem(state, 'ampoule_blanche')
       ? [{ label: 'Examiner les gravures de la salle', to: 'c81' }]
@@ -4065,120 +4066,155 @@ const STORY = {
 
   c83: {
     number: 'PAGE 83',
-    title: 'Le temps manquant',
-    image: 'Le temps manquant',
+    title: 'L’avenue basse',
+    image: 'L’avenue basse',
     text: `
-      <p>Tu suis une avenue droite.</p>
+      <p>Tu quittes le carrefour par une avenue qui descend lentement.</p>
 
-      <p>Au bout d’une vingtaine de pas, tu t’arrêtes.</p>
+      <p>Ici, la cité paraît moins intacte.</p>
 
-      <p>Quelque chose a changé.</p>
+      <p>Des blocs se sont détachés des façades. Des dalles sont fendues. Par endroits, des racines minérales ont soulevé le sol.</p>
 
-      <p>Tu ne sais pas quoi.</p>
+      <p>Tu avances entre les débris.</p>
 
-      <p>Tu regardes derrière toi.</p>
+      <p>Sur plusieurs pierres, tu retrouves l’œil fermé.</p>
 
-      <p>Le carrefour est beaucoup plus loin qu’il ne devrait l’être.</p>
+      <p>Les marques ne sont pas décoratives. Elles ont été gravées à hauteur de main, parfois accompagnées d’un trait ou d’une flèche.</p>
 
-      <p>Sur le dos de ta main gauche, un trait de craie blanche dessine un œil fermé.</p>
+      <p>Quelqu’un s’en servait pour se repérer.</p>
 
-      <p>Tu le frottes.</p>
+      <p>Plus bas, une partie entière de la rue s’est effondrée.</p>
 
-      <p>La craie part immédiatement.</p>
+      <p>Derrière les pierres brisées apparaît une maçonnerie plus ancienne, grossière, directement appuyée contre la roche.</p>
 
-      <p>Tu n’as aucun souvenir de l’avoir tracé.</p>
+      <p>La cité n’a pas été construite d’un seul bloc.</p>
 
-      <p>Dans la poussière, à tes pieds, tes propres empreintes arrivent depuis une rue latérale.</p>
-
-      <p>Pas depuis le carrefour.</p>
-
-      <p>Tu pourrais les suivre à rebours.</p>
-
-      <p>Tu décides de ne pas le faire.</p>
+      <p>Quelque chose existait déjà ici lorsqu’on a élevé ses rues.</p>
     `,
-    choices: [{ label: 'Continuer tout droit', to: 'c84' }]
+    choices: [{ label: 'Examiner l’éboulement', to: 'c84' }]
   },
 
   c84: {
     number: 'PAGE 84',
-    title: 'La fenêtre',
-    image: 'La fenêtre',
+    title: 'Derrière le mur',
+    image: 'Derrière le mur',
     text: `
-      <p>La rue se resserre entre deux blocs sans portes.</p>
+      <p>Tu longes l’éboulement jusqu’à trouver une ouverture entre deux blocs.</p>
 
-      <p>À mi-chemin, une fenêtre apparaît dans le mur de gauche.</p>
+      <p>Elle est étroite, mais quelqu’un a déjà déplacé plusieurs pierres pour l’agrandir.</p>
 
-      <p>C’est la première que tu vois depuis ton entrée dans la cité.</p>
+      <p>Tu te glisses à l’intérieur.</p>
 
-      <p>De l’autre côté, il fait jour.</p>
+      <p>Derrière la façade de la cité court un ancien passage de service taillé à même la roche.</p>
 
-      <p>Tu t’approches.</p>
+      <p>Le plafond est bas. Les parois portent encore les traces régulières d’outils.</p>
 
-      <p>Tu reconnais un toit.</p>
+      <p>À plusieurs endroits, des étais de bois se sont effondrés depuis longtemps. Tu dois escalader leurs restes, ramper sous une poutre puis te hisser sur une corniche étroite.</p>
 
-      <p>Puis le haut du clocher de Valombre.</p>
+      <p>Le passage se termine au bord d’un conduit vertical.</p>
 
-      <p>Un ciel gris. Une fumée légère sort d’une cheminée.</p>
+      <p>Des prises ont été creusées dans la paroi. De vieux anneaux de fer sont scellés dans la pierre.</p>
 
-      <p>La scène est si ordinaire que ton premier mouvement est presque de sourire.</p>
+      <p>Au fond, une plateforme apparaît une dizaine de mètres plus bas.</p>
 
-      <p>Puis tu remarques que rien ne bouge.</p>
-
-      <p>Ni la fumée.</p>
-
-      <p>Ni un linge suspendu entre deux maisons.</p>
-
-      <p>Ni les branches d’un arbre pourtant penché par le vent.</p>
-
-      <p>Tu détournes les yeux une seconde.</p>
-
-      <p>Lorsque tu regardes de nouveau, il n’y a plus de fenêtre.</p>
-
-      <p>Seulement une paroi de pierre intacte.</p>
-
-      <p>Tu la touches.</p>
-
-      <p>Elle est froide.</p>
+      <p>Sur son bord, tu distingues encore le symbole de l’œil fermé.</p>
     `,
-    choices: [{ label: 'T’éloigner du mur', to: 'c85' }]
+    choices: [{ label: 'Préparer la descente', to: 'c85' }]
   },
 
   c85: {
     number: 'PAGE 85',
     title: 'Le puits des Veilleurs',
     image: 'Le puits des Veilleurs',
+    text: state => `
+      <p>Tu t’accroupis au bord du conduit.</p>
+
+      <p>Les prises de pierre sont usées mais encore praticables. Plusieurs ont toutefois perdu un morceau de leur bord.</p>
+
+      <p>Les anneaux de fer semblent plus solides.</p>
+
+      <p>En dessous, le puits s’enfonce dans une partie de la montagne qui ne ressemble plus à une ville.</p>
+
+      <p>Seulement à un chantier très ancien.</p>
+
+      ${hasItem(state, 'ceinture_corde_rouge') ? '<p>La Ceinture de corde rouge peut te servir à t’assurer aux anneaux pendant la descente.</p>' : '<p>Sans corde, tu devras compter sur les prises et sur ton équilibre.</p>'}
+    `,
+    choices: state => {
+      const list = [];
+      if (hasItem(state, 'ceinture_corde_rouge')) {
+        list.push({
+          label: 'T’assurer avec la Ceinture de corde rouge',
+          to: 'c86',
+          effect: s => { s.flags.cityWellDescent = 'rope'; }
+        });
+      }
+      list.push({
+        label: 'Descendre par les prises — lancer les trois dés de Dextérité',
+        to: 'c86',
+        effect: s => {
+          const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
+          s.flags.cityWellDescent = ok ? 'success' : 'fail';
+          if (!ok) s.flags.cityWellDamage = applyDamage(s, 2);
+        }
+      });
+      return list;
+    }
+  },
+
+  c86: {
+    number: 'PAGE 86',
+    title: 'Le palier inférieur',
+    image: 'Le palier inférieur',
     text: state => {
+      const descent = state.flags.cityWellDescent;
       const canCleanse = hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.blackEarthContamination);
-      return `
-        <p>La rue finit autour d’un puits circulaire.</p>
+      let intro = '';
+      if (descent === 'rope') {
+        intro = `
+          <p>Tu fixes la corde à l’un des anneaux et descends lentement.</p>
 
-        <p>Pas un puits d’eau.</p>
+          <p>Deux prises cèdent sous tes bottes, mais la corde retient ton poids.</p>
 
-        <p>Un conduit vertical assez large pour qu’un homme y descende le long d’une échelle de pierre.</p>
+          <p>Tu atteins la plateforme sans blessure.</p>
+        `;
+      } else if (descent === 'success') {
+        intro = diceResultHtml(state) + `
+          <p>Tu descends en prenant le temps de tester chaque prise avant d’y mettre ton poids.</p>
 
-        <p>Le symbole de l’œil fermé est répété autour de l’ouverture.</p>
+          <p>La roche s’effrite parfois sous tes doigts, mais tu atteins la plateforme sans glisser.</p>
+        `;
+      } else {
+        intro = diceResultHtml(state) + `
+          <p>À quelques mètres du fond, une prise se détache sous ta main.</p>
 
-        <p>À côté repose une dalle couverte de petites cavités, exactement à la taille des ampoules du laboratoire.</p>
+          <p>Tu glisses, heurtes la paroi puis tombes lourdement sur la plateforme.</p>
 
-        <p>Plusieurs sont tachées de noir.</p>
+          ${damageAbsorptionHtml(state.flags.cityWellDamage)}
 
-        ${canCleanse ? `
-          <p>L’ampoule blanche dans ton équipement paraît soudain moins mystérieuse.</p>
+          <p>Tu restes un instant au sol avant de te relever.</p>
+        `;
+      }
+      return intro + `
+        <p>La plateforme donne sur une galerie basse encombrée d’outils rongés par la rouille et de paniers de pierre effondrés.</p>
 
-          <p>Tu repenses à la terre qui refuse de quitter tes ongles, à ce goût resté trop longtemps au fond de ta gorge.</p>
-        ` : ''}
+        <p>Les Veilleurs ont creusé ici.</p>
 
-        <p>Au fond du conduit, très loin, un courant d’air monte par pulsations lentes.</p>
+        <p>Dans un renfoncement, une petite dalle porte plusieurs cavités de la taille des ampoules du laboratoire.</p>
 
-        <p>Tu n’aimes pas le rythme qu’il impose à ta respiration.</p>
+        <p>Le bord de certaines est taché de noir.</p>
+
+        ${canCleanse ? '<p>L’Ampoule blanche que tu transportes s’adapte exactement à l’une de ces cavités.</p><p>Tu repenses à la terre restée sous tes ongles et au goût qui revient parfois au fond de ta gorge.</p>' : ''}
+
+        <p>Plus loin, une flèche gravée sous un œil fermé indique une galerie descendante.</p>
       `;
     },
     choices: state => {
+      if (state.hp <= 0) return fatalChoices();
       const list = [];
       if (hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.blackEarthContamination)) {
         list.push({
           label: 'Utiliser l’Ampoule blanche',
-          to: 'c86',
+          to: 'c87',
           effect: s => {
             removeItem(s, 'ampoule_blanche');
             if ((s.dexPenalty || 0) > 0) s.dexPenalty = Math.max(0, s.dexPenalty - 1);
@@ -4187,93 +4223,51 @@ const STORY = {
           }
         });
       }
-      list.push({ label: 'Conserver ce que tu possèdes et poursuivre', to: 'c86' });
+      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c87' });
       return list;
     }
-  },
-
-  c86: {
-    number: 'PAGE 86',
-    title: 'Ce qui reste',
-    image: 'Ce qui reste',
-    text: state => `
-      ${state.flags.usedWhiteAmpouleAtWell ? `
-        <p>Tu brises l’extrémité de l’ampoule et laisses quelques gouttes du liquide blanc couler sur tes doigts.</p>
-
-        <p>La sensation est d’abord glaciale.</p>
-
-        <p>Puis une douleur fine remonte sous tes ongles.</p>
-
-        <p>La terre noire apparaît en petits grains à la surface de ta peau.</p>
-
-        <p>Tu les essuies.</p>
-
-        <p>Cette fois, ils ne reviennent pas.</p>
-
-        <p>Le goût terreux au fond de ta gorge s’atténue jusqu’à disparaître.</p>
-
-        <p>Tu devrais te sentir soulagé.</p>
-
-        <p>Une part de toi regrette pourtant la force tranquille qui accompagnait cette présence.</p>
-
-        <p>Le regret ne dure qu’un instant.</p>
-      ` : `
-        <p>Tu laisses le puits derrière toi.</p>
-
-        <p>Quelques pas plus loin, tu réalises que tu as calé ta respiration sur les pulsations d’air qui montaient du conduit.</p>
-
-        <p>Tu t’obliges à changer de rythme.</p>
-
-        <p>Il te faut plusieurs essais.</p>
-      `}
-
-      <p>Une rue descend maintenant vers les profondeurs de la cité.</p>
-
-      <p>Les constructions deviennent plus basses.</p>
-
-      <p>Plus humaines.</p>
-
-      <p>Sur les murs, les marques de l’œil fermé se multiplient.</p>
-    `,
-    choices: [{ label: 'Suivre les marques des Veilleurs', to: 'c87' }]
   },
 
   c87: {
     number: 'PAGE 87',
     title: 'La porte sous la ville',
     image: 'La porte sous la ville',
-    text: `
-      <p>La rue se termine devant une porte de pierre noire.</p>
+    text: state => `
+      ${state.flags.usedWhiteAmpouleAtWell ? `
+        <p>Le liquide blanc brûle légèrement lorsqu’il touche tes doigts.</p>
 
-      <p>Elle n’a rien de monumental.</p>
+        <p>La terre noire tassée sous tes ongles se ramollit puis se détache en grains épais.</p>
 
-      <p>Elle est même presque décevante après ce que tu viens de traverser.</p>
+        <p>Tu t’essuies longuement.</p>
 
-      <p>À hauteur d’homme, quelqu’un a gravé récemment le symbole de l’œil fermé.</p>
+        <p>Le goût terreux au fond de ta gorge finit lui aussi par s’atténuer.</p>
 
-      <p>En dessous, une seconde marque a été ajoutée.</p>
+        <p>Pour la première fois depuis la fissure, tu as l’impression d’en être débarrassé.</p>
+      ` : ''}
 
-      <p>Une petite lame noire.</p>
+      <p>Tu suis la galerie indiquée par les Veilleurs.</p>
 
-      <p>La gravure est maladroite.</p>
+      <p>Elle descend entre des murs renforcés de blocs bruts. Des niches contiennent encore des coins de métal, des masses et des fragments de corde pétrifiée par l’âge.</p>
 
-      <p>Faite avec un outil qui a dérapé plusieurs fois.</p>
+      <p>Au bout se trouve une porte de pierre noire, à peine plus haute que toi.</p>
 
-      <p>Près du seuil, dans la poussière, une trace de botte est encore visible.</p>
+      <p>Un œil fermé est gravé à hauteur d’homme.</p>
 
-      <p>Une seule.</p>
+      <p>Juste en dessous, quelqu’un a ajouté le dessin sommaire d’une petite lame noire.</p>
 
-      <p>Elle pointe vers l’intérieur.</p>
+      <p>La gravure est plus récente que le reste.</p>
+
+      <p>Près du seuil, une empreinte de botte s’est imprimée dans une plaque de poussière humide.</p>
+
+      <p>Elle va vers l’intérieur.</p>
 
       <p>Tu penses à Aldren.</p>
 
-      <p>Tu n’as aucune preuve que cette trace est la sienne.</p>
+      <p>Tu n’as aucune preuve qu’elle lui appartienne.</p>
 
-      <p>Tu pousses la porte.</p>
-
-      <p>De l’autre côté, un escalier descend sous la Cité morte.</p>
+      <p>La porte résiste d’abord, puis cède sous ton épaule dans un grondement sourd.</p>
     `,
-    choices: [{ label: 'Descendre', to: 'c88' }]
+    choices: [{ label: 'Passer sous la cité', to: 'c88' }]
   },
 
   c88: {
@@ -4282,41 +4276,35 @@ const STORY = {
     image: 'Sous la Cité morte',
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
     text: `
-      <p>Tu descends longtemps.</p>
+      <p>Derrière la porte, un escalier grossier s’enfonce dans la roche.</p>
 
-      <p>À mesure que la cité disparaît au-dessus de toi, ses formes impossibles cèdent la place à une architecture plus ancienne.</p>
+      <p>Tu descends.</p>
 
-      <p>Plus étroite.</p>
+      <p>La pierre travaillée de la cité disparaît rapidement. Ici, les galeries ont été creusées à la main puis renforcées là où la montagne menaçait de reprendre sa place.</p>
 
-      <p>Plus fonctionnelle.</p>
+      <p>Des rainures courent au sol pour évacuer une eau qui ne coule plus.</p>
 
-      <p>Les Veilleurs ont travaillé ici.</p>
+      <p>Des anneaux de fer ponctuent les parois. Certains portent encore des lambeaux de corde.</p>
 
-      <p>Des niches ont été creusées dans les murs. Des anneaux de métal sont scellés dans la pierre. Des repères indiquent des directions aujourd’hui effacées.</p>
+      <p>Tu passes sous un étai brisé, franchis une tranchée étroite et dois te hisser sur un ancien front de taille pour poursuivre.</p>
 
-      <p>À intervalles réguliers revient le dessin d’une petite lame noire.</p>
+      <p>Les marques laissées par les Veilleurs deviennent plus nombreuses.</p>
 
-      <p>Au bout de l’escalier, un courant d’air monte d’un passage sans lumière.</p>
+      <p>L’œil fermé.</p>
 
-      <p>Tu fais encore un pas.</p>
+      <p>Puis, de plus en plus souvent, la petite lame noire.</p>
 
-      <p>Très loin au-dessus, la Cité morte produit un bruit unique.</p>
+      <p>Sur une paroi, quelqu’un a gravé la lame au-dessus d’une ligne qui descend encore.</p>
 
-      <p>Pas un effondrement.</p>
+      <p>À côté, une seconde empreinte de botte marque la poussière.</p>
 
-      <p>Pas un cri.</p>
+      <p>Plus nette que la première.</p>
 
-      <p>Quelque chose de plus vaste et de plus lent, comme si des milliers de tonnes de pierre venaient de changer imperceptiblement de position.</p>
+      <p>Quelqu’un est passé par ici.</p>
 
-      <p>Tu lèves les yeux.</p>
+      <p>Tu resserres ta prise sur ton arme et t’engages dans la galerie.</p>
 
-      <p>L’escalier derrière toi est vide.</p>
-
-      <p>Tu reprends ta descente.</p>
-
-      <p>Quelque part devant toi se trouve la lame noire.</p>
-
-      <p>Et peut-être Sir Aldren.</p>
+      <p>Devant toi, la roche descend vers des niveaux plus anciens encore.</p>
 
       <p><strong>Fin de cette version test.</strong></p>
     `,
