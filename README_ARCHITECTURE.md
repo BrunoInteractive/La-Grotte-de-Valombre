@@ -124,5 +124,12 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - Cette interface est destinée uniquement aux versions TEST.
 
 
-## V22 — direction créatures
+## V23 — direction créatures
 Les créatures sont décrites par impressions contradictoires et détails difficiles à relier plutôt que par une anatomie exhaustive. Une créature blessée ne montre pas de peur : elle peut être physiquement repoussée ou ralentie, mais ne doute pas et ne protège pas instinctivement sa blessure. La fissure des Grandes Marches applique 2 dégâts (Protection puis Vie) et -1 Dextérité persistant.
+
+
+## V23 — Style ténébreux et conséquences physiques
+- Les descriptions des créatures suivent désormais une règle de perception incertaine : des détails isolés peuvent sembler familiers, mais l'ensemble refuse de former une anatomie stable ou identifiable.
+- Le Rampant de l'îlot reprend la formulation validée : la comparaison rassurante avec un reptile se défait à mesure qu'il approche.
+- La page 53 devient une véritable échappée de justesse : le héros se débat et s'arrache lui-même à la fissure ; aucune ressource d'eau n'est supposée. L'épreuve conserve 2 dégâts (Protection avant Vie), -1 Dextérité et la contamination à la terre noire.
+- Une pièce de protection arrivée à 0 reste dans l'inventaire mais est marquée « endommagée — désormais inutilisable ». Le message apparaît aussi lors du coup qui la détruit.

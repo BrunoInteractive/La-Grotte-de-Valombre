@@ -102,6 +102,7 @@ function applyDamage(state, amount) {
   let remaining = incoming;
   let absorbed = 0;
   const before = currentProtection(state);
+  const destroyedProtection = [];
 
   for (const id of Object.keys(PROTECTION_ITEMS)) {
     if (!hasItem(state, id) || remaining <= 0) continue;
@@ -112,6 +113,9 @@ function applyDamage(state, amount) {
       source.remaining -= used;
       remaining -= used;
       absorbed += used;
+      if (available > 0 && source.remaining <= 0) {
+        destroyedProtection.push(PROTECTION_ITEMS[id].name);
+      }
     }
   }
 
@@ -121,6 +125,7 @@ function applyDamage(state, amount) {
     incoming,
     absorbed,
     hpLost,
+    destroyedProtection,
     protectionBefore: before,
     protectionAfter: currentProtection(state),
     heroHp: state.hp
@@ -131,13 +136,18 @@ function applyDamage(state, amount) {
 
 function damageAbsorptionHtml(result) {
   if (!result) return '';
+  let html = '';
   if (result.absorbed > 0 && result.hpLost > 0) {
-    return `<p><strong>Ta protection absorbe ${result.absorbed} point${result.absorbed > 1 ? 's' : ''} de dégâts.</strong> Tu perds <strong>${result.hpLost}</strong> point${result.hpLost > 1 ? 's' : ''} de Vie.</p>`;
+    html = `<p><strong>Ta protection absorbe ${result.absorbed} point${result.absorbed > 1 ? 's' : ''} de dégâts.</strong> Tu perds <strong>${result.hpLost}</strong> point${result.hpLost > 1 ? 's' : ''} de Vie.</p>`;
+  } else if (result.absorbed > 0) {
+    html = `<p><strong>Ta protection absorbe entièrement le choc (${result.absorbed}).</strong> Tu ne perds aucun point de Vie.</p>`;
+  } else {
+    html = `<p><strong>Tu perds ${result.hpLost} point${result.hpLost > 1 ? 's' : ''} de Vie.</strong></p>`;
   }
-  if (result.absorbed > 0) {
-    return `<p><strong>Ta protection absorbe entièrement le choc (${result.absorbed}).</strong> Tu ne perds aucun point de Vie.</p>`;
+  if (Array.isArray(result.destroyedProtection) && result.destroyedProtection.length) {
+    html += result.destroyedProtection.map(name => `<p><strong>${name} est désormais trop endommagé pour te protéger.</strong> Tu le conserves dans ton inventaire, mais il est inutilisable.</p>`).join('');
   }
-  return `<p><strong>Tu perds ${result.hpLost} point${result.hpLost > 1 ? 's' : ''} de Vie.</strong></p>`;
+  return html;
 }
 
 function fightRound(state, key, enemy) {
@@ -1352,9 +1362,11 @@ const STORY = {
     text: state => `
       <p>Tu te tournes vers le grondement, l’épée prête.</p>
       <p>Quelque chose bouge dans l’obscurité.</p>
-      <p>Tu essaies d’en suivre la forme, mais ton regard n’arrive pas à la fixer.</p>
-      <p>Il y a une masse, certainement. Une présence assez lourde pour faire vibrer la pierre.</p>
-      <p>Pour le reste, chaque détail que tu crois distinguer cesse de correspondre au suivant.</p>
+      <p>Ton esprit lui donne d’abord une forme simple : une masse lourde, ramassée, assez proche pour faire vibrer la pierre sous tes pieds.</p>
+      <p>Puis cette première certitude se défait.</p>
+      <p>Une partie paraît large lorsqu’elle passe devant la faible lumière, une autre beaucoup trop basse, et aucun contour ne reste à la même place assez longtemps pour que tu puisses les réunir.</p>
+      <p>Tu sais seulement que quelque chose vient vers toi.</p>
+      <p>Tout le reste devient moins certain à mesure que tu regardes.</p>
       ${state.throwingBlades > 0
         ? `<p>Tu possèdes encore <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>`
         : '<p>Tu n’as rien d’autre que ton épée.</p>'}
@@ -1883,13 +1895,15 @@ const STORY = {
 
       <p>Elle bondit.</p>
 
-      <p>Tu n’as qu’un instant pour regarder ce qui devrait être son visage.</p>
+      <p>Tu n’as qu’un instant pour regarder ce qui se tourne vers toi.</p>
 
-      <p>La terre noire y dessine des reliefs que ton esprit transforme malgré lui en traits humains, puis défait aussitôt.</p>
+      <p>Parce qu’il y avait une voix, des vêtements, une silhouette accroupie, ton esprit cherche encore un visage.</p>
 
-      <p>Tu ne sais pas si tu vois encore un homme, ou seulement ce qu’il en reste.</p>
+      <p>Il croit parfois le trouver sous la terre noire : une ligne qui pourrait être une bouche, un creux qui pourrait contenir un œil.</p>
 
-      <p>Mais sous cette masse sombre, il y a autre chose.</p>
+      <p>Mais dès que tu fixes l’un de ces détails, les autres cessent de tenir autour.</p>
+
+      <p>Quelque chose de beaucoup plus certain apparaît pourtant sur sa poitrine.</p>
 
       <p>Un morceau de tissu bleu.</p>
 
@@ -1897,7 +1911,7 @@ const STORY = {
 
       <p><strong>ROCHEBRUME.</strong></p>
 
-      <p>Humain ou non, tu dois réagir.</p>
+      <p>Tu n’as pas le temps de comprendre davantage.</p>
 
       ${enemyCardHtml(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing)}
     `,
@@ -1973,9 +1987,10 @@ const STORY = {
           <p>La silhouette s’effondre lourdement.</p>
           <p>Pendant quelques secondes, tu restes immobile, l’arme levée.</p>
           <p>Elle ne bouge plus.</p>
-          <p>Sous les plaques de terre noire, tu distingues encore un visage humain.</p>
-          <p>Sur sa poitrine, l’écusson de Rochebrume est maintenant parfaitement visible.</p>
-          <p>Tu préfères ne pas chercher à savoir depuis combien de temps il ne l’était plus tout à fait.</p>
+          <p>La chose qui te faisait face repose maintenant de côté.</p>
+          <p>Tu pensais que l’immobilité rendrait enfin ses traits plus faciles à comprendre. Elle ne fait que rendre chaque détail plus isolé du suivant.</p>
+          <p>Sur sa poitrine, en revanche, l’écusson de Rochebrume est parfaitement visible.</p>
+          <p>Celui-là ne laisse aucune place au doute.</p>
         `;
       }
 
@@ -2024,13 +2039,15 @@ const STORY = {
         return r + `
           <p>Tu avances lentement, sans jamais t’arracher à la paroi.</p>
 
-          <p>À plusieurs reprises, de très longs doigts apparaissent dans les fentes puis se retirent avant de te toucher.</p>
+          <p>À plusieurs reprises, quelque chose de pâle affleure dans les fentes puis disparaît avant que tu puisses tourner la tête.</p>
 
-          <p>Tu ne vois jamais davantage qu’un œil, une phalange, parfois quelque chose qui ressemble à des dents beaucoup trop petites.</p>
+          <p>Une fois, tu crois reconnaître un doigt. Plus loin, peut-être un œil. Un peu après, une rangée de petites formes blanches qui pourraient être des dents.</p>
+
+          <p>Pris séparément, chacun de ces détails paraît presque familier.</p>
+
+          <p>Tu n’en vois jamais assez pour comprendre à quoi ils appartiennent.</p>
 
           <p>Le plus difficile est de ne pas accélérer.</p>
-
-          <p>Tu sens qu’elles attendent précisément cela.</p>
 
           <p>Enfin, la roche s’écarte.</p>
 
@@ -2438,25 +2455,23 @@ const STORY = {
 
           <p>Une forme basse apparaît.</p>
 
-          <p>De loin, ton esprit lui donne immédiatement un nom : un énorme alligator.</p>
+          <p>Plus elle approche, moins tu comprends ce que tu regardes.</p>
 
-          <p>Cette certitude ne dure que quelques secondes.</p>
+          <p>À distance, ton esprit avait trouvé une comparaison rassurante : un grand reptile, peut-être un alligator.</p>
 
-          <p>À mesure qu’elle approche, rien ne devient plus clair. Au contraire.</p>
+          <p>Maintenant, cette idée se défait.</p>
 
-          <p>Ce que tu prenais pour des pattes ne se pose jamais tout à fait comme des pattes. Ce que tu croyais être une tête change de proportion chaque fois que la forme tourne.</p>
+          <p>Chaque partie semble presque familière prise isolément. Pourtant, dès que tu essaies de les réunir, les proportions cessent de tenir. Les membres ne plient pas là où tu t’y attends. La tête change presque de forme lorsqu’elle tourne.</p>
 
-          <p>Tu pourrais décrire séparément certains détails. Ensemble, ils ne composent rien que tu connaisses.</p>
+          <p>Tu continues malgré toi à chercher quelque chose de connu dans cette silhouette.</p>
 
-          <p>Ce n’est plus un alligator.</p>
+          <p>Il n’y a rien.</p>
 
-          <p>Mais tu serais incapable de dire ce que c’est à la place.</p>
-
-          <p>La chose rampe entre toi et la barque.</p>
+          <p>La chose se place entre toi et la barque.</p>
 
           <p>Elle avance lentement, sans jamais détourner sa trajectoire.</p>
 
-          <p>Lorsqu’une partie de sa gueule — si c’en est bien une — se referme, la dalle résonne sous tes pieds.</p>
+          <p>Un claquement bref part de l’avant de sa forme et la dalle résonne sous tes pieds.</p>
 
           ${card}
         `;
@@ -2768,45 +2783,49 @@ const STORY = {
 
       <p>Quelque chose te tire brutalement dans l’obscurité.</p>
 
-      <p>Ton épaule heurte la pierre. Ton arme racle la paroi. Tu essaies de t’agripper, mais tes doigts ne rencontrent que de la poussière et des surfaces humides.</p>
+      <p>Ton épaule heurte la pierre. Ton arme racle la paroi. Tu te débats aussitôt, sans même savoir contre quoi.</p>
+
+      <p>Tu frappes. Tu pousses avec les jambes. Tes doigts raclent la roche jusqu’à sentir la peau s’ouvrir.</p>
 
       <p>Autour de toi, ça fourmille.</p>
 
-      <p>Des corps — ou des membres — passent contre tes jambes, ton dos, ton visage.</p>
+      <p>Des contacts brefs passent contre tes jambes, ton dos, ton visage. Tu ne parviens jamais à en saisir un seul assez longtemps pour comprendre ce qui te touche.</p>
 
-      <p>Tu entends des craquements d’os.</p>
+      <p>Puis viennent les craquements.</p>
 
-      <p>Très proches.</p>
+      <p>Un premier.</p>
 
-      <p>À un moment, tu ne sais plus s’ils viennent de ce qui t’entoure ou de ton propre corps.</p>
+      <p>Un autre.</p>
 
-      <p>Puis tu ne sens plus rien.</p>
+      <p>Beaucoup trop près.</p>
 
-      <p>Le noir devient complet.</p>
+      <p>Tu ne sais bientôt plus s’ils viennent de la roche, de ce qui s’agite autour de toi… ou de ton propre corps.</p>
 
-      <p>Tu perds connaissance.</p>
+      <p>Tu continues pourtant à te débattre.</p>
+
+      <p>Une de tes mains trouve une aspérité. Elle cède. Tu en trouves une autre. Tu tires de toutes tes forces tandis que quelque chose te retient encore dans le noir.</p>
+
+      <p>Après cela, il manque quelques secondes.</p>
+
+      <p>Tu te retrouves soudain à genoux devant la fissure, les paumes ouvertes contre la pierre, incapable de reprendre ton souffle.</p>
+
+      <p>Tu sais que tu t’en es arraché toi-même.</p>
+
+      <p>Mais lorsque tu cherches à te rappeler le dernier effort, tu ne trouves rien.</p>
 
       ${damageAbsorptionHtml(state.flags.stairsCrackDamage)}
 
-      <p>Lorsque tu rouvres les yeux, tu es allongé sur une plateforme de pierre, plusieurs dizaines de mètres plus haut.</p>
-
-      <p>Tu n’as aucun souvenir d’être sorti de la fissure.</p>
-
       <p>De la terre noire est tassée sous tes ongles, jusque dans les chairs.</p>
 
-      <p>Tu en sens aussi dans le coin de tes yeux.</p>
+      <p>Tu en as dans le coin des yeux et jusque sur les gencives. Lorsque tu tousses, tu en sens encore le goût humide au fond de ta gorge.</p>
 
-      <p>Lorsque tu tousses, un goût de poussière humide remonte du fond de ta gorge.</p>
+      <p>Tu t’essuies du mieux que tu peux. Tu frottes tes doigts contre tes vêtements, puis contre la pierre.</p>
 
-      <p>Tu frottes. Tu craches. Tu rinces tes yeux avec le peu d’eau que tu peux épargner.</p>
-
-      <p>Elle ne part pas complètement.</p>
+      <p>Il en reste toujours.</p>
 
       <p><strong>Tu perds 1 point de Dextérité.</strong></p>
 
-      <p>Et lorsque tu cesses enfin d’essayer de l’enlever, tu ressens une seconde de soulagement.</p>
-
-      <p>Presque comme si tu venais d’arrêter de lutter contre quelque chose qui voulait rester.</p>
+      <p>Quand tu reprends enfin ta marche, l’air libre de la galerie te paraît étrangement froid.</p>
     `,
     choices: state => state.hp <= 0
       ? fatalChoices()
@@ -3015,17 +3034,17 @@ const STORY = {
 
       <p>Elle remonte jusqu’au bord du pont.</p>
 
-      <p>De loin, sous les planches, tu avais cru voir un corps très maigre muni de membres trop longs.</p>
+      <p>De loin, sous les planches, ton esprit avait trouvé une explication : un corps très maigre, muni de membres trop longs.</p>
 
-      <p>À cette distance, cette description ne tient plus.</p>
+      <p>Maintenant qu’elle est près de toi, cette explication se défait à son tour.</p>
 
-      <p>Tu vois bien des articulations, des extrémités qui prennent appui sur le bois, une masse centrale qui devrait permettre de comprendre le reste.</p>
+      <p>Tu reconnais par instants une articulation, une extrémité appuyée sur le bois, quelque chose qui pourrait être un torse.</p>
 
-      <p>Mais chaque fois que ton regard passe d’une partie à l’autre, leur disposition semble avoir changé.</p>
+      <p>Mais lorsque ton regard essaie de suivre l’un de ces éléments jusqu’au suivant, l’ensemble cesse de tenir.</p>
 
-      <p>Tu ne saurais pas dire comment elle tient sous le pont.</p>
+      <p>Tu ne comprends pas comment elle reste sous le pont.</p>
 
-      <p>Tu ne saurais même pas affirmer de quel côté elle te regarde.</p>
+      <p>Après quelques secondes, tu n’es même plus certain qu’elle possède un côté tourné vers toi.</p>
 
       <p>Puis trois coups secs résonnent dans toute la caverne.</p>
 
@@ -3626,7 +3645,8 @@ const STORY = {
       if (PROTECTION_ITEMS[id]) {
         ensureProtectionState(state);
         const source = state.protectionItems[id] || { remaining: 0, max: PROTECTION_ITEMS[id].max };
-        return `<div class="inventory-protection-state">Protection restante : <strong>${source.remaining} / ${source.max}</strong></div>`;
+        const broken = source.remaining <= 0;
+        return `<div class="inventory-protection-state">Protection restante : <strong>${source.remaining} / ${source.max}</strong>${broken ? '<br><strong>État : endommagé — désormais inutilisable.</strong>' : ''}</div>`;
       }
       return '';
     },
@@ -3698,8 +3718,14 @@ const STORY = {
     const damage = forceDamageBonus(force) + weaponPower;
     const armor = [];
     ensureProtectionState(state);
-    if (hasItem(state, 'casque_cabosse')) armor.push(`Casque cabossé — ${state.protectionItems.casque_cabosse?.remaining || 0}/2`);
-    if (hasItem(state, 'gantelet_veilleur')) armor.push(`Gantelet de Veilleur — ${state.protectionItems.gantelet_veilleur?.remaining || 0}/1`);
+    if (hasItem(state, 'casque_cabosse')) {
+      const remaining = state.protectionItems.casque_cabosse?.remaining || 0;
+      armor.push(`Casque cabossé — ${remaining}/2${remaining <= 0 ? ' · endommagé' : ''}`);
+    }
+    if (hasItem(state, 'gantelet_veilleur')) {
+      const remaining = state.protectionItems.gantelet_veilleur?.remaining || 0;
+      armor.push(`Gantelet de Veilleur — ${remaining}/1${remaining <= 0 ? ' · endommagé' : ''}`);
+    }
     return `
       <div class="character-modal-sheet">
         <div class="character-modal-name">${escapeHtml(state.heroName || 'Écuyer sans nom')}</div>
@@ -3730,8 +3756,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 9,
-    saveVersion: 8,
+    contentVersion: 10,
+    saveVersion: 9,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,
