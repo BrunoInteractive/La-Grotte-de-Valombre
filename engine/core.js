@@ -63,7 +63,16 @@ function rollDamage(state, key) {
   state.damageRolls[key] = damage;
   state.lastDamageDie = damage;
   state.lastDamageKey = key;
-  state.hp = Math.max(0, state.hp - damage);
+  if (!state.damageRollResults || typeof state.damageRollResults !== 'object') state.damageRollResults = {};
+  const book = window.GameRuntime && GameRuntime.activeBook;
+  const resolver = book && book.rules && typeof book.rules.applyDamage === 'function'
+    ? book.rules.applyDamage
+    : null;
+  const resolution = resolver
+    ? resolver(state, damage)
+    : { incoming: damage, absorbed: 0, hpLost: damage, heroHp: Math.max(0, state.hp - damage) };
+  if (!resolver) state.hp = resolution.heroHp;
+  state.damageRollResults[key] = resolution;
   return damage;
 }
 
@@ -81,9 +90,15 @@ function damageResultHtml(state, key) {
   if (!Number.isInteger(damage)) {
     return `<div class="dice-result"><p><strong>Tu es blessé.</strong></p><p>Lance un dé pour déterminer la gravité de la blessure.</p></div>`;
   }
-  const pointWord = damage === 1 ? 'point' : 'points';
+  const resolution = state.damageRollResults && state.damageRollResults[key]
+    ? state.damageRollResults[key]
+    : { absorbed: 0, hpLost: damage };
+  const loss = Number.isFinite(resolution.hpLost) ? resolution.hpLost : damage;
+  const protectionLine = resolution.absorbed > 0
+    ? `<p><strong>Ta protection absorbe ${resolution.absorbed} point${resolution.absorbed > 1 ? 's' : ''}.</strong>${loss > 0 ? ` Tu perds ${loss} point${loss > 1 ? 's' : ''} de Vie.` : ' Tu ne perds aucun point de Vie.'}</p>`
+    : `<p><strong>Tu perds ${loss} point${loss > 1 ? 's' : ''} de Vie.</strong></p>`;
   const fatal = state.hp <= 0 ? `<p><strong>Ta Vie tombe à 0.</strong></p>` : '';
-  return `<div class="dice-result"><p class="roll-number">Dé de blessure</p><div class="dice-faces">${renderDie(damage)}</div><p><strong>Résultat : ${damage}</strong></p><p><strong>Tu perds ${damage} ${pointWord} de Vie.</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p>${fatal}</div>`;
+  return `<div class="dice-result"><p class="roll-number">Dé de blessure</p><div class="dice-faces">${renderDie(damage)}</div><p><strong>Résultat : ${damage}</strong></p>${protectionLine}<p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p>${fatal}</div>`;
 }
 
 function fatalChoices() {

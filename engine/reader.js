@@ -25,6 +25,7 @@ const imageLabel = document.getElementById('imageLabel');
 const statusTags = document.getElementById('statusTags');
 const inventoryCount = document.getElementById('inventoryCount');
 const inventoryBtn = document.getElementById('inventoryBtn');
+const characterBtn = document.getElementById('characterBtn');
 const restartBtn = document.getElementById('restartBtn');
 const menuBtn = document.getElementById('menuBtn');
 const drawer = document.getElementById('drawer');
@@ -212,7 +213,8 @@ function render() {
   inventoryCount.textContent = Object.keys(state.inventory).length;
   statusTags.innerHTML = '';
   if (!node.sheet) {
-    const labels = [`♥ ${state.hp}/${state.maxHp}`, `Chance ${state.chance}`, `Force ${currentForce(state)}`, `Dextérité ${currentDexterity(state)}`, `Puissance de l’arme ${state.weapon === 'none' ? 0 : combatPower(state)}`];
+    const protection = BOOK.rules && typeof BOOK.rules.currentProtection === 'function' ? BOOK.rules.currentProtection(state) : 0;
+    const labels = [`♥ ${state.hp}/${state.maxHp}`, `🛡 ${protection}`, `Chance ${state.chance}`, `Force ${currentForce(state)}`, `Dextérité ${currentDexterity(state)}`, `Puissance de l’arme ${state.weapon === 'none' ? 0 : combatPower(state)}`];
     if (state.silver > 0) labels.push(`${state.silver} argent`);
     if (state.goldCoins > 0) labels.push(`${state.goldCoins} or`);
     labels.forEach(label => { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = label; statusTags.appendChild(tag); });
@@ -249,6 +251,13 @@ function showModal(title, html) {
   modalContent.innerHTML = html;
   modal.classList.remove('hidden');
   modalBackdrop.classList.remove('hidden');
+}
+
+function openCharacterSheet() {
+  const html = typeof BOOK.characterSheetHtml === 'function'
+    ? BOOK.characterSheetHtml(state)
+    : '<p>Fiche indisponible.</p>';
+  showModal('Fiche perso', html);
 }
 
 function openInventory() {
@@ -329,6 +338,7 @@ modalContent.addEventListener('click', event => {
 });
 
 inventoryBtn.addEventListener('click', openInventory);
+characterBtn.addEventListener('click', openCharacterSheet);
 journalBtn.addEventListener('click', openJournal);
 journalCloseBtn.addEventListener('click', closeJournal);
 restartBtn.addEventListener('click', restartGame);

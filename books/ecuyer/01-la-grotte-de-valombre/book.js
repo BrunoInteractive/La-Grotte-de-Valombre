@@ -22,6 +22,12 @@ const ENEMIES = {
     maxHp: 5,
     force: 8,
     dexterity: 10
+  },
+  isletCrawler: {
+    name: 'RAMPANT DE L’ÎLOT',
+    maxHp: 12,
+    force: 18,
+    dexterity: 5
   }
 };
 
@@ -49,6 +55,91 @@ function forceDamageBonus(force) {
   return Math.max(1, Math.floor(Math.max(0, Number(force) || 0) / 4));
 }
 
+const PROTECTION_ITEMS = {
+  casque_cabosse: { max: 2, name: 'Casque cabossé' },
+  gantelet_veilleur: { max: 1, name: 'Gantelet de Veilleur' }
+};
+
+function ensureProtectionState(state) {
+  if (!state.protectionItems || typeof state.protectionItems !== 'object') state.protectionItems = {};
+  Object.entries(PROTECTION_ITEMS).forEach(([id, def]) => {
+    if (hasItem(state, id) && !state.protectionItems[id]) {
+      state.protectionItems[id] = { max: def.max, remaining: def.max };
+    }
+  });
+}
+
+function addProtectiveItem(state, id, name, description, protection) {
+  addItem(state, id, name, description, { protection });
+  ensureProtectionState(state);
+  if (!state.protectionItems[id]) state.protectionItems[id] = { max: protection, remaining: protection };
+  state.protectionItems[id].max = protection;
+  if (!Number.isFinite(state.protectionItems[id].remaining)) state.protectionItems[id].remaining = protection;
+}
+
+function removeProtectiveItem(state, id) {
+  removeItem(state, id);
+  ensureProtectionState(state);
+  delete state.protectionItems[id];
+}
+
+function currentProtection(state) {
+  ensureProtectionState(state);
+  return Object.entries(PROTECTION_ITEMS).reduce((total, [id]) => {
+    if (!hasItem(state, id)) return total;
+    const source = state.protectionItems[id];
+    return total + Math.max(0, Number(source && source.remaining) || 0);
+  }, 0);
+}
+
+function maxProtection(state) {
+  return Object.entries(PROTECTION_ITEMS).reduce((total, [id, def]) => total + (hasItem(state, id) ? def.max : 0), 0);
+}
+
+function applyDamage(state, amount) {
+  ensureProtectionState(state);
+  const incoming = Math.max(0, Math.floor(Number(amount) || 0));
+  let remaining = incoming;
+  let absorbed = 0;
+  const before = currentProtection(state);
+
+  for (const id of Object.keys(PROTECTION_ITEMS)) {
+    if (!hasItem(state, id) || remaining <= 0) continue;
+    const source = state.protectionItems[id];
+    const available = Math.max(0, Number(source && source.remaining) || 0);
+    const used = Math.min(available, remaining);
+    if (used > 0) {
+      source.remaining -= used;
+      remaining -= used;
+      absorbed += used;
+    }
+  }
+
+  const hpLost = remaining;
+  state.hp = Math.max(0, state.hp - hpLost);
+  const result = {
+    incoming,
+    absorbed,
+    hpLost,
+    protectionBefore: before,
+    protectionAfter: currentProtection(state),
+    heroHp: state.hp
+  };
+  state.lastDamageResolution = result;
+  return result;
+}
+
+function damageAbsorptionHtml(result) {
+  if (!result) return '';
+  if (result.absorbed > 0 && result.hpLost > 0) {
+    return `<p><strong>Ta protection absorbe ${result.absorbed} point${result.absorbed > 1 ? 's' : ''} de dégâts.</strong> Tu perds <strong>${result.hpLost}</strong> point${result.hpLost > 1 ? 's' : ''} de Vie.</p>`;
+  }
+  if (result.absorbed > 0) {
+    return `<p><strong>Ta protection absorbe entièrement le choc (${result.absorbed}).</strong> Tu ne perds aucun point de Vie.</p>`;
+  }
+  return `<p><strong>Tu perds ${result.hpLost} point${result.hpLost > 1 ? 's' : ''} de Vie.</strong></p>`;
+}
+
 function fightRound(state, key, enemy) {
   const combat = combatState(state, key, enemy);
   const heroDice = roll2D6();
@@ -66,6 +157,10 @@ function fightRound(state, key, enemy) {
 
   let outcome = 'tie';
   let damage = 0;
+  let protectionAbsorbed = 0;
+  let hpLost = 0;
+  let protectionBefore = currentProtection(state);
+  let protectionAfter = protectionBefore;
 
   if (heroAttack > enemyAttack) {
     outcome = 'hero';
@@ -74,7 +169,11 @@ function fightRound(state, key, enemy) {
   } else if (heroAttack < enemyAttack) {
     outcome = 'enemy';
     damage = enemyDamage;
-    state.hp = Math.max(0, state.hp - damage);
+    const resolution = applyDamage(state, damage);
+    protectionAbsorbed = resolution.absorbed;
+    hpLost = resolution.hpLost;
+    protectionBefore = resolution.protectionBefore;
+    protectionAfter = resolution.protectionAfter;
   }
 
   combat.round += 1;
@@ -95,6 +194,10 @@ function fightRound(state, key, enemy) {
     enemyWeaponPower,
     enemyDamage,
     damage,
+    protectionAbsorbed,
+    hpLost,
+    protectionBefore,
+    protectionAfter,
     outcome,
     heroHp: state.hp,
     enemyHp: combat.hp
@@ -113,6 +216,7 @@ function enemyCardHtml(state, key, enemy) {
         <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${combat.hp} / ${enemy.maxHp}</strong></div>
         <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${enemy.force}</strong></div>
         <div><span class="enemy-icon">◆</span><span>Dextérité</span><strong>${enemy.dexterity}</strong></div>
+        <div><span class="enemy-icon">⚔</span><span>Arme</span><strong>${enemy.weaponName || 'Aucune'}</strong></div>
         <div><span class="enemy-icon">✦</span><span>Dégâts</span><strong>${forceDamageBonus(enemy.force) + (Number.isFinite(enemy.weaponPower) ? enemy.weaponPower : 0)}</strong></div>
       </div>
     </div>`;
@@ -133,7 +237,12 @@ function combatRoundHtml(state, key, enemy) {
   const outcomeText = r.outcome === 'hero'
     ? `<strong>Tu remportes l’échange.</strong><br>Tu infliges <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de dégâts <span class="combat-detail">(${heroDamageDetail})</span>.`
     : r.outcome === 'enemy'
-      ? `<strong>${enemy.name} remporte l’échange.</strong><br>Tu perds <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de Vie <span class="combat-detail">(${enemyDamageDetail})</span>.`
+      ? (() => {
+          const protectionLine = r.protectionAbsorbed > 0
+            ? ` Ta protection absorbe <strong>${r.protectionAbsorbed}</strong>${r.hpLost > 0 ? ` ; tu perds <strong>${r.hpLost}</strong> point${r.hpLost > 1 ? 's' : ''} de Vie.` : ' ; tu ne perds aucun point de Vie.'}`
+            : ` Tu perds <strong>${r.hpLost}</strong> point${r.hpLost > 1 ? 's' : ''} de Vie.`;
+          return `<strong>${enemy.name} remporte l’échange.</strong><br>Il inflige <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de dégâts <span class="combat-detail">(${enemyDamageDetail})</span>.${protectionLine}`;
+        })()
       : `<strong>Égalité.</strong><br>Les deux attaques se neutralisent. Aucun dégât.`;
 
   return `
@@ -155,7 +264,7 @@ function combatRoundHtml(state, key, enemy) {
         </div>
       </div>
       <div class="combat-outcome">${outcomeText}</div>
-      <div class="combat-life-line">Ta Vie : <strong>${state.hp} / ${state.maxHp}</strong> · Vie adverse : <strong>${combat.hp} / ${enemy.maxHp}</strong></div>
+      <div class="combat-life-line">Ta Vie : <strong>${state.hp} / ${state.maxHp}</strong> · Protection : <strong>${currentProtection(state)}</strong> · Vie adverse : <strong>${combat.hp} / ${enemy.maxHp}</strong></div>
     </div>`;
 }
 
@@ -177,6 +286,7 @@ const STORY = {
 
         <div class="hero-sheet-grid">
           <div class="hero-stat"><strong>Vie</strong><span>${state.hp} / ${state.maxHp}</span></div>
+          <div class="hero-stat"><strong>Protection</strong><span>${currentProtection(state)}</span></div>
           <div class="hero-stat"><strong>Chance</strong><span>${state.chance}</span></div>
           <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)}</span></div>
           <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)}</span></div>
@@ -186,6 +296,7 @@ const STORY = {
         <div class="hero-characteristics">
           <div class="hero-info-title">Tes caractéristiques</div>
           <p><strong>Vie :</strong> indique la santé du héros. Lorsqu’elle atteint zéro, ses forces le quittent.</p>
+          <p><strong>Protection :</strong> provient de certaines pièces d’équipement. Elle absorbe les dégâts avant la Vie et diminue lorsqu’elle encaisse un choc.</p>
           <p><strong>Chance :</strong> permet de se sortir habilement d’un mauvais tour ou d’une situation qui semblait mal engagée.</p>
           <p><strong>Force :</strong> représente la puissance physique du héros. Elle contribue aux dégâts qu’il inflige et lui permet de forcer, retenir ou briser ce qui lui barre la route.</p>
           <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. La Dextérité du héros peut être affectée par ce qu’il porte, par exemple une arme lourde.</p>
@@ -1355,7 +1466,7 @@ const STORY = {
       const combat = combatState(state, 'shadowMass', ENEMIES.shadowMass);
       if (combat.hp <= 0) return [{ label: 'Quitter la salle et poursuivre dans la grotte', to: 'c28' }];
       if (state.hp <= 0) return fatalChoices();
-      return [{ label: 'Continuer le combat', to: 'c26' }];
+      return [{ label: 'Continuer le combat', to: 'c27', effect: s => fightRound(s, 'shadowMass', ENEMIES.shadowMass) }];
     }
   },
 
@@ -1465,10 +1576,12 @@ const STORY = {
     number: 'PAGE 30',
     title: 'Le journal d’Anselme',
     image: 'Le journal d’Anselme',
-    text: `
+    text: state => `
       <p>Tu laisses Anselme près du feu et t’approches de l’ancien campement.</p>
 
       <p>Il semble abandonné depuis bien plus longtemps. Une couverture moisie s’est presque soudée au sol. Une tasse de métal repose près d’un cercle de cendres froides.</p>
+
+      <p>À côté de la couverture, un <strong>casque de fer cabossé</strong> a été abandonné au sol. Il est lourd et terni, mais aucune fente ne traverse le métal.</p>
 
       <p>Sous la tasse, tu découvres un petit carnet protégé par une couverture de cuir.</p>
 
@@ -1495,14 +1608,20 @@ const STORY = {
       <p>Tu regardes vers l’homme assis près du feu.</p>
 
       <p>Il t’a pourtant affirmé être entré dans cette grotte il y a deux ou trois jours.</p>
+
+      ${hasItem(state, 'casque_cabosse') ? '<p>Le casque n’est plus au sol : tu l’as ajouté à ton équipement.</p>' : ''}
     `,
     choices: state => {
-      const list = [{ label: 'Continuer vers les profondeurs', to: 'c37' }];
-
-      if (!state.flags.galleryAttempted) {
-        list.push({ label: 'Explorer la galerie bloquée', to: 'c31' });
+      const list = [];
+      if (!hasItem(state, 'casque_cabosse')) {
+        list.push({
+          label: 'Ramasser le casque cabossé (+2 Protection)',
+          to: 'c28',
+          effect: s => addProtectiveItem(s, 'casque_cabosse', 'Casque cabossé', 'Un casque de fer ancien mais encore solide. Il peut absorber 2 points de dégâts avant ta Vie.', 2)
+        });
       }
-
+      list.push({ label: 'Continuer vers les profondeurs', to: 'c37' });
+      if (!state.flags.galleryAttempted) list.push({ label: 'Explorer la galerie bloquée', to: 'c31' });
       list.push({ label: 'Aller dans le tunnel voisin', to: 'c34' });
       return list;
     }
@@ -1824,7 +1943,7 @@ const STORY = {
       effect: s => {
         const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.fissurePass = ok ? 'success' : 'fail';
-        if (!ok) s.hp = Math.max(0, s.hp - 1);
+        if (!ok) s.flags.fissureDamage = applyDamage(s, 1);
       }
     }]
   },
@@ -1881,7 +2000,7 @@ const STORY = {
       const combat = combatState(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing);
       if (combat.hp <= 0) return [{ label: 'Reprendre ton souffle et poursuivre', to: 'c37' }];
       if (state.hp <= 0) return fatalChoices();
-      return [{ label: 'Continuer le combat', to: 'c36' }];
+      return [{ label: 'Continuer le combat', to: 'c38', effect: s => fightRound(s, 'rochebrumeMissing', ENEMIES.rochebrumeMissing) }];
     }
   },
 
@@ -1930,7 +2049,7 @@ const STORY = {
 
         <p>Quelque chose griffe ta peau avant de disparaître dans la pierre.</p>
 
-        <p><strong>Tu perds 1 point de Vie.</strong></p>
+        ${damageAbsorptionHtml(state.flags.fissureDamage)}
 
         <p>Lorsque le passage s’élargit enfin, tu ne t’arrêtes pas.</p>
 
@@ -1986,7 +2105,7 @@ const STORY = {
 
       <p>À gauche, un sentier descend vers une étendue d’eau parfaitement noire.</p>
 
-      <p>Face à toi, un escalier monumental grimpe le long de la falaise.</p>
+      <p>Face à toi, un ancien escalier de pierre grimpe le long de la falaise.</p>
 
       <p>À droite, une corniche étroite rejoint un pont suspendu au-dessus d’un gouffre sans fond visible.</p>
 
@@ -1996,7 +2115,7 @@ const STORY = {
     `,
     choices: [
       { label: 'Descendre vers le lac noir', to: 'c41' },
-      { label: 'Prendre les marches gigantesques', to: 'c44' },
+      { label: 'Prendre l’escalier de pierre', to: 'c44' },
       { label: 'Longer la corniche vers le pont', to: 'c55' }
     ]
   },
@@ -2021,13 +2140,23 @@ const STORY = {
 
       <p>Pas même un frémissement.</p>
 
-      <p>Tu approches la main de la surface.</p>
+      <p>Très haut au-dessus de l’eau, presque perdu dans la brume, tu distingues la ligne d’un pont suspendu entre deux falaises.</p>
 
-      <p>Ton reflet apparaît.</p>
+      <p>Quelque chose de sombre semble se déplacer dessous.</p>
 
-      <p>Une seconde trop tard.</p>
+      <p>À cette distance, tu n’es même pas certain qu’il s’agisse d’un être vivant.</p>
 
-      <p>Tu retires immédiatement ta main.</p>
+      <p>Tu t’accroupis près de l’eau.</p>
+
+      <p>La surface reste noire un instant, sans rien renvoyer.</p>
+
+      <p>Puis ton visage apparaît enfin.</p>
+
+      <p>Tu tournes légèrement la tête.</p>
+
+      <p>Ton reflet ne reproduit le mouvement qu’un bref instant plus tard.</p>
+
+      <p>Tu te redresses aussitôt.</p>
 
       <p>Un peu plus loin, une vieille barque est attachée à un anneau de pierre.</p>
 
@@ -2039,21 +2168,21 @@ const STORY = {
 
       <p>Il n’y a plus que l’eau.</p>
 
-      <p>Puis quelque chose frappe sous la coque.</p>
+      <p>Alors un coup sec résonne.</p>
 
       <p><strong>TOC.</strong></p>
 
-      <p>Tu cesses de ramer.</p>
+      <p>Tu lèves les yeux. Il t’a semblé venir de très haut, peut-être du pont aperçu depuis la rive.</p>
 
-      <p>Un second coup répond beaucoup plus loin.</p>
-
-      <p><strong>TOC.</strong></p>
-
-      <p>Puis un troisième, directement sous tes pieds.</p>
+      <p>Un second coup répond, plus proche.</p>
 
       <p><strong>TOC.</strong></p>
 
-      <p>Le même rythme que les trois notes entendues dans la forêt de Rochebrume.</p>
+      <p>Puis un troisième frappe directement sous la coque.</p>
+
+      <p><strong>TOC.</strong></p>
+
+      <p>Le même rythme exact que les trois notes entendues dans la forêt de Rochebrume.</p>
     `,
     choices: [
       { label: 'Te pencher et regarder sous l’eau', to: 'c42' },
@@ -2131,50 +2260,49 @@ const STORY = {
 
   c44: {
     number: 'PAGE 44',
-    title: 'Les marches des géants',
-    image: 'Les marches des géants',
+    title: 'Les marches déformées',
+    image: 'Les marches déformées',
     onEnter: s => { s.flags.worldRoute = 'stairs'; },
-    text: `
+    text: state => `
       <p>Tu choisis l’escalier.</p>
 
-      <p>Les premières marches suffisent à te faire comprendre qu’il n’a pas été conçu pour des hommes.</p>
+      <p>Au début, rien ne paraît anormal.</p>
 
-      <p>Chacune t’arrive presque à la poitrine.</p>
+      <p>Les marches sont anciennes, usées au centre, mais assez régulières pour être montées sans difficulté.</p>
 
-      <p>Tu dois parfois poser les deux mains sur la pierre et te hisser comme sur un mur.</p>
+      <p>Puis, très progressivement, leur hauteur change.</p>
 
-      <p>Pourtant, le long de l’escalier principal, de petites entailles ont été ajoutées plus tard.</p>
+      <p>L’une est un peu trop haute. La suivante légèrement inclinée.</p>
 
-      <p>Des prises.</p>
+      <p>Plus loin, leurs bords deviennent mousses et irréguliers, comme si la pierre avait lentement oublié la forme qu’on lui avait donnée.</p>
 
-      <p>Des marches humaines taillées dans les marches gigantesques.</p>
+      <p>Après plusieurs dizaines de mètres, tu ne montes presque plus un escalier.</p>
 
-      <p>Quelqu’un est donc venu ici après les bâtisseurs.</p>
+      <p>Tu progresses sur une succession de ressauts de roche lisses, déformés et parfois glissants.</p>
 
-      <p>Tu montes.</p>
+      <p>Le mur à ta droite devrait t’aider.</p>
 
-      <p>La lumière blanche ne change jamais.</p>
+      <p>Mais lui aussi change.</p>
 
-      <p>Au bout d’un temps impossible à mesurer, ton pied s’enfonce légèrement dans une dalle.</p>
+      <p>La pierre s’effrite sous tes doigts. Certaines prises se détachent dès que tu y mets ton poids.</p>
 
-      <p>Un grondement répond dans toute la falaise.</p>
+      <p>Plus tu avances, plus une impression désagréable s’impose : tout ici semble fait pour te pousser vers le vide.</p>
 
-      <p>Une marche située plusieurs mètres plus haut coulisse lentement dans la paroi.</p>
+      <p>Devant toi, le passage se resserre sur une portion inclinée où les anciennes marches ne sont plus que des plaques de roche polie.</p>
 
-      <p>Puis une autre.</p>
+      <p>Tu n’as aucun autre appui que cette paroi friable.</p>
 
-      <p>L’escalier entier est un mécanisme.</p>
+      <p><strong>Ta Dextérité actuelle : ${currentDexterity(state)}</strong></p>
     `,
-    choices: [
-      { label: 'T’arrêter et observer avant de faire un pas de plus', to: 'c49', effect: s => { s.flags.stairsApproach = 'observe'; } },
-      { label: 'Profiter de l’ouverture et grimper vite', to: 'c49', effect: s => {
-          s.flags.stairsApproach = 'rush';
-          const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
-          s.flags.stairsRush = ok ? 'success' : 'fail';
-          if (!ok) s.hp = Math.max(0, s.hp - 2);
-        }
+    choices: [{
+      label: 'Traverser la portion glissante — tester ta Dextérité',
+      to: 'c49',
+      effect: s => {
+        const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
+        s.flags.stairsCross = ok ? 'success' : 'fail';
+        if (!ok) s.flags.stairsDamage = applyDamage(s, 2);
       }
-    ]
+    }]
   },
 
   c45: {
@@ -2220,7 +2348,7 @@ const STORY = {
       effect: s => {
         const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.lakeBalance = ok ? 'success' : 'fail';
-        if (!ok) s.hp = Math.max(0, s.hp - 2);
+        if (!ok) s.flags.lakeImpactDamage = applyDamage(s, 2);
       }
     }]
   },
@@ -2255,7 +2383,7 @@ const STORY = {
 
         <p>La douleur te coupe le souffle.</p>
 
-        <p><strong>Tu perds 2 points de Vie.</strong></p>
+        ${damageAbsorptionHtml(state.flags.lakeImpactDamage)}
 
         <p>Lorsque tu parviens à te relever, la masse a déjà disparu.</p>
 
@@ -2277,40 +2405,109 @@ const STORY = {
     number: 'PAGE 47',
     title: 'L’îlot de l’œil fermé',
     image: 'L’îlot de l’œil fermé',
-    text: state => `
-      <p>L’îlot n’est guère plus grand qu’une chambre.</p>
+    text: state => {
+      const enemy = ENEMIES.isletCrawler;
+      const combat = combatState(state, 'isletCrawler', enemy);
+      const card = enemyCardHtml(state, 'isletCrawler', enemy);
 
-      <p>Quatre piliers brisés entourent une dalle de pierre blanche.</p>
+      if (combat.round === 0) {
+        return `
+          <p>L’îlot n’est guère plus grand qu’une chambre.</p>
 
-      <p>Au centre est gravé un œil fermé.</p>
+          <p>Quatre piliers brisés entourent une dalle de pierre blanche.</p>
 
-      <p>Dans une petite cavité repose un anneau métallique couvert de dépôts gris.</p>
+          <p>Au centre est gravé un œil fermé.</p>
 
-      <p>Il est étonnamment léger.</p>
+          <p>Dans une petite cavité repose un anneau métallique couvert de dépôts gris.</p>
 
-      <p>Rien ne brille. Rien ne vibre.</p>
+          <p>Tu fais un pas vers lui.</p>
 
-      <p>Pourtant, lorsque tu le prends entre deux doigts, tes mouvements te semblent immédiatement plus précis.</p>
+          <p>Quelque chose racle la pierre derrière l’un des piliers.</p>
 
-      ${hasItem(state, 'anneau_veilleurs')
-        ? '<p>La cavité est désormais vide.</p>'
-        : '<p>Tu peux l’emporter, ou laisser cet objet là où les Veilleurs l’ont placé.</p>'}
-    `,
-    choices: state => hasItem(state, 'anneau_veilleurs')
-      ? [{ label: 'Reprendre la barque', to: 'c48' }]
-      : [
+          <p>Une forme basse apparaît.</p>
+
+          <p>De loin, elle évoque un énorme alligator. Mais plus elle avance, moins cette comparaison tient.</p>
+
+          <p>Ses pattes avant se plient comme des bras. Au bout, cinq doigts trop longs s’écartent sur la dalle.</p>
+
+          <p>Sa peau est nue par endroits, presque humaine. Sa mâchoire est trop large, mais la ligne de ses pommettes te rappelle malgré toi un visage.</p>
+
+          <p>La chose rampe entre toi et la barque.</p>
+
+          <p>Elle est lente.</p>
+
+          <p>Mais lorsqu’elle referme ses mâchoires, la pierre elle-même résonne.</p>
+
+          ${card}
+        `;
+      }
+
+      const result = combatRoundHtml(state, 'isletCrawler', enemy);
+      if (combat.hp <= 0) {
+        return card + result + `
+          <p>Ton coup arrête enfin sa progression.</p>
+
+          <p>La créature s’affaisse contre la dalle et reste immobile.</p>
+
+          <p>De profil, sa tête paraît moins animale encore. Sous la mâchoire déformée, tu distingues l’implantation d’une oreille humaine.</p>
+
+          <p>Tu détournes les yeux.</p>
+
+          <p>Dans la cavité au centre de l’îlot, l’anneau est toujours là.</p>
+
+          <p>Rien ne brille. Rien ne vibre.</p>
+
+          <p>Pourtant, lorsque tu le prends entre deux doigts, il paraît presque ne rien peser.</p>
+        `;
+      }
+
+      if (state.hp <= 0) {
+        return card + result + `
+          <p>La masse difforme te renverse sur la dalle blanche.</p>
+          <p>Sa mâchoire descend vers toi tandis que le lac noir remplit tout ton champ de vision.</p>
+        `;
+      }
+
+      if (combat.last && combat.last.outcome === 'enemy') {
+        return card + result + `
+          <p>La créature referme ses mâchoires là où tu te trouvais une fraction de seconde plus tôt.</p>
+          <p>Elle pivote lourdement et se remet entre toi et la barque.</p>
+        `;
+      }
+
+      if (combat.last && combat.last.outcome === 'tie') {
+        return card + result + `
+          <p>Ton arme rencontre son crâne dans un choc sec, mais elle dévie au même instant.</p>
+          <p>Vous vous retrouvez de nouveau face à face autour de la dalle.</p>
+        `;
+      }
+
+      return card + result + `
+        <p>Ton coup l’atteint. La créature s’aplatit contre la pierre, blessée, puis recommence lentement à ramper vers toi.</p>
+        <p>Elle n’est pas morte.</p>
+      `;
+    },
+    choices: state => {
+      const enemy = ENEMIES.isletCrawler;
+      const combat = combatState(state, 'isletCrawler', enemy);
+      if (state.hp <= 0) return fatalChoices();
+      if (combat.hp <= 0) {
+        if (hasItem(state, 'anneau_veilleurs')) return [{ label: 'Reprendre la barque', to: 'c48' }];
+        return [
           {
             label: 'Prendre l’Anneau des Veilleurs (+1 Dextérité)',
             to: 'c48',
-            effect: s => {
-              if (!s.flags.anneauVeilleursPris) {
-                s.flags.anneauVeilleursPris = true;
-                addItem(s, 'anneau_veilleurs', 'Anneau des Veilleurs', 'Un anneau ancien et très léger. +1 Dextérité.');
-              }
-            }
+            effect: s => addItem(s, 'anneau_veilleurs', 'Anneau des Veilleurs', 'Un anneau ancien et très léger. +1 Dextérité.')
           },
-          { label: 'Le laisser et repartir', to: 'c48' }
-        ]
+          { label: 'Laisser l’anneau et reprendre la barque', to: 'c48' }
+        ];
+      }
+      return [{
+        label: combat.round === 0 ? 'Lancer les dés de combat' : 'Continuer le combat',
+        to: 'c47',
+        effect: s => fightRound(s, 'isletCrawler', enemy)
+      }];
+    }
   },
 
   c48: {
@@ -2349,60 +2546,41 @@ const STORY = {
 
   c49: {
     number: 'PAGE 49',
-    title: 'L’escalier qui bouge',
-    image: 'L’escalier qui bouge',
+    title: 'La paroi friable',
+    image: 'La paroi friable',
     text: state => {
-      if (state.flags.stairsApproach === 'observe') {
-        return `
-          <p>Tu ne bouges plus.</p>
-
-          <p>Le grondement continue au-dessus de toi.</p>
-
-          <p>Puis tu remarques quelque chose sur les petites marches ajoutées par les hommes.</p>
-
-          <p>À intervalles réguliers, un minuscule œil fermé a été gravé près de certaines prises.</p>
-
-          <p>Toujours du même côté.</p>
-
-          <p>Tu attends que la pierre se stabilise, puis tu suis ces marques.</p>
-
-          <p>À chaque fois que tu poses le pied sur une marche non marquée, un bloc se déplace quelque part dans la falaise.</p>
-
-          <p>Tu n’essaies pas une seconde fois.</p>
-
-          <p>Les symboles forment un chemin.</p>
-
-          <p>Les Veilleurs sont passés ici avant toi.</p>
-        `;
-      }
-
       const r = diceResultHtml(state);
-      if (state.flags.stairsRush === 'success') {
+      if (state.flags.stairsCross === 'success') {
         return r + `
-          <p>Tu grimpes avant que le mécanisme ait fini de se mettre en mouvement.</p>
+          <p>Tu avances lentement, presque de côté.</p>
 
-          <p>Une dalle se referme derrière ton pied.</p>
+          <p>Une première pierre cède sous ta main. Tu la laisses tomber sans chercher à la retenir.</p>
 
-          <p>Une autre glisse au-dessus de ta tête.</p>
+          <p>Quelques secondes plus tard, ton pied glisse à son tour.</p>
 
-          <p>Tu sautes sur la marche suivante et te hisses juste avant qu’un bloc ne vienne écraser l’endroit où tu te trouvais.</p>
+          <p>Tu transfères ton poids sur l’autre jambe avant que la roche ne t’emporte.</p>
 
-          <p>Lorsque l’escalier se fige, tu es encore debout.</p>
+          <p>Lorsque tu atteins enfin une plateforme plus stable, tes avant-bras tremblent.</p>
+
+          <p>Derrière toi, plusieurs morceaux de paroi se détachent encore et disparaissent dans le vide.</p>
+
+          <p>Tu continues.</p>
         `;
       }
-
       return r + `
-        <p>Tu essaies de profiter du mouvement pour gagner de la hauteur.</p>
+        <p>Ton pied part brusquement sur la roche lisse.</p>
 
-        <p>Une marche disparaît sous ton pied.</p>
+        <p>Tu te jettes contre la paroi et saisis une aspérité.</p>
 
-        <p>Tu chutes lourdement sur la pierre inférieure avant de réussir à t’agripper à une prise.</p>
+        <p>Elle se pulvérise dans ta main.</p>
 
-        <p>Un bloc passe au-dessus de toi dans un grondement assourdissant.</p>
+        <p>Tu glisses sur plusieurs mètres avant de heurter violemment un ressaut de pierre.</p>
 
-        <p><strong>Tu perds 2 points de Vie.</strong></p>
+        ${damageAbsorptionHtml(state.flags.stairsDamage)}
 
-        <p>Quand tout s’immobilise enfin, tu restes suspendu plusieurs secondes avant d’oser reprendre l’ascension.</p>
+        <p>Tu restes un instant plaqué contre la roche, incapable de regarder le vide.</p>
+
+        <p>Puis tu trouves une nouvelle prise et reprends l’ascension, beaucoup plus lentement.</p>
       `;
     },
     choices: state => state.hp <= 0
@@ -2499,21 +2677,17 @@ const STORY = {
     title: 'La silhouette au sommet',
     image: 'La silhouette au sommet',
     text: `
-      <p>Tu quittes les fresques et retrouves les marches.</p>
+      <p>Tu quittes les fresques et retrouves ce qu’il reste de l’escalier.</p>
 
       <p>C’est alors que tu la vois.</p>
 
-      <p>Très haut au-dessus de toi, une silhouette se tient sur une marche.</p>
+      <p>Très haut au-dessus de toi, une silhouette se tient sur une portion encore régulière de la montée.</p>
 
       <p>Immobile.</p>
 
       <p>Trop loin pour distinguer un visage.</p>
 
       <p>Tu continues à monter.</p>
-
-      <p>Cent marches.</p>
-
-      <p>Peut-être davantage.</p>
 
       <p>La silhouette est toujours là.</p>
 
@@ -2524,8 +2698,6 @@ const STORY = {
       <p>Elle ne se rapproche pas.</p>
 
       <p>Tu t’arrêtes.</p>
-
-      <p>Elle aussi semble s’arrêter, alors qu’elle n’avait pas bougé.</p>
 
       <p>Tu lèves lentement une main.</p>
 
@@ -2538,18 +2710,79 @@ const STORY = {
       <p>Elle disparaît.</p>
 
       <p>Il n’y a aucun endroit où elle aurait pu se cacher.</p>
+
+      <p>Quelques mètres plus loin, tu remarques une fissure verticale dans la paroi.</p>
+
+      <p>Elle est juste assez large pour t’y glisser de profil.</p>
+
+      <p>Un courant d’air tiède en sort.</p>
+
+      <p>Et, très loin à l’intérieur, quelque chose gratte doucement la pierre.</p>
     `,
     choices: [
-      { label: 'Continuer sans regarder en arrière', to: 'c53' }
+      { label: 'T’aventurer dans la fissure', to: 'c53', effect: s => { if (!s.flags.stairsCrackEntered) { s.flags.stairsCrackEntered = true; s.flags.stairsCrackDamage = applyDamage(s, 2); } } },
+      { label: 'Ne pas t’y aventurer et poursuivre l’ascension', to: 'c54' }
     ]
   },
 
   c53: {
     number: 'PAGE 53',
+    title: 'La fissure',
+    image: 'La fissure',
+    text: state => `
+      <p>Tu t’engages de profil entre les deux parois.</p>
+
+      <p>Après quelques pas, la lumière de l’escalier ne forme déjà plus qu’une ligne derrière toi.</p>
+
+      <p>Tu poses une main devant toi pour chercher la roche.</p>
+
+      <p>Une autre main se referme sur ton poignet.</p>
+
+      <p>Tu n’as même pas le temps de crier.</p>
+
+      <p>Quelque chose te tire brutalement dans l’obscurité.</p>
+
+      <p>Ton épaule heurte la pierre. Ton arme racle la paroi. Tu essaies de t’agripper, mais tes doigts ne rencontrent que de la poussière et des surfaces humides.</p>
+
+      <p>Autour de toi, ça fourmille.</p>
+
+      <p>Des corps — ou des membres — passent contre tes jambes, ton dos, ton visage.</p>
+
+      <p>Tu entends des craquements d’os.</p>
+
+      <p>Très proches.</p>
+
+      <p>À un moment, tu ne sais plus s’ils viennent de ce qui t’entoure ou de ton propre corps.</p>
+
+      <p>Puis tu ne sens plus rien.</p>
+
+      <p>Le noir devient complet.</p>
+
+      <p>Tu perds connaissance.</p>
+
+      ${damageAbsorptionHtml(state.flags.stairsCrackDamage)}
+
+      <p>Lorsque tu rouvres les yeux, tu es allongé sur une plateforme de pierre, plusieurs dizaines de mètres plus haut.</p>
+
+      <p>Tu n’as aucun souvenir d’être sorti de la fissure.</p>
+
+      <p>Sous les ongles de ta main droite, une poussière noire s’est logée profondément.</p>
+
+      <p>Tu la grattes aussitôt.</p>
+
+      <p>Une partie de toi regrette presque de la voir disparaître.</p>
+    `,
+    choices: state => state.hp <= 0
+      ? fatalChoices()
+      : [{ label: 'Te relever et poursuivre', to: 'c54' }]
+  },
+
+  c54: {
+    number: 'PAGE 54',
     title: 'Au-dessus de la cité',
     image: 'Au-dessus de la cité',
-    text: `
-      <p>Les dernières marches débouchent sur une immense plateforme.</p>
+    text: state => `
+      <p>Les dernières portions de l’ascension débouchent sur une plateforme stable.</p>
 
       <p>Le vide s’ouvre devant toi.</p>
 
@@ -2557,51 +2790,32 @@ const STORY = {
 
       <p>Une cité entière occupe la vallée de pierre.</p>
 
-      <p>Des rues droites disparaissent sous des arches gigantesques.</p>
-
-      <p>Des escaliers montent vers des murs sans porte.</p>
-
-      <p>Des portes isolées se dressent au milieu de places vides.</p>
+      <p>Des rues droites disparaissent sous des arches. Des escaliers montent vers des murs sans porte. Des portes isolées se dressent au milieu de places vides.</p>
 
       <p>Certaines structures semblent continuer jusque sur les parois verticales.</p>
 
       <p>D’autres paraissent suspendues au plafond invisible.</p>
 
-      <p>Tu restes longtemps à regarder.</p>
+      <p>Un escalier plus récent, clairement taillé à taille humaine, descend vers une petite porte percée à la base d’une arche.</p>
 
-      <p>Ce n’est pas une ville abandonnée.</p>
+      <p>Juste avant la porte repose le squelette d’un homme.</p>
 
-      <p>C’est une ville dont tu n’es même pas certain qu’elle ait été conçue pour être habitée.</p>
+      <p>Une de ses mains porte encore un <strong>gantelet</strong> articulé de métal sombre — le gant d’armure d’un chevalier ou d’un Veilleur.</p>
 
-      <p>Un ancien escalier humain descend vers ses niveaux supérieurs.</p>
+      <p>Les plaques sont fines, mais intactes.</p>
+
+      ${hasItem(state, 'gantelet_veilleur') ? '<p>Tu as déjà ajouté le gantelet à ton équipement.</p>' : '<p>Il pourrait encore encaisser un coup à ta place.</p>'}
     `,
-    choices: [
-      { label: 'Descendre vers la cité', to: 'c54' }
-    ]
-  },
-
-  c54: {
-    number: 'PAGE 54',
-    title: 'La porte haute',
-    image: 'La porte haute',
-    text: `
-      <p>Tu descends le petit escalier pendant de longues minutes.</p>
-
-      <p>À mesure que tu approches, les proportions deviennent plus difficiles à comprendre.</p>
-
-      <p>Une arche que tu croyais haute comme une maison est en réalité assez grande pour contenir le clocher de Valombre.</p>
-
-      <p>À sa base, presque invisible depuis la plateforme, une porte de taille humaine a été creusée plus tard.</p>
-
-      <p>Le symbole de l’œil fermé est gravé juste au-dessus.</p>
-
-      <p>Tu passes dessous.</p>
-
-      <p>Pour la première fois, les parois de la Cité morte t’entourent.</p>
-    `,
-    choices: [
-      { label: 'Entrer dans les quartiers hauts', to: 'c64' }
-    ]
+    choices: state => hasItem(state, 'gantelet_veilleur')
+      ? [{ label: 'Franchir la porte et entrer dans les quartiers hauts', to: 'c64' }]
+      : [
+          {
+            label: 'Prendre le Gantelet de Veilleur (+1 Protection)',
+            to: 'c64',
+            effect: s => addProtectiveItem(s, 'gantelet_veilleur', 'Gantelet de Veilleur', 'Un gant d’armure articulé trouvé au-dessus de la Cité morte. Il peut absorber 1 point de dégâts avant ta Vie.', 1)
+          },
+          { label: 'Le laisser et franchir la porte', to: 'c64' }
+        ]
   },
 
   c55: {
@@ -2698,7 +2912,7 @@ const STORY = {
           effect: s => {
             const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
             s.flags.bridgeRun = ok ? 'success' : 'fail';
-            if (!ok) s.hp = Math.max(0, s.hp - 1);
+            if (!ok) s.flags.bridgeRunDamage = applyDamage(s, 1);
           }
         },
         { label: 'Frapper la chose à travers les planches', to: 'c58' }
@@ -2741,7 +2955,7 @@ const STORY = {
 
         <p>Tu t’effondres sur un genou.</p>
 
-        <p><strong>Tu perds 1 point de Vie.</strong></p>
+        ${damageAbsorptionHtml(state.flags.bridgeRunDamage)}
 
         <p>Avant que tu puisses te relever, deux longs doigts passent entre les lattes et se referment sur le bord.</p>
 
@@ -2761,7 +2975,7 @@ const STORY = {
     title: 'Le marcheur sous le pont',
     image: 'Le marcheur sous le pont',
     text: state => `
-      <p>La créature pivote autour d’une corde avec une facilité écœurante.</p>
+      <p>La créature pivote autour d’une corde avec une facilité déconcertante.</p>
 
       <p>Elle apparaît enfin à hauteur du tablier.</p>
 
@@ -2773,9 +2987,15 @@ const STORY = {
 
       <p>Elle n’a pas de terre noire sur le visage.</p>
 
-      <p>Pourtant, lorsqu’elle ouvre la bouche, tu entends les trois petits coups secs du lac.</p>
+      <p>Pourtant, lorsqu’elle ouvre la bouche, trois coups secs résonnent dans toute la caverne.</p>
 
       <p><strong>TOC. TOC. TOC.</strong></p>
+
+      <p>Tu reconnais immédiatement le rythme exact des trois notes entendues dans la forêt de Rochebrume.</p>
+
+      <p>Le son descend très loin sous le pont.</p>
+
+      <p>Quelques secondes plus tard, depuis les profondeurs où s’étend le lac noir, trois coups beaucoup plus faibles semblent lui répondre.</p>
 
       <p>Cette fois, il n’y a plus de place pour l’éviter.</p>
 
@@ -2799,15 +3019,17 @@ const STORY = {
 
       if (combat.hp <= 0) {
         return card + result + `
-          <p>Ton coup le décroche du pont.</p>
+          <p>Ton dernier coup le décroche du pont.</p>
 
-          <p>Ses doigts cherchent une dernière prise.</p>
+          <p>Ses doigts cherchent une prise, mais son bras ne répond plus correctement.</p>
 
-          <p>Puis son corps bascule dans le vide.</p>
+          <p>Son corps bascule et disparaît dans la brume.</p>
 
-          <p>Tu attends le bruit de sa chute.</p>
+          <p>Tu restes quelques secondes à surveiller les cordes sous tes pieds.</p>
 
-          <p>Il ne vient jamais.</p>
+          <p>Rien ne remonte.</p>
+
+          <p>Cette fois, tu es presque certain qu’il ne pourra pas revenir.</p>
         `;
       }
 
@@ -2821,9 +3043,11 @@ const STORY = {
 
       if (combat.last && combat.last.outcome === 'enemy') {
         return card + result + `
-          <p>La créature te heurte puis disparaît sous le tablier avant que tu puisses riposter.</p>
+          <p>La créature te heurte puis se replie sous le tablier.</p>
 
-          <p>Une seconde plus tard, ses doigts réapparaissent entre deux planches.</p>
+          <p>Tu n’as pas le temps de souffler : quelques planches plus loin, ses doigts réapparaissent déjà.</p>
+
+          <p>Elle cherche un nouvel angle pour revenir sur toi.</p>
         `;
       }
 
@@ -2831,21 +3055,31 @@ const STORY = {
         return card + result + `
           <p>Tu frappes au moment où elle se jette sur toi.</p>
 
-          <p>Vous vous séparez sans parvenir à prendre l’avantage.</p>
+          <p>Vos mouvements se neutralisent et vous vous séparez sans parvenir à prendre l’avantage.</p>
 
-          <p>Le pont continue de se balancer sous vos mouvements.</p>
+          <p>Le pont continue de se balancer sous vos pieds et ses doigts.</p>
         `;
       }
 
       return card + result + `
-        <p>Ton coup porte, mais la créature se replie autour d’une corde et revient aussitôt.</p>
+        <p>Ton coup porte.</p>
+
+        <p>La créature se replie autour d’une corde, blessée. Pendant un instant, elle pend sous le pont par un seul bras.</p>
+
+        <p>Puis elle se hisse de nouveau vers toi.</p>
+
+        <p>Elle revient, mais pas tout à fait avec la même assurance.</p>
       `;
     },
     choices: state => {
       const combat = combatState(state, 'bridgeWalker', ENEMIES.bridgeWalker);
       if (combat.hp <= 0) return [{ label: 'Achever la traversée', to: 'c60' }];
       if (state.hp <= 0) return fatalChoices();
-      return [{ label: 'Continuer le combat', to: 'c58' }];
+      return [{
+        label: 'Continuer le combat',
+        to: 'c59',
+        effect: s => fightRound(s, 'bridgeWalker', ENEMIES.bridgeWalker)
+      }];
     }
   },
 
@@ -3035,49 +3269,75 @@ const STORY = {
     title: 'La Cité morte',
     image: 'La Cité morte',
     onEnter: s => setCheckpoint(s, 'La Cité morte'),
-    text: state => `
-      <p>Quelle que soit la route qui t’a conduit jusqu’ici, elle finit par rejoindre la même avenue.</p>
+    text: state => {
+      const otherWays = [];
+      if (state.flags.worldRoute !== 'lake') otherWays.push('une rampe encore humide remonte depuis des quartiers noyés');
+      if (state.flags.worldRoute !== 'stairs') otherWays.push('un escalier étroit descend des niveaux supérieurs');
+      if (state.flags.worldRoute !== 'bridge') otherWays.push('une porte latérale s’ouvre vers le vide et laisse deviner, très loin, la ligne d’un pont');
+      const routesLine = otherWays.length
+        ? `<p>À mesure que tu avances, tu remarques d’autres accès débouchant sur la même avenue : ${otherWays.join(' ; ')}.</p><p>Tu comprends que ce lieu aurait pu être atteint par d’autres chemins à travers le monde sous la montagne.</p>`
+        : '';
 
-      <p>Tu avances entre deux façades si hautes que leurs sommets disparaissent dans la lumière blanche.</p>
+      return `
+        <p>Le passage que tu suivais finit par déboucher sur une large avenue.</p>
 
-      <p>Il n’y a aucune fenêtre.</p>
+        ${routesLine}
 
-      <p>Seulement des portes.</p>
+        <p>Tu avances entre deux façades si hautes que leurs sommets disparaissent dans la lumière blanche.</p>
 
-      <p>Des centaines.</p>
+        <p>Il n’y a aucune fenêtre.</p>
 
-      <p>Certaines sont trop petites pour un enfant.</p>
+        <p>Seulement des portes.</p>
 
-      <p>D’autres assez hautes pour laisser passer une tour.</p>
+        <p>Des centaines.</p>
 
-      <p>Au bout de l’avenue, l’espace s’ouvre sur une place circulaire.</p>
+        <p>Certaines sont trop petites pour un enfant.</p>
 
-      <p>En son centre se dresse une structure qui ressemble à une fontaine sèche.</p>
+        <p>D’autres assez hautes pour laisser passer une tour.</p>
 
-      <p>De la poussière noire repose au fond de la vasque.</p>
+        <p>Au bout de l’avenue, l’espace s’ouvre sur une place circulaire.</p>
 
-      <p>Tu t’approches.</p>
+        <p>En son centre se dresse une structure qui ressemble à une fontaine sèche.</p>
 
-      <p>Un grain se soulève.</p>
+        <p>De la poussière noire repose au fond de la vasque.</p>
 
-      <p>Puis un autre.</p>
+        <p>Tu t’arrêtes à quelques pas.</p>
 
-      <p>Ils montent lentement dans l’air au lieu de retomber.</p>
+        <p>Rien ne bouge.</p>
 
-      <p>Tu recules.</p>
+        <p>Pourtant, plus tu la regardes, plus ta fatigue semble s’éloigner.</p>
 
-      <p>Autour de la place, plusieurs passages attendent dans le silence.</p>
+        <p>La douleur dans tes épaules devient moins importante. Ta peur aussi.</p>
 
-      <p>L’un d’eux est couvert de noms gravés dans la pierre.</p>
+        <p>Une certitude absurde se forme en toi avec une douceur presque rassurante : si tu plongeais simplement les doigts dans cette poussière, tu serais plus fort.</p>
 
-      <p>Un autre est fermé par une suite de portes étroites.</p>
+        <p>Plus léger.</p>
 
-      <p>Plus loin, une faible lumière blanche filtre sous une arche marquée de l’œil fermé.</p>
+        <p>Peut-être même assez fort pour ne plus avoir peur de ce qui t’attend.</p>
 
-      <p>Tu comprends que la véritable exploration de la Cité morte commence ici.</p>
+        <p>Ta main se soulève légèrement avant que tu t’en rendes compte.</p>
 
-      <p><strong>Fin de cette version test.</strong></p>
-    `,
+        <p>Tu la rabats contre toi.</p>
+
+        <p>La poussière n’a pas bougé.</p>
+
+        <p>Elle attend seulement au fond de la vasque.</p>
+
+        <p>Ce qui t’effraie le plus, en reculant, c’est le bref regret que tu ressens de ne pas l’avoir touchée.</p>
+
+        <p>Autour de la place, plusieurs passages attendent dans le silence.</p>
+
+        <p>L’un d’eux est couvert de noms gravés dans la pierre.</p>
+
+        <p>Un autre est fermé par une suite de portes étroites.</p>
+
+        <p>Plus loin, une faible lumière blanche filtre sous une arche marquée de l’œil fermé.</p>
+
+        <p>Tu comprends que la véritable exploration de la Cité morte commence ici.</p>
+
+        <p><strong>Fin de cette version test.</strong></p>
+      `;
+    },
     choices: [
       { label: 'Reprendre au dernier point de sauvegarde', action: 'checkpoint' },
       { label: 'Recommencer depuis le début', action: 'restart' }
@@ -3173,6 +3433,9 @@ const STORY = {
       lastDamageDie: null,
       lastDamageKey: null,
       lastHealingDie: null,
+      protectionItems: {},
+      lastDamageResolution: null,
+      damageRollResults: {},
       currentCheckpoint: null
     };
   }
@@ -3218,6 +3481,18 @@ const STORY = {
       id: 'ceinture_rouge',
       name: 'Ceinture de corde rouge',
       description: 'Une ceinture des Veilleurs : +1 Force lors des tests pour grimper, retenir ou se suspendre.'
+    },
+    {
+      id: 'casque_cabosse',
+      name: 'Casque cabossé',
+      description: 'Un casque de fer ancien. Donne 2 points de Protection qui encaissent les dégâts avant la Vie.',
+      protection: 2
+    },
+    {
+      id: 'gantelet_veilleur',
+      name: 'Gantelet de Veilleur',
+      description: 'Un gant d’armure articulé. Donne 1 point de Protection qui encaisse les dégâts avant la Vie.',
+      protection: 1
     }
   ];
 
@@ -3230,6 +3505,11 @@ const STORY = {
     if (entry.special === 'throwingBlades') {
       state.throwingBlades = enabled ? Math.max(3, state.throwingBlades || 0) : 0;
       syncThrowingBlades(state);
+      return;
+    }
+    if (entry.protection) {
+      if (enabled) addProtectiveItem(state, entry.id, entry.name, entry.description, entry.protection);
+      else removeProtectiveItem(state, entry.id);
       return;
     }
     if (enabled) addItem(state, entry.id, entry.name, entry.description);
@@ -3276,11 +3556,19 @@ const STORY = {
     },
 
     extraHtml(state) {
+      const weaponDex = state.weapon === 'heavy' ? '−4' : state.weapon === 'light' ? '−1' : '0';
+      const equipment = `
+        <div class="inventory-equipment-card">
+          <div class="inventory-equipment-title">Équipement actuel</div>
+          <div class="inventory-equipment-row"><span>Arme équipée</span><strong>${weaponLabel(state)}</strong></div>
+          <div class="inventory-equipment-row"><span>Effet de l’arme</span><strong>DEX ${weaponDex} · Puissance ${state.weapon === 'none' ? 0 : combatPower(state)}</strong></div>
+          <div class="inventory-equipment-row"><span>Protection restante</span><strong>${currentProtection(state)} / ${maxProtection(state)}</strong></div>
+        </div>`;
       const testPanel = testInventoryHtml(state);
       const healing = Number.isInteger(state.lastHealingDie)
         ? `<div class="dice-result"><p class="roll-number">Dernière potion</p><div class="dice-faces">${renderDie(state.lastHealingDie)}</div><p><strong>+${state.lastHealingDie} point${state.lastHealingDie > 1 ? 's' : ''} de Vie</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p></div>`
         : '';
-      return testPanel + healing;
+      return equipment + testPanel + healing;
     },
 
     actionHtml(id, item, state) {
@@ -3292,6 +3580,11 @@ const STORY = {
       }
       if (id === 'lame_noire') {
         return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="equip-black-blade">Équiper la lame noire</button></div>`;
+      }
+      if (PROTECTION_ITEMS[id]) {
+        ensureProtectionState(state);
+        const source = state.protectionItems[id] || { remaining: 0, max: PROTECTION_ITEMS[id].max };
+        return `<div class="inventory-protection-state">Protection restante : <strong>${source.remaining} / ${source.max}</strong></div>`;
       }
       return '';
     },
@@ -3356,6 +3649,35 @@ const STORY = {
     }
   };
 
+  function characterSheetHtml(state) {
+    const force = currentForce(state);
+    const dexterity = currentDexterity(state);
+    const weaponPower = state.weapon === 'none' ? 0 : combatPower(state);
+    const damage = forceDamageBonus(force) + weaponPower;
+    const armor = [];
+    ensureProtectionState(state);
+    if (hasItem(state, 'casque_cabosse')) armor.push(`Casque cabossé — ${state.protectionItems.casque_cabosse?.remaining || 0}/2`);
+    if (hasItem(state, 'gantelet_veilleur')) armor.push(`Gantelet de Veilleur — ${state.protectionItems.gantelet_veilleur?.remaining || 0}/1`);
+    return `
+      <div class="character-modal-sheet">
+        <div class="character-modal-name">${escapeHtml(state.heroName || 'Écuyer sans nom')}</div>
+        <div class="character-modal-rank">Écuyer de Sir Aldren de Rochebrune</div>
+        <div class="character-modal-stats">
+          <div><span>♥ Vie</span><strong>${state.hp} / ${state.maxHp}</strong></div>
+          <div><span>🛡 Protection</span><strong>${currentProtection(state)} / ${maxProtection(state)}</strong></div>
+          <div><span>Chance</span><strong>${state.chance}</strong></div>
+          <div><span>Force</span><strong>${force}</strong></div>
+          <div><span>Dextérité</span><strong>${dexterity}</strong></div>
+          <div><span>Puissance de l’arme</span><strong>${weaponPower}</strong></div>
+        </div>
+        <div class="character-modal-equipment">
+          <p><strong>Arme :</strong> ${weaponLabel(state)}</p>
+          <p><strong>Dégâts si tu remportes un échange :</strong> ${damage}</p>
+          <p><strong>Protection portée :</strong> ${armor.length ? armor.join(' · ') : 'Aucune'}</p>
+        </div>
+      </div>`;
+  }
+
   BookRegistry.register({
     id: 'ecuyer-01',
     seriesId: 'ecuyer',
@@ -3366,8 +3688,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 7,
-    saveVersion: 6,
+    contentVersion: 8,
+    saveVersion: 7,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,
@@ -3376,7 +3698,8 @@ const STORY = {
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
-    rules: { currentForce, currentDexterity, combatPower, weaponLabel },
+    rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage },
+    characterSheetHtml,
     inventory,
     checkpoints: [
       { node: 'c8', label: 'Sortie de Valombre', onlyIfNone: true }

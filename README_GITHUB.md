@@ -17,5 +17,5 @@ V17 TEST : nouvel équilibrage des armes et dégâts (bonus de Force = Force ÷ 
 V19 TEST : le bouton ☰ ouvre désormais une liste déroulante de toutes les pages (001–066) avec leur titre. Un clic permet d’aller directement à une page sans rejouer les choix précédents.
 
 
-### V20 TEST
+### V21 TEST
 Inventaire de test complet avec activation/désactivation des objets et sélection rapide de l’arme équipée.

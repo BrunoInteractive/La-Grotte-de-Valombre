@@ -31,7 +31,7 @@ Le livre possède des métadonnées séparées :
 - `contentVersion` : version du contenu du livre ; peut évoluer à chaque mise à jour.
 - `saveVersion` : version du format de sauvegarde ; ne change que si la structure de sauvegarde doit réellement migrer.
 
-Ainsi, une future V20 pourra toujours utiliser le même dossier `books/ecuyer/01-la-grotte-de-valombre/` et le même ID `ecuyer-01`.
+Ainsi, une future V21 pourra toujours utiliser le même dossier `books/ecuyer/01-la-grotte-de-valombre/` et le même ID `ecuyer-01`.
 
 ## Sauvegardes
 
@@ -114,7 +114,7 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - Le menu ne contient plus les anciens boutons Continuer / Inventaire / Recommencer ; ces fonctions restent accessibles ailleurs dans l’interface.
 
 
-## V20 — Inventaire de test
+## V21 — Inventaire de test
 
 - L’inventaire affiche dès le départ tous les objets déjà introduits jusqu’à la page 66.
 - Chaque objet peut être coché/décoché pour simuler sa possession.
