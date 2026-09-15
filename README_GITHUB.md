@@ -1,4 +1,4 @@
-# Déploiement GitHub Pages — V16 TEST
+# Déploiement GitHub Pages — V19 TEST
 
 Téléverse le contenu de ce dossier en conservant exactement les sous-dossiers `engine/`, `app/` et `books/`. `index.html` doit rester à la racine.
 
@@ -12,3 +12,6 @@ Les illustrations ne sont pas incluses dans cette archive : elles sont gérées 
 
 
 V17 TEST : nouvel équilibrage des armes et dégâts (bonus de Force = Force ÷ 4, minimum 1). Illustrations non incluses.
+
+
+V19 TEST : le bouton ☰ ouvre désormais une liste déroulante de toutes les pages (001–066) avec leur titre. Un clic permet d’aller directement à une page sans rejouer les choix précédents.

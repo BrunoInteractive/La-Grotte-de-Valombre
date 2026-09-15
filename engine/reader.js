@@ -30,9 +30,7 @@ const menuBtn = document.getElementById('menuBtn');
 const drawer = document.getElementById('drawer');
 const drawerBackdrop = document.getElementById('drawerBackdrop');
 const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-const continueBtn = document.getElementById('continueBtn');
-const drawerInventoryBtn = document.getElementById('drawerInventoryBtn');
-const drawerRestartBtn = document.getElementById('drawerRestartBtn');
+const pageNavList = document.getElementById('pageNavList');
 const modalBackdrop = document.getElementById('modalBackdrop');
 const modal = document.getElementById('modal');
 const closeModalBtn = document.getElementById('closeModalBtn');
@@ -270,7 +268,55 @@ function openInventory() {
 }
 
 function closeModal() { modal.classList.add('hidden'); modalBackdrop.classList.add('hidden'); }
-function openDrawer() { drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); drawerBackdrop.classList.remove('hidden'); }
+
+function pageNavigationEntries() {
+  return Object.entries(PAGE_BY_NODE)
+    .map(([nodeId, pageNumber]) => ({
+      nodeId,
+      pageNumber,
+      title: (STORY[nodeId] && STORY[nodeId].title) ? STORY[nodeId].title : `Page ${padPage(pageNumber)}`
+    }))
+    .sort((a, b) => a.pageNumber - b.pageNumber);
+}
+
+function renderPageNavigation() {
+  if (!pageNavList) return;
+  const entries = pageNavigationEntries();
+  pageNavList.innerHTML = '';
+  entries.forEach(entry => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `page-nav-btn${state.node === entry.nodeId ? ' current' : ''}`;
+    btn.dataset.node = entry.nodeId;
+    btn.innerHTML = `<span class="page-nav-number">${padPage(entry.pageNumber)}</span><span class="page-nav-title"></span>`;
+    btn.querySelector('.page-nav-title').textContent = entry.title;
+    btn.addEventListener('click', () => jumpToPageForTest(entry.nodeId));
+    pageNavList.appendChild(btn);
+  });
+}
+
+function jumpToPageForTest(nodeId) {
+  if (!STORY[nodeId] || !PAGE_BY_NODE[nodeId]) return;
+  // Outil de test : on change uniquement la page courante.
+  // Aucun effet de choix/onEnter/checkpoint antérieur n'est déclenché automatiquement.
+  state.node = nodeId;
+  state.history.push(nodeId);
+  saveState();
+  closeDrawer();
+  render();
+  try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0,0); }
+}
+
+function openDrawer() {
+  renderPageNavigation();
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden','false');
+  drawerBackdrop.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    const current = pageNavList && pageNavList.querySelector('.page-nav-btn.current');
+    if (current) current.scrollIntoView({ block: 'center' });
+  });
+}
 function closeDrawer() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); drawerBackdrop.classList.add('hidden'); }
 
 const bookApi = { book: BOOK, saveState, render, openInventory, showModal, closeModal };
@@ -289,9 +335,6 @@ restartBtn.addEventListener('click', restartGame);
 menuBtn.addEventListener('click', openDrawer);
 closeDrawerBtn.addEventListener('click', closeDrawer);
 drawerBackdrop.addEventListener('click', closeDrawer);
-continueBtn.addEventListener('click', closeDrawer);
-drawerInventoryBtn.addEventListener('click', () => { closeDrawer(); openInventory(); });
-drawerRestartBtn.addEventListener('click', restartGame);
 closeModalBtn.addEventListener('click', closeModal);
 modalBackdrop.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDrawer(); closeModal(); closeJournal(); } });

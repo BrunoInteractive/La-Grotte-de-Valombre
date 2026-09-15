@@ -98,3 +98,17 @@ Les ZIP de développement peuvent continuer à s’appeler `..._V13.zip`, `..._V
 - Disparu de Rochebrume : Vie 3, Force 3, Dextérité 8, dégâts 1.
 - La mini-fiche adversaire affiche aussi les dégâts.
 - Aucun fichier d’illustration n’est inclus ; le dossier images reste vide.
+
+
+## V18 TEST — trois routes vers la Cité morte
+- Suite développée jusqu’au point de convergence dans la Cité morte (page 66).
+- Trois routes majeures : Lac noir, Grandes Marches, Pont.
+- Illustrations toujours gérées séparément.
+
+## V19 TEST — navigation directe entre les pages
+- Le bouton ☰ en haut à droite devient un navigateur de test.
+- Il affiche toutes les pages 001 à 066, triées par numéro, avec leur titre.
+- La page courante est surlignée et automatiquement centrée à l’ouverture.
+- Cliquer sur une page y va directement sans exécuter les effets des choix ou des pages précédentes.
+- L’état courant (inventaire, caractéristiques, objets, blessures) est conservé pendant ce saut de test.
+- Le menu ne contient plus les anciens boutons Continuer / Inventaire / Recommencer ; ces fonctions restent accessibles ailleurs dans l’interface.
