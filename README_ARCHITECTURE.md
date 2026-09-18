@@ -165,3 +165,28 @@ Les créatures sont décrites par impressions contradictoires et détails diffic
 - Les autres routes enrichissent ensuite la compréhension lors des parties suivantes, sans être obligatoires.
 - Le nom du héros reste gravé dans la Salle des noms : il indique que le lien avec ce qui appelle sous la montagne a déjà commencé, sans expliquer encore son mécanisme.
 - La dernière gravure de la Salle de veille prépare la recherche de la Lame noire et la descente vers la prochaine zone, destinée à être plus orientée action et combat.
+
+## V27 — Rochebrume : continuité d’état
+- Élias mémorise l’annonce de la mort de Gaspard.
+- L’étranger ne réapparaît plus après sa disparition.
+
+
+## V29 — actions sur place
+- Les objets ramassables peuvent utiliser `stay: true` : l'effet est appliqué puis la page courante est simplement réaffichée, sans navigation vers une autre page.
+- Page 30 : le casque cabossé est désormais ramassé sur place ; le bouton disparaît ensuite et l'illustration de la page 30 reste affichée.
+
+
+### V32 — démo joueurs jusqu’à la page 40
+La démo joueur se poursuit désormais dans les premières galeries et s’arrête à la page 40. Les pages marquées `noImage: true` sont rendues en texte seul.
+
+
+## V32 — démo joueurs jusqu’à la page 40
+- Page 4 sans image.
+- Marchand et forgeron ne sont proposés qu'une seule fois sur la place de Valombre.
+- L'achat des lames d'Élias se fait désormais directement sur la page 18, sans changement de page.
+- La table des pages de la démo est correctement limitée aux pages 1 à 40.
+
+
+## V33 — Visites uniques et checkpoint
+- Marchand, forgeron, personnages de rue et Élias ne sont plus revisitable après leur première scène, sauf futur embranchement narratif explicite.
+- Premier checkpoint déplacé à la page 20, à l’entrée de la grotte.

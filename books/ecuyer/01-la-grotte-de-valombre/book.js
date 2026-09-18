@@ -324,19 +324,58 @@ function combatRoundHtml(state, key, enemy) {
     </div>`;
 }
 
+function heroGender(state) {
+  return state.heroGender === 'male' ? 'male' : 'female';
+}
+
+function heroName(state) {
+  return heroGender(state) === 'male' ? 'Aubin' : 'Aélis';
+}
+
+function heroRank(state) {
+  return heroGender(state) === 'male'
+    ? 'Écuyer de Sir Aldren de Rochebrune'
+    : 'Écuyère de Sir Aldren de Rochebrune';
+}
+
+function heroPortraitFilename(state) {
+  return heroGender(state) === 'male'
+    ? 'La-Grotte-de-Valombre-Hero-Aubin.png'
+    : 'La-Grotte-de-Valombre-Hero-Aelis.png';
+}
+
+function setHeroIdentity(state, gender) {
+  state.heroGender = gender === 'male' ? 'male' : 'female';
+  state.heroName = state.heroGender === 'male' ? 'Aubin' : 'Aélis';
+}
+
 const STORY = {
   start: {
     sheet: true,
     number: 'FICHE DU HÉROS',
-    title: 'Ton personnage',
+    title: 'Choisis ton personnage',
     text: state => `
       <div class="hero-sheet">
-        <div class="hero-sheet-row">
-          <span class="hero-label">Nom</span>
-          <input id="heroNameInput" class="hero-name-input" type="text" maxlength="24"
-            placeholder="Ton nom" value="${escapeHtml(state.heroName || '')}">
+        <div class="hero-selection-title">Qui veux-tu incarner ?</div>
+        <div class="hero-selection-copy">Tu vivras la même aventure et disposeras des mêmes caractéristiques. Seuls ton identité et ton portrait changent.</div>
+
+        <div class="hero-choice-grid">
+          <label class="hero-choice-card ${heroGender(state) === 'female' ? 'selected' : ''}">
+            <input class="hero-gender-input" type="radio" name="heroGenderChoice" value="female" ${heroGender(state) === 'female' ? 'checked' : ''}>
+            <span class="hero-choice-portrait"><img src="./books/ecuyer/01-la-grotte-de-valombre/images/La-Grotte-de-Valombre-Hero-Aelis.png" alt="Portrait d’Aélis" onerror="this.parentElement.style.display='none'"></span>
+            <span class="hero-choice-name">Aélis</span>
+            <span class="hero-choice-rank">Écuyère de Sir Aldren de Rochebrune</span>
+          </label>
+          <label class="hero-choice-card ${heroGender(state) === 'male' ? 'selected' : ''}">
+            <input class="hero-gender-input" type="radio" name="heroGenderChoice" value="male" ${heroGender(state) === 'male' ? 'checked' : ''}>
+            <span class="hero-choice-portrait"><img src="./books/ecuyer/01-la-grotte-de-valombre/images/La-Grotte-de-Valombre-Hero-Aubin.png" alt="Portrait d’Aubin" onerror="this.parentElement.style.display='none'"></span>
+            <span class="hero-choice-name">Aubin</span>
+            <span class="hero-choice-rank">Écuyer de Sir Aldren de Rochebrune</span>
+          </label>
         </div>
-        <div class="hero-sheet-row"><span class="hero-label">Rang</span><span class="hero-value">Écuyer de Sir Aldren de Rochebrune</span></div>
+
+        <div class="hero-sheet-row"><span class="hero-label">Nom</span><span class="hero-value"><strong>${heroName(state)}</strong></span></div>
+        <div class="hero-sheet-row"><span class="hero-label">Rang</span><span class="hero-value">${heroRank(state)}</span></div>
         <div class="hero-sheet-row"><span class="hero-label">Style</span><span class="hero-value">Vif, prudent et observateur</span></div>
         <div class="hero-sheet-row"><span class="hero-label">Technique de bataille</span><span class="hero-value">Esquive, déplacement rapide et contre-attaque</span></div>
 
@@ -351,29 +390,28 @@ const STORY = {
 
         <div class="hero-characteristics">
           <div class="hero-info-title">Tes caractéristiques</div>
-          <p><strong>Vie :</strong> indique la santé du héros. Lorsqu’elle atteint zéro, ses forces le quittent.</p>
+          <p><strong>Vie :</strong> indique la santé du personnage. Lorsqu’elle atteint zéro, c’est la fin de votre aventure.</p>
           <p><strong>Protection :</strong> provient de certaines pièces d’équipement. Elle absorbe les dégâts avant la Vie et diminue lorsqu’elle encaisse un choc.</p>
           <p><strong>Chance :</strong> permet de se sortir habilement d’un mauvais tour ou d’une situation qui semblait mal engagée.</p>
-          <p><strong>Force :</strong> représente la puissance physique du héros. Elle contribue aux dégâts qu’il inflige et lui permet de forcer, retenir ou briser ce qui lui barre la route.</p>
-          <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. La Dextérité du héros peut être affectée par ce qu’il porte, par exemple une arme lourde.</p>
-          <p><strong>Puissance de l’arme :</strong> valeur propre à l’arme équipée. Elle s’ajoute au bonus de Force lorsque le héros remporte un échange.</p>
+          <p><strong>Force :</strong> représente sa puissance physique. Elle contribue aux dégâts infligés et permet de forcer, retenir ou briser ce qui barre la route.</p>
+          <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. Elle peut être affectée par ce qui est porté, par exemple une arme lourde.</p>
+          <p><strong>Puissance de l’arme :</strong> valeur propre à l’arme équipée. Elle s’ajoute au bonus de Force lorsque le personnage remporte un échange.</p>
         </div>
 
         <div class="combat-rules-card">
           <div class="combat-rules-title">Règles des combats</div>
-          <p><strong>Combats :</strong> héros et adversaire lancent chacun 2 dés et ajoutent leur Dextérité.<br>Le meilleur score remporte l’échange.<br>En cas d’égalité, personne n’est blessé.<br>Le gagnant inflige son <strong>bonus de Force + la Puissance de son arme</strong> s’il en possède une.<br><span class="combat-detail">Bonus de Force = Force ÷ 4, arrondi à l’inférieur, avec un minimum de 1.</span></p>
+          <p><strong>Combats :</strong> personnage et adversaire lancent chacun 2 dés et ajoutent leur Dextérité.<br>Le meilleur score remporte l’échange.<br>En cas d’égalité, personne n’est blessé.<br>Le gagnant inflige son <strong>bonus de Force + la Puissance de son arme</strong> s’il en possède une.<br><span class="combat-detail">Bonus de Force = Force ÷ 4, arrondi à l’inférieur, avec un minimum de 1.</span></p>
         </div>
 
         <div class="hero-weapon">Au départ, tu ne portes encore aucune arme.</div>
       </div>
-      <p>Sir Aldren t’a ordonné de rester au village. Pourtant, la nuit est tombée depuis longtemps et son cheval vient de revenir seul.</p>
+      <p>Sir Aldren t’a ordonné de rester au village. Pourtant, il aurait déjà dû être revenu, et son cheval vient de rentrer seul.</p>
     `,
-    choices: [{ label: 'Commencer l’aventure', to: 'c1' }]
+    choices: [{ label: 'Commencer l’aventure', to: 'c1', effect: s => setHeroIdentity(s, heroGender(s)) }]
   },
-
   c1: {
     number: 'PAGE 1',
-    title: 'Le cheval revenu seul',
+    title: 'Les écuries de Valombre',
     image: 'Le cheval revenu seul',
     onEnter: s => equipHeavySword(s),
     text: state => `
@@ -403,7 +441,7 @@ const STORY = {
 
   c2: {
     number: 'PAGE 2',
-    title: 'La sacoche de Sir Aldren',
+    title: '',
     image: 'La sacoche de Sir Aldren',
     onEnter: s => {
       if (!s.flags.sacocheFouillee) {
@@ -412,25 +450,27 @@ const STORY = {
         addItem(
           s,
           'parchemin',
-          'Parchemin ancien',
-          'Un fragment ancien découvert dans les affaires de Sir Aldren. Il peut être relu quand tu veux.'
+          'Notes d’Aldren',
+          'Une feuille couverte de mots griffonnés à la hâte par Sir Aldren. Elle peut être relue quand tu veux.'
         );
       }
     },
     text: state => `
-      <p>Tu ouvres la sacoche. À l’intérieur, tu trouves <strong>trois pièces d’argent</strong>, une petite <strong>fiole rouge sombre</strong> et un morceau de parchemin plié plusieurs fois.</p>
-      <p>Le papier paraît beaucoup plus ancien que le reste. Certaines lettres sont presque effacées.</p>
+      <p>Tu ouvres la sacoche. À l’intérieur, tu trouves <strong>trois pièces d’argent</strong>, une petite <strong>fiole rouge sombre</strong> et une feuille pliée plusieurs fois.</p>
+      <p>Le papier est couvert de mots griffonnés à la hâte. Certaines lignes se chevauchent. D’autres sont à peine lisibles.</p>
 
       <div class="parchment-verse">
-        <strong>L’œil qui dort doit demeurer fermé,</strong><br>
-        <strong>Car nul vivant ne doit le réveiller.</strong><br><br>
-        <strong>Là où le soufre vient empoisonner l’air,</strong><br>
-        <strong>Détourne tes pas et rebrousse en arrière.</strong><br><br>
-        <strong>Lorsque les liens ne pourront plus céder,</strong><br>
-        <strong>Cherche la lame noire : elle seule peut libérer.</strong>
+        <strong>N’OUVRE JAMAIS L’ŒIL QUI DORT</strong><br><br>
+        <s><strong>SOUFFRE</strong></s><br>
+        <span>Le mot a été barré trois fois. À côté, une petite tête de mort a été dessinée d’un trait nerveux.</span><br><br>
+        <strong>IL FAUT TROUVER LA LAME NOIRE !!!</strong><br><br>
+        <em>attention à ce qui se cache derrière les parois</em><br><br>
+        <strong>TERRE NOIRE</strong> · terre noire · <strong>TERRE NOIRE</strong> · terre noire
       </div>
 
-      <p>Tu plies soigneusement le parchemin et le ranges dans ton inventaire. Tu pourras désormais le relire quand tu le souhaites.</p>
+      <p>Le mot <strong>terre noire</strong> revient encore dans les marges, parfois écrit plus gros, parfois repassé plusieurs fois.</p>
+      <p>Tu replies la feuille. Quoi qu’Aldren ait voulu noter, il ne semble pas avoir eu le temps de mettre ses idées en ordre.</p>
+      <p>Tu ranges ses notes dans ton inventaire. Tu pourras les relire quand tu le souhaites.</p>
       ${hasItem(state,'fiole_rouge') || state.flags.fioleLaissee
         ? '<p>Tu as déjà décidé quoi faire de la mystérieuse fiole rouge.</p>'
         : '<p>La fiole rouge reste entre tes mains. Tu ignores encore ce qu’elle contient.</p>'}
@@ -455,24 +495,39 @@ const STORY = {
     number: 'PAGE 3',
     title: 'La place de Valombre',
     image: 'La place de Valombre',
-    text: `
-      <p>La place de Valombre est presque déserte. Les volets se ferment les uns après les autres.</p>
-      <p>Sous son auvent, le <strong>marchand</strong> termine de ranger ses affaires. Dans la forge, une lueur rouge éclaire encore les murs.</p>
-      <p>Plus loin, dans l’ombre d’une ruelle, une étrange silhouette semble parler toute seule.</p>
-      <p>Tu peux rencontrer qui tu veux — ou quitter le village immédiatement.</p>
-    `,
-    choices: [
-      { label: 'Voir le marchand', to: 'c4' },
-      { label: 'Voir le forgeron', to: 'c5' },
-      { label: 'Approcher la personne dans la ruelle', to: 'c6' },
-      { label: 'Partir vers la grotte', to: 'c8' }
-    ]
+    text: state => {
+      const details = [];
+      if (!state.flags.merchantVisited) {
+        details.push('<p>Sous son auvent, le <strong>marchand</strong> termine de ranger ses affaires.</p>');
+      }
+      if (!state.flags.blacksmithVisited) {
+        details.push('<p>Dans la forge, une lueur rouge éclaire encore les murs.</p>');
+      }
+      if (!state.flags.valombreStreetVisited) {
+        details.push('<p>Plus loin, dans l’ombre d’une ruelle, une étrange silhouette semble parler toute seule.</p>');
+      }
+      return `
+        <p>La place de Valombre est presque déserte. Les volets se ferment les uns après les autres.</p>
+        ${details.join('')}
+        <p>Tu peux encore prendre le temps de faire ce qui te semble utile — ou quitter le village.</p>
+      `;
+    },
+    choices: state => {
+      const list = [];
+      if (!state.flags.merchantVisited) list.push({ label: 'Voir le marchand', to: 'c4' });
+      if (!state.flags.blacksmithVisited) list.push({ label: 'Voir le forgeron', to: 'c5' });
+      if (!state.flags.valombreStreetVisited) list.push({ label: 'Approcher la personne dans la ruelle', to: 'c6' });
+      list.push({ label: 'Partir vers la grotte', to: 'c8' });
+      return list;
+    }
   },
 
   c4: {
     number: 'PAGE 4',
-    title: 'Le marchand',
+    title: '',
+    noImage: true,
     image: 'Le marchand de Valombre',
+    onEnter: s => { s.flags.merchantVisited = true; },
     text: state => {
       if (hasItem(state,'potion_guerison')) {
         return `
@@ -517,8 +572,9 @@ const STORY = {
 
   c5: {
     number: 'PAGE 5',
-    title: 'Le forgeron',
+    title: 'La forge',
     image: 'Le forgeron de Valombre',
+    onEnter: s => { s.flags.blacksmithVisited = true; },
     text: state => `
       <p>Le forgeron lève immédiatement les yeux lorsque tu entres.</p>
 
@@ -578,8 +634,9 @@ const STORY = {
 
   c6: {
     number: 'PAGE 6',
-    title: 'La silhouette dans la ruelle',
+    title: 'La ruelle',
     image: 'La silhouette dans la ruelle',
+    onEnter: s => { s.flags.valombreStreetVisited = true; },
     text: `
       <p>Tu t’approches de la personne étrangement accoudée contre le mur.</p>
       <p>Elle semble parler seule, marmonnant quelque chose dans sa barbe. Sa silhouette est si maigre qu’elle paraît presque déformée.</p>
@@ -594,7 +651,7 @@ const STORY = {
 
   c7: {
     number: 'PAGE 7',
-    title: 'Ils arrivent',
+    title: '',
     image: 'Les yeux du fou',
     onEnter: s => { s.flags.avertissementSoufre = true; },
     text: `
@@ -649,11 +706,10 @@ const STORY = {
     text: `
       <p>Tu quittes Valombre.</p>
 
-      <p>À mesure que tu t’éloignes du village, les dernières lumières disparaissent derrière les arbres.</p>
+      <p>À mesure que tu t’éloignes du village, Valombre disparaît derrière les arbres.</p>
+      <p>Devant toi, le chemin devient plus sauvage, plus silencieux.</p>
 
       <p>Le chemin monte lentement vers les collines.</p>
-
-      <p>Au bout d’une demi-heure, la lune apparaît entre deux masses de nuages et éclaire brièvement le sentier.</p>
 
       <p>C’est alors que tu aperçois quelque chose sur le bas-côté.</p>
 
@@ -676,7 +732,7 @@ const STORY = {
 
   c9: {
     number: 'PAGE 9',
-    title: 'L’homme au bord du chemin',
+    title: '',
     image: 'L’homme au bord du chemin',
     text: `
       <p>Tu t’approches lentement.</p>
@@ -756,7 +812,7 @@ const STORY = {
 
   c10: {
     number: 'PAGE 10',
-    title: 'Le dernier réflexe',
+    title: '',
     image: 'Le dernier réflexe',
     text: `
       <p>Tu t’accroupis à côté de lui.</p>
@@ -795,7 +851,7 @@ const STORY = {
 
   c11: {
     number: 'PAGE 11',
-    title: 'Le coup',
+    title: '',
     image: 'Le coup',
     text: `
       <p>Tu tires brusquement ton bras et frappes.</p>
@@ -835,11 +891,9 @@ const STORY = {
 
   c12: {
     number: 'PAGE 12',
-    title: 'Une voix sous la terre',
+    title: '',
+    noImage: true,
     image: 'Une voix sous la terre',
-    onEnter: s => {
-      s.dexPenalty = Math.min(6, (s.dexPenalty || 0) + 1);
-    },
     text: state => `
       <p>Tu maintiens son poignet.</p>
 
@@ -869,8 +923,6 @@ const STORY = {
 
       <p>La douleur est vive.</p>
 
-      <p><strong>Ta Dextérité diminue de 1 point.</strong></p>
-
       <p>Lorsque tu parviens enfin à rouvrir les yeux, Gaspard ne bouge plus.</p>
 
       <p>Sa tête est retombée lourdement en arrière.</p>
@@ -887,7 +939,7 @@ const STORY = {
     `,
     choices: state => {
       if (!hasDamageRoll(state, 'c12')) {
-        return [{ label: 'Lancer le dé de blessure', action: 'damage', damageKey: 'c12' }];
+        return [{ label: 'Lancer le dé à 3 faces de blessure', action: 'damage', damageKey: 'c12', damageSides: 3 }];
       }
       if (state.hp <= 0) return fatalChoices();
       return [
@@ -900,7 +952,7 @@ const STORY = {
 
   c13: {
     number: 'PAGE 13',
-    title: 'Les affaires de Gaspard Vellin',
+    title: '',
     image: 'Les affaires de Gaspard Vellin',
     onEnter: s => {
       if (!s.flags.gaspardFouille) {
@@ -960,109 +1012,106 @@ const STORY = {
 
       <p>Le sentier descend rapidement entre les arbres.</p>
 
-      <p>Tu connais cette forêt.</p>
+      <p>Tu connais cette forêt. Enfant, tu l’as traversée plusieurs fois pour rejoindre Rochebrume.</p>
 
-      <p>Ou du moins, tu croyais la connaître.</p>
+      <p>Pourtant, ce soir, elle ne correspond plus tout à fait à ton souvenir.</p>
 
-      <p>Lorsque tu étais enfant, tu l’as traversée plusieurs fois pour rejoindre Rochebrume.</p>
+      <p>Les arbres paraissent trop proches les uns des autres. Leurs troncs se courbent selon des angles étranges, comme s’ils avaient lentement poussé autour de quelque chose enfoui sous la terre.</p>
 
-      <p>Elle n’avait rien de remarquable.</p>
+      <p>Au-dessus de toi, les branches s’entrecroisent jusqu’à presque faire disparaître le ciel.</p>
 
-      <p>Des chênes.</p>
+      <p>Même les distances te troublent. Un arbre que tu crois proche semble reculer à mesure que tu avances.</p>
 
-      <p>Des hêtres.</p>
+      <p>Tu continues sans t’attarder.</p>
 
-      <p>Quelques chemins de chasse.</p>
+      <p>Quelques minutes plus tard, les premières maisons de Rochebrume apparaissent enfin entre les troncs.</p>
 
-      <p>Pourtant, ce soir, quelque chose ne correspond pas à ton souvenir.</p>
-
-      <p>Les arbres paraissent trop proches les uns des autres.</p>
-
-      <p>Leurs troncs poussent selon des angles étranges, comme s’ils s’étaient lentement courbés pour éviter quelque chose situé sous la terre.</p>
-
-      <p>Certaines branches s’entrecroisent si étroitement au-dessus de toi qu’elles dissimulent presque entièrement le ciel.</p>
-
-      <p>Même les distances semblent fausses.</p>
-
-      <p>Un arbre que tu pensais à quelques pas demande une minute entière de marche pour être atteint.</p>
-
-      <p>Puis tu entends un oiseau.</p>
-
-      <p>Trois notes.</p>
-
-      <p>Toujours les mêmes.</p>
-
-      <p>Trois notes espacées exactement de la même manière.</p>
-
-      <p>Encore.</p>
-
-      <p>Encore.</p>
-
-      <p>Encore.</p>
-
-      <p>Tu t’arrêtes.</p>
-
-      <p>Le chant continue.</p>
-
-      <p>Mais tu réalises alors quelque chose qui te glace.</p>
-
-      <p>Le son ne vient jamais du même endroit.</p>
-
-      <p>Il se déplace autour de toi sans que rien ne vole entre les branches.</p>
-
-      <p>Tu reprends ta marche.</p>
-
-      <p>Tu ne regardes plus derrière toi.</p>
-
-      <p>Quelques minutes plus tard, les premières maisons de Rochebrume apparaissent enfin.</p>
-
-      <p>Et là encore…</p>
-
-      <p>quelque chose ne va pas.</p>
+      <p>Et là encore, quelque chose ne va pas.</p>
     `,
-    choices: [
-      { label: 'Entrer dans Rochebrume', to: 'c15' }
-    ]
+    choices: [{ label: 'Entrer dans Rochebrume', to: 'c15' }]
   },
 
   c15: {
     number: 'PAGE 15',
     title: 'Rochebrume',
     image: 'Rochebrume',
-    text: `
-      <p>Le village est désert.</p>
+    text: state => {
+      if (state.flags.strangerGone) {
+        return `
+          <p>La rue de Rochebrume est toujours aussi vide.</p>
 
-      <p>Pas silencieux.</p>
+          <p>Au croisement, là où se tenait l’étranger quelques instants plus tôt, il n’y a plus personne.</p>
 
-      <p><strong>Désert.</strong></p>
+          <p>Seulement la route vide.</p>
+        `;
+      }
+      if (state.flags.eliasVisited) {
+        return `
+          <p>Le village est toujours désert.</p>
 
-      <p>Une porte est ouverte.</p>
+          <p>Tu as déjà parlé à Élias. Plus loin, la personne aperçue dans la rue est encore là.</p>
 
-      <p>Une brouette a été abandonnée au milieu de la rue.</p>
+          <p>Rien d’autre ne semble devoir te retenir ici.</p>
+        `;
+      }
+      return `
+        <p>Le village est désert.</p>
 
-      <p>Du linge pend encore entre deux maisons.</p>
+        <p>Pas silencieux.</p>
 
-      <p>Sur une table, devant une habitation, une miche de pain a été laissée à moitié coupée.</p>
+        <p><strong>Désert.</strong></p>
 
-      <p>Comme si tous les habitants avaient simplement cessé ce qu’ils faisaient.</p>
+        <p>Une porte est ouverte.</p>
 
-      <p>Tu aperçois cependant deux signes de vie.</p>
+        <p>Une brouette a été abandonnée au milieu de la rue.</p>
 
-      <p>La taverne de Gaspard Vellin est encore ouverte.</p>
+        <p>Du linge pend encore entre deux maisons.</p>
 
-      <p>Et plus loin, une personne se tient seule au milieu de la rue.</p>
-    `,
-    choices: [
-      { label: 'Entrer dans la taverne de Gaspard', to: 'c16' },
-      { label: 'Parler à la personne dans la rue', to: 'c19' }
-    ]
+        <p>Sur une table, devant une habitation, une miche de pain a été laissée à moitié coupée.</p>
+
+        <p>Comme si tous les habitants avaient simplement cessé ce qu’ils faisaient.</p>
+
+        <p>Tu aperçois cependant deux signes de vie.</p>
+
+        <p>La taverne de Gaspard Vellin est encore ouverte.</p>
+
+        <p>Et plus loin, une personne se tient seule au milieu de la rue.</p>
+      `;
+    },
+    choices: state => {
+      const list = [];
+      if (!state.flags.eliasVisited) {
+        list.push({ label: 'Entrer dans la taverne de Gaspard', to: 'c16' });
+      }
+      if (!state.flags.strangerGone) {
+        list.push({ label: 'Parler à la personne dans la rue', to: 'c19' });
+      }
+      if (state.flags.eliasVisited || state.flags.strangerGone) {
+        list.push({ label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' });
+      }
+      return list;
+    }
   },
 
   c16: {
     number: 'PAGE 16',
     title: 'La taverne',
+    noImage: true,
     image: 'La taverne de Rochebrume',
-    text: `
+    onEnter: s => { s.flags.eliasVisited = true; },
+    text: state => state.flags.gaspardDeathAnnounced ? `
+      <p>Tu pousses de nouveau la porte de la taverne.</p>
+
+      <p>Élias est toujours derrière le comptoir.</p>
+
+      <p>Il a cessé de trembler, mais son visage s’est fermé.</p>
+
+      <p>Lorsqu’il te voit revenir, il relève les yeux un instant.</p>
+
+      <p>Il ne te demande rien.</p>
+
+      <p>Le silence entre vous suffit.</p>
+    ` : `
       <p>Tu pousses la porte.</p>
 
       <p>Un jeune homme lève immédiatement les yeux.</p>
@@ -1087,16 +1136,37 @@ const STORY = {
 
       <blockquote>« Avec lui, ça ne veut pas forcément dire grand-chose. Quand il trouve quelqu’un avec qui boire, il oublie parfois jusqu’au chemin de sa propre maison. »</blockquote>
     `,
-    choices: [
-      { label: 'Lui annoncer que Gaspard est mort', to: 'c17' },
-      { label: 'Ne rien lui dire', to: 'c18' }
-    ]
+    choices: state => {
+      if (state.flags.gaspardDeathAnnounced) {
+        const list = [];
+        if (!state.flags.eliasBladesPurchased) {
+          list.push({ label: 'Lui demander s’il a quelque chose qui pourrait t’aider pour la montagne', to: 'c18' });
+        }
+        if (!state.flags.strangerGone) {
+          list.push({ label: 'Aller parler à la personne dans la rue', to: 'c19' });
+        }
+        list.push({ label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' });
+        return list;
+      }
+      if (state.flags.eliasBladesPurchased) {
+        return [
+          { label: 'Lui annoncer que Gaspard est mort', to: 'c17' },
+          { label: 'Ne rien ajouter et retourner dans la rue', to: 'c15' },
+          { label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' }
+        ];
+      }
+      return [
+        { label: 'Lui annoncer que Gaspard est mort', to: 'c17' },
+        { label: 'Ne rien lui dire', to: 'c18' }
+      ];
+    }
   },
 
   c17: {
     number: 'PAGE 17',
-    title: 'La nouvelle',
+    title: '',
     image: 'La nouvelle',
+    onEnter: s => { s.flags.gaspardDeathAnnounced = true; },
     text: `
       <p>Tu lui expliques ce que tu as trouvé sur le chemin.</p>
 
@@ -1136,17 +1206,49 @@ const STORY = {
 
       <p>Il refuse désormais de répondre.</p>
     `,
-    choices: [
-      { label: 'Aller parler à la personne dans la rue', to: 'c19' },
-      { label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' }
-    ]
+    choices: state => {
+      const list = [];
+      if (!state.flags.strangerGone) {
+        list.push({ label: 'Aller parler à la personne dans la rue', to: 'c19' });
+      }
+      list.push({ label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' });
+      return list;
+    }
   },
 
   c18: {
     number: 'PAGE 18',
-    title: 'Les lames d’Élias',
+    title: '',
     image: 'Les lames d’Élias',
-    text: state => `
+    text: state => state.flags.eliasBladesPurchased ? `
+      <p>Élias enveloppe soigneusement les lames dans un morceau de cuir avant de te les tendre.</p>
+
+      <blockquote>« Garde-les à portée de main. »</blockquote>
+
+      <p>Tu possèdes maintenant <strong>${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet</strong>.</p>
+
+      <p>Élias referme le tiroir. Il ne t’en proposera pas davantage.</p>
+    ` : state.flags.gaspardDeathAnnounced ? `
+      <p>Tu t’apprêtes à repartir.</p>
+
+      <p>Le regard d’Élias tombe sur ton épée.</p>
+
+      <blockquote>« Attends. »</blockquote>
+
+      <p>Il hésite, puis ouvre un tiroir sous le comptoir.</p>
+
+      <p>Plusieurs petites lames sont soigneusement alignées à l’intérieur.</p>
+
+      <blockquote>« Gaspard gardait ça pour les voyageurs. »</blockquote>
+
+      <blockquote>« Ça ne tue pas grand-chose, mais lancé au visage, ça peut te donner quelques secondes. »</blockquote>
+
+      <p>Il garde les yeux sur les lames.</p>
+
+      <blockquote>« Une pièce d’or la lame. »</blockquote>
+
+      <p><strong>Tu possèdes ${state.goldCoins} pièce${state.goldCoins > 1 ? 's' : ''} d’or.</strong></p>
+    ` : `
       <p>Tu ne lui dis rien.</p>
 
       <p>Élias soupire.</p>
@@ -1168,16 +1270,24 @@ const STORY = {
       <p><strong>Tu possèdes ${state.goldCoins} pièce${state.goldCoins > 1 ? 's' : ''} d’or.</strong></p>
     `,
     choices: state => {
+      if (state.flags.eliasBladesPurchased) {
+        return [
+          { label: 'Retourner dans la rue', to: 'c15' },
+          { label: 'Repartir vers la grotte', to: 'c20' }
+        ];
+      }
+
       const list = [];
       const maxBuy = Math.min(3, state.goldCoins);
 
       for (let qty = 1; qty <= maxBuy; qty++) {
         list.push({
           label: `Acheter ${qty} lame${qty > 1 ? 's' : ''} de jet — ${qty} pièce${qty > 1 ? 's' : ''} d’or`,
-          to: 'c43',
+          stay: true,
           effect: s => {
             s.goldCoins -= qty;
             s.throwingBlades += qty;
+            s.flags.eliasBladesPurchased = true;
             syncThrowingBlades(s);
           }
         });
@@ -1194,30 +1304,23 @@ const STORY = {
 
   c19: {
     number: 'PAGE 19',
-    title: 'L’étranger',
+    title: '',
     image: 'L’étranger de Rochebrume',
+    onEnter: s => { s.flags.strangerGone = true; },
     text: `
       <p>La personne se tient toujours au milieu de la rue.</p>
 
-      <p>En t’approchant, tu éprouves immédiatement une sensation étrange.</p>
+      <p>L’homme doit avoir une quarantaine d’années. Des cheveux sombres, une barbe de quelques jours, un manteau couvert de poussière.</p>
 
-      <p>Tu connais cet homme.</p>
+      <p>Rien chez lui ne paraît particulièrement remarquable.</p>
 
-      <p>Tu en es presque certain.</p>
+      <p>Pourtant, lorsque tu détournes les yeux une seconde, tu t’aperçois que tu serais incapable de décrire son visage.</p>
 
-      <p>Pourtant, impossible de te souvenir d’où.</p>
+      <p>Tu le regardes de nouveau.</p>
 
-      <p>Son visage ne possède rien de remarquable.</p>
+      <p>Tout est là. Les yeux, le nez, la bouche.</p>
 
-      <p>Une quarantaine d’années.</p>
-
-      <p>Des cheveux sombres.</p>
-
-      <p>Une barbe de quelques jours.</p>
-
-      <p>Un manteau poussiéreux.</p>
-
-      <p>Et pourtant chaque fois que tu détournes légèrement les yeux, tu es incapable de te rappeler précisément ses traits.</p>
+      <p>Mais dès que ton regard s’en éloigne, les détails disparaissent presque aussitôt de ta mémoire.</p>
 
       <p>Lui te regarde avec méfiance.</p>
 
@@ -1253,16 +1356,6 @@ const STORY = {
 
       <blockquote>« Mais je crois que je vais repartir plus tôt que prévu. »</blockquote>
 
-      <p>Tu observes encore son visage.</p>
-
-      <p>Cette impression de déjà-vu ne disparaît pas.</p>
-
-      <p>Au contraire.</p>
-
-      <p>Elle devient presque douloureuse.</p>
-
-      <p>Comme un souvenir que ton esprit refuse obstinément de laisser remonter.</p>
-
       <p>L’homme te salue et s’éloigne.</p>
 
       <p>Tu le regardes tourner au coin d’une maison.</p>
@@ -1272,10 +1365,15 @@ const STORY = {
       <p>Il n’y a personne.</p>
 
       <p>Seulement la route vide.</p>
-    `,    choices: [
-      { label: 'Entrer dans la taverne de Gaspard avant de repartir', to: 'c16' },
-      { label: 'Repartir vers la grotte', to: 'c20' }
-    ]
+    `,
+    choices: state => {
+      const list = [];
+      if (!state.flags.eliasVisited) {
+        list.push({ label: 'Entrer dans la taverne de Gaspard avant de repartir', to: 'c16' });
+      }
+      list.push({ label: 'Repartir vers la grotte', to: 'c20' });
+      return list;
+    }
   },
 
   c20: {
@@ -1308,7 +1406,7 @@ const STORY = {
 
   c21: {
     number: 'PAGE 21',
-    title: 'Le souffle acide',
+    title: '',
     image: 'Le souffle acide',
     text: `
       <p>Tu t’enfonces dans le passage qui descend.</p>
@@ -1341,7 +1439,7 @@ const STORY = {
 
       <p>Personne ne viendra te chercher.</p>
     `,    choices: [
-      { label: 'Reprendre à la sortie du village', action: 'checkpoint' },
+      { label: 'Reprendre à l’entrée de la grotte', action: 'checkpoint' },
       { label: 'Recommencer depuis le début', action: 'restart' }
     ]
   },
@@ -1375,7 +1473,7 @@ const STORY = {
 
   c23: {
     number: 'PAGE 23',
-    title: 'La fuite',
+    title: '',
     image: 'La fuite',
     text: `
       <p>Tu fais demi-tour et détales sans réfléchir.</p>
@@ -1396,14 +1494,14 @@ const STORY = {
 
       <p>Finalement, tu redescends jusqu’au village, te caches dans l’écurie et attends que le temps passe… en espérant que la mort finira par tout faire taire.</p>
     `,    choices: [
-      { label: 'Reprendre à la sortie du village', action: 'checkpoint' },
+      { label: 'Reprendre à l’entrée de la grotte', action: 'checkpoint' },
       { label: 'Recommencer depuis le début', action: 'restart' }
     ]
   },
 
   c24: {
     number: 'PAGE 24',
-    title: 'Le grondement dans l’ombre',
+    title: '',
     image: 'Le grondement dans l’ombre',
     text: state => `
       <p>Tu te tournes vers le grondement, l’épée prête.</p>
@@ -1433,7 +1531,7 @@ const STORY = {
 
   c25: {
     number: 'PAGE 25',
-    title: 'La lame de jet',
+    title: '',
     image: 'La lame de jet',
     text: state => {
       const combat = combatState(state, 'shadowMass', ENEMIES.shadowMass);
@@ -1451,7 +1549,7 @@ const STORY = {
 
   c26: {
     number: 'PAGE 26',
-    title: 'Le choc',
+    title: '',
     image: 'Le choc',
     text: state => `
       <p>La masse se jette sur toi.</p>
@@ -1463,7 +1561,7 @@ const STORY = {
 
   c27: {
     number: 'PAGE 27',
-    title: 'Le résultat du combat',
+    title: '',
     image: 'Le résultat du combat',
     text: state => {
       const combat = combatState(state, 'shadowMass', ENEMIES.shadowMass);
@@ -1607,7 +1705,7 @@ const STORY = {
 
   c29: {
     number: 'PAGE 29',
-    title: 'Le deuxième échange',
+    title: '',
     image: 'Le deuxième échange',
     text: `
       <p>La créature a encaissé ton premier coup.</p>
@@ -1631,7 +1729,7 @@ const STORY = {
 
   c30: {
     number: 'PAGE 30',
-    title: 'Le journal d’Anselme',
+    title: '',
     image: 'Le journal d’Anselme',
     text: state => `
       <p>Tu laisses Anselme près du feu et t’approches de l’ancien campement.</p>
@@ -1673,7 +1771,7 @@ const STORY = {
       if (!hasItem(state, 'casque_cabosse')) {
         list.push({
           label: 'Ramasser le casque cabossé (+2 Protection)',
-          to: 'c28',
+          stay: true,
           effect: s => addProtectiveItem(s, 'casque_cabosse', 'Casque cabossé', 'Un casque de fer ancien mais encore solide. Il peut absorber 2 points de dégâts avant ta Vie.', 2)
         });
       }
@@ -1687,6 +1785,7 @@ const STORY = {
   c31: {
     number: 'PAGE 31',
     title: 'La galerie condamnée',
+    noImage: true,
     image: 'La galerie condamnée',
     text: state => `
       <p>Tu t’engages dans la galerie de droite.</p>
@@ -1710,13 +1809,14 @@ const STORY = {
             : 'force_fail';
         }
       },
-      { label: 'Ne pas prendre le risque et revenir au camp', to: 'c28' }
+      { label: 'Ne pas prendre le risque et poursuivre vers les profondeurs', to: 'c37' }
     ]
   },
 
   c32: {
     number: 'PAGE 32',
-    title: 'La pierre',
+    title: '',
+    noImage: true,
     image: 'La pierre',
     onEnter: s => {
       if (s.lastCombatOutcome === 'force_success' && !s.flags.brassardPris) {
@@ -1767,14 +1867,13 @@ const STORY = {
       `;
     },
     choices: [
-      { label: 'Revenir au camp d’Anselme', to: 'c28' },
       { label: 'Poursuivre vers les profondeurs', to: 'c37' }
     ]
   },
 
   c33: {
     number: 'PAGE 33',
-    title: 'La fin du combat',
+    title: '',
     image: 'La fin du combat',
     text: state => {
       const r = diceResultHtml(state);
@@ -1842,6 +1941,7 @@ const STORY = {
   c34: {
     number: 'PAGE 34',
     title: 'Le tunnel voisin',
+    noImage: true,
     image: 'Le tunnel voisin',
     text: `
       <p>Tu laisses la lumière du feu derrière toi et t’engages dans le tunnel voisin.</p>
@@ -1881,7 +1981,8 @@ const STORY = {
 
   c35: {
     number: 'PAGE 35',
-    title: 'Une voix humaine',
+    title: '',
+    noImage: true,
     image: 'Une voix humaine',
     text: `
       <p>Tu restes à plusieurs pas de la silhouette.</p>
@@ -1923,7 +2024,7 @@ const STORY = {
 
   c36: {
     number: 'PAGE 36',
-    title: 'Sous la terre noire',
+    title: '',
     image: 'Sous la terre noire',
     text: state => `
       <p>Tu avances lentement, les mains bien visibles.</p>
@@ -1984,11 +2085,11 @@ const STORY = {
 
       <p>Quelque chose de pâle apparaît dans la fente.</p>
 
-      <p>Ton premier réflexe est d’y voir un œil.</p>
+      <p>Cela ressemble fortement à un œil qui te fixe. Un regard glacé, étrangement immobile.</p>
 
-      <p>Mais lorsque tu cherches une paupière, une pupille, quoi que ce soit qui confirmerait cette idée, la chose se retire.</p>
+      <p>Mais tu n’en es pas certain.</p>
 
-      <p>Tu n’es plus certain d’avoir vu un œil du tout.</p>
+      <p>La chose se retire avant que tu puisses comprendre ce que tu as réellement vu.</p>
 
       <p>D’autres frottements lui répondent plus loin.</p>
 
@@ -2011,7 +2112,7 @@ const STORY = {
 
   c38: {
     number: 'PAGE 38',
-    title: 'Ce qui restait de lui',
+    title: '',
     image: 'Ce qui restait de lui',
     text: state => {
       const combat = combatState(state, 'rochebrumeMissing', ENEMIES.rochebrumeMissing);
@@ -2078,7 +2179,8 @@ const STORY = {
 
   c39: {
     number: 'PAGE 39',
-    title: 'Ce qui vit entre les pierres',
+    title: '',
+    noImage: true,
     image: 'Ce qui vit entre les pierres',
     text: state => {
       const r = diceResultHtml(state);
@@ -2186,11 +2288,11 @@ const STORY = {
       <p>Tu ne pourras pas explorer les trois.</p>
 
       <p>Il faut choisir.</p>
+
+      <p class="ending">FIN DE CETTE VERSION D’ESSAI</p>
     `,
     choices: [
-      { label: 'Descendre vers le lac noir', to: 'c41' },
-      { label: 'Prendre l’escalier de pierre', to: 'c44' },
-      { label: 'Longer la corniche vers le pont', to: 'c55' }
+      { label: 'Recommencer l’aventure', action: 'restart' }
     ]
   },
 
@@ -2266,7 +2368,7 @@ const STORY = {
 
   c42: {
     number: 'PAGE 42',
-    title: 'Un visage sous l’eau',
+    title: '',
     image: 'Un visage sous l’eau',
     onEnter: s => { s.flags.lookedIntoLake = true; },
     text: `
@@ -2317,7 +2419,7 @@ const STORY = {
 
   c43: {
     number: 'PAGE 43',
-    title: 'Les lames dans la poche',
+    title: '',
     image: 'Les lames dans la poche',
     text: state => `
       <p>Élias enveloppe soigneusement les lames dans un morceau de cuir avant de te les tendre.</p>
@@ -2334,7 +2436,7 @@ const STORY = {
 
   c44: {
     number: 'PAGE 44',
-    title: 'Les marches déformées',
+    title: 'Les Grandes Marches',
     image: 'Les marches déformées',
     onEnter: s => { s.flags.worldRoute = 'stairs'; },
     text: state => `
@@ -2381,7 +2483,7 @@ const STORY = {
 
   c45: {
     number: 'PAGE 45',
-    title: 'Quelque chose sous la coque',
+    title: '',
     image: 'Quelque chose sous la coque',
     text: state => `
       <p>Tu reprends les rames.</p>
@@ -2431,7 +2533,7 @@ const STORY = {
 
   c46: {
     number: 'PAGE 46',
-    title: 'Le lac se referme',
+    title: '',
     image: 'Le lac se referme',
     text: state => {
       const r = diceResultHtml(state);
@@ -2640,7 +2742,7 @@ const STORY = {
 
   c49: {
     number: 'PAGE 49',
-    title: 'La paroi friable',
+    title: '',
     image: 'La paroi friable',
     text: state => {
       const r = diceResultHtml(state);
@@ -2684,7 +2786,7 @@ const STORY = {
 
   c50: {
     number: 'PAGE 50',
-    title: 'Les bâtisseurs',
+    title: '',
     image: 'Les bâtisseurs',
     text: `
       <p>L’escalier débouche sur une terrasse verticale taillée dans la falaise.</p>
@@ -2732,7 +2834,7 @@ const STORY = {
 
   c51: {
     number: 'PAGE 51',
-    title: 'La petite lame noire',
+    title: '',
     image: 'La petite lame noire',
     text: `
       <p>La fresque suivante est beaucoup plus petite.</p>
@@ -2751,9 +2853,9 @@ const STORY = {
 
       <p>Mais elle est toujours humaine.</p>
 
-      <p>Tu repenses au parchemin trouvé dans la sacoche d’Aldren.</p>
+      <p>Tu repenses aux mots griffonnés dans la sacoche d’Aldren.</p>
 
-      <blockquote>« Lorsque les liens ne pourront plus céder,<br>Cherche la lame noire : elle seule peut libérer. »</blockquote>
+      <blockquote>« IL FAUT TROUVER LA LAME NOIRE !!! »</blockquote>
 
       <p>Tu avais imaginé une arme capable de tuer.</p>
 
@@ -2768,7 +2870,7 @@ const STORY = {
 
   c52: {
     number: 'PAGE 52',
-    title: 'La silhouette au sommet',
+    title: '',
     image: 'La silhouette au sommet',
     text: `
       <p>Tu quittes les fresques et retrouves ce qu’il reste de l’escalier.</p>
@@ -2973,7 +3075,7 @@ const STORY = {
 
   c56: {
     number: 'PAGE 56',
-    title: 'Les pas sous tes pieds',
+    title: '',
     image: 'Les pas sous tes pieds',
     text: state => `
       <p>Tu as parcouru presque un tiers du pont lorsque tu entends un pas.</p>
@@ -3037,7 +3139,7 @@ const STORY = {
 
   c57: {
     number: 'PAGE 57',
-    title: 'La course sur le pont',
+    title: '',
     image: 'La course sur le pont',
     text: state => {
       const r = diceResultHtml(state);
@@ -3086,7 +3188,7 @@ const STORY = {
 
   c58: {
     number: 'PAGE 58',
-    title: 'Le marcheur sous le pont',
+    title: '',
     image: 'Le marcheur sous le pont',
     text: state => `
       <p>La créature pivote autour d’une corde avec une facilité déconcertante.</p>
@@ -3124,7 +3226,7 @@ const STORY = {
 
   c59: {
     number: 'PAGE 59',
-    title: 'Le combat au-dessus du vide',
+    title: '',
     image: 'Le combat au-dessus du vide',
     text: state => {
       const combat = combatState(state, 'bridgeWalker', ENEMIES.bridgeWalker);
@@ -3506,7 +3608,7 @@ const STORY = {
 
   c68: {
     number: 'PAGE 68',
-    title: 'Ceux qui sont venus',
+    title: '',
     image: 'Ceux qui sont venus',
     text: `
       <p><strong>GASPARD VELLIN.</strong></p>
@@ -3544,10 +3646,10 @@ const STORY = {
 
   c69: {
     number: 'PAGE 69',
-    title: 'Ton nom',
+    title: '',
     image: 'Ton nom',
     text: state => {
-      const hero = escapeHtml((state.heroName || 'ÉCUYER').trim() || 'ÉCUYER').toUpperCase();
+      const hero = escapeHtml(heroName(state)).toUpperCase();
       return `
         <p><strong>${hero}.</strong></p>
 
@@ -3584,7 +3686,7 @@ const STORY = {
 
   c70: {
     number: 'PAGE 70',
-    title: 'Le dernier Veilleur',
+    title: '',
     image: 'Le dernier Veilleur',
     text: state => `
       ${state.flags.touchedOwnName ? `
@@ -3631,7 +3733,7 @@ const STORY = {
 
   c71: {
     number: 'PAGE 71',
-    title: 'Les appelés',
+    title: '',
     image: 'Les appelés',
     text: `
       <p>Avant de quitter la galerie, tu regardes une dernière fois les murs.</p>
@@ -3692,7 +3794,7 @@ const STORY = {
 
       <p>Puis, à ta droite :</p>
 
-      <blockquote>« ${escapeHtml(state.heroName || 'Écuyer')} ? »</blockquote>
+      <blockquote>« ${escapeHtml(heroName(state))} ? »</blockquote>
 
       <p>La voix de Sir Aldren.</p>
 
@@ -3713,7 +3815,7 @@ const STORY = {
 
   c73: {
     number: 'PAGE 73',
-    title: 'La porte d’Aldren',
+    title: '',
     image: 'La porte d’Aldren',
     text: state => {
       const r = diceResultHtml(state);
@@ -3765,7 +3867,7 @@ const STORY = {
 
   c74: {
     number: 'PAGE 74',
-    title: 'Ceux qui ont répondu',
+    title: '',
     image: 'Ceux qui ont répondu',
     text: `
       <p>Tu t’éloignes de la porte jusqu’à ne plus voir sa poignée.</p>
@@ -3799,12 +3901,12 @@ const STORY = {
 
   c75: {
     number: 'PAGE 75',
-    title: 'Ne pas répondre',
+    title: '',
     image: 'Ne pas répondre',
     text: state => `
       <p>Tu continues sans toucher la poignée.</p>
 
-      <blockquote>« ${escapeHtml(state.heroName || 'Écuyer')}… »</blockquote>
+      <blockquote>« ${escapeHtml(heroName(state))}… »</blockquote>
 
       <p>La voix d’Aldren reste derrière toi.</p>
 
@@ -3839,7 +3941,7 @@ const STORY = {
 
   c76: {
     number: 'PAGE 76',
-    title: 'L’avertissement',
+    title: '',
     image: 'L’avertissement',
     text: `
       <p>Le couloir se termine sous une arche basse.</p>
@@ -3873,7 +3975,7 @@ const STORY = {
 
   c77: {
     number: 'PAGE 77',
-    title: 'L’arche blanche',
+    title: 'Le laboratoire des Veilleurs',
     image: 'L’arche blanche',
     text: `
       <p>La lumière vient de petites plaques pâles incrustées dans les murs.</p>
@@ -3905,7 +4007,7 @@ const STORY = {
 
   c78: {
     number: 'PAGE 78',
-    title: 'Les aiguilles de pierre',
+    title: '',
     image: 'Les aiguilles de pierre',
     text: `
       <p>Tu t’approches d’une des tables.</p>
@@ -3945,7 +4047,7 @@ const STORY = {
 
   c79: {
     number: 'PAGE 79',
-    title: 'Le bras de pierre',
+    title: '',
     image: 'Le bras de pierre',
     text: state => {
       const r = diceResultHtml(state);
@@ -3977,7 +4079,7 @@ const STORY = {
 
   c80: {
     number: 'PAGE 80',
-    title: 'L’ampoule blanche',
+    title: '',
     image: 'L’ampoule blanche',
     text: `
       <p>Le verre est froid.</p>
@@ -4010,7 +4112,7 @@ const STORY = {
 
   c81: {
     number: 'PAGE 81',
-    title: 'Ce qu’ils essayaient de sauver',
+    title: '',
     image: 'Ce qu’ils essayaient de sauver',
     text: `
       <p>Sur le mur du fond, une série de silhouettes raconte ce qui se passait ici.</p>
@@ -4148,7 +4250,7 @@ const STORY = {
 
   c84: {
     number: 'PAGE 84',
-    title: 'Derrière le mur',
+    title: 'Le passage de service',
     image: 'Derrière le mur',
     text: `
       <p>Tu longes l’éboulement jusqu’à trouver une ouverture entre deux blocs.</p>
@@ -4368,7 +4470,7 @@ const STORY = {
 
 };
 
-  const PAGE_ORDER = Array.from({ length: 88 }, (_, i) => `c${i + 1}`);
+  const PAGE_ORDER = Array.from({ length: 40 }, (_, i) => `c${i + 1}`);
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -4425,7 +4527,8 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      heroName: seriesProfile.heroName || '',
+      heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
+      heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
       flags: {},
       visited: {},
@@ -4465,7 +4568,7 @@ const STORY = {
   const TEST_ITEM_CATALOG = [
     {
       id: 'parchemin',
-      name: 'Parchemin ancien',
+      name: 'Notes d’Aldren',
       description: 'Un fragment ancien découvert dans les affaires de Sir Aldren. Il peut être relu quand tu veux.'
     },
     {
@@ -4596,16 +4699,15 @@ const STORY = {
           <div class="inventory-equipment-row"><span>Effet de l’arme</span><strong>DEX ${weaponDex} · Puissance ${state.weapon === 'none' ? 0 : combatPower(state)}</strong></div>
           <div class="inventory-equipment-row"><span>Protection restante</span><strong>${currentProtection(state)} / ${maxProtection(state)}</strong></div>
         </div>`;
-      const testPanel = testInventoryHtml(state);
       const healing = Number.isInteger(state.lastHealingDie)
         ? `<div class="dice-result"><p class="roll-number">Dernière potion</p><div class="dice-faces">${renderDie(state.lastHealingDie)}</div><p><strong>+${state.lastHealingDie} point${state.lastHealingDie > 1 ? 's' : ''} de Vie</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p></div>`
         : '';
-      return equipment + testPanel + healing;
+      return equipment + healing;
     },
 
     actionHtml(id, item, state) {
       if (id === 'parchemin') {
-        return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="read-parchment">Lire le parchemin</button></div>`;
+        return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="read-parchment">Relire les notes</button></div>`;
       }
       if (id === 'potion_guerison') {
         return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-potion" ${state.hp >= state.maxHp ? 'disabled' : ''}>Boire la potion (1 dé de Vie)</button></div>`;
@@ -4651,10 +4753,10 @@ const STORY = {
       }
 
       if (action === 'read-parchment') {
-        api.showModal('Parchemin ancien', `
-          <img class="inventory-parchment-image" src="${api.book.assetBase}/objets/La-Grotte-de-Valombre-Parchemin.png" alt="Parchemin ancien" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        api.showModal('Notes d’Aldren', `
+          <img class="inventory-parchment-image" src="${api.book.assetBase}/objets/La-Grotte-de-Valombre-Parchemin.png" alt="Notes d’Aldren" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="inventory-image-fallback">Ton image apparaîtra ici dès que tu ajouteras :<br><strong>books/ecuyer/01-la-grotte-de-valombre/images/objets/La-Grotte-de-Valombre-Parchemin.png</strong></div>
-          <div class="parchment-verse"><strong>L’œil qui dort doit demeurer fermé,</strong><br><strong>Car nul vivant ne doit le réveiller.</strong><br><br><strong>Là où le soufre vient empoisonner l’air,</strong><br><strong>Détourne tes pas et rebrousse en arrière.</strong><br><br><strong>Lorsque les liens ne pourront plus céder,</strong><br><strong>Cherche la lame noire : elle seule peut libérer.</strong></div>
+          <div class="parchment-verse"><strong>N’OUVRE JAMAIS L’ŒIL QUI DORT</strong><br><br><s><strong>SOUFFRE</strong></s><br><small>barré trois fois, avec une tête de mort dessinée à côté</small><br><br><strong>IL FAUT TROUVER LA LAME NOIRE !!!</strong><br><br><em>attention à ce qui se cache derrière les parois</em><br><br><strong>TERRE NOIRE</strong> · terre noire · <strong>TERRE NOIRE</strong> · terre noire</div>
           <button class="inventory-action-btn" data-action="back-inventory">Retour à l’inventaire</button>`);
         return true;
       }
@@ -4718,8 +4820,11 @@ const STORY = {
     }
     return `
       <div class="character-modal-sheet">
-        <div class="character-modal-name">${escapeHtml(state.heroName || 'Écuyer sans nom')}</div>
-        <div class="character-modal-rank">Écuyer de Sir Aldren de Rochebrune</div>
+        <div class="character-modal-portrait">
+          <img src="./books/ecuyer/01-la-grotte-de-valombre/images/${heroPortraitFilename(state)}" alt="Portrait de ${heroName(state)}" onerror="this.parentElement.style.display='none'">
+        </div>
+        <div class="character-modal-name">${heroName(state)}</div>
+        <div class="character-modal-rank">${heroRank(state)}</div>
         <div class="character-modal-stats">
           <div><span>♥ Vie</span><strong>${state.hp} / ${state.maxHp}</strong></div>
           <div><span>🛡 Protection</span><strong>${currentProtection(state)} / ${maxProtection(state)}</strong></div>
@@ -4737,8 +4842,8 @@ const STORY = {
   }
 
   BookRegistry.register({
-    id: 'ecuyer-01',
-    seriesId: 'ecuyer',
+    id: 'ecuyer-01-player-test',
+    seriesId: 'ecuyer-playtest',
     seriesLabel: 'ÉCUYER 01',
     episode: 1,
     orderInSeries: 1,
@@ -4746,24 +4851,24 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 12,
-    saveVersion: 10,
+    contentVersion: 21,
+    saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
     pageOrder: PAGE_ORDER,
     pageByNode: PAGE_BY_NODE,
     padPage,
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
-    imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
+    imageExtensions: ['png'],
     createInitialState,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage },
     characterSheetHtml,
     inventory,
     checkpoints: [
-      { node: 'c8', label: 'Sortie de Valombre', onlyIfNone: true }
+      { node: 'c20', label: 'Entrée de la grotte', onlyIfNone: true }
     ],
-    legacyStorageKeys: ['ldveh.book.ecuyer-01.save.v1', 'ldveh.book.ecuyer-01-valombre.save.v1', 'valombre_save_v12_3d6_stats18'],
-    legacyCheckpointKeys: ['ldveh.book.ecuyer-01.checkpoint.v1', 'ldveh.book.ecuyer-01-valombre.checkpoint.v1', 'valombre_checkpoint_v12_3d6_stats18'],
+    legacyStorageKeys: [],
+    legacyCheckpointKeys: [],
     exportSeriesMemory(state) {
       // Les décisions durables seront explicitement ajoutées ici lorsqu’elles
       // seront validées comme conséquences inter-livres. Rien n’est exporté

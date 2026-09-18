@@ -53,7 +53,8 @@ function defaultSeriesProfile() {
   return {
     version: 2,
     seriesId: BOOK.seriesId,
-    heroName: '',
+    heroGender: 'female',
+    heroName: 'Aélis',
     baseStats: { maxHp: 18, chance: 12, force: 8, dexterity: 13 },
     memory: {},
     completedBooks: []
@@ -106,7 +107,8 @@ function saveSeriesProfile() {
   try { localStorage.setItem(SERIES_KEY, JSON.stringify(seriesProfile)); } catch (e) {}
 }
 function syncSeriesFromState() {
-  seriesProfile.heroName = state.heroName || seriesProfile.heroName || '';
+  seriesProfile.heroGender = state.heroGender === 'male' ? 'male' : 'female';
+  seriesProfile.heroName = state.heroName || (seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis');
   seriesProfile.baseStats = {
     maxHp: state.maxHp || seriesProfile.baseStats.maxHp,
     chance: state.chance || seriesProfile.baseStats.chance,
@@ -199,16 +201,31 @@ function render() {
     chapterNumber.textContent = 'FICHE DU HÉROS';
     imageFrame.classList.add('hidden');
   } else {
-    const pageNumber = PAGE_BY_NODE[state.node] || 1;
+    const mappedPage = PAGE_BY_NODE[state.node];
+    const declaredPage = node.number ? parseInt(String(node.number).replace(/\D/g, ''), 10) : NaN;
+    const pageNumber = mappedPage || (Number.isFinite(declaredPage) ? declaredPage : 1);
     chapterNumber.textContent = `PAGE ${padPage(pageNumber)}`;
-    imageFrame.classList.remove('hidden');
-    loadPageImage(pageNumber, node.title || '');
+    if (node.noImage) {
+      imageFrame.classList.add('hidden');
+      storyImage.removeAttribute('src');
+      storyImage.classList.add('hidden');
+    } else {
+      imageFrame.classList.remove('hidden');
+      loadPageImage(pageNumber, node.title || '');
+    }
   }
   chapterTitle.textContent = node.title || '';
+  chapterTitle.classList.toggle('hidden', !node.title);
   storyText.innerHTML = typeof node.text === 'function' ? node.text(state) : node.text;
 
-  const heroNameInput = document.getElementById('heroNameInput');
-  if (heroNameInput) heroNameInput.addEventListener('input', event => { state.heroName = event.target.value.slice(0,24); saveState(); });
+  document.querySelectorAll('.hero-gender-input').forEach(input => {
+    input.addEventListener('change', event => {
+      state.heroGender = event.target.value === 'male' ? 'male' : 'female';
+      state.heroName = state.heroGender === 'male' ? 'Aubin' : 'Aélis';
+      saveState();
+      render();
+    });
+  });
 
   inventoryCount.textContent = Object.keys(state.inventory).length;
   statusTags.innerHTML = '';
@@ -225,14 +242,15 @@ function render() {
   availableChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
-    const destinationPage = PAGE_BY_NODE[choice.to];
+    const destinationPage = choice.stay ? null : PAGE_BY_NODE[choice.to];
     const destination = destinationPage ? `<span class="choice-dest">Rendez-vous à la page ${padPage(destinationPage)}</span>` : '';
     btn.innerHTML = `<span class="choice-index">${i + 1}</span><span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
     btn.addEventListener('click', () => {
       if (choice.action === 'checkpoint') return restartFromCheckpoint();
       if (choice.action === 'restart') return restartGame();
-      if (choice.action === 'damage') { rollDamage(state, choice.damageKey || state.node); saveState(); render(); return; }
+      if (choice.action === 'damage') { rollDamage(state, choice.damageKey || state.node, choice.damageSides || 6); saveState(); render(); return; }
       if (typeof choice.effect === 'function') choice.effect(state);
+      if (choice.stay) { saveState(); render(); return; }
       enterNode(choice.to);
     });
     choices.appendChild(btn);
@@ -267,11 +285,11 @@ function openInventory() {
   const moneyLine = topText ? `<div class="inventory-topline">${topText}</div>` : '';
   const extraLine = BOOK.inventory && BOOK.inventory.extraHtml ? BOOK.inventory.extraHtml(state) : '';
   const list = items.length
-    ? `<div class="inventory-owned-section"><div class="inventory-owned-title">Objets actuellement actifs</div><div class="inventory-list">${items.map(([id,item]) => {
+    ? `<div class="inventory-owned-section"><div class="inventory-owned-title">Objets</div><div class="inventory-list">${items.map(([id,item]) => {
         const action = BOOK.inventory && BOOK.inventory.actionHtml ? BOOK.inventory.actionHtml(id,item,state) : '';
         return `<div class="inventory-item"><strong>${item.name}${item.quantity ? ` × ${item.quantity}` : ''}</strong><p>${item.description}</p>${action}</div>`;
       }).join('')}</div></div>`
-    : `<div class="inventory-empty">Aucun objet n’est actuellement coché.</div>`;
+    : `<div class="inventory-empty">Ton inventaire est vide.</div>`;
   modalContent.innerHTML = moneyLine + extraLine + list;
   modal.classList.remove('hidden'); modalBackdrop.classList.remove('hidden');
 }
@@ -326,7 +344,13 @@ function openDrawer() {
     if (current) current.scrollIntoView({ block: 'center' });
   });
 }
-function closeDrawer() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); drawerBackdrop.classList.add('hidden'); }
+function closeDrawer() {
+  if (drawer) {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true');
+  }
+  if (drawerBackdrop) drawerBackdrop.classList.add('hidden');
+}
 
 const bookApi = { book: BOOK, saveState, render, openInventory, showModal, closeModal };
 modalContent.addEventListener('click', event => {
@@ -342,9 +366,9 @@ characterBtn.addEventListener('click', openCharacterSheet);
 journalBtn.addEventListener('click', openJournal);
 journalCloseBtn.addEventListener('click', closeJournal);
 restartBtn.addEventListener('click', restartGame);
-menuBtn.addEventListener('click', openDrawer);
-closeDrawerBtn.addEventListener('click', closeDrawer);
-drawerBackdrop.addEventListener('click', closeDrawer);
+if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDrawer);
+if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
 closeModalBtn.addEventListener('click', closeModal);
 modalBackdrop.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDrawer(); closeModal(); closeJournal(); } });
