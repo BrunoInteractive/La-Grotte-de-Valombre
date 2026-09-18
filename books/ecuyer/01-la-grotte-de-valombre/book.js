@@ -2330,7 +2330,7 @@ const STORY = {
     choices: [
       { label: 'Descendre vers le lac noir', to: 'c41' },
       { label: 'Prendre l’escalier de pierre', to: 'c44' },
-      { label: 'Longer la corniche vers le pont', to: 'c55' }
+      { label: 'Longer la corniche vers le pont', to: 'c58' }
     ]
   },
 
@@ -2554,9 +2554,9 @@ const STORY = {
 
         <p>Sur ta droite, la brume se déchire un instant.</p>
 
-        <p>À quelques dizaines de mètres, une petite masse rocheuse émerge de l’eau. Elle semble trop régulière pour être entièrement naturelle.</p>
+        <p>À quelques dizaines de mètres, une masse de pierre émerge de l’eau. Une bonne partie de l’îlot se perd dans la brume, mais tu distingues les vestiges de plusieurs murs.</p>
 
-        <p>Tu distingues un rebord de pierre, juste assez bas pour y accoster.</p>
+        <p>Un ancien quai forme un rebord assez bas pour y accoster.</p>
 
         <p>La brume commence déjà à se refermer sur l’îlot.</p>
 
@@ -2622,15 +2622,19 @@ const STORY = {
 
       if (combat.round === 0 && !combat.lastBlade) {
         return `
-          <p>L’îlot n’est guère plus grand qu’une chambre.</p>
+          <p>Tu accostes contre l’ancien quai de pierre et tires la barque hors de l’eau.</p>
 
-          <p>Quatre piliers brisés entourent une dalle de pierre blanche.</p>
+          <p>L’îlot s’étend sur plusieurs dizaines de pas. Son sol irrégulier est parsemé de blocs effondrés et de vestiges de murs. À une extrémité, un escalier descend directement dans les eaux noires du lac.</p>
 
-          <p>Au centre est gravé un œil fermé.</p>
+          <p>Tu avances parmi les ruines.</p>
 
-          <p>Dans une petite cavité repose un anneau métallique couvert de dépôts gris.</p>
+          <p>Au centre de l’îlot, quatre piliers brisés entourent une large dalle de pierre blanche.</p>
 
-          <p>Tu fais un pas vers lui.</p>
+          <p>Un œil fermé y est gravé.</p>
+
+          <p>Dans une petite cavité, au milieu de la dalle, repose un anneau métallique couvert de dépôts gris.</p>
+
+          <p>Tu t’approches pour l’examiner.</p>
 
           <p>Quelque chose racle la pierre derrière l’un des piliers.</p>
 
@@ -2745,10 +2749,6 @@ const STORY = {
     text: `
       <p>La traversée continue encore longtemps.</p>
 
-      <p>Tu n’entends plus aucun coup sous la coque.</p>
-
-      <p>Tu aurais presque préféré.</p>
-
       <p>Enfin, une ligne de pierre apparaît dans la brume.</p>
 
       <p>La barque heurte une marche noyée.</p>
@@ -2768,7 +2768,7 @@ const STORY = {
       <p>Pour la première fois depuis ton arrivée dans ce monde impossible, tu as devant toi quelque chose qui ressemble à une ville.</p>
     `,
     choices: [
-      { label: 'Entrer par les arches noyées', to: 'c63' }
+      { label: 'Entrer par les arches noyées', to: 'c66' }
     ]
   },
 
@@ -2905,56 +2905,114 @@ const STORY = {
     title: '',
     image: 'La silhouette au sommet',
     text: `
-      <p>Tu quittes les fresques et retrouves ce qu’il reste de l’escalier.</p>
+      <p>Tu quittes les fresques et reprends l’ascension.</p>
 
-      <p>C’est alors que tu la vois.</p>
+      <p>Plus haut, sur une portion encore régulière de l’escalier, une silhouette se tient debout près de la paroi.</p>
 
-      <p>Très haut au-dessus de toi, une silhouette se tient sur une portion encore régulière de la montée.</p>
+      <p>Une silhouette humaine.</p>
 
-      <p>Immobile.</p>
+      <p>Après toutes les choses que tu as croisées dans ces profondeurs, sa posture presque ordinaire te surprend.</p>
 
-      <p>Trop loin pour distinguer un visage.</p>
+      <p>Elle est trop loin pour que tu distingues son visage.</p>
 
-      <p>Tu continues à monter.</p>
+      <p><strong>Et si c’était Aldren ?</strong></p>
 
-      <p>La silhouette est toujours là.</p>
-
-      <p>À exactement la même distance.</p>
-
-      <p>Tu accélères.</p>
-
-      <p>Elle ne se rapproche pas.</p>
-
-      <p>Tu t’arrêtes.</p>
-
-      <p>Tu lèves lentement une main.</p>
-
-      <p>Très loin, la silhouette lève la sienne.</p>
-
-      <p>Du même côté.</p>
-
-      <p>Tu baisses le bras.</p>
-
-      <p>Elle disparaît.</p>
-
-      <p>Il n’y a aucun endroit où elle aurait pu se cacher.</p>
-
-      <p>Quelques mètres plus loin, tu remarques une fissure verticale dans la paroi.</p>
-
-      <p>Elle est juste assez large pour t’y glisser de profil.</p>
-
-      <p>Un courant d’air tiède en sort.</p>
-
-      <p>Et, très loin à l’intérieur, quelque chose gratte doucement la pierre.</p>
+      <p>L’homme ne semble pas t’avoir remarqué.</p>
     `,
     choices: [
-      { label: 'T’aventurer dans la fissure', to: 'c53', effect: s => { if (!s.flags.stairsCrackEntered) { s.flags.stairsCrackEntered = true; s.flags.stairsCrackDamage = applyDamage(s, 2); s.dexPenalty = (s.dexPenalty || 0) + 1; s.flags.blackEarthContamination = true; } } },
-      { label: 'Ne pas t’y aventurer et poursuivre l’ascension', to: 'c54' }
+      { label: 'Appeler la silhouette', to: 'c53', effect: s => { s.flags.stairsSilhouetteApproach = 'called'; } },
+      { label: 'T’approcher discrètement', to: 'c54', effect: s => { s.flags.stairsSilhouetteApproach = 'stealth'; } }
     ]
   },
 
   c53: {
     number: 'PAGE 53',
+    title: '',
+    image: 'L’appel',
+    text: `
+      <p>« Aldren ! »</p>
+
+      <p>Ta voix résonne entre les parois.</p>
+
+      <p>La silhouette tourne brusquement la tête dans ta direction, puis disparaît entre deux avancées rocheuses.</p>
+
+      <p>Tu gravis les dernières marches pour la rejoindre.</p>
+
+      <p>À l’endroit où elle se tenait, tu découvres une fissure verticale, juste assez large pour t’y glisser de profil.</p>
+
+      <p>Un courant d’air tiède en sort.</p>
+
+      <p>Tu entends un frottement, quelque part à l’intérieur.</p>
+
+      <p>Impossible de savoir si c’est bien là qu’elle s’est réfugiée.</p>
+    `,
+    choices: [{ label: 'Examiner les abords de la fissure', to: 'c55' }]
+  },
+
+  c54: {
+    number: 'PAGE 54',
+    title: '',
+    image: 'La silhouette inhumaine',
+    text: `
+      <p>Tu avances lentement, en prenant soin de ne pas faire rouler les pierres sous tes pas.</p>
+
+      <p>La silhouette reste immobile.</p>
+
+      <p>À mesure que tu te rapproches, tu remarques que ses bras sont trop longs. Son dos présente une courbure anormale.</p>
+
+      <p>Un bruit humide accompagne chacun de ses mouvements.</p>
+
+      <p>Tu n’es plus qu’à quelques pas lorsqu’elle se retourne.</p>
+
+      <p>Ses yeux sont injectés de sang. Sous un front presque humain, son visage présente des traits déformés que tu ne parviens pas à reconnaître.</p>
+
+      <p>Elle pousse un râle grave et prolongé.</p>
+
+      <p>Puis elle pivote vers la paroi et se glisse dans une étroite fissure, avec une souplesse impossible.</p>
+
+      <p>Tu l’entends ramper quelques instants entre les pierres.</p>
+
+      <p>Puis plus rien.</p>
+
+      <p>Un courant d’air tiède sort de l’ouverture.</p>
+    `,
+    choices: [{ label: 'Rejoindre la fissure', to: 'c55' }]
+  },
+
+  c55: {
+    number: 'PAGE 55',
+    title: 'Devant la fissure',
+    image: 'Devant la fissure',
+    text: state => `
+      <p>Tu t’arrêtes devant l’ouverture. La paroi est fendue sur toute la hauteur d’un homme, mais la fissure est à peine assez large pour te laisser passer de profil.</p>
+
+      ${state.flags.stairsSilhouetteApproach === 'stealth'
+        ? '<p>Tu sais que la chose au visage inhumain s’est glissée à l’intérieur. Un râle étouffé résonne encore au fond du passage.</p>'
+        : '<p>La silhouette a disparu près d’ici. Un léger frottement parvient du fond du passage, mais tu ignores ce qui le produit.</p>'}
+
+      <p>L’escalier se poursuit vers le haut, le long de la falaise.</p>
+
+      <p>Tu peux entrer dans la fissure ou la laisser derrière toi et continuer à monter.</p>
+    `,
+    choices: [
+      {
+        label: 'T’aventurer dans la fissure',
+        to: 'c56',
+        effect: s => {
+          if (!s.flags.stairsCrackEntered) {
+            s.flags.stairsCrackEntered = true;
+            s.flags.stairsCrackDamage = applyDamage(s, 2);
+            s.dexPenalty = (s.dexPenalty || 0) + 1;
+            s.flags.blackEarthContamination = true;
+          }
+        }
+      },
+      { label: 'Laisser la fissure derrière toi et poursuivre l’ascension', to: 'c57' }
+    ]
+  },
+
+  c56: {
+    number: 'PAGE 56',
     title: 'La fissure',
     image: 'La fissure',
     text: state => `
@@ -3022,11 +3080,11 @@ const STORY = {
     `,
     choices: state => state.hp <= 0
       ? fatalChoices()
-      : [{ label: 'Te relever et poursuivre', to: 'c54' }]
+      : [{ label: 'Te relever et poursuivre', to: 'c57' }]
   },
 
-  c54: {
-    number: 'PAGE 54',
+  c57: {
+    number: 'PAGE 57',
     title: 'Au-dessus de la cité',
     image: 'Au-dessus de la cité',
     text: state => `
@@ -3055,19 +3113,19 @@ const STORY = {
       ${hasItem(state, 'gantelet_veilleur') ? '<p>Tu as déjà ajouté le gantelet à ton équipement.</p>' : '<p>Il pourrait encore encaisser un coup à ta place.</p>'}
     `,
     choices: state => hasItem(state, 'gantelet_veilleur')
-      ? [{ label: 'Franchir la porte et entrer dans les quartiers hauts', to: 'c64' }]
+      ? [{ label: 'Franchir la porte et entrer dans les quartiers hauts', to: 'c67' }]
       : [
           {
             label: 'Prendre le Gantelet de Veilleur (+1 Protection)',
-            to: 'c64',
+            to: 'c67',
             effect: s => addProtectiveItem(s, 'gantelet_veilleur', 'Gantelet de Veilleur', 'Un gant d’armure articulé trouvé au-dessus de la Cité morte. Il peut absorber 1 point de dégâts avant ta Vie.', 1)
           },
-          { label: 'Le laisser et franchir la porte', to: 'c64' }
+          { label: 'Le laisser et franchir la porte', to: 'c67' }
         ]
   },
 
-  c55: {
-    number: 'PAGE 55',
+  c58: {
+    number: 'PAGE 58',
     title: 'La corniche du vide',
     image: 'La corniche du vide',
     onEnter: s => { s.flags.worldRoute = 'bridge'; },
@@ -3101,12 +3159,12 @@ const STORY = {
       <p>Tu commences la traversée.</p>
     `,
     choices: [
-      { label: 'Avancer sur le pont', to: 'c56' }
+      { label: 'Avancer sur le pont', to: 'c59' }
     ]
   },
 
-  c56: {
-    number: 'PAGE 56',
+  c59: {
+    number: 'PAGE 59',
     title: '',
     image: 'Les pas sous tes pieds',
     text: state => `
@@ -3140,12 +3198,12 @@ const STORY = {
     `,
     choices: state => {
       const list = [
-        { label: 'Garder ton calme et continuer lentement', to: 'c60', effect: s => { s.flags.bridgeSolution = 'calm'; } }
+        { label: 'Garder ton calme et continuer lentement', to: 'c63', effect: s => { s.flags.bridgeSolution = 'calm'; } }
       ];
       if (state.throwingBlades > 0) {
         list.push({
           label: 'Lancer une lame dans le vide pour l’attirer ailleurs',
-          to: 'c60',
+          to: 'c63',
           effect: s => {
             s.throwingBlades -= 1;
             syncThrowingBlades(s);
@@ -3156,21 +3214,21 @@ const STORY = {
       list.push(
         {
           label: 'Courir jusqu’à l’autre côté — tester ta Dextérité',
-          to: 'c57',
+          to: 'c60',
           effect: s => {
             const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
             s.flags.bridgeRun = ok ? 'success' : 'fail';
             if (!ok) s.flags.bridgeRunDamage = applyDamage(s, 1);
           }
         },
-        { label: 'Frapper la chose à travers les planches', to: 'c58' }
+        { label: 'Frapper la chose à travers les planches', to: 'c61' }
       );
       return list;
     }
   },
 
-  c57: {
-    number: 'PAGE 57',
+  c60: {
+    number: 'PAGE 60',
     title: '',
     image: 'La course sur le pont',
     text: state => {
@@ -3213,13 +3271,13 @@ const STORY = {
     choices: state => {
       if (state.hp <= 0) return fatalChoices();
       return state.flags.bridgeRun === 'success'
-        ? [{ label: 'Reprendre ton souffle', to: 'c60' }]
-        : [{ label: 'Te défendre', to: 'c58' }];
+        ? [{ label: 'Reprendre ton souffle', to: 'c63' }]
+        : [{ label: 'Te défendre', to: 'c61' }];
     }
   },
 
-  c58: {
-    number: 'PAGE 58',
+  c61: {
+    number: 'PAGE 61',
     title: '',
     image: 'Le marcheur sous le pont',
     text: state => `
@@ -3252,11 +3310,11 @@ const STORY = {
 
       ${enemyCardHtml(state, 'bridgeWalker', ENEMIES.bridgeWalker)}
     `,
-    choices: state => combatActionChoices(state, 'bridgeWalker', ENEMIES.bridgeWalker, 'c59')
+    choices: state => combatActionChoices(state, 'bridgeWalker', ENEMIES.bridgeWalker, 'c62')
   },
 
-  c59: {
-    number: 'PAGE 59',
+  c62: {
+    number: 'PAGE 62',
     title: '',
     image: 'Le combat au-dessus du vide',
     text: state => {
@@ -3333,14 +3391,14 @@ const STORY = {
     },
     choices: state => {
       const combat = combatState(state, 'bridgeWalker', ENEMIES.bridgeWalker);
-      if (combat.hp <= 0) return [{ label: 'Achever la traversée', to: 'c60' }];
+      if (combat.hp <= 0) return [{ label: 'Achever la traversée', to: 'c63' }];
       if (state.hp <= 0) return fatalChoices();
-      return combatActionChoices(state, 'bridgeWalker', ENEMIES.bridgeWalker, 'c59', 'Continuer le combat');
+      return combatActionChoices(state, 'bridgeWalker', ENEMIES.bridgeWalker, 'c62', 'Continuer le combat');
     }
   },
 
-  c60: {
-    number: 'PAGE 60',
+  c63: {
+    number: 'PAGE 63',
     title: 'L’autre extrémité du pont',
     image: 'L’autre extrémité du pont',
     text: state => {
@@ -3366,11 +3424,11 @@ const STORY = {
       `;
     },
     choices: state => hasItem(state, 'ceinture_rouge')
-      ? [{ label: 'Continuer vers la porte', to: 'c61' }]
+      ? [{ label: 'Continuer vers la porte', to: 'c64' }]
       : [
           {
             label: 'Prendre la Ceinture de corde rouge',
-            to: 'c61',
+            to: 'c64',
             effect: s => {
               addItem(
                 s,
@@ -3380,12 +3438,12 @@ const STORY = {
               );
             }
           },
-          { label: 'La laisser', to: 'c61' }
+          { label: 'La laisser', to: 'c64' }
         ]
   },
 
-  c61: {
-    number: 'PAGE 61',
+  c64: {
+    number: 'PAGE 64',
     title: 'La porte suspendue',
     image: 'La porte suspendue',
     text: `
@@ -3404,12 +3462,12 @@ const STORY = {
       <p>Puis le couloir s’interrompt devant une passerelle de pierre qui rejoint une construction latérale.</p>
     `,
     choices: [
-      { label: 'Traverser la passerelle', to: 'c62' }
+      { label: 'Traverser la passerelle', to: 'c65' }
     ]
   },
 
-  c62: {
-    number: 'PAGE 62',
+  c65: {
+    number: 'PAGE 65',
     title: 'La rue suspendue',
     image: 'La rue suspendue',
     text: `
@@ -3428,12 +3486,12 @@ const STORY = {
       <p>Le silence de la ville commence à t’envelopper.</p>
     `,
     choices: [
-      { label: 'Descendre vers le centre', to: 'c65' }
+      { label: 'Descendre vers le centre', to: 'c68' }
     ]
   },
 
-  c63: {
-    number: 'PAGE 63',
+  c66: {
+    number: 'PAGE 66',
     title: 'Les quartiers noyés',
     image: 'Les quartiers noyés',
     text: state => `
@@ -3449,9 +3507,7 @@ const STORY = {
 
       <p>À plusieurs reprises, tu crois voir des lumières très loin sous l’eau des rues.</p>
 
-      ${state.flags.lookedIntoLake
-        ? '<p>Tu reconnais les lueurs entrevues sous la barque.</p>'
-        : '<p>Elles semblent provenir de plus bas encore, derrière les arches immergées.</p>'}
+      <p>Elles semblent provenir de plus bas encore, derrière les arches immergées.</p>
 
       <p>Tu refuses de regarder longtemps.</p>
 
@@ -3460,12 +3516,12 @@ const STORY = {
       <p>Au sommet, les rues deviennent sèches.</p>
     `,
     choices: [
-      { label: 'Suivre la grande rue', to: 'c66' }
+      { label: 'Suivre la grande rue', to: 'c69' }
     ]
   },
 
-  c64: {
-    number: 'PAGE 64',
+  c67: {
+    number: 'PAGE 67',
     title: 'Les quartiers hauts',
     image: 'Les quartiers hauts',
     text: `
@@ -3488,12 +3544,12 @@ const STORY = {
       <p>Tu suis leurs marques jusqu’à une grande rue centrale.</p>
     `,
     choices: [
-      { label: 'Suivre la grande rue', to: 'c66' }
+      { label: 'Suivre la grande rue', to: 'c69' }
     ]
   },
 
-  c65: {
-    number: 'PAGE 65',
+  c68: {
+    number: 'PAGE 68',
     title: 'La porte latérale',
     image: 'La porte latérale',
     text: `
@@ -3518,12 +3574,12 @@ const STORY = {
       <p>Tu la suis.</p>
     `,
     choices: [
-      { label: 'Atteindre le centre de la cité', to: 'c66' }
+      { label: 'Atteindre le centre de la cité', to: 'c69' }
     ]
   },
 
-  c66: {
-    number: 'PAGE 66',
+  c69: {
+    number: 'PAGE 69',
     title: 'La Cité morte',
     image: 'La Cité morte',
     onEnter: s => setCheckpoint(s, 'La Cité morte'),
@@ -3597,14 +3653,14 @@ const STORY = {
       `;
     },
     choices: [
-      { label: 'Suivre le passage couvert de noms', to: 'c67', effect: s => { s.flags.cityRoute = 'names'; } },
-      { label: 'Entrer dans le couloir aux portes étroites', to: 'c72', effect: s => { s.flags.cityRoute = 'voices'; } },
-      { label: 'Suivre la lumière blanche sous l’arche', to: 'c77', effect: s => { s.flags.cityRoute = 'laboratory'; } }
+      { label: 'Suivre le passage couvert de noms', to: 'c70', effect: s => { s.flags.cityRoute = 'names'; } },
+      { label: 'Entrer dans le couloir aux portes étroites', to: 'c75', effect: s => { s.flags.cityRoute = 'voices'; } },
+      { label: 'Suivre la lumière blanche sous l’arche', to: 'c80', effect: s => { s.flags.cityRoute = 'laboratory'; } }
     ]
   },
 
-  c67: {
-    number: 'PAGE 67',
+  c70: {
+    number: 'PAGE 70',
     title: 'La salle des noms',
     image: 'La salle des noms',
     text: `
@@ -3636,11 +3692,11 @@ const STORY = {
 
       <p>Puis un nom familier attire ton regard.</p>
     `,
-    choices: [{ label: 'T’approcher', to: 'c68' }]
+    choices: [{ label: 'T’approcher', to: 'c71' }]
   },
 
-  c68: {
-    number: 'PAGE 68',
+  c71: {
+    number: 'PAGE 71',
     title: '',
     image: 'Ceux qui sont venus',
     text: `
@@ -3674,11 +3730,11 @@ const STORY = {
 
       <p>Et tu trouves le tien.</p>
     `,
-    choices: [{ label: 'Lire ton nom', to: 'c69' }]
+    choices: [{ label: 'Lire ton nom', to: 'c72' }]
   },
 
-  c69: {
-    number: 'PAGE 69',
+  c72: {
+    number: 'PAGE 72',
     title: '',
     image: 'Ton nom',
     text: state => {
@@ -3712,13 +3768,13 @@ const STORY = {
       `;
     },
     choices: [
-      { label: 'Toucher ton nom', to: 'c70', effect: s => { s.flags.touchedOwnName = true; } },
-      { label: 'Ne pas le toucher et continuer', to: 'c70' }
+      { label: 'Toucher ton nom', to: 'c73', effect: s => { s.flags.touchedOwnName = true; } },
+      { label: 'Ne pas le toucher et continuer', to: 'c73' }
     ]
   },
 
-  c70: {
-    number: 'PAGE 70',
+  c73: {
+    number: 'PAGE 73',
     title: '',
     image: 'Le dernier Veilleur',
     text: state => `
@@ -3753,19 +3809,19 @@ const STORY = {
       <p>Et ils essayaient de les arrêter avant qu’ils ne descendent plus bas.</p>
     `,
     choices: state => hasItem(state, 'plaque_veilleur')
-      ? [{ label: 'Quitter la salle des noms', to: 'c71' }]
+      ? [{ label: 'Quitter la salle des noms', to: 'c74' }]
       : [
           {
             label: 'Prendre la Plaque du Veilleur',
-            to: 'c71',
+            to: 'c74',
             effect: s => addItem(s, 'plaque_veilleur', 'Plaque du Veilleur', 'Une petite plaque de bronze portant l’œil fermé. Elle appartenait à l’un des Veilleurs qui recensait les personnes attirées sous la montagne.')
           },
-          { label: 'La laisser', to: 'c71' }
+          { label: 'La laisser', to: 'c74' }
         ]
   },
 
-  c71: {
-    number: 'PAGE 71',
+  c74: {
+    number: 'PAGE 74',
     title: '',
     image: 'Les appelés',
     text: `
@@ -3793,11 +3849,11 @@ const STORY = {
 
       <p>Il faut aussi comprendre pourquoi elle connaît déjà ton nom.</p>
     `,
-    choices: [{ label: 'Poursuivre dans la cité', to: 'c82' }]
+    choices: [{ label: 'Poursuivre dans la cité', to: 'c85' }]
   },
 
-  c72: {
-    number: 'PAGE 72',
+  c75: {
+    number: 'PAGE 75',
     title: 'Le couloir des portes',
     image: 'Le couloir des portes',
     text: state => `
@@ -3836,18 +3892,18 @@ const STORY = {
       <blockquote>« Je suis ici. Ouvre. »</blockquote>
     `,
     choices: [
-      { label: 'Ouvrir la porte', to: 'c73', effect: s => {
+      { label: 'Ouvrir la porte', to: 'c76', effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.voiceDoorDex = ok ? 'success' : 'fail';
           if (!ok) s.flags.voiceDoorDamage = applyDamage(s, 2);
         }
       },
-      { label: 'Ne pas répondre et continuer', to: 'c75' }
+      { label: 'Ne pas répondre et continuer', to: 'c78' }
     ]
   },
 
-  c73: {
-    number: 'PAGE 73',
+  c76: {
+    number: 'PAGE 76',
     title: '',
     image: 'La porte d’Aldren',
     text: state => {
@@ -3895,11 +3951,11 @@ const STORY = {
         <p>Tu refermes la porte.</p>
       `;
     },
-    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'T’éloigner de cette porte', to: 'c74' }]
+    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'T’éloigner de cette porte', to: 'c77' }]
   },
 
-  c74: {
-    number: 'PAGE 74',
+  c77: {
+    number: 'PAGE 77',
     title: '',
     image: 'Ceux qui ont répondu',
     text: `
@@ -3929,11 +3985,11 @@ const STORY = {
 
       <p>Peut-être qu’on leur donnait simplement une voix qu’ils ne pouvaient pas se résoudre à abandonner.</p>
     `,
-    choices: [{ label: 'Continuer dans le couloir', to: 'c76' }]
+    choices: [{ label: 'Continuer dans le couloir', to: 'c79' }]
   },
 
-  c75: {
-    number: 'PAGE 75',
+  c78: {
+    number: 'PAGE 78',
     title: '',
     image: 'Ne pas répondre',
     text: state => `
@@ -3969,11 +4025,11 @@ const STORY = {
 
       <p>Quelque chose leur donne une raison d’y venir.</p>
     `,
-    choices: [{ label: 'Atteindre le bout du couloir', to: 'c76' }]
+    choices: [{ label: 'Atteindre le bout du couloir', to: 'c79' }]
   },
 
-  c76: {
-    number: 'PAGE 76',
+  c79: {
+    number: 'PAGE 79',
     title: '',
     image: 'L’avertissement',
     text: `
@@ -4003,11 +4059,11 @@ const STORY = {
 
       <p>S’il t’appelle plus bas, il faudra d’abord t’assurer que c’est bien lui.</p>
     `,
-    choices: [{ label: 'Franchir l’arche', to: 'c82' }]
+    choices: [{ label: 'Franchir l’arche', to: 'c85' }]
   },
 
-  c77: {
-    number: 'PAGE 77',
+  c80: {
+    number: 'PAGE 80',
     title: 'Le laboratoire des Veilleurs',
     image: 'L’arche blanche',
     text: `
@@ -4035,11 +4091,11 @@ const STORY = {
 
       <p>Les Veilleurs cherchaient à retirer quelque chose du corps de ceux qu’ils attachaient ici.</p>
     `,
-    choices: [{ label: 'Examiner les appareils', to: 'c78' }]
+    choices: [{ label: 'Examiner les appareils', to: 'c81' }]
   },
 
-  c78: {
-    number: 'PAGE 78',
+  c81: {
+    number: 'PAGE 81',
     title: '',
     image: 'Les aiguilles de pierre',
     text: `
@@ -4069,7 +4125,7 @@ const STORY = {
     `,
     choices: [{
       label: 'Éviter le bras — lancer les trois dés de Dextérité',
-      to: 'c79',
+      to: 'c82',
       effect: s => {
         const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.labTrap = ok ? 'success' : 'fail';
@@ -4078,8 +4134,8 @@ const STORY = {
     }]
   },
 
-  c79: {
-    number: 'PAGE 79',
+  c82: {
+    number: 'PAGE 82',
     title: '',
     image: 'Le bras de pierre',
     text: state => {
@@ -4107,11 +4163,11 @@ const STORY = {
         <p>Le mécanisme grince encore une fois puis s’immobilise.</p>
       `;
     },
-    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'Prendre l’ampoule', to: 'c80' }]
+    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'Prendre l’ampoule', to: 'c83' }]
   },
 
-  c80: {
-    number: 'PAGE 80',
+  c83: {
+    number: 'PAGE 83',
     title: '',
     image: 'L’ampoule blanche',
     text: `
@@ -4132,19 +4188,19 @@ const STORY = {
       <p>Tu sais seulement que les machines de cette salle cherchaient à extraire un mal inconnu.</p>
     `,
     choices: state => hasItem(state, 'ampoule_blanche')
-      ? [{ label: 'Examiner les gravures de la salle', to: 'c81' }]
+      ? [{ label: 'Examiner les gravures de la salle', to: 'c84' }]
       : [
           {
             label: 'Prendre l’Ampoule blanche',
-            to: 'c81',
+            to: 'c84',
             effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Une ampoule des Veilleurs contenant un liquide blanc. Elle semble avoir servi au traitement de ceux que la montagne avait atteints.')
           },
-          { label: 'La laisser', to: 'c81' }
+          { label: 'La laisser', to: 'c84' }
         ]
   },
 
-  c81: {
-    number: 'PAGE 81',
+  c84: {
+    number: 'PAGE 84',
     title: '',
     image: 'Ce qu’ils essayaient de sauver',
     text: `
@@ -4186,11 +4242,11 @@ const STORY = {
 
       <p>Et parfois, ils parvenaient à faire taire la voix.</p>
     `,
-    choices: [{ label: 'Quitter le laboratoire', to: 'c82' }]
+    choices: [{ label: 'Quitter le laboratoire', to: 'c85' }]
   },
 
-  c82: {
-    number: 'PAGE 82',
+  c85: {
+    number: 'PAGE 85',
     title: 'La salle de veille',
     image: 'La salle de veille',
     text: state => {
@@ -4248,11 +4304,11 @@ const STORY = {
         <p>Si Aldren a continué, c’est probablement par là.</p>
       `;
     },
-    choices: [{ label: 'Suivre la direction indiquée par les Veilleurs', to: 'c83' }]
+    choices: [{ label: 'Suivre la direction indiquée par les Veilleurs', to: 'c86' }]
   },
 
-  c83: {
-    number: 'PAGE 83',
+  c86: {
+    number: 'PAGE 86',
     title: 'L’avenue basse',
     image: 'L’avenue basse',
     text: `
@@ -4278,11 +4334,11 @@ const STORY = {
 
       <p>Quelque chose existait déjà ici lorsqu’on a élevé ses rues.</p>
     `,
-    choices: [{ label: 'Examiner l’éboulement', to: 'c84' }]
+    choices: [{ label: 'Examiner l’éboulement', to: 'c87' }]
   },
 
-  c84: {
-    number: 'PAGE 84',
+  c87: {
+    number: 'PAGE 87',
     title: 'Le passage de service',
     image: 'Derrière le mur',
     text: `
@@ -4306,11 +4362,11 @@ const STORY = {
 
       <p>Sur son bord, tu distingues encore le symbole de l’œil fermé.</p>
     `,
-    choices: [{ label: 'Préparer la descente', to: 'c85' }]
+    choices: [{ label: 'Préparer la descente', to: 'c88' }]
   },
 
-  c85: {
-    number: 'PAGE 85',
+  c88: {
+    number: 'PAGE 88',
     title: 'Le puits des Veilleurs',
     image: 'Le puits des Veilleurs',
     text: state => `
@@ -4331,13 +4387,13 @@ const STORY = {
       if (hasItem(state, 'ceinture_corde_rouge')) {
         list.push({
           label: 'T’assurer avec la Ceinture de corde rouge',
-          to: 'c86',
+          to: 'c89',
           effect: s => { s.flags.cityWellDescent = 'rope'; }
         });
       }
       list.push({
         label: 'Descendre par les prises — lancer les trois dés de Dextérité',
-        to: 'c86',
+        to: 'c89',
         effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.cityWellDescent = ok ? 'success' : 'fail';
@@ -4348,8 +4404,8 @@ const STORY = {
     }
   },
 
-  c86: {
-    number: 'PAGE 86',
+  c89: {
+    number: 'PAGE 89',
     title: 'Le palier inférieur',
     image: 'Le palier inférieur',
     text: state => {
@@ -4401,7 +4457,7 @@ const STORY = {
       if (hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.blackEarthContamination)) {
         list.push({
           label: 'Utiliser l’Ampoule blanche',
-          to: 'c87',
+          to: 'c90',
           effect: s => {
             removeItem(s, 'ampoule_blanche');
             if ((s.dexPenalty || 0) > 0) s.dexPenalty = Math.max(0, s.dexPenalty - 1);
@@ -4410,13 +4466,13 @@ const STORY = {
           }
         });
       }
-      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c87' });
+      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c90' });
       return list;
     }
   },
 
-  c87: {
-    number: 'PAGE 87',
+  c90: {
+    number: 'PAGE 90',
     title: 'La porte sous la ville',
     image: 'La porte sous la ville',
     text: state => `
@@ -4454,11 +4510,11 @@ const STORY = {
 
       <p>La porte résiste d’abord, puis cède sous ton épaule dans un grondement sourd.</p>
     `,
-    choices: [{ label: 'Passer sous la cité', to: 'c88' }]
+    choices: [{ label: 'Passer sous la cité', to: 'c91' }]
   },
 
-  c88: {
-    number: 'PAGE 88',
+  c91: {
+    number: 'PAGE 91',
     title: 'Sous la Cité morte',
     image: 'Sous la Cité morte',
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
@@ -4558,45 +4614,48 @@ const STORY = {
   "c50": "Les bâtisseurs",
   "c51": "La petite lame noire",
   "c52": "La silhouette au sommet",
-  "c53": "La fissure",
-  "c54": "Au-dessus de la cité",
-  "c55": "La corniche du vide",
-  "c56": "Les pas sous tes pieds",
-  "c57": "La course sur le pont",
-  "c58": "Le marcheur sous le pont",
-  "c59": "Le combat au-dessus du vide",
-  "c60": "L’autre extrémité du pont",
-  "c61": "La porte suspendue",
-  "c62": "La rue suspendue",
-  "c63": "Les quartiers noyés",
-  "c64": "Les quartiers hauts",
-  "c65": "La porte latérale",
-  "c66": "La Cité morte",
-  "c67": "La salle des noms",
-  "c68": "Ceux qui sont venus",
-  "c69": "Ton nom",
-  "c70": "Le dernier Veilleur",
-  "c71": "Les appelés",
-  "c72": "Le couloir des portes",
-  "c73": "La porte d’Aldren",
-  "c74": "Ceux qui ont répondu",
-  "c75": "Ne pas répondre",
-  "c76": "L’avertissement",
-  "c77": "Le laboratoire des Veilleurs",
-  "c78": "Les aiguilles de pierre",
-  "c79": "Le bras de pierre",
-  "c80": "L’ampoule blanche",
-  "c81": "Ce qu’ils essayaient de sauver",
-  "c82": "La salle de veille",
-  "c83": "L’avenue basse",
-  "c84": "Le passage de service",
-  "c85": "Le puits des Veilleurs",
-  "c86": "Le palier inférieur",
-  "c87": "La porte sous la ville",
-  "c88": "Sous la Cité morte"
+  "c53": "L’appel",
+  "c54": "La silhouette inhumaine",
+  "c55": "Devant la fissure",
+  "c56": "La fissure",
+  "c57": "Au-dessus de la cité",
+  "c58": "La corniche du vide",
+  "c59": "Les pas sous tes pieds",
+  "c60": "La course sur le pont",
+  "c61": "Le marcheur sous le pont",
+  "c62": "Le combat au-dessus du vide",
+  "c63": "L’autre extrémité du pont",
+  "c64": "La porte suspendue",
+  "c65": "La rue suspendue",
+  "c66": "Les quartiers noyés",
+  "c67": "Les quartiers hauts",
+  "c68": "La porte latérale",
+  "c69": "La Cité morte",
+  "c70": "La salle des noms",
+  "c71": "Ceux qui sont venus",
+  "c72": "Ton nom",
+  "c73": "Le dernier Veilleur",
+  "c74": "Les appelés",
+  "c75": "Le couloir des portes",
+  "c76": "La porte d’Aldren",
+  "c77": "Ceux qui ont répondu",
+  "c78": "Ne pas répondre",
+  "c79": "L’avertissement",
+  "c80": "Le laboratoire des Veilleurs",
+  "c81": "Les aiguilles de pierre",
+  "c82": "Le bras de pierre",
+  "c83": "L’ampoule blanche",
+  "c84": "Ce qu’ils essayaient de sauver",
+  "c85": "La salle de veille",
+  "c86": "L’avenue basse",
+  "c87": "Le passage de service",
+  "c88": "Le puits des Veilleurs",
+  "c89": "Le palier inférieur",
+  "c90": "La porte sous la ville",
+  "c91": "Sous la Cité morte"
 };
 
-  const PAGE_ORDER = Array.from({ length: 88 }, (_, i) => `c${i + 1}`);
+  const PAGE_ORDER = Array.from({ length: 91 }, (_, i) => `c${i + 1}`);
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -4653,6 +4712,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
+      pageMapVersion: 53,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -4689,6 +4749,26 @@ const STORY = {
       damageRollResults: {},
       currentCheckpoint: null
     };
+  }
+
+  // V53 : les anciennes pages c53...c88 deviennent c56...c91.
+  // Conversion unique et idempotente des sauvegardes et checkpoints V52.
+  function migratePageNumbersV53(state) {
+    if (!state || typeof state !== 'object' || state.pageMapVersion >= 53) return state;
+    const renumber = id => {
+      if (typeof id !== 'string') return id;
+      const match = /^c(\d+)$/.exec(id);
+      if (!match) return id;
+      const page = Number(match[1]);
+      return page >= 53 && page <= 88 ? `c${page + 3}` : id;
+    };
+    state.node = renumber(state.node);
+    if (state.visited && typeof state.visited === 'object' && !Array.isArray(state.visited)) {
+      state.visited = Object.fromEntries(Object.entries(state.visited).map(([id, value]) => [renumber(id), value]));
+    }
+    if (Array.isArray(state.history)) state.history = state.history.map(renumber);
+    state.pageMapVersion = 53;
+    return state;
   }
 
   const TEST_ITEM_CATALOG = [
@@ -4978,7 +5058,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 26,
+    contentVersion: 27,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
@@ -4987,8 +5067,15 @@ const STORY = {
     navigationTitles: PAGE_NAV_TITLES,
     padPage,
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
+    imageCandidatesForPage: n => {
+      const current = `La-Grotte-de-Valombre-${padPage(n)}`;
+      if (n <= 52) return [current];
+      if (n <= 55) return [`pages/${current}`];
+      return [`pages/${current}`, `La-Grotte-de-Valombre-${padPage(n - 3)}`];
+    },
     imageExtensions: ['png'],
     createInitialState,
+    migrateState: migratePageNumbersV53,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage },
     characterSheetHtml,
     inventory,

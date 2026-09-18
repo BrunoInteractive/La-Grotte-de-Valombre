@@ -98,7 +98,16 @@ migrateLegacySaveIfNeeded();
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? { ...defaultState(), ...JSON.parse(saved) } : defaultState();
+    if (!saved) return defaultState();
+    const previous = JSON.parse(saved);
+    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 53) {
+      try {
+        if (!localStorage.getItem(`${STORAGE_KEY}.backup-v52`)) localStorage.setItem(`${STORAGE_KEY}.backup-v52`, saved);
+      } catch (e) {}
+      BOOK.migrateState(previous);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(previous));
+    }
+    return { ...defaultState(), ...previous };
   } catch { return defaultState(); }
 }
 let state = loadState();
@@ -140,7 +149,15 @@ function restartFromCheckpoint() {
     const saved = localStorage.getItem(CHECKPOINT_KEY);
     if (!saved) return restartGame();
     const journalBackup = state.journal || '';
-    state = { ...defaultState(), ...JSON.parse(saved) };
+    const previous = JSON.parse(saved);
+    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 53) {
+      try {
+        if (!localStorage.getItem(`${CHECKPOINT_KEY}.backup-v52`)) localStorage.setItem(`${CHECKPOINT_KEY}.backup-v52`, saved);
+      } catch (e) {}
+      BOOK.migrateState(previous);
+      localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(previous));
+    }
+    state = { ...defaultState(), ...previous };
     state.journal = journalBackup || state.journal || '';
     saveState(); closeDrawer(); closeModal(); closeJournal(); render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -169,20 +186,23 @@ function enterNode(id) {
 
 function loadPageImage(pageNumber, title) {
   const base = BOOK.imageBaseForPage(pageNumber);
+  const candidates = typeof BOOK.imageCandidatesForPage === 'function'
+    ? BOOK.imageCandidatesForPage(pageNumber)
+    : [base];
   imageLabel.textContent = base;
   storyImage.classList.add('hidden');
   imagePlaceholder.style.display = 'grid';
   storyImage.alt = title ? `Illustration — ${title}` : `Illustration page ${padPage(pageNumber)}`;
-  let index = 0;
   const extensions = BOOK.imageExtensions || ['webp','png','jpg','jpeg'];
+  const attempts = candidates.flatMap(candidate => extensions.map(ext => `${BOOK.assetBase}/${candidate}.${ext}`));
+  let index = 0;
   const tryNext = () => {
-    if (index >= extensions.length) {
+    if (index >= attempts.length) {
       storyImage.removeAttribute('src'); storyImage.classList.add('hidden'); imagePlaceholder.style.display = 'grid'; return;
     }
-    const ext = extensions[index++];
     storyImage.onload = () => { storyImage.classList.remove('hidden'); imagePlaceholder.style.display = 'none'; };
     storyImage.onerror = tryNext;
-    storyImage.src = `${BOOK.assetBase}/${base}.${ext}`;
+    storyImage.src = attempts[index++];
   };
   tryNext();
 }
