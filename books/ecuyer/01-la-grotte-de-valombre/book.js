@@ -2547,6 +2547,21 @@ const STORY = {
     title: '',
     image: 'Le lac se referme',
     text: state => {
+      // L’îlot doit être découvert dans chaque issue de l’attaque, avant le choix de l’accoster.
+      // Ne pas présenter de nouveaux choix d’exploration après une blessure mortelle.
+      const isletDiscovery = state.hp > 0 ? `
+        <p>Tu récupères les rames et reprends lentement ta route.</p>
+
+        <p>Sur ta droite, la brume se déchire un instant.</p>
+
+        <p>À quelques dizaines de mètres, une petite masse rocheuse émerge de l’eau. Elle semble trop régulière pour être entièrement naturelle.</p>
+
+        <p>Tu distingues un rebord de pierre, juste assez bas pour y accoster.</p>
+
+        <p>La brume commence déjà à se refermer sur l’îlot.</p>
+
+        <p>Tu peux t’en approcher pour l’examiner, ou poursuivre ta traversée sans prendre le risque de t’arrêter.</p>
+      ` : '';
       if (state.flags.lakeTentacleOutcome === 'counter') {
         return diceResultHtml(state) + (state.weapon === 'none'
           ? `
@@ -2564,7 +2579,7 @@ const STORY = {
             <p>Tu restes prêt à frapper, mais rien ne remonte.</p>
 
             <p>Le lac retrouve peu à peu son immobilité.</p>
-          `;
+          ` + isletDiscovery;
       }
       if (state.flags.lakeTentacleOutcome === 'lookHit') {
         return diceResultHtml(state) + `
@@ -2577,15 +2592,15 @@ const STORY = {
           <p>Lorsque tu te redresses, le tentacule a déjà replongé.</p>
 
           <p>Le lac redevient parfaitement immobile.</p>
-        `;
+        ` + isletDiscovery;
       }
       return `
-        <p>Tu te remets péniblement en position et récupères les rames.</p>
+        <p>Tu te remets péniblement en position.</p>
 
         <p>Tu surveilles l’eau quelques instants. Le tentacule ne revient pas.</p>
 
         <p>Le lac redevient parfaitement immobile.</p>
-      `;
+      ` + isletDiscovery;
     },
     choices: state => {
       if (state.hp <= 0) return fatalChoices();
@@ -4963,7 +4978,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 25,
+    contentVersion: 26,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,

@@ -4,11 +4,11 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 25,
+  "contentVersion": 26,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V51 — Travail · le tentacule du lac noir et les choix conséquents"
+  "buildLabel": "V52 — Travail · îlot introduit avant les choix du lac"
 }
