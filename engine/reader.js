@@ -223,8 +223,8 @@ function render() {
   } else {
     const mappedPage = PAGE_BY_NODE[state.node];
     const declaredPage = node.number ? parseInt(String(node.number).replace(/\D/g, ''), 10) : NaN;
-    const pageNumber = mappedPage || (Number.isFinite(declaredPage) ? declaredPage : 1);
-    chapterNumber.textContent = `PAGE ${padPage(pageNumber)}`;
+    const pageNumber = Number.isInteger(mappedPage) ? mappedPage : (Number.isFinite(declaredPage) ? declaredPage : 1);
+    chapterNumber.textContent = pageNumber === 0 ? 'PROLOGUE · 000' : `PAGE ${padPage(pageNumber)}`;
     if (node.noImage) {
       imageFrame.classList.add('hidden');
       storyImage.removeAttribute('src');
@@ -263,7 +263,7 @@ function render() {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
     const destinationPage = choice.stay ? null : PAGE_BY_NODE[choice.to];
-    const destination = destinationPage ? `<span class="choice-dest">Rendez-vous à la page ${padPage(destinationPage)}</span>` : '';
+    const destination = destinationPage === 0 ? '<span class="choice-dest">Lire le prologue</span>' : destinationPage ? `<span class="choice-dest">Rendez-vous à la page ${padPage(destinationPage)}</span>` : '';
     btn.innerHTML = `<span class="choice-index">${i + 1}</span><span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
     btn.addEventListener('click', () => {
       if (choice.action === 'checkpoint') return restartFromCheckpoint();
@@ -343,7 +343,7 @@ function renderPageNavigation() {
 }
 
 function jumpToPageForTest(nodeId) {
-  if (!STORY[nodeId] || !PAGE_BY_NODE[nodeId]) return;
+  if (!STORY[nodeId] || !Number.isInteger(PAGE_BY_NODE[nodeId])) return;
   // Outil de test : on change uniquement la page courante.
   // Aucun effet de choix/onEnter/checkpoint antérieur n'est déclenché automatiquement.
   state.node = nodeId;

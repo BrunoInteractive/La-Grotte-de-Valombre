@@ -433,17 +433,34 @@ const STORY = {
           <p>En bas de l’écran, tu peux consulter à tout moment ta fiche perso et ton inventaire. Tu y retrouveras tes caractéristiques, ton équipement et les objets découverts pendant l’aventure.</p>
         </div>
       </div>
-      <p>Sir Aldren t’a ordonné de rester au village. Pourtant, il aurait déjà dû être revenu, et son cheval vient de rentrer seul.</p>
     `,
-    choices: [{ label: 'Commencer l’aventure', to: 'c1', effect: s => setHeroIdentity(s, heroGender(s)) }]
+    choices: [{ label: 'Commencer l’aventure', to: 'c0', effect: s => setHeroIdentity(s, heroGender(s)) }]
   },
+  c0: {
+    number: 'PAGE 000',
+    title: 'Valombre',
+    image: 'Le village oublié',
+    text: state => `
+      <p>Tu as toujours connu Valombre ainsi.</p>
+      <p>Des maisons aux murs lézardés, des champs qui donnent juste assez pour passer l’hiver et des habitants qui comptent leurs pièces avant d’entrer chez le marchand.</p>
+      <p>Les anciens assurent qu’il n’en a pas toujours été ainsi. Ils racontent qu’autrefois, Valombre prospérait. Ses artisans travaillaient pour les seigneurs des environs. Des marchands parcouraient ses routes et son nom était connu, admiré ou craint, bien au-delà de la vallée.</p>
+      <p>Personne ne sait vraiment ce qui a changé. Les routes commerciales ont été abandonnées. Les familles les plus riches sont parties. Avec les générations, les récits de grandeur sont devenus des histoires qu’on raconte au coin du feu.</p>
+      <p>Toi, tu n’as jamais connu cette époque. Depuis l’enfance, tu rêves de quitter Valombre, de parcourir le royaume et de découvrir ce qui existe au-delà de ces terres oubliées.</p>
+      <p>La chevalerie t’a toujours semblé être le seul chemin possible.</p>
+      <p>Lorsque Sir Aldren de Rochebrune t’a pris à son service comme ${heroGender(state) === 'male' ? 'écuyer' : 'écuyère'}, tu as cru tenir enfin ta chance. Tu as entretenu ses armes, soigné son cheval et appris tout ce que tu pouvais auprès de lui.</p>
+      <p>Puis Aldren est parti seul vers la grotte qui domine la vallée. Il disait vouloir affronter une créature dont on parlait au village. Il t’a ordonné de rester.</p>
+      <p>Trois jours ont passé.</p>
+      <p>Ce matin, des sabots résonnent soudain au bout de la rue.</p>
+    `,
+    choices: [{ label: 'Rejoindre les écuries', to: 'c1' }]
+  },
+
   c1: {
     number: 'PAGE 1',
     title: 'Les écuries de Valombre',
     image: 'Le cheval revenu seul',
     onEnter: s => equipHeavySword(s),
     text: state => `
-      <p>Des sabots résonnent soudain sur les pavés de Valombre.</p>
       <p>Le cheval de <strong>Sir Aldren de Rochebrune</strong> apparaît au bout de la rue. Seul.</p>
       <p>De l’écume couvre son poitrail. Une longue entaille traverse la selle et du sang séché macule l’une des sacoches.</p>
 
@@ -3584,6 +3601,7 @@ const STORY = {
       <p>Tu t'approches de la paroi sculptée. Les gravures sont immenses, mais leurs gestes restent lisibles.</p>
       <p>La première scène représente la cité lorsqu'elle était habitée. Des hommes et des femmes transportent des blocs, élèvent des arches et construisent des habitations.</p>
       <p>Tu reconnais les rues et les colonnes autour de toi. Ce sont leurs ouvrages.</p>
+      <p>Au bord de la gravure, plusieurs routes quittent la cité vers des vallées de surface. L’une semble suivre les collines de Valombre. Tu n’en es pas certain.</p>
       <p>Plus loin, les bâtisseurs abandonnent leurs outils. Ils se réunissent autour d'une ouverture qui descend sous la cité.</p>
       <p>Sur les vêtements de certains apparaît un signe que tu connais déjà : <strong>l'œil fermé</strong>.</p>
       <p>Tu avances vers la scène suivante.</p>
@@ -3962,63 +3980,36 @@ const STORY = {
   c85: {
     number: 'PAGE 85',
     title: 'Le laboratoire des Veilleurs',
-    image: 'L’arche blanche',
+    image: 'Le dispensaire des Veilleurs',
     text: `
-      <p>La lumière vient de petites plaques pâles incrustées dans les murs.</p>
-
-      <p>Le passage débouche dans une grande salle.</p>
-
-      <p>Des tables de pierre sont alignées contre les parois.</p>
-
-      <p>Des sangles desséchées pendent encore à certaines.</p>
-
-      <p>Au-dessus, de longs bras articulés portent des aiguilles de pierre.</p>
-
-      <p>Tu penses d’abord à une salle de torture.</p>
-
-      <p>Puis tu remarques les bassins, les rigoles et les récipients soigneusement rangés.</p>
-
-      <p>Sur plusieurs tables, les sangles sont accompagnées de coussins de cuir pour maintenir la tête et les épaules.</p>
-
-      <p>Dans une cuve fermée, une matière noire a séché en une couche épaisse.</p>
-
-      <p>Le même dépôt apparaît au bout de certaines aiguilles.</p>
-
-      <p>Les traces sur les aiguilles indiquent qu'on cherchait à extraire quelque chose du corps des personnes maintenues sur ces tables.</p>
-
-      <p>Des soins, peut-être. Mais rien ne te dit si ces personnes y consentaient.</p>
+      <p>La lumière blanche vient de petites plaques incrustées dans les murs. L’arche débouche sur une salle à taille humaine.</p>
+      <p>Des lits étroits sont disposés près d’un foyer éteint. Sur une table, des écuelles propres, des bandes de tissu et des carnets ont été soigneusement rangés.</p>
+      <p>Une phrase est gravée au-dessus de la porte :</p>
+      <blockquote>QUE NUL NE SOIT LIVRÉ À L’APPEL SANS SECOURS.</blockquote>
+      <p>Les premiers carnets parlent d’hommes qui entendaient une voix les pousser à descendre. Les Veilleurs les nourrissaient, les surveillaient et tentaient de les convaincre de rester.</p>
+      <p>Puis les notes se font plus pressantes : ceux qui semblaient guéris repartaient parfois vers la montagne au milieu de la nuit.</p>
+      <p>Au fond du dispensaire, une porte donne sur des tables munies de sangles. Au-dessus d’elles pendent des instruments de pierre et de métal.</p>
+      <p>Tu avances pour comprendre ce qu’ils faisaient ici.</p>
     `,
-    choices: [{ label: 'Examiner les appareils', to: 'c86' }]
+    choices: [{ label: 'Examiner les registres et les instruments', to: 'c86' }]
   },
 
   c86: {
     number: 'PAGE 86',
-    title: '',
-    image: 'Les aiguilles de pierre',
+    title: 'Les remèdes impossibles',
+    image: 'Les instruments des Veilleurs',
     text: `
-      <p>Tu t’approches d’une des tables.</p>
-
-      <p>Les aiguilles convergent vers les bras, la poitrine et la gorge.</p>
-
-      <p>Au bout de chacune, une matière noire a séché en croûtes très fines.</p>
-
-      <p>Dans un renfoncement du mur, plusieurs ampoules de verre sont rangées dans une boîte de pierre.</p>
-
-      <p>Presque toutes sont brisées.</p>
-
-      <p>Une seule paraît intacte.</p>
-
-      <p>Un liquide blanc et trouble remplit encore son fond.</p>
-
-      <p>Tu avances la main.</p>
-
-      <p>La dalle sous ta botte s’abaisse de quelques millimètres.</p>
-
-      <p>Un déclic sec répond dans le mur.</p>
-
-      <p>Un mécanisme ancien se réveille.</p>
-
-      <p>Un bras de pierre pivote vers toi.</p>
+      <p>Chaque table est munie d’un appui pour la tête. Des schémas représentent un crâne traversé par de fines lignes, semblables à celles de la fresque de l’appel.</p>
+      <p>Les Veilleurs croyaient pouvoir retirer une partie de l’esprit atteinte par la voix. Ils ont tenté des interventions de plus en plus profondes.</p>
+      <p>Tu lis plusieurs observations :</p>
+      <blockquote>LA VOIX S’EST TUE. IL NE RECONNAÎT PLUS SA FILLE.</blockquote>
+      <blockquote>L’APPEL EST REVENU AU TROISIÈME JOUR.</blockquote>
+      <blockquote>AUCUN TRAITEMENT N’A DURABLEMENT ROMPU LE LIEN.</blockquote>
+      <p>Les lits du dispensaire te reviennent en mémoire. Certains avaient cherché à soigner ces hommes. Mais ici, les soins ressemblent peu à peu à des supplices.</p>
+      <p>Une autre série de tables occupe la moitié de la salle. Des conduits partent d’une cuve de terre noire et aboutissent à des aiguilles dirigées <strong>vers</strong> les personnes immobilisées.</p>
+      <p>Les instruments ne servaient pas à retirer la terre de leur corps. Ils étaient conçus pour l’y faire entrer.</p>
+      <p>Près d’une boîte contenant des ampoules blanches, une dalle du sol semble moins usée que les autres.</p>
+      <p>Tu fais un pas vers la boîte. La dalle s’enfonce et un bras articulé pivote brutalement vers toi.</p>
     `,
     choices: [{
       label: 'Éviter le bras — lancer les trois dés de Dextérité',
@@ -4033,111 +4024,71 @@ const STORY = {
 
   c87: {
     number: 'PAGE 87',
-    title: '',
-    image: 'Le bras de pierre',
+    title: 'Le bras d’injection',
+    image: 'Le bras d’injection',
     text: state => {
       const r = diceResultHtml(state);
       if (state.flags.labTrap === 'success') {
         return r + `
           <p>Tu te jettes de côté.</p>
-
-          <p>L’aiguille traverse l’endroit où se trouvait ta gorge et s’arrête dans un claquement sec.</p>
-
-          <p>Le mécanisme essaie de revenir à sa position initiale, puis se bloque.</p>
-
-          <p>Après quelques secondes, le silence revient.</p>
+          <p>Une aiguille épaisse traverse l’endroit où se trouvait ton épaule et s’arrête dans un claquement sec.</p>
+          <p>Du sable noir remplit encore le réservoir fixé à l’arrière du bras. Le mécanisme tentait de t’injecter cette matière.</p>
+          <p>Il essaie de revenir à sa position initiale, puis se bloque.</p>
         `;
       }
       return r + `
-        <p>Tu recules trop tard.</p>
-
-        <p>Le bras de pierre te frappe à l’épaule et t’écrase contre le bord de la table.</p>
-
+        <p>Tu recules trop tard. Le bras te frappe à l’épaule et t’écrase contre le bord de la table.</p>
         ${damageAbsorptionHtml(state.flags.labTrapDamage)}
-
-        <p>L’aiguille passe à quelques doigts de ton cou.</p>
-
-        <p>Le mécanisme grince encore une fois puis s’immobilise.</p>
+        <p>L’aiguille dérape sur la pierre à quelques doigts de ton cou. Son réservoir contient encore de la terre noire.</p>
+        <p>Tu te dégages tandis que le bras grince puis se bloque. Rien n’a pénétré ta peau, mais le choc t’a fait mal.</p>
       `;
     },
-    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'Prendre l’ampoule', to: 'c88' }]
+    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'Examiner les ampoules', to: 'c88' }]
   },
 
   c88: {
     number: 'PAGE 88',
-    title: '',
+    title: 'L’ampoule blanche',
     image: 'L’ampoule blanche',
     text: `
-      <p>Le verre est froid.</p>
-
-      <p>Le liquide blanc ne remplit qu’un tiers de l’ampoule.</p>
-
-      <p>Lorsque tu la retournes, il s’écoule lentement sur la paroi intérieure.</p>
-
-      <p>Aucune inscription.</p>
-
-      <p>Seulement l’œil fermé, gravé si finement qu’il faut incliner le verre pour le voir.</p>
-
-      <p>Autour de toi, les autres ampoules sont toutes vides ou brisées.</p>
-
-      <p>Tu ne sais pas ce que celle-ci peut encore soigner.</p>
-
-      <p>Tu sais seulement que les machines de cette salle cherchaient à extraire un mal inconnu.</p>
+      <p>La boîte contient plusieurs ampoules brisées. Une seule est intacte. Un liquide blanc et trouble en remplit encore le fond.</p>
+      <p>Sur le couvercle, tu déchiffres une inscription :</p>
+      <blockquote>RINCER LES INSTRUMENTS APRÈS CONTACT AVEC LA TERRE NOIRE.</blockquote>
+      <p>Un dessin montre des grains noirs se détachant d’une aiguille plongée dans le liquide.</p>
+      <p>Ce n’est pas un remède contre l’appel. Peut-être ce produit peut-il, au moins, nettoyer les traces de terre qui restent sur toi.</p>
+      <p>Tu peux emporter l’ampoule ou la laisser. Une dernière série de registres t’attend au fond de la salle.</p>
     `,
     choices: state => hasItem(state, 'ampoule_blanche')
-      ? [{ label: 'Examiner les gravures de la salle', to: 'c89' }]
+      ? [{ label: 'Consulter les derniers registres', to: 'c89' }]
       : [
           {
             label: 'Prendre l’Ampoule blanche',
             to: 'c89',
-            effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Une ampoule des Veilleurs contenant un liquide blanc. Elle semble avoir servi au traitement de ceux que la montagne avait atteints.')
+            effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Un liquide destiné à rincer les instruments souillés de terre noire. Il peut atténuer les traces superficielles de contamination, sans guérir l’appel.')
           },
-          { label: 'La laisser', to: 'c89' }
+          { label: 'Laisser l’ampoule et lire les registres', to: 'c89' }
         ]
   },
 
   c89: {
     number: 'PAGE 89',
-    title: '',
-    image: 'Ce qu’ils essayaient de sauver',
+    title: 'La fabrication des gardiens',
+    image: 'Les registres des expériences',
     text: `
-      <p>Sur le mur du fond, une série de silhouettes raconte ce qui se passait ici.</p>
-
-      <p>La première représente un homme tourné vers une montagne.</p>
-
-      <p>Trois traits partent de sa tête, comme s’il écoutait quelque chose.</p>
-
-      <p>Dans la seconde, une matière sombre apparaît autour de sa bouche, de ses mains et de sa poitrine.</p>
-
-      <p>Dans la troisième, il est attaché sur une table semblable à celles qui t’entourent.</p>
-
-      <p>Les aiguilles entrent dans son corps.</p>
-
-      <p>La matière noire en ressort et coule vers un récipient.</p>
-
-      <p>Dans la dernière image, l’homme est debout. L’œil fermé est gravé au-dessus de lui.</p>
-
-      <p>Sous les dessins, quelques mots sont encore lisibles :</p>
-
-      <blockquote>À L’APPEL, RETENIR.</blockquote>
-
-      <blockquote>EXTRAIRE AVANT LA DESCENTE.</blockquote>
-
-      <blockquote>APRÈS L’EXTRACTION, LE SILENCE REVIENT CHEZ CERTAINS.</blockquote>
-
-      <p>Une dernière ligne a été ajoutée plus tard :</p>
-
-      <blockquote>S’ILS ENTENDENT ENCORE, NE PAS LES LAISSER DESCENDRE.</blockquote>
-
-      <p>Tu regardes les sangles avec un malaise nouveau.</p>
-
-      <p>Ces appareils servaient au moins à tenter de sauver certains malades.</p>
-
-      <p>Mais les sangles et les aiguilles ne disent rien du sort de ceux qui refusaient les traitements.</p>
-
-      <p>Ils avaient compris que les voix poussaient les voyageurs à descendre, tandis que la terre noire les contaminait.</p>
-
-      <p>Après certains traitements, les patients n’entendaient plus rien. Les gravures ne disent pas combien de temps cela durait.</p>
+      <p>Les registres les plus récents ne parlent presque plus de guérison. Ils décrivent l’exposition volontaire à la terre noire de personnes attirées par la prison.</p>
+      <p>Tu lis quatre lignes, consignées d’une écriture régulière :</p>
+      <blockquote>SUJET 17 : DÉCÈS.</blockquote>
+      <blockquote>SUJET 18 : DÉCÈS.</blockquote>
+      <blockquote>SUJET 19 : TRANSFORMATION. NE RÉPOND PLUS À L’APPEL.</blockquote>
+      <blockquote>SUJET 20 : TRANSFORMATION. OBÉIT AUX SIGNAUX DE GARDE.</blockquote>
+      <p>Un plan des galeries montre des formes déformées disposées près des accès. Sur les premiers feuillets, les Veilleurs cherchaient à faire taire une voix. À la fin, ils cherchaient à fabriquer des gardiens.</p>
+      <p>Une directive porte le sceau de l’œil fermé :</p>
+      <blockquote>CONSERVER LES SUJETS RÉSISTANTS POUR LA DÉFENSE DES PASSAGES.</blockquote>
+      <p>Dans la marge, quelqu’un a écrit : « Ce sont encore des hommes. »</p>
+      <p>Une autre main a répondu : « Plus pour longtemps. »</p>
+      <p>Tu repenses aux créatures rencontrées dans la montagne. Combien ont commencé leur descente comme toi ?</p>
+      <p>Ces expériences ont-elles empêché une catastrophe, ou ajouté d’autres victimes à celles de l’appel ? Les registres ne le disent pas.</p>
+      <p>Un couloir te conduit vers une salle ronde où convergent les autres parcours de la cité.</p>
     `,
     choices: [{ label: 'Quitter le laboratoire', to: 'c90' }]
   },
@@ -4153,7 +4104,7 @@ const STORY = {
       } else if (state.flags.cityRoute === 'voices') {
         routeMemory = '<p>Tu repenses aux voix empruntées à ceux que les voyageurs aimaient. L’appel pouvait les conduire jusque dans les pièges.</p>';
       } else if (state.flags.cityRoute === 'laboratory') {
-        routeMemory = '<p>Tu repenses aux aiguilles des salles blanches. Certains Veilleurs avaient essayé de retirer la terre noire des corps atteints.</p>';
+        routeMemory = '<p>Tu repenses aux salles blanches : les tentatives pour faire taire l’appel ont échoué. Les Veilleurs ont ensuite fait pénétrer la terre noire dans des corps pour obtenir des gardiens.</p>';
       }
       const echoes = [];
       if (state.visited?.c24 || state.visited?.c26 || state.visited?.c27) {
@@ -4172,6 +4123,8 @@ const STORY = {
         <p>Sous le plan, une inscription est encore lisible :</p>
         <blockquote>LA TERRE NOIRE ENTRETIENT LE SCEAU. NE PAS LA TOUCHER.</blockquote>
         <p>Le sable noir de la place semble être cette même matière, réduite en grains et disposée dans les canaux de la prison.</p>
+        <p>Sur le bord du plan, des chemins conduisant vers la surface sont barrés, comme si les Veilleurs en avaient condamné les accès.</p>
+        <p>Tu repenses aux anciennes routes de Valombre. Ont-elles été fermées pour protéger la vallée ? Leur fermeture a-t-elle participé à son déclin ? Ce plan ne permet pas de le savoir.</p>
         <p>Un panneau voisin représente des personnes qui approchent des accès à la prison. Certaines s'effondrent au contact de la terre. Sur d'autres, la matière gagne les bras et la poitrine, puis déforme leurs silhouettes.</p>
         <p>Dans la dernière scène, les formes transformées sont placées devant trois passages. L’une est une masse lourde ; une autre rampe au ras du sol ; la troisième se tient accrochée sous une passerelle.</p>
         ${recognition}
@@ -4378,7 +4331,7 @@ const STORY = {
 
         <p>Le goût terreux au fond de ta gorge finit lui aussi par s’atténuer.</p>
 
-        <p>Pour la première fois depuis la fissure, tu as l’impression d’en être débarrassé.</p>
+        <p>Les traces superficielles se détachent et la gêne s’atténue. Tu ignores ce qui peut subsister plus profondément, et rien ne prouve que l’appel ait disparu.</p>
       ` : ''}
 
       <p>Tu suis la galerie indiquée par les Veilleurs.</p>
@@ -4455,6 +4408,7 @@ const STORY = {
   // Libellés complets de l’outil de navigation TEST.
   // Les titres narratifs de STORY restent volontairement masqués sur certaines pages.
   const PAGE_NAV_TITLES = {
+  "c0": "Prologue — Valombre",
   "c1": "Les écuries de Valombre",
   "c2": "La sacoche de Sir Aldren",
   "c3": "La place de Valombre",
@@ -4553,8 +4507,8 @@ const STORY = {
   "c96": "Sous la Cité morte"
 };
 
-  const PAGE_ORDER = Array.from({ length: 96 }, (_, i) => `c${i + 1}`);
-  const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
+  const PAGE_ORDER = ['c0', ...Array.from({ length: 96 }, (_, i) => `c${i + 1}`)];
+  const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
   function equipHeavySword(state) {
@@ -4755,7 +4709,7 @@ const STORY = {
     {
       id: 'ampoule_blanche',
       name: 'Ampoule blanche',
-      description: 'Une ampoule des Veilleurs liée au traitement de la terre noire.'
+      description: 'Un liquide de rinçage des instruments souillés de terre noire : il peut atténuer la contamination superficielle, mais ne guérit pas l’appel.'
     }
   ];
 
@@ -4846,7 +4800,7 @@ const STORY = {
       }
       if (id === 'ampoule_blanche') {
         const useful = ((state.dexPenalty || 0) > 0 || state.flags.blackEarthContamination);
-        return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule" ${useful ? '' : 'disabled'}>Utiliser l’Ampoule blanche</button></div>`;
+        return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule" ${useful ? '' : 'disabled'}>Rincer les traces de terre noire</button></div>`;
       }
       if (PROTECTION_ITEMS[id]) {
         ensureProtectionState(state);
@@ -4921,7 +4875,7 @@ const STORY = {
         removeItem(state, 'ampoule_blanche');
         if ((state.dexPenalty || 0) > 0) state.dexPenalty = Math.max(0, state.dexPenalty - 1);
         state.flags.blackEarthContamination = false;
-        state.flags.usedWhiteAmpoule = true;
+        state.flags.usedWhiteAmpoule = true; // Rinçage des traces superficielles ; l’appel demeure.
         api.saveState();
         api.render();
         api.openInventory();
@@ -4980,7 +4934,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 29,
+    contentVersion: 30,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
@@ -4991,8 +4945,8 @@ const STORY = {
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
     imageCandidatesForPage: n => {
       const current = `La-Grotte-de-Valombre-${padPage(n)}`;
-      // Réécritures V55 : ne pas afficher les anciennes PNG qui racontent une autre scène.
-      if ([50, 51, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 90].includes(n)) return [`pages/${current}`];
+      // Prologue et scènes réécrites : éviter les anciennes illustrations incompatibles.
+      if (n === 0 || [50, 51, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 85, 86, 87, 88, 89, 90].includes(n)) return [`pages/${current}`];
       if (n <= 52) return [current];
       if (n <= 55) return [`pages/${current}`];
       if (n <= 69) return [`pages/${current}`, `La-Grotte-de-Valombre-${padPage(n - 3)}`];
