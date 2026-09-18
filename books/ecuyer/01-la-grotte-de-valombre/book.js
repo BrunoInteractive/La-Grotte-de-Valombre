@@ -2289,10 +2289,11 @@ const STORY = {
 
       <p>Il faut choisir.</p>
 
-      <p class="ending">FIN DE CETTE VERSION D’ESSAI</p>
     `,
     choices: [
-      { label: 'Recommencer l’aventure', action: 'restart' }
+      { label: 'Descendre vers le lac noir', to: 'c41' },
+      { label: 'Prendre l’escalier de pierre', to: 'c44' },
+      { label: 'Longer la corniche vers le pont', to: 'c55' }
     ]
   },
 
@@ -4470,7 +4471,7 @@ const STORY = {
 
 };
 
-  const PAGE_ORDER = Array.from({ length: 40 }, (_, i) => `c${i + 1}`);
+  const PAGE_ORDER = Array.from({ length: 88 }, (_, i) => `c${i + 1}`);
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -4702,7 +4703,8 @@ const STORY = {
       const healing = Number.isInteger(state.lastHealingDie)
         ? `<div class="dice-result"><p class="roll-number">Dernière potion</p><div class="dice-faces">${renderDie(state.lastHealingDie)}</div><p><strong>+${state.lastHealingDie} point${state.lastHealingDie > 1 ? 's' : ''} de Vie</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p></div>`
         : '';
-      return equipment + healing;
+      const testPanel = testInventoryHtml(state);
+      return equipment + testPanel + healing;
     },
 
     actionHtml(id, item, state) {
@@ -4842,8 +4844,8 @@ const STORY = {
   }
 
   BookRegistry.register({
-    id: 'ecuyer-01-player-test',
-    seriesId: 'ecuyer-playtest',
+    id: 'ecuyer-01',
+    seriesId: 'ecuyer',
     seriesLabel: 'ÉCUYER 01',
     episode: 1,
     orderInSeries: 1,
@@ -4867,8 +4869,8 @@ const STORY = {
     checkpoints: [
       { node: 'c20', label: 'Entrée de la grotte', onlyIfNone: true }
     ],
-    legacyStorageKeys: [],
-    legacyCheckpointKeys: [],
+    legacyStorageKeys: ['ldveh.book.ecuyer-01.save.v1', 'ldveh.book.ecuyer-01-valombre.save.v1', 'valombre_save_v12_3d6_stats18'],
+    legacyCheckpointKeys: ['ldveh.book.ecuyer-01.checkpoint.v1', 'ldveh.book.ecuyer-01-valombre.checkpoint.v1', 'valombre_checkpoint_v12_3d6_stats18'],
     exportSeriesMemory(state) {
       // Les décisions durables seront explicitement ajoutées ici lorsqu’elles
       // seront validées comme conséquences inter-livres. Rien n’est exporté
