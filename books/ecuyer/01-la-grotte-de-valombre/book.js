@@ -2679,6 +2679,8 @@ const STORY = {
 
           <p>Tu détournes les yeux.</p>
 
+          <p>Près de la créature, quelques grains de terre noire se mêlent à la poussière de pierre.</p>
+
           <p>Dans la cavité au centre de l’îlot, l’anneau est toujours là.</p>
 
           <p>Rien ne brille. Rien ne vibre.</p>
@@ -2732,7 +2734,7 @@ const STORY = {
           {
             label: 'Prendre l’Anneau des Veilleurs (+1 Dextérité)',
             to: 'c48',
-            effect: s => addItem(s, 'anneau_veilleurs', 'Anneau des Veilleurs', 'Un anneau ancien et très léger. +1 Dextérité.')
+            effect: s => addItem(s, 'anneau_veilleurs', 'Anneau des Veilleurs', 'Un anneau ancien et très léger. +1 Dextérité. Son motif peut actionner certains mécanismes des Veilleurs.')
           },
           { label: 'Laisser l’anneau et reprendre la barque', to: 'c48' }
         ];
@@ -3566,109 +3568,189 @@ const STORY = {
         <p>Tu fixes la vasque. Quelques grains ont glissé sur le bord. Là où ils touchent la pierre, une tache sombre s’étend lentement.</p>
         <p>Tu aurais plongé la main dedans sans cette voix.</p>
         <p>Qui vient de t’arrêter ?</p>
-        <p>Trois passages s’ouvrent autour de la place.</p>
-        <p>Le premier mène à une galerie bordée de niches de pierre.</p>
-        <p>Le second aligne une suite de portes étroites, toutes fermées.</p>
-        <p>Le dernier laisse filtrer une lumière blanche sous une arche marquée de l’œil fermé.</p>
+        <p>De l'autre côté de la place, une paroi entière est couverte de gravures monumentales.</p>
+        <p>La dernière figure visible depuis ici porte le symbole de l'œil fermé.</p>
+        <p>Tu traverses la place pour examiner ces scènes.</p>
       `;
     },
-    choices: [
-      { label: 'Explorer la galerie aux niches de pierre', to: 'c70', effect: s => { s.flags.cityRoute = 'names'; } },
-      { label: 'Entrer dans le couloir aux portes étroites', to: 'c75', effect: s => { s.flags.cityRoute = 'voices'; } },
-      { label: 'Suivre la lumière blanche sous l’arche', to: 'c80', effect: s => { s.flags.cityRoute = 'laboratory'; } }
-    ]
+    choices: [{ label: 'Examiner les grandes gravures', to: 'c70' }]
   },
 
   c70: {
     number: 'PAGE 70',
-    title: 'La salle des disparus',
-    image: 'La salle des disparus',
+    title: 'Les bâtisseurs',
+    image: 'Les bâtisseurs de la cité',
     text: `
-      <p>Le passage débouche dans une longue salle aux murs creusés de niches.</p>
-      <p>Des sacs de voyage y sont rangés à côté de casques cabossés, de bottes desséchées et d’armes dont les lames ont rouillé jusqu’à la garde.</p>
-      <p>Certains objets ont été enveloppés dans des morceaux de toile. D’autres reposent directement sur la pierre.</p>
-      <p>Chaque niche porte un petit symbole de l’œil fermé et une plaquette d’argile couverte d’inscriptions.</p>
-      <p>Tu examines un bouclier fendu. Sous la poussière, tu distingues les armoiries d’une ancienne maison que tu ne connais pas.</p>
-      <p>Tout a été disposé avec soin.</p>
-      <p>On a apporté ces affaires ici après les avoir retrouvées ailleurs dans la montagne.</p>
+      <p>Tu t'approches de la paroi sculptée. Les gravures sont immenses, mais leurs gestes restent lisibles.</p>
+      <p>La première scène représente la cité lorsqu'elle était habitée. Des hommes et des femmes transportent des blocs, élèvent des arches et construisent des habitations.</p>
+      <p>Tu reconnais les rues et les colonnes autour de toi. Ce sont leurs ouvrages.</p>
+      <p>Plus loin, les bâtisseurs abandonnent leurs outils. Ils se réunissent autour d'une ouverture qui descend sous la cité.</p>
+      <p>Sur les vêtements de certains apparaît un signe que tu connais déjà : <strong>l'œil fermé</strong>.</p>
+      <p>Tu avances vers la scène suivante.</p>
     `,
-    choices: [{ label: 'Examiner les affaires retrouvées', to: 'c71' }]
+    choices: [{ label: 'Suivre la fresque', to: 'c71' }]
   },
 
   c71: {
     number: 'PAGE 71',
-    title: '',
-    image: 'Les affaires retrouvées',
+    title: 'La porte scellée',
+    image: 'La construction de la prison',
     text: `
-      <p>Tu passes d’une niche à l’autre.</p>
-      <p>Une gourde écrasée. Un petit marteau de mineur. Un fourreau sans épée.</p>
-      <p>Dans une niche plus basse, une chaussure d’enfant repose près d’une bourse vide.</p>
-      <p>Il ne s’agit pas des richesses d’une tombe. Ce sont les affaires de personnes parties avec presque rien.</p>
-      <p>Sur les plaquettes, les mêmes mentions reviennent : <em>retrouvé près de la galerie</em>, <em>récupéré à l’escalier</em>, <em>aucun retour</em>.</p>
-      <p>Tu comprends que les Veilleurs recherchaient les voyageurs descendus jusqu’ici et rapportaient ce qu’ils pouvaient de leurs affaires.</p>
-      <p>Au bout de la rangée, plusieurs plaquettes ont été réunies sur une table.</p>
-      <p>Une inscription plus grande surmonte l’ensemble :</p>
-      <blockquote>CEUX QUI ONT FRANCHI LE DERNIER SEUIL NE SONT PAS REVENUS.</blockquote>
+      <p>La gravure suivante montre une forme immense au fond d'une cavité.</p>
+      <p>La pierre a été abîmée à cet endroit. Impossible de savoir ce que les bâtisseurs avaient voulu représenter.</p>
+      <p>Autour de cette forme, les hommes dressent des murs, condamnent des galeries et placent d'énormes blocs au-dessus de la cavité.</p>
+      <p>Dans la dernière scène, ils ferment une porte monumentale. L'œil fermé est gravé au centre de son battant.</p>
+      <p>Les mêmes hommes portent ce symbole sur leurs vêtements.</p>
+      <p><strong>Les premiers Veilleurs ont construit une prison sous la cité.</strong></p>
+      <p>Mais rien, sur cette partie de la fresque, n'explique ce qui les a poussés à enfermer la forme immense.</p>
     `,
-    choices: [{ label: 'Lire les dernières plaquettes', to: 'c72' }]
+    choices: [{ label: 'Examiner la suite des gravures', to: 'c72' }]
   },
 
   c72: {
     number: 'PAGE 72',
-    title: '',
-    image: 'Les traces de la descente',
+    title: 'L’appel',
+    image: 'L’appel à travers la pierre',
     text: `
-      <p>Les dernières plaquettes sont différentes. Aucun objet ne les accompagne.</p>
-      <p>On y a noté des dates anciennes, des descriptions sommaires et l’endroit où chaque voyageur a été vu pour la dernière fois.</p>
-      <p>Les indications convergent toutes vers des galeries situées sous la cité.</p>
-      <p>Une plaquette mentionne un homme assez fort pour franchir une porte que plusieurs Veilleurs n’avaient pas réussi à soulever.</p>
-      <p>Une autre parle d’une femme qui avait résisté à plusieurs pièges avant de disparaître à son tour.</p>
-      <p>Tu penses à Aldren. Lui aussi est descendu sans revenir.</p>
-      <p>Mais ces inscriptions sont anciennes : rien ne prouve que les Veilleurs aient connu son passage.</p>
-      <p>Un étroit couloir mène au fond de la salle.</p>
+      <p>La prison est achevée sur la scène suivante.</p>
+      <p>De longues lignes partent de la forme enfermée. Elles traversent les murs et atteignent la tête de silhouettes éloignées.</p>
+      <p>Sur la gravure d'après, ces personnes quittent leurs maisons. Certaines emportent des outils, d'autres des armes. Elles marchent vers la cité, puis vers la porte scellée.</p>
+      <p>L'une d'elles tient une épée.</p>
+      <p>Tu repenses au parchemin d'Aldren :</p>
+      <blockquote>IL FAUT OUVRIR L’ŒIL FERMÉ.</blockquote>
+      <p>Quelque chose appelle depuis sa prison et cherche à faire venir quelqu'un jusqu'à la porte.</p>
+      <p>Est-ce la même volonté qui t'a repoussé de la vasque ?</p>
+      <p>Et Aldren a-t-il lui aussi suivi cet appel ?</p>
     `,
-    choices: [{ label: 'Suivre le couloir', to: 'c73' }]
+    choices: [{ label: 'Regarder la dernière partie de la fresque', to: 'c73' }]
   },
 
   c73: {
     number: 'PAGE 73',
-    title: '',
-    image: 'Le dernier Veilleur',
+    title: 'Le seuil',
+    image: 'Les voyageurs au seuil',
     text: `
-      <p>Au bout du couloir, un squelette est assis contre un mur.</p>
-      <p>Une cotte de mailles noircie recouvre encore ses épaules. À son cou pend une petite plaque de bronze portant l’œil fermé.</p>
-      <p>Une tablette de pierre a glissé près de lui. Quelques lignes restent lisibles :</p>
-      <blockquote>RETROUVER CEUX QUI DESCENDENT.</blockquote>
-      <blockquote>NE PAS LES LAISSER FRANCHIR LE DERNIER SEUIL.</blockquote>
-      <blockquote>SI LA TERRE NOIRE PARAÎT DANS LA BOUCHE OU SOUS LES ONGLES, LES CONDUIRE AUX SALLES BLANCHES.</blockquote>
-      <p>Tu comprends à quoi servait cette salle : les Veilleurs cherchaient des voyageurs, recueillaient leurs affaires et tentaient d’arrêter ceux qui pouvaient encore l’être.</p>
-      <p>Leurs efforts n’ont pas suffi à sauver tous ceux qui ont poursuivi la descente.</p>
+      <p>La dernière scène représente plusieurs voyageurs au pied de la porte.</p>
+      <p>Certains sont étendus sur le sol. Un autre avance encore, une main appuyée contre la pierre. Il tient une lame courte dont la surface a été noircie par le graveur.</p>
+      <p>Le panneau qui aurait montré ce qui vient ensuite a été brisé. Il n'en reste que le bord.</p>
+      <p>Tu sais maintenant que d'autres ont été attirés ici avant toi. La fresque ne dit pas s'ils ont réussi à ouvrir la porte, ni pourquoi tant d'entre eux sont tombés.</p>
+      <p>Tu regardes une dernière fois l'œil fermé.</p>
+      <p>Si quelque chose veut sortir, pourquoi les Veilleurs ont-ils fait tant d'efforts pour l'en empêcher ?</p>
+      <p>La réponse ne figure pas sur cette paroi.</p>
+      <p>Sur ta droite, un passage rejoint les anciennes salles habitées. Deux autres ouvertures s'enfoncent sous les bâtiments.</p>
     `,
-    choices: state => hasItem(state, 'plaque_veilleur')
-      ? [{ label: 'Quitter la salle des disparus', to: 'c74' }]
-      : [
-          { label: 'Prendre la Plaque du Veilleur', to: 'c74', effect: s => addItem(s, 'plaque_veilleur', 'Plaque du Veilleur', 'Une plaque de bronze portant l’œil fermé. Elle appartenait à un Veilleur chargé de retrouver les voyageurs descendus sous la cité.') },
-          { label: 'La laisser', to: 'c74' }
-        ]
+    choices: [{ label: 'Rejoindre les trois accès', to: 'c74' }]
   },
 
   c74: {
     number: 'PAGE 74',
-    title: '',
-    image: 'Le passage des disparus',
+    title: 'Trois chemins dans la cité',
+    image: 'Le carrefour des Veilleurs',
     text: `
-      <p>Tu repasses devant les niches.</p>
-      <p>Les objets ne t’apprennent pas ce qui se trouve au fond de la montagne. Ils disent seulement combien de personnes sont parties à sa recherche.</p>
-      <p>Les Veilleurs ont retrouvé certaines d’entre elles. D’autres ont disparu au-delà du dernier seuil.</p>
-      <p>Tu ignores ce qui les appelait, mais tu sais désormais qu’il ne suffit pas d’atteindre le fond pour en revenir.</p>
-      <p>Aldren a peut-être emprunté le même chemin.</p>
-      <p>Tu rejoins une porte qui donne sur une salle ronde.</p>
+      <p>Tu atteins un carrefour où trois passages s'éloignent de la place.</p>
+      <p>Le premier conduit vers des pièces à taille humaine. Des tables et des bancs sont visibles derrière une porte restée ouverte.</p>
+      <p>Le deuxième est bordé de portes étroites, toutes fermées. Tu crois entendre une voix très lointaine.</p>
+      <p>Le troisième laisse filtrer une lumière blanche sous une arche portant l'œil fermé.</p>
+      <p>Tu dois choisir par où continuer.</p>
     `,
-    choices: [{ label: 'Poursuivre dans la cité', to: 'c85' }]
+    choices: [
+      { label: 'Explorer les anciens quartiers des Veilleurs', to: 'c75', effect: s => { s.flags.cityRoute = 'quarters'; } },
+      { label: 'Entrer dans le couloir aux portes étroites', to: 'c80', effect: s => { s.flags.cityRoute = 'voices'; } },
+      { label: 'Suivre la lumière blanche sous l’arche', to: 'c85', effect: s => { s.flags.cityRoute = 'laboratory'; } }
+    ]
   },
 
   c75: {
     number: 'PAGE 75',
+    title: 'Le réfectoire des Veilleurs',
+    image: 'Le réfectoire des Veilleurs',
+    text: `
+      <p>Tu entres dans une vaste pièce où plusieurs longues tables occupent encore le centre.</p>
+      <p>Des bols d'argile sont alignés près d'une cheminée éteinte. Des manteaux pendent à des crochets, à hauteur d'homme.</p>
+      <p>Sur un mur, quelqu'un a dessiné des maisons entourées d'arbres et de champs. Des silhouettes tiennent des enfants par la main.</p>
+      <p>Sous le dessin, une devise est gravée :</p>
+      <blockquote>QUE NOTRE VEILLE PRÉSERVE CEUX QUI VIVENT AU-DESSUS.</blockquote>
+      <p>Tu t'arrêtes devant les tables. Les Veilleurs mangeaient ici, partageaient leurs journées et parlaient sans doute des proches qu'ils avaient laissés à la surface.</p>
+      <p>Une porte au fond mène vers des salles de garde.</p>
+    `,
+    choices: [{ label: 'Entrer dans la salle de garde', to: 'c76' }]
+  },
+
+  c76: {
+    number: 'PAGE 76',
+    title: 'Les consignes de garde',
+    image: 'La salle de garde des Veilleurs',
+    text: `
+      <p>Des bancs font face à un plan des galeries. Une vieille lampe repose près d'une pile de registres reliés de cuir.</p>
+      <p>Les premiers feuillets détaillent des rondes, des réserves de nourriture et des équipes chargées de surveiller les accès.</p>
+      <p>Tu retrouves ensuite des consignes concernant la terre noire :</p>
+      <blockquote>ÉVITER TOUT CONTACT. CONDUIRE LES PERSONNES ATTEINTES AUX SALLES DE SOINS.</blockquote>
+      <p>Plus loin, une autre main a ajouté :</p>
+      <blockquote>ISOLER CEUX QUI ENTENDENT L'APPEL, MÊME S'ILS PARAISSENT SAINS.</blockquote>
+      <p>Les entrées suivantes décrivent des hommes morts après avoir touché la terre et d'autres dont le corps s'était mis à changer.</p>
+      <p>Les consignes de garde se font de plus en plus sévères.</p>
+      <p>Un couloir mène vers le bureau où étaient conservés les ordres.</p>
+    `,
+    choices: [{ label: 'Lire les ordres du commandement', to: 'c77' }]
+  },
+
+  c77: {
+    number: 'PAGE 77',
+    title: 'Les ordres',
+    image: 'Le bureau des ordres',
+    text: `
+      <p>La pièce est petite. Un siège renversé fait face à un pupitre couvert de tablettes de pierre.</p>
+      <p>Les plus anciennes autorisent la mise à l'écart des personnes contaminées. Elles prévoient encore des soins.</p>
+      <p>Puis les mots changent.</p>
+      <blockquote>NE PLUS ATTENDRE L'APPARITION DES MARQUES. AU PREMIER SOUPÇON, EXÉCUTER.</blockquote>
+      <p>Un registre consigne les condamnations. Plusieurs sont motivées par des signes décrits avec précision. Pour d'autres, un seul mot suffit : « Soupçon ».</p>
+      <p>Dans la marge, une écriture différente demande :</p>
+      <blockquote>ET SI NOUS NOUS TROMPIONS ?</blockquote>
+      <p>Quelqu'un a rayé cette question jusqu'à creuser la pierre.</p>
+      <p>Tu repenses aux tables du réfectoire. Ceux qui avaient juré de protéger les vivants en sont venus à tuer sans certitude.</p>
+      <p>Une porte étroite mène aux appartements de l'ordre.</p>
+    `,
+    choices: [{ label: 'Rejoindre les derniers appartements', to: 'c78' }]
+  },
+
+  c78: {
+    number: 'PAGE 78',
+    title: 'Les derniers jours',
+    image: 'Les appartements désertés',
+    text: `
+      <p>Les lits sont renversés. Des vêtements ont été abandonnés dans les couloirs. Une porte porte encore la marque d'un coup de hache.</p>
+      <p>Dans une chambre, tu trouves deux rapports rédigés le même jour.</p>
+      <p>Le premier ordonne d'éliminer tous ceux qui s'opposent aux condamnations : leur hésitation mettrait la cité en danger.</p>
+      <p>Le second refuse cet ordre. Il affirme que certains malades peuvent encore être soignés et demande qu'on épargne au moins ceux dont aucun signe n'a été confirmé.</p>
+      <p>Au bas du second document, une autre main a ajouté : « Arrêté pour avoir refusé d'obéir. »</p>
+      <p>Les Veilleurs ont fini par se retourner les uns contre les autres.</p>
+      <p>Tu ignores ce qu'ils avaient réellement vu au fond de la montagne. Tu sais seulement que leur peur n'épargnait plus personne.</p>
+      <p>Sur une table de garde, une petite plaque de bronze porte l'œil fermé.</p>
+    `,
+    choices: state => hasItem(state, 'plaque_veilleur')
+      ? [{ label: 'Quitter les appartements', to: 'c79' }]
+      : [
+          { label: 'Prendre la plaque du Veilleur', to: 'c79', effect: s => addItem(s, 'plaque_veilleur', 'Plaque du Veilleur', 'Une plaque de bronze portant l’œil fermé, abandonnée dans les anciens quartiers des Veilleurs.') },
+          { label: 'Laisser la plaque et sortir', to: 'c79' }
+        ]
+  },
+
+  c79: {
+    number: 'PAGE 79',
+    title: 'Quitter les quartiers',
+    image: 'Le passage des quartiers',
+    text: `
+      <p>Tu sors des appartements par une galerie de service.</p>
+      <p>Derrière toi restent des tables communes, des consignes de secours et des ordres d'exécution. Tout cela appartient au même ordre.</p>
+      <p>Les Veilleurs avaient-ils vu une menace si terrible qu'ils pensaient devoir tout sacrifier ? Ou ont-ils fini par confondre prudence et cruauté ?</p>
+      <p>Tu ne peux pas le savoir ici.</p>
+      <p>La galerie rejoint une salle ronde où convergent deux autres passages.</p>
+    `,
+    choices: [{ label: 'Entrer dans la salle ronde', to: 'c90' }]
+  },
+
+  c80: {
+    number: 'PAGE 80',
     title: 'Le couloir des portes',
     image: 'Le couloir des portes',
     text: state => `
@@ -3707,18 +3789,18 @@ const STORY = {
       <blockquote>« Je suis ici. Ouvre. »</blockquote>
     `,
     choices: [
-      { label: 'Ouvrir la porte', to: 'c76', effect: s => {
+      { label: 'Ouvrir la porte', to: 'c81', effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.voiceDoorDex = ok ? 'success' : 'fail';
           if (!ok) s.flags.voiceDoorDamage = applyDamage(s, 2);
         }
       },
-      { label: 'Ne pas répondre et continuer', to: 'c78' }
+      { label: 'Ne pas répondre et continuer', to: 'c83' }
     ]
   },
 
-  c76: {
-    number: 'PAGE 76',
+  c81: {
+    number: 'PAGE 81',
     title: '',
     image: 'La porte d’Aldren',
     text: state => {
@@ -3766,11 +3848,11 @@ const STORY = {
         <p>Tu refermes la porte.</p>
       `;
     },
-    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'T’éloigner de cette porte', to: 'c77' }]
+    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'T’éloigner de cette porte', to: 'c82' }]
   },
 
-  c77: {
-    number: 'PAGE 77',
+  c82: {
+    number: 'PAGE 82',
     title: '',
     image: 'Ceux qui ont répondu',
     text: `
@@ -3800,11 +3882,11 @@ const STORY = {
 
       <p>Peut-être qu’on leur donnait simplement une voix qu’ils ne pouvaient pas se résoudre à abandonner.</p>
     `,
-    choices: [{ label: 'Continuer dans le couloir', to: 'c79' }]
+    choices: [{ label: 'Continuer dans le couloir', to: 'c84' }]
   },
 
-  c78: {
-    number: 'PAGE 78',
+  c83: {
+    number: 'PAGE 83',
     title: '',
     image: 'Ne pas répondre',
     text: state => `
@@ -3840,11 +3922,11 @@ const STORY = {
 
       <p>Quelque chose leur donne une raison d’y venir.</p>
     `,
-    choices: [{ label: 'Atteindre le bout du couloir', to: 'c79' }]
+    choices: [{ label: 'Atteindre le bout du couloir', to: 'c84' }]
   },
 
-  c79: {
-    number: 'PAGE 79',
+  c84: {
+    number: 'PAGE 84',
     title: '',
     image: 'L’avertissement',
     text: `
@@ -3874,11 +3956,11 @@ const STORY = {
 
       <p>S’il t’appelle plus bas, il faudra d’abord t’assurer que c’est bien lui.</p>
     `,
-    choices: [{ label: 'Franchir l’arche', to: 'c85' }]
+    choices: [{ label: 'Franchir l’arche', to: 'c90' }]
   },
 
-  c80: {
-    number: 'PAGE 80',
+  c85: {
+    number: 'PAGE 85',
     title: 'Le laboratoire des Veilleurs',
     image: 'L’arche blanche',
     text: `
@@ -3902,15 +3984,15 @@ const STORY = {
 
       <p>Le même dépôt apparaît au bout de certaines aiguilles.</p>
 
-      <p>Ce lieu n’a pas été construit pour faire souffrir.</p>
+      <p>Les traces sur les aiguilles indiquent qu'on cherchait à extraire quelque chose du corps des personnes maintenues sur ces tables.</p>
 
-      <p>Les Veilleurs cherchaient à retirer quelque chose du corps de ceux qu’ils attachaient ici.</p>
+      <p>Des soins, peut-être. Mais rien ne te dit si ces personnes y consentaient.</p>
     `,
-    choices: [{ label: 'Examiner les appareils', to: 'c81' }]
+    choices: [{ label: 'Examiner les appareils', to: 'c86' }]
   },
 
-  c81: {
-    number: 'PAGE 81',
+  c86: {
+    number: 'PAGE 86',
     title: '',
     image: 'Les aiguilles de pierre',
     text: `
@@ -3940,7 +4022,7 @@ const STORY = {
     `,
     choices: [{
       label: 'Éviter le bras — lancer les trois dés de Dextérité',
-      to: 'c82',
+      to: 'c87',
       effect: s => {
         const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.labTrap = ok ? 'success' : 'fail';
@@ -3949,8 +4031,8 @@ const STORY = {
     }]
   },
 
-  c82: {
-    number: 'PAGE 82',
+  c87: {
+    number: 'PAGE 87',
     title: '',
     image: 'Le bras de pierre',
     text: state => {
@@ -3978,11 +4060,11 @@ const STORY = {
         <p>Le mécanisme grince encore une fois puis s’immobilise.</p>
       `;
     },
-    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'Prendre l’ampoule', to: 'c83' }]
+    choices: state => state.hp <= 0 ? fatalChoices() : [{ label: 'Prendre l’ampoule', to: 'c88' }]
   },
 
-  c83: {
-    number: 'PAGE 83',
+  c88: {
+    number: 'PAGE 88',
     title: '',
     image: 'L’ampoule blanche',
     text: `
@@ -4003,19 +4085,19 @@ const STORY = {
       <p>Tu sais seulement que les machines de cette salle cherchaient à extraire un mal inconnu.</p>
     `,
     choices: state => hasItem(state, 'ampoule_blanche')
-      ? [{ label: 'Examiner les gravures de la salle', to: 'c84' }]
+      ? [{ label: 'Examiner les gravures de la salle', to: 'c89' }]
       : [
           {
             label: 'Prendre l’Ampoule blanche',
-            to: 'c84',
+            to: 'c89',
             effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Une ampoule des Veilleurs contenant un liquide blanc. Elle semble avoir servi au traitement de ceux que la montagne avait atteints.')
           },
-          { label: 'La laisser', to: 'c84' }
+          { label: 'La laisser', to: 'c89' }
         ]
   },
 
-  c84: {
-    number: 'PAGE 84',
+  c89: {
+    number: 'PAGE 89',
     title: '',
     image: 'Ce qu’ils essayaient de sauver',
     text: `
@@ -4049,59 +4131,63 @@ const STORY = {
 
       <p>Tu regardes les sangles avec un malaise nouveau.</p>
 
-      <p>Les Veilleurs ne torturaient pas les gens attirés sous la montagne.</p>
+      <p>Ces appareils servaient au moins à tenter de sauver certains malades.</p>
 
-      <p>Ils tentaient de les sauver.</p>
+      <p>Mais les sangles et les aiguilles ne disent rien du sort de ceux qui refusaient les traitements.</p>
 
       <p>Ils avaient compris que les voix poussaient les voyageurs à descendre, tandis que la terre noire les contaminait.</p>
 
       <p>Après certains traitements, les patients n’entendaient plus rien. Les gravures ne disent pas combien de temps cela durait.</p>
     `,
-    choices: [{ label: 'Quitter le laboratoire', to: 'c85' }]
+    choices: [{ label: 'Quitter le laboratoire', to: 'c90' }]
   },
 
-  c85: {
-    number: 'PAGE 85',
-    title: 'La salle de veille',
-    image: 'La fresque de la prison',
+  c90: {
+    number: 'PAGE 90',
+    title: 'Les défenses du sceau',
+    image: 'Le mécanisme des gardiens',
     text: state => {
       let routeMemory = '';
-      if (state.flags.cityRoute === 'names') {
-        routeMemory = '<p>Tu repenses aux affaires rassemblées dans les niches. Tant de voyageurs ont disparu avant toi.</p>';
+      if (state.flags.cityRoute === 'quarters' || state.flags.cityRoute === 'names') {
+        routeMemory = '<p>Tu repenses aux quartiers des Veilleurs, à leurs premières consignes de secours puis aux ordres d’exécution. Leurs raisons demeurent obscures.</p>';
       } else if (state.flags.cityRoute === 'voices') {
-        routeMemory = '<p>Tu repenses aux voix derrière les portes. Elles savaient exactement ce que tu voulais entendre.</p>';
+        routeMemory = '<p>Tu repenses aux voix empruntées à ceux que les voyageurs aimaient. L’appel pouvait les conduire jusque dans les pièges.</p>';
       } else if (state.flags.cityRoute === 'laboratory') {
-        routeMemory = '<p>Tu repenses aux aiguilles du laboratoire. Les Veilleurs tentaient de retirer la terre noire de leurs patients.</p>';
+        routeMemory = '<p>Tu repenses aux aiguilles des salles blanches. Certains Veilleurs avaient essayé de retirer la terre noire des corps atteints.</p>';
       }
+      const echoes = [];
+      if (state.visited?.c24 || state.visited?.c26 || state.visited?.c27) {
+        echoes.push('Tu reconnais dans la première forme la masse rencontrée à l’entrée de la grotte.');
+      }
+      if (state.visited?.c47) {
+        echoes.push('Une autre rappelle la créature qui gardait l’îlot.');
+      }
+      if (state.flags.worldRoute === 'bridge' || state.visited?.c61) {
+        echoes.push('La dernière ressemble au marcheur du pont.');
+      }
+      const recognition = echoes.length ? `<p>${echoes.join(' ')}</p>` : '';
       return `
-        <p>Tu débouches dans une salle ronde. Trois couloirs y aboutissent : l’un vient des niches où reposent les affaires des disparus, un autre du couloir des portes et le dernier des salles blanches.</p>
-        <p>Les trois chemins se rejoignent ici.</p>
-        <p>Au centre, une immense dalle porte une suite de scènes gravées.</p>
-        <p>La première représente une cité habitée. Des hommes et des femmes travaillent parmi les colonnes, les échafaudages et les outils.</p>
-        <p>Dans la suivante, ces mêmes hommes entourent une forme immense, couchée au fond d’une cavité. Sa silhouette est trop abîmée pour que tu comprennes ce qu’elle représente.</p>
-        <p>Sur les scènes suivantes, ils dressent des piliers et des murs autour de cette forme, condamnent les accès et ferment une dernière porte.</p>
-        <p>Ils portent tous le même signe sur leurs vêtements : <strong>l’œil fermé</strong>.</p>
-        <p>Tu reconnais le symbole des Veilleurs.</p>
-        <p><strong>Ce sont donc des hommes, les premiers Veilleurs, qui ont construit cette prison.</strong></p>
-        <p>Le dessin continue. La forme est enfermée, mais des traits partent d’elle, traversent les murs et atteignent la tête de voyageurs qui se mettent en marche.</p>
-        <p>Certains portent des armes. D’autres des outils. Tous se dirigent vers la porte scellée.</p>
-        <p>Tu comprends enfin le sens de l’appel : <strong>quelque chose d’emprisonné cherche des hommes capables de venir jusqu’à lui et d’ouvrir sa prison.</strong></p>
-        ${routeMemory}
-        <p>Dans la partie basse de la fresque, des Veilleurs remplissent de sable noir des vasques reliées à la porte par d’étroits canaux.</p>
-        <p>Une inscription accompagne le dessin :</p>
+        <p>Tu débouches dans une salle ronde. Trois couloirs y aboutissent : les anciens quartiers des Veilleurs, le couloir des voix et les salles blanches.</p>
+        <p>Au centre, une table de pierre porte le plan d'une porte entourée de canaux. Les canaux mènent à des vasques emplies de grains noirs.</p>
+        <p>Sous le plan, une inscription est encore lisible :</p>
         <blockquote>LA TERRE NOIRE ENTRETIENT LE SCEAU. NE PAS LA TOUCHER.</blockquote>
-        <p>Tu revois la vasque de la place et cette voix qui t’a brutalement repoussé lorsque tu allais y plonger la main.</p>
-        <p>La chose enfermée voulait-elle t’éviter de mourir avant que tu atteignes sa porte ?</p>
-        <p>Pourquoi les Veilleurs l’ont-ils enfermée ? La fresque ne montre aucune réponse.</p>
-        <p>Au pied de la dalle, une petite lame noire est gravée sous l’œil fermé. Une flèche indique les niveaux inférieurs de la cité.</p>
-        <p>Aldren cherchait cette lame. S’il est encore en vie, sa piste descend probablement par là.</p>
+        <p>Le sable noir de la place semble être cette même matière, réduite en grains et disposée dans les canaux de la prison.</p>
+        <p>Un panneau voisin représente des personnes qui approchent des accès à la prison. Certaines s'effondrent au contact de la terre. Sur d'autres, la matière gagne les bras et la poitrine, puis déforme leurs silhouettes.</p>
+        <p>Dans la dernière scène, les formes transformées sont placées devant trois passages. L’une est une masse lourde ; une autre rampe au ras du sol ; la troisième se tient accrochée sous une passerelle.</p>
+        ${recognition}
+        <p><strong>La terre noire tue ceux qui ne lui résistent pas et transforme les survivants en gardiens.</strong> Les Veilleurs ont organisé ces défenses autour de la prison.</p>
+        ${routeMemory}
+        <p>Tu revois la vasque de la place et cette voix qui t'a fait reculer avant que tu touches le sable. Elle t'a peut-être empêché de mourir. Ou de devenir l'un de ces gardiens.</p>
+        <p>Si la voix vient de la chose enfermée, elle avait une raison de te garder en vie : tu dois encore atteindre sa porte.</p>
+        <p>Mais cela ne te dit toujours pas pourquoi les Veilleurs l'ont emprisonnée, ni ce qui arriverait si tu l'ouvrais.</p>
+        <p>Sur le plan, une petite lame noire est dessinée près d'un passage menant aux niveaux inférieurs. Tu penses à Aldren.</p>
       `;
     },
-    choices: [{ label: 'Descendre vers les niveaux inférieurs', to: 'c86' }]
+    choices: [{ label: 'Descendre vers les niveaux inférieurs', to: 'c91' }]
   },
 
-  c86: {
-    number: 'PAGE 86',
+  c91: {
+    number: 'PAGE 91',
     title: 'L’avenue basse',
     image: 'L’avenue basse',
     text: `
@@ -4127,11 +4213,11 @@ const STORY = {
 
       <p>Quelque chose existait déjà ici lorsqu’on a élevé ses rues.</p>
     `,
-    choices: [{ label: 'Examiner l’éboulement', to: 'c87' }]
+    choices: [{ label: 'Examiner l’éboulement', to: 'c92' }]
   },
 
-  c87: {
-    number: 'PAGE 87',
+  c92: {
+    number: 'PAGE 92',
     title: 'Le passage de service',
     image: 'Derrière le mur',
     text: `
@@ -4155,11 +4241,11 @@ const STORY = {
 
       <p>Sur son bord, tu distingues encore le symbole de l’œil fermé.</p>
     `,
-    choices: [{ label: 'Préparer la descente', to: 'c88' }]
+    choices: [{ label: 'Préparer la descente', to: 'c93' }]
   },
 
-  c88: {
-    number: 'PAGE 88',
+  c93: {
+    number: 'PAGE 93',
     title: 'Le puits des Veilleurs',
     image: 'Le puits des Veilleurs',
     text: state => `
@@ -4173,20 +4259,28 @@ const STORY = {
 
       <p>Seulement à un chantier très ancien.</p>
 
-      ${hasItem(state, 'ceinture_corde_rouge') ? '<p>La Ceinture de corde rouge peut te servir à t’assurer aux anneaux pendant la descente.</p>' : '<p>Sans corde, tu devras compter sur les prises et sur ton équilibre.</p>'}
+      ${hasItem(state, 'ceinture_rouge') ? '<p>La Ceinture de corde rouge peut te servir à t’assurer aux anneaux pendant la descente.</p>' : '<p>Sans corde, tu devras compter sur les prises et sur ton équilibre.</p>'}
+      ${hasItem(state, 'anneau_veilleurs') ? '<p>À côté du puits, un petit logement circulaire reproduit exactement le motif de ton Anneau des Veilleurs. Il est relié à une échelle de service repliée dans la paroi.</p>' : ''}
     `,
     choices: state => {
       const list = [];
-      if (hasItem(state, 'ceinture_corde_rouge')) {
+      if (hasItem(state, 'anneau_veilleurs')) {
+        list.push({
+          label: 'Actionner le mécanisme avec l’Anneau des Veilleurs',
+          to: 'c94',
+          effect: s => { s.flags.cityWellDescent = 'ring'; }
+        });
+      }
+      if (hasItem(state, 'ceinture_rouge')) {
         list.push({
           label: 'T’assurer avec la Ceinture de corde rouge',
-          to: 'c89',
+          to: 'c94',
           effect: s => { s.flags.cityWellDescent = 'rope'; }
         });
       }
       list.push({
         label: 'Descendre par les prises — lancer les trois dés de Dextérité',
-        to: 'c89',
+        to: 'c94',
         effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.cityWellDescent = ok ? 'success' : 'fail';
@@ -4197,15 +4291,21 @@ const STORY = {
     }
   },
 
-  c89: {
-    number: 'PAGE 89',
+  c94: {
+    number: 'PAGE 94',
     title: 'Le palier inférieur',
     image: 'Le palier inférieur',
     text: state => {
       const descent = state.flags.cityWellDescent;
       const canCleanse = hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.blackEarthContamination);
       let intro = '';
-      if (descent === 'rope') {
+      if (descent === 'ring') {
+        intro = `
+          <p>Tu glisses l’anneau dans le logement de pierre et le tournes. Un cran s’enclenche.</p>
+          <p>Une échelle de fer sort lentement de la paroi et se bloque au-dessus du vide. Tu récupères ton anneau.</p>
+          <p>Tu descends prudemment et atteins la plateforme sans blessure.</p>
+        `;
+      } else if (descent === 'rope') {
         intro = `
           <p>Tu fixes la corde à l’un des anneaux et descends lentement.</p>
 
@@ -4250,7 +4350,7 @@ const STORY = {
       if (hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.blackEarthContamination)) {
         list.push({
           label: 'Utiliser l’Ampoule blanche',
-          to: 'c90',
+          to: 'c95',
           effect: s => {
             removeItem(s, 'ampoule_blanche');
             if ((s.dexPenalty || 0) > 0) s.dexPenalty = Math.max(0, s.dexPenalty - 1);
@@ -4259,13 +4359,13 @@ const STORY = {
           }
         });
       }
-      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c90' });
+      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c95' });
       return list;
     }
   },
 
-  c90: {
-    number: 'PAGE 90',
+  c95: {
+    number: 'PAGE 95',
     title: 'La porte sous la ville',
     image: 'La porte sous la ville',
     text: state => `
@@ -4303,11 +4403,11 @@ const STORY = {
 
       <p>La porte résiste d’abord, puis cède sous ton épaule dans un grondement sourd.</p>
     `,
-    choices: [{ label: 'Passer sous la cité', to: 'c91' }]
+    choices: [{ label: 'Passer sous la cité', to: 'c96' }]
   },
 
-  c91: {
-    number: 'PAGE 91',
+  c96: {
+    number: 'PAGE 96',
     title: 'Sous la Cité morte',
     image: 'Sous la Cité morte',
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
@@ -4424,31 +4524,36 @@ const STORY = {
   "c67": "Les quartiers hauts",
   "c68": "La porte latérale",
   "c69": "La Cité morte",
-  "c70": "La salle des disparus",
-  "c71": "Les affaires retrouvées",
-  "c72": "Les traces de la descente",
-  "c73": "Le dernier Veilleur",
-  "c74": "Le passage des disparus",
-  "c75": "Le couloir des portes",
-  "c76": "La porte d’Aldren",
-  "c77": "Ceux qui ont répondu",
-  "c78": "Ne pas répondre",
-  "c79": "L’avertissement",
-  "c80": "Le laboratoire des Veilleurs",
-  "c81": "Les aiguilles de pierre",
-  "c82": "Le bras de pierre",
-  "c83": "L’ampoule blanche",
-  "c84": "Ce qu’ils essayaient de sauver",
-  "c85": "La fresque de la prison",
-  "c86": "L’avenue basse",
-  "c87": "Le passage de service",
-  "c88": "Le puits des Veilleurs",
-  "c89": "Le palier inférieur",
-  "c90": "La porte sous la ville",
-  "c91": "Sous la Cité morte"
+  "c70": "Les bâtisseurs",
+  "c71": "La porte scellée",
+  "c72": "L’appel",
+  "c73": "Le seuil",
+  "c74": "Trois chemins dans la cité",
+  "c75": "Le réfectoire des Veilleurs",
+  "c76": "Les consignes de garde",
+  "c77": "Les ordres",
+  "c78": "Les derniers jours",
+  "c79": "Quitter les quartiers",
+  "c80": "Le couloir des portes",
+  "c81": "La porte d’Aldren",
+  "c82": "Ceux qui ont répondu",
+  "c83": "Ne pas répondre",
+  "c84": "L’avertissement",
+  "c85": "Le laboratoire des Veilleurs",
+  "c86": "Les aiguilles de pierre",
+  "c87": "Le bras de pierre",
+  "c88": "L’ampoule blanche",
+  "c89": "Ce qu’ils essayaient de sauver",
+  "c90": "Les défenses du sceau",
+  "c91": "L’avenue basse",
+  "c92": "Le passage de service",
+  "c93": "Le puits des Veilleurs",
+  "c94": "Le palier inférieur",
+  "c95": "La porte sous la ville",
+  "c96": "Sous la Cité morte"
 };
 
-  const PAGE_ORDER = Array.from({ length: 91 }, (_, i) => `c${i + 1}`);
+  const PAGE_ORDER = Array.from({ length: 96 }, (_, i) => `c${i + 1}`);
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i + 1]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -4505,7 +4610,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 53,
+      pageMapVersion: 55,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -4564,6 +4669,30 @@ const STORY = {
     return state;
   }
 
+  // V55 : après migration éventuelle V53, les anciennes pages 70 à 91 deviennent 75 à 96.
+  // Les cinq nouvelles pages 070-074 restent le passage commun obligatoire.
+  function migratePageNumbersV55(state) {
+    if (!state || typeof state !== 'object') return state;
+    if (!Number.isFinite(state.pageMapVersion) || state.pageMapVersion < 53) migratePageNumbersV53(state);
+    if (state.pageMapVersion >= 55) return state;
+    const renumber = id => {
+      if (typeof id !== 'string') return id;
+      const match = /^c(\d+)$/.exec(id);
+      if (!match) return id;
+      const number = Number(match[1]);
+      return number >= 70 && number <= 91 ? `c${number + 5}` : id;
+    };
+    state.node = renumber(state.node);
+    if (state.visited && typeof state.visited === 'object' && !Array.isArray(state.visited)) {
+      state.visited = Object.fromEntries(Object.entries(state.visited).map(([id, wasVisited]) => [renumber(id), wasVisited]));
+    }
+    if (Array.isArray(state.history)) state.history = state.history.map(renumber);
+    // Legacy route ID used by the old optional room. Preserve the player's chosen path.
+    if (state.flags && state.flags.cityRoute === 'names') state.flags.cityRoute = 'quarters';
+    state.pageMapVersion = 55;
+    return state;
+  }
+
   const TEST_ITEM_CATALOG = [
     {
       id: 'parchemin',
@@ -4593,7 +4722,7 @@ const STORY = {
     {
       id: 'anneau_veilleurs',
       name: 'Anneau des Veilleurs',
-      description: 'Un anneau ancien et très léger. Tant qu’il est coché : +1 Dextérité.'
+      description: 'Un anneau ancien et très léger. Tant qu’il est coché : +1 Dextérité. Peut actionner un mécanisme des Veilleurs.'
     },
     {
       id: 'lames_jet',
@@ -4621,7 +4750,7 @@ const STORY = {
     {
       id: 'plaque_veilleur',
       name: 'Plaque du Veilleur',
-      description: 'Plaque de bronze d’un Veilleur chargé de retrouver les voyageurs disparus.'
+      description: 'Plaque de bronze abandonnée dans les anciens quartiers des Veilleurs.'
     },
     {
       id: 'ampoule_blanche',
@@ -4851,7 +4980,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 28,
+    contentVersion: 29,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
@@ -4862,16 +4991,16 @@ const STORY = {
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
     imageCandidatesForPage: n => {
       const current = `La-Grotte-de-Valombre-${padPage(n)}`;
-      // Images anciennes devenues inexactes après la réécriture V54 :
-      // charger uniquement une nouvelle illustration dans images/pages/.
-      if ([50, 51, 70, 71, 72, 73, 74, 85].includes(n)) return [`pages/${current}`];
+      // Réécritures V55 : ne pas afficher les anciennes PNG qui racontent une autre scène.
+      if ([50, 51, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 90].includes(n)) return [`pages/${current}`];
       if (n <= 52) return [current];
       if (n <= 55) return [`pages/${current}`];
-      return [`pages/${current}`, `La-Grotte-de-Valombre-${padPage(n - 3)}`];
+      if (n <= 69) return [`pages/${current}`, `La-Grotte-de-Valombre-${padPage(n - 3)}`];
+      return [`pages/${current}`, `La-Grotte-de-Valombre-${padPage(n - 8)}`];
     },
     imageExtensions: ['png'],
     createInitialState,
-    migrateState: migratePageNumbersV53,
+    migrateState: migratePageNumbersV55,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage },
     characterSheetHtml,
     inventory,

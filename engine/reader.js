@@ -100,7 +100,7 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return defaultState();
     const previous = JSON.parse(saved);
-    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 53) {
+    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 55) {
       try {
         if (!localStorage.getItem(`${STORAGE_KEY}.backup-v52`)) localStorage.setItem(`${STORAGE_KEY}.backup-v52`, saved);
       } catch (e) {}
@@ -150,7 +150,7 @@ function restartFromCheckpoint() {
     if (!saved) return restartGame();
     const journalBackup = state.journal || '';
     const previous = JSON.parse(saved);
-    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 53) {
+    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 55) {
       try {
         if (!localStorage.getItem(`${CHECKPOINT_KEY}.backup-v52`)) localStorage.setItem(`${CHECKPOINT_KEY}.backup-v52`, saved);
       } catch (e) {}

@@ -4,11 +4,11 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 28,
+  "contentVersion": 29,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V54 — Travail · 91 pages · parchemin, appel, salle des disparus et prison dans la cité"
+  "buildLabel": "V55 — Travail · 96 pages · fresques obligatoires, quartiers des Veilleurs, défense du sceau et anneau"
 }
