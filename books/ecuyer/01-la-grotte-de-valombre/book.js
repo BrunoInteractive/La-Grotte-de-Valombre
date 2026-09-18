@@ -134,6 +134,15 @@ function applyDamage(state, amount) {
   return result;
 }
 
+function lakeTentacleDamageHtml(state, key) {
+  if (!hasDamageRoll(state, key)) return '';
+  const result = state.damageRollResults && state.damageRollResults[key];
+  const broken = result && Array.isArray(result.destroyedProtection)
+    ? result.destroyedProtection.map(name => `<p><strong>${name} est désormais trop endommagé pour te protéger.</strong> Tu le conserves dans ton inventaire, mais il est inutilisable.</p>`).join('')
+    : '';
+  return damageResultHtml(state, key) + broken;
+}
+
 function damageAbsorptionHtml(result) {
   if (!result) return '';
   let html = '';
@@ -2373,77 +2382,76 @@ const STORY = {
 
       <p>Il n’y a plus que l’eau.</p>
 
-      <p>Alors un coup sec résonne.</p>
+      <p>Alors un coup sec résonne contre le bois, sous tes pieds.</p>
 
       <p><strong>TOC.</strong></p>
 
-      <p>Tu lèves les yeux. Il t’a semblé venir de très haut, peut-être du pont aperçu depuis la rive.</p>
+      <p>Tu immobilises les rames.</p>
 
-      <p>Un second coup répond, plus proche.</p>
-
-      <p><strong>TOC.</strong></p>
-
-      <p>Puis un troisième frappe directement sous la coque.</p>
+      <p>Un second coup frappe le flanc de la barque.</p>
 
       <p><strong>TOC.</strong></p>
 
-      <p>Le même rythme exact que les trois notes entendues dans la forêt de Rochebrume.</p>
+      <p>Puis un troisième, juste sous le bord où repose ta main.</p>
+
+      <p><strong>TOC.</strong></p>
     `,
     choices: [
       { label: 'Te pencher et regarder sous l’eau', to: 'c42' },
-      { label: 'Ne surtout pas regarder et recommencer à ramer', to: 'c45' }
+      {
+        label: 'Ne pas regarder et recommencer à ramer',
+        to: 'c45',
+        effect: s => {
+          s.flags.lakeTentacleOutcome = 'surprised';
+          rollDamage(s, 'lakeTentacleSurprised', 3);
+        }
+      }
     ]
   },
 
   c42: {
     number: 'PAGE 42',
     title: '',
-    image: 'Un visage sous l’eau',
+    image: 'Les lueurs sous le lac',
     onEnter: s => { s.flags.lookedIntoLake = true; },
-    text: `
-      <p>Tu poses les rames et te penches lentement au-dessus du bord.</p>
+    text: state => `
+      <p>Tu poses les rames et te penches au-dessus du bord.</p>
 
-      <p>La surface est si sombre qu’elle ressemble davantage à une ouverture qu’à de l’eau.</p>
+      <p>L’eau est si noire que tu ne distingues d’abord rien sous la surface.</p>
 
-      <p>Puis des points lumineux apparaissent très loin sous toi.</p>
+      <p>Puis quelques lueurs apparaissent, très loin en dessous.</p>
 
-      <p>Des dizaines.</p>
+      <p>Entre elles, tu devines des formes pâles. Une ligne droite. Plus loin, ce qui pourrait être une arche.</p>
 
-      <p>Des centaines.</p>
+      <p>Tu essaies de mieux voir.</p>
 
-      <p>Ils ressemblent à des étoiles dans un ciel nocturne.</p>
+      <p>Un nouveau coup résonne contre la coque.</p>
 
-      <p>Mais elles sont sous le bateau.</p>
+      <p>Cette fois, tu aperçois quelque chose juste sous la surface.</p>
 
-      <p>Et beaucoup trop loin.</p>
+      <p>Un long tentacule noir glisse le long de la barque. Épais comme une cuisse, il se replie lentement sur lui-même. Son extrémité vient heurter le bois.</p>
 
-      <p>Tu te penches davantage.</p>
+      <p>Tu comprends d’où venaient les coups.</p>
 
-      <p>Un visage apparaît entre les lumières.</p>
+      <p>Soudain, le tentacule disparaît sous la barque.</p>
 
-      <p><strong>Sir Aldren.</strong></p>
+      <p>L’eau se soulève.</p>
 
-      <p>Il flotte plusieurs mètres sous la surface, parfaitement immobile.</p>
+      <p><strong>Il jaillit vers toi.</strong></p>
 
-      <p>Ses yeux s’ouvrent.</p>
-
-      <p>Sa bouche prononce quelque chose.</p>
-
-      <p>Tu n’entends rien.</p>
-
-      <p>Puis le visage recule dans l’obscurité.</p>
-
-      <p>Trop vite.</p>
-
-      <p>Comme s’il n’avait jamais appartenu à un corps.</p>
-
-      <p>Tu te redresses.</p>
-
-      <p>Au même instant, la barque cesse de flotter normalement.</p>
+      <p><strong>Ta Dextérité actuelle : ${currentDexterity(state)}</strong></p>
     `,
-    choices: [
-      { label: 'Reprendre les rames', to: 'c45' }
-    ]
+    choices: state => [{
+      label: state.weapon === 'none'
+        ? 'Esquiver le tentacule — tester ta Dextérité'
+        : 'Dégainer et frapper le tentacule — tester ta Dextérité',
+      to: 'c46',
+      effect: s => {
+        const success = roll3D6(s, 'Dextérité', currentDexterity(s));
+        s.flags.lakeTentacleOutcome = success ? 'counter' : 'lookHit';
+        if (!success) rollDamage(s, 'lakeTentacleLookHit', 3);
+      }
+    }]
   },
 
   c43: {
@@ -2513,51 +2521,25 @@ const STORY = {
   c45: {
     number: 'PAGE 45',
     title: '',
-    image: 'Quelque chose sous la coque',
+    image: 'Le tentacule surgit',
     text: state => `
-      <p>Tu reprends les rames.</p>
+      <p>Tu resserres les mains sur les rames et poursuis ta route.</p>
 
-      <p>Tu essaies de ne plus regarder l’eau.</p>
+      <p>Les coups cessent.</p>
 
-      <p>Alors le lac change de forme.</p>
+      <p>Pendant quelques secondes, seule l’eau glisse contre la coque.</p>
 
-      <p>À une dizaine de mètres devant toi, la surface se soulève lentement.</p>
+      <p>Soudain, un tentacule noir, épais comme une cuisse, jaillit hors de l’eau et s’abat sur toi.</p>
 
-      <p>Pas une vague.</p>
+      <p>Tu n’as pas le temps de saisir ton arme.</p>
 
-      <p>Une bosse immense.</p>
+      <p>Le choc te projette contre le bord de la barque. Le tentacule se rétracte aussitôt et disparaît sous la surface.</p>
 
-      <p>Elle avance sous l’eau sans produire le moindre bruit.</p>
-
-      <p>Elle passe sous la barque.</p>
-
-      <p>Le bois monte de presque un mètre.</p>
-
-      <p>Pendant une seconde, tu distingues sous tes pieds quelque chose de plus sombre encore que l’eau.</p>
-
-      <p>Ton esprit cherche aussitôt une taille à lui donner.</p>
-
-      <p>Plus large que la barque. Puis qu’une maison. Puis davantage encore.</p>
-
-      <p>Mais aucune comparaison ne tient : la courbure aperçue sous l’eau ne semble jamais appartenir au même volume.</p>
-
-      <p>Tu renonces à comprendre ce qui vient de passer sous toi.</p>
-
-      <p>Puis la présence continue sa route.</p>
-
-      <p>La barque retombe brutalement.</p>
-
-      <p><strong>Ta Dextérité actuelle : ${currentDexterity(state)}</strong></p>
+      ${hasDamageRoll(state, 'lakeTentacleSurprised') ? lakeTentacleDamageHtml(state, 'lakeTentacleSurprised') : ''}
     `,
-    choices: [{
-      label: 'T’agripper et garder l’équilibre — lancer les trois dés de Dextérité',
-      to: 'c46',
-      effect: s => {
-        const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
-        s.flags.lakeBalance = ok ? 'success' : 'fail';
-        if (!ok) s.flags.lakeImpactDamage = applyDamage(s, 2);
-      }
-    }]
+    choices: state => state.hp <= 0
+      ? fatalChoices()
+      : [{ label: 'Te relever et poursuivre la traversée', to: 'c46' }]
   },
 
   c46: {
@@ -2565,38 +2547,44 @@ const STORY = {
     title: '',
     image: 'Le lac se referme',
     text: state => {
-      const r = diceResultHtml(state);
-      if (state.flags.lakeBalance === 'success') {
-        return r + `
-          <p>Tu te jettes au fond de la barque et agrippes les deux bords.</p>
+      if (state.flags.lakeTentacleOutcome === 'counter') {
+        return diceResultHtml(state) + (state.weapon === 'none'
+          ? `
+            <p>Tu te rejettes en arrière juste avant que le tentacule ne s’abatte sur toi.</p>
 
-          <p>L’embarcation retombe dans un claquement violent.</p>
+            <p>Il frappe le bord de la barque et replonge aussitôt.</p>
+          `
+          : `
+            <p>Tu te rejettes en arrière et dégaines d’un même mouvement.</p>
 
-          <p>De l’eau noire passe par-dessus le plat-bord, mais tu conserves l’équilibre.</p>
+            <p>Ta lame entaille le tentacule au moment où il franchit le bord.</p>
 
-          <p>La masse continue sa route sous la surface.</p>
+            <p>Il se replie brusquement et disparaît sous l’eau.</p>
+          `) + `
+            <p>Tu restes prêt à frapper, mais rien ne remonte.</p>
 
-          <p>Puis elle disparaît.</p>
+            <p>Le lac retrouve peu à peu son immobilité.</p>
+          `;
+      }
+      if (state.flags.lakeTentacleOutcome === 'lookHit') {
+        return diceResultHtml(state) + `
+          <p>Tu tentes de dégainer, mais le tentacule t’atteint avant que tu puisses frapper.</p>
 
-          <p>En quelques secondes, le lac redevient parfaitement plat.</p>
+          <p>Le choc te projette contre un banc de bois.</p>
 
-          <p>Comme si rien n’avait jamais bougé.</p>
+          ${lakeTentacleDamageHtml(state, 'lakeTentacleLookHit')}
+
+          <p>Lorsque tu te redresses, le tentacule a déjà replongé.</p>
+
+          <p>Le lac redevient parfaitement immobile.</p>
         `;
       }
-      return r + `
-        <p>Tu cherches un appui trop tard.</p>
+      return `
+        <p>Tu te remets péniblement en position et récupères les rames.</p>
 
-        <p>La barque retombe et tu es projeté contre un banc de bois.</p>
+        <p>Tu surveilles l’eau quelques instants. Le tentacule ne revient pas.</p>
 
-        <p>La douleur te coupe le souffle.</p>
-
-        ${damageAbsorptionHtml(state.flags.lakeImpactDamage)}
-
-        <p>Lorsque tu parviens à te relever, la masse a déjà disparu.</p>
-
-        <p>Le lac est redevenu parfaitement lisse.</p>
-
-        <p>Cette immobilité te paraît désormais plus effrayante que le mouvement.</p>
+        <p>Le lac redevient parfaitement immobile.</p>
       `;
     },
     choices: state => {
@@ -3240,7 +3228,6 @@ const STORY = {
 
       <p><strong>TOC. TOC. TOC.</strong></p>
 
-      <p>Tu reconnais immédiatement le rythme exact des trois notes entendues dans la forêt de Rochebrume.</p>
 
       <p>Le son descend très loin sous le pont.</p>
 
@@ -3434,7 +3421,7 @@ const STORY = {
     number: 'PAGE 63',
     title: 'Les quartiers noyés',
     image: 'Les quartiers noyés',
-    text: `
+    text: state => `
       <p>Tu passes sous les arches basses.</p>
 
       <p>L’eau noire recouvre encore le sol par endroits.</p>
@@ -3447,7 +3434,9 @@ const STORY = {
 
       <p>À plusieurs reprises, tu crois voir des lumières très loin sous l’eau des rues.</p>
 
-      <p>Les mêmes étoiles impossibles que dans le lac.</p>
+      ${state.flags.lookedIntoLake
+        ? '<p>Tu reconnais les lueurs entrevues sous la barque.</p>'
+        : '<p>Elles semblent provenir de plus bas encore, derrière les arches immergées.</p>'}
 
       <p>Tu refuses de regarder longtemps.</p>
 
@@ -4543,10 +4532,10 @@ const STORY = {
   "c39": "Ce qui vit entre les pierres",
   "c40": "Le monde sous la montagne",
   "c41": "Le lac noir",
-  "c42": "Un visage sous l’eau",
+  "c42": "Les lueurs sous le lac",
   "c43": "Les lames dans la poche",
   "c44": "Les Grandes Marches",
-  "c45": "Quelque chose sous la coque",
+  "c45": "Le tentacule surgit",
   "c46": "Le lac se referme",
   "c47": "L’îlot de l’œil fermé",
   "c48": "La rive basse",
@@ -4974,7 +4963,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 23,
+    contentVersion: 25,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
