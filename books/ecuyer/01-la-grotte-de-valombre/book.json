@@ -4,11 +4,11 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 30,
+  "contentVersion": 31,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V56 — Travail · 96 pages + prologue 000 · laboratoire des Veilleurs réécrit et héritage de Valombre"
+  "buildLabel": "V57 — Travail · 96 pages + prologue 000 · page 001 réécrite"
 }

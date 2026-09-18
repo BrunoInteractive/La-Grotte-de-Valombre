@@ -461,21 +461,19 @@ const STORY = {
     image: 'Le cheval revenu seul',
     onEnter: s => equipHeavySword(s),
     text: state => `
-      <p>Le cheval de <strong>Sir Aldren de Rochebrune</strong> apparaît au bout de la rue. Seul.</p>
-      <p>De l’écume couvre son poitrail. Une longue entaille traverse la selle et du sang séché macule l’une des sacoches.</p>
-
-      <p>Ton regard se pose alors sur l’ancienne épée de Sir Aldren, appuyée contre le mur de l’écurie.</p>
-      <p>Tu l’as vu la manier des centaines de fois.</p>
-      <p>Pourtant, lorsque tes doigts se referment sur sa poignée, tu ressens quelque chose d’étrange.</p>
-      <p>Un mélange de <strong>crainte et de fierté</strong>.</p>
-      <p>Jusqu’à aujourd’hui, cette arme appartenait à ton maître. La prendre donne soudain à son absence une réalité que tu aurais préféré repousser encore un peu.</p>
-      <p>Tu soulèves la lame.</p>
-      <p>Elle est lourde. Beaucoup plus lourde que les armes avec lesquelles Aldren t’a appris à combattre.</p>
-      <p>Mais lorsque tu la tiens devant toi, tu sens également sa puissance.</p>
-      <p>Ce n’est pas une arme faite pour être rapide.</p>
-      <p>C’est une arme faite pour <strong>frapper fort</strong>.</p>
-      <p>Tu la passes à ton côté.</p>
-      <p>Si Sir Aldren est encore vivant quelque part dans cette montagne, tu comptes bien le retrouver.</p>
+      <p>Le cheval de <strong>Sir Aldren de Rochebrune</strong> apparaît au bout de la rue.</p>
+      <p>Seul.</p>
+      <p>De l’écume couvre son poitrail. La selle est entaillée. Du sang séché macule une sacoche.</p>
+      <p>Aldren a disparu.</p>
+      <p>Tu ne vas pas rester ici à attendre son retour.</p>
+      <p>Contre le mur de l’écurie repose son ancienne épée.</p>
+      <p>Tu l’as entretenue des centaines de fois. Aujourd’hui, tu la prends.</p>
+      <p>Elle est lourde. Tu la soulèves à deux mains, puis la passes à ton côté.</p>
+      <p>Tu regardes le chemin qui mène hors du village.</p>
+      <p>Depuis l’enfance, tu rêves de partir. De découvrir le monde. De vivre autre chose que cette vie à Valombre.</p>
+      <p>Cette fois, tu as une raison de le faire.</p>
+      <p><strong>Tu vas retrouver Aldren.</strong></p>
+      <p>Et rien ne te fera rester au village.</p>
     `,
     choices: [
       { label: 'Fouiller la sacoche de Sir Aldren', to: 'c2' },
@@ -4934,7 +4932,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 30,
+    contentVersion: 31,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
