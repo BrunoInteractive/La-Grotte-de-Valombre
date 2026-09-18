@@ -301,7 +301,7 @@ function pageNavigationEntries() {
     .map(([nodeId, pageNumber]) => ({
       nodeId,
       pageNumber,
-      title: (STORY[nodeId] && STORY[nodeId].title) ? STORY[nodeId].title : `Page ${padPage(pageNumber)}`
+      title: BOOK.navigationTitles?.[nodeId] || STORY[nodeId]?.title || `Page ${padPage(pageNumber)}`
     }))
     .sort((a, b) => a.pageNumber - b.pageNumber);
 }
