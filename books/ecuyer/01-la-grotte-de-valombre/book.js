@@ -489,17 +489,15 @@ const STORY = {
       <p>Tu le déplies. Ce n’est pas vraiment un message. Plutôt des notes jetées à la hâte, comme pour fixer des idées avant de les oublier.</p>
 
       <div class="parchment-verse">
-        <em>ne pas ouvrir l’œil</em><br><br>
-        <strong>soufre !!!</strong><br>
-        <small>Le mot « soufre » est entouré plusieurs fois, avec plusieurs traits nerveux et des points d’exclamation.</small><br><br>
-        <em>lame noire</em><br><br>
-        <em>derrière la paroi</em><br>
-        <em>terre noire</em><br>
-        <em>ne pas écouter</em><br>
-        <em>surtout ne pas—</em>
+        <strong>IL FAUT OUVRIR L’ŒIL FERMÉ</strong><br><br>
+        <em>La lame noire. Trouver la lame noire.</em><br><br>
+        <s>La terre noire…</s><br>
+        <small>Ces mots sont barrés trois fois. Dans la marge, Aldren a ajouté : « ÉVITER ».</small><br><br>
+        <strong>SOUFRE !!! ☠</strong><br>
+        <small>Le mot est entouré trois fois de traits nerveux. Une tête de mort est dessinée à côté.</small>
       </div>
 
-      <p>La dernière ligne s’interrompt dans une traînée d’encre. Tu relis la feuille sans mieux comprendre.</p>
+      <p>Les premières lignes ont été écrites avec une insistance presque fébrile. Les avertissements, eux, ne laissent guère de doute : Aldren voulait éviter la terre noire et le soufre.</p><p>Mais pourquoi voulait-il ouvrir cet œil fermé ?</p>
       <p>Tu replies soigneusement les notes et les ranges dans ton inventaire. Tu pourras les relire quand tu le souhaites.</p>
       ${hasItem(state,'fiole_rouge') || state.flags.fioleLaissee
         ? '<p>Tu as déjà décidé quoi faire de la mystérieuse fiole rouge.</p>'
@@ -1417,6 +1415,7 @@ const STORY = {
       <p>L’un <strong>descend</strong> dans l’obscurité, et de ce passage monte une <strong>forte odeur de soufre</strong>.</p>
 
       <p>L’autre continue tout droit et semble s’enfoncer dans un passage beaucoup plus étroit.</p>
+      ${hasItem(state, 'parchemin') ? '<p>Tu repenses aux avertissements d’Aldren : <strong>éviter le soufre</strong>.</p>' : ''}
 
     `,
     choices: [
@@ -2322,7 +2321,7 @@ const STORY = {
 
       <p>À droite, une corniche étroite rejoint un pont suspendu au-dessus d’un gouffre sans fond visible.</p>
 
-      <p>Tu ne pourras pas explorer les trois.</p>
+      <p>Tu éprouves le besoin de continuer, de t’enfoncer plus profondément. Cette envie te surprend : tu étais venu pour retrouver Aldren, pas pour obéir à une direction que tu ne comprends pas.</p><p>Tu ne pourras pas explorer les trois.</p>
 
       <p>Il faut choisir.</p>
 
@@ -2819,85 +2818,38 @@ const STORY = {
   c50: {
     number: 'PAGE 50',
     title: '',
-    image: 'Les bâtisseurs',
+    image: 'Ceux qui sont descendus',
     text: `
-      <p>L’escalier débouche sur une terrasse verticale taillée dans la falaise.</p>
-
-      <p>Des fresques couvrent la paroi sur plusieurs dizaines de mètres.</p>
-
-      <p>Tu distingues de minuscules silhouettes humaines disposées autour d’une forme immense.</p>
-
-      <p>Au premier regard, tu crois assister à une cérémonie.</p>
-
-      <p>Des fidèles autour de leur dieu.</p>
-
-      <p>Puis tu remarques les outils.</p>
-
-      <p>Les cordes.</p>
-
-      <p>Les blocs de pierre.</p>
-
-      <p>Les hommes ne sont pas agenouillés.</p>
-
-      <p>Ils travaillent.</p>
-
-      <p>Ils élèvent des murs autour de la forme.</p>
-
-      <p>Ils ferment des passages.</p>
-
-      <p>Ils construisent quelque chose d’énorme autour d’elle.</p>
-
-      <p><strong>Une prison.</strong></p>
-
-      <p>Au-dessus de chaque scène revient le même symbole.</p>
-
-      <p>L’œil fermé.</p>
-
-      <p>Pour la première fois, une idée simple s’impose à toi.</p>
-
-      <p>Ce symbole n’est peut-être pas celui de ce qui dort sous la montagne.</p>
-
-      <p>Il pourrait être celui de ceux qui ont essayé de l’empêcher de se réveiller.</p>
+      <p>L’escalier débouche sur une terrasse taillée dans la falaise.</p>
+      <p>Une longue fresque couvre la paroi. Elle est divisée en plusieurs scènes que le temps a presque effacées.</p>
+      <p>Dans la première, des hommes et des femmes quittent leurs maisons. Certains portent des épées, d’autres des outils ou de simples sacs.</p>
+      <p>Tous marchent vers une montagne, la tête légèrement tournée, comme s’ils écoutaient quelque chose.</p>
+      <p>Tu suis leurs silhouettes du doigt.</p>
+      <p>Plus loin, ils descendent un escalier. Puis ils passent sous une arche marquée d’un œil fermé.</p>
+      <p>Sur la scène suivante, plusieurs sont allongés au pied d’un passage. Leurs armes et leurs outils sont éparpillés autour d’eux.</p>
+      <p>Un seul se tient encore debout, appuyé sur son épée. Son visage a disparu sous une fissure de la pierre.</p>
+      <p>Tu regardes de nouveau les premiers voyageurs.</p>
+      <p>Ils venaient d’endroits différents. Pourtant, ils ont tous pris la même direction.</p>
+      <p>Tu ignores ce qui les attirait, et ce qu’ils ont trouvé au bout du chemin.</p>
     `,
-    choices: [
-      { label: 'Examiner la fresque suivante', to: 'c51' }
-    ]
+    choices: [{ label: 'Examiner la gravure suivante', to: 'c51' }]
   },
 
   c51: {
     number: 'PAGE 51',
     title: '',
-    image: 'La petite lame noire',
+    image: 'La lame gravée',
     text: `
-      <p>La fresque suivante est beaucoup plus petite.</p>
-
-      <p>Un homme y est représenté de profil.</p>
-
-      <p>Dans sa main : une lame courte, entièrement noire.</p>
-
-      <p>Devant lui, plusieurs silhouettes humaines sont reliées à une masse immense par de minces traits gravés dans la pierre.</p>
-
-      <p>L’homme approche la lame de l’un de ces traits.</p>
-
-      <p>Sur l’image suivante, le trait est coupé.</p>
-
-      <p>La silhouette humaine tombe à genoux.</p>
-
-      <p>Mais elle est toujours humaine.</p>
-
-      <p>Tu repenses aux mots griffonnés dans la sacoche d’Aldren.</p>
-
-      <p>Parmi les notes d’Aldren, ces deux mots te reviennent : <em>lame noire</em>.</p>
-
-      <p>Tu avais imaginé une arme capable de tuer.</p>
-
-      <p>La fresque suggère autre chose.</p>
-
-      <p>Quelque chose qui <strong>coupe un lien</strong>.</p>
+      <p>Un petit panneau a été gravé à part, près du bord de la terrasse.</p>
+      <p>On y voit un voyageur devant une porte dont le contour se perd dans la roche.</p>
+      <p>Dans sa main, une lame courte et entièrement noire.</p>
+      <p>Il la lève vers un œil fermé, gravé au-dessus du passage.</p>
+      <p>La scène suivante a été brisée. Il ne reste qu’une fissure et quelques éclats de pierre.</p>
+      <p>Tu repenses aux notes d’Aldren : <em>« La lame noire. Trouver la lame noire. »</em></p>
+      <p>Quelqu’un a donc cherché cette arme avant lui.</p>
+      <p>Mais la fresque ne montre ni ce qu’il en a fait, ni ce qui l’attendait derrière la porte.</p>
     `,
-    choices: [
-      { label: 'Reprendre l’ascension', to: 'c52' }
-    ]
+    choices: [{ label: 'Reprendre l’ascension', to: 'c52' }]
   },
 
   c52: {
@@ -3592,68 +3544,36 @@ const STORY = {
         ? `<p>Un peu plus loin, d’autres ouvertures rejoignent l’avenue. ${otherWays.join(' ; ')}.</p><p>Au sol, d’anciennes traces de passage convergent depuis chacune d’elles vers la place.</p>`
         : '';
       const contamination = state.flags.blackEarthContamination
-        ? `<p>Le goût de terre resté au fond de ta gorge te paraît soudain moins étranger.</p><p>Cette pensée te vient sans raison. Tu la chasses aussitôt.</p>`
+        ? '<p>Le goût de terre resté au fond de ta gorge revient tandis que tu fixes la vasque.</p>'
         : '';
-
       return `
         <p>Le passage que tu suivais finit par s’élargir.</p>
-
-        <p>Sans véritable seuil, tu te retrouves dans une avenue assez vaste pour qu’un village entier y tienne.</p>
-
+        <p>Tu débouches dans une avenue assez vaste pour qu’un village entier y tienne.</p>
         ${routesLine}
-
         <p>Les façades montent si haut que leur sommet se dissout dans la lumière blanche.</p>
-
-        <p>Il n’y a aucune fenêtre.</p>
-
-        <p>Seulement des portes.</p>
-
-        <p>Des centaines.</p>
-
-        <p>Certaines sont trop petites pour un enfant. D’autres ont la hauteur d’un clocher.</p>
-
+        <p>Il n’y a aucune fenêtre. Seulement des portes, par centaines, de toutes les tailles.</p>
         <p>Au bout de l’avenue, l’espace s’ouvre sur une place circulaire.</p>
-
-        <p>En son centre se dresse une vasque de pierre sèche.</p>
-
-        <p>Une poussière noire repose au fond.</p>
-
-        <p>Tu t’arrêtes à plusieurs pas.</p>
-
-        <p>Rien ne bouge.</p>
-
-        <p>Plus tu la regardes, moins ta fatigue paraît importante.</p>
-
-        <p>La douleur de tes épaules s’éloigne. Ta peur aussi.</p>
-
-        <p>Une idée se forme avec une douceur qui n’a rien à faire ici : il suffirait de plonger les doigts dans cette poussière pour continuer plus facilement.</p>
-
-        <p>Pour devenir un peu plus fort.</p>
-
-        <p>Peut-être assez pour ne plus avoir peur du reste.</p>
-
+        <p>Au centre repose une large vasque de pierre. Une fine couche de sable noir en tapisse le fond.</p>
+        <p>Tu t’en approches.</p>
+        <p>Les grains semblent remuer, bien qu’aucun souffle ne traverse la place.</p>
+        <p>Tu éprouves soudain le besoin d’y plonger la main. L’idée paraît parfaitement naturelle : tu es certain que quelque chose d’utile se trouve là.</p>
         ${contamination}
-
-        <p>Ta main se soulève légèrement avant que tu t’en rendes compte.</p>
-
-        <p>Tu la rabats contre toi.</p>
-
-
-        <p>En reculant, tu éprouves un bref regret.</p>
-
-        <p>C’est ce regret qui te fait quitter la vasque.</p>
-
+        <p>Tu tends les doigts.</p>
+        <p>À quelques centimètres du sable, une douleur fulgurante te traverse le crâne.</p>
+        <p><strong>NON.</strong></p>
+        <p>Le mot ne vient pas de toi. Il s’impose avec une telle violence que tu recules d’un bond et tombes à genoux.</p>
+        <p>La douleur cesse aussitôt.</p>
+        <p>Tu fixes la vasque. Quelques grains ont glissé sur le bord. Là où ils touchent la pierre, une tache sombre s’étend lentement.</p>
+        <p>Tu aurais plongé la main dedans sans cette voix.</p>
+        <p>Qui vient de t’arrêter ?</p>
         <p>Trois passages s’ouvrent autour de la place.</p>
-
-        <p>Le premier est couvert de noms gravés dans la pierre.</p>
-
+        <p>Le premier mène à une galerie bordée de niches de pierre.</p>
         <p>Le second aligne une suite de portes étroites, toutes fermées.</p>
-
         <p>Le dernier laisse filtrer une lumière blanche sous une arche marquée de l’œil fermé.</p>
       `;
     },
     choices: [
-      { label: 'Suivre le passage couvert de noms', to: 'c70', effect: s => { s.flags.cityRoute = 'names'; } },
+      { label: 'Explorer la galerie aux niches de pierre', to: 'c70', effect: s => { s.flags.cityRoute = 'names'; } },
       { label: 'Entrer dans le couloir aux portes étroites', to: 'c75', effect: s => { s.flags.cityRoute = 'voices'; } },
       { label: 'Suivre la lumière blanche sous l’arche', to: 'c80', effect: s => { s.flags.cityRoute = 'laboratory'; } }
     ]
@@ -3661,161 +3581,73 @@ const STORY = {
 
   c70: {
     number: 'PAGE 70',
-    title: 'La salle des noms',
-    image: 'La salle des noms',
+    title: 'La salle des disparus',
+    image: 'La salle des disparus',
     text: `
-      <p>Le passage se rétrécit, puis s’ouvre sur une longue galerie aux murs parfaitement lisses.</p>
-
-      <p>Ils sont couverts de noms.</p>
-
-      <p>Des centaines d’abord.</p>
-
-      <p>Puis des milliers.</p>
-
-      <p>Certains sont presque effacés. D’autres paraissent beaucoup plus récents.</p>
-
-      <p>À côté de plusieurs inscriptions, tu remarques de petits signes répétés : un œil fermé, trois traits courts, parfois une ligne interrompue.</p>
-
-      <p>Ce n’est pas un monument funéraire.</p>
-
-      <p>Les noms ont été classés.</p>
-
-      <p>Notés.</p>
-
-      <p>Suivis.</p>
-
-      <p>Plus loin, une inscription plus grande a été gravée au-dessus d’une série de colonnes.</p>
-
-      <blockquote>CEUX QUI ENTENDENT L’APPEL DOIVENT ÊTRE INSCRITS AVANT LA DESCENTE.</blockquote>
-
-      <p>Tu relis lentement.</p>
-
-      <p>Puis un nom familier attire ton regard.</p>
+      <p>Le passage débouche dans une longue salle aux murs creusés de niches.</p>
+      <p>Des sacs de voyage y sont rangés à côté de casques cabossés, de bottes desséchées et d’armes dont les lames ont rouillé jusqu’à la garde.</p>
+      <p>Certains objets ont été enveloppés dans des morceaux de toile. D’autres reposent directement sur la pierre.</p>
+      <p>Chaque niche porte un petit symbole de l’œil fermé et une plaquette d’argile couverte d’inscriptions.</p>
+      <p>Tu examines un bouclier fendu. Sous la poussière, tu distingues les armoiries d’une ancienne maison que tu ne connais pas.</p>
+      <p>Tout a été disposé avec soin.</p>
+      <p>On a apporté ces affaires ici après les avoir retrouvées ailleurs dans la montagne.</p>
     `,
-    choices: [{ label: 'T’approcher', to: 'c71' }]
+    choices: [{ label: 'Examiner les affaires retrouvées', to: 'c71' }]
   },
 
   c71: {
     number: 'PAGE 71',
     title: '',
-    image: 'Ceux qui sont venus',
+    image: 'Les affaires retrouvées',
     text: `
-      <p><strong>GASPARD VELLIN.</strong></p>
-
-      <p>À côté de son nom, trois traits courts ont été gravés dans la pierre.</p>
-
-      <p>Un peu plus loin :</p>
-
-      <p><strong>ANSELME VARN.</strong></p>
-
-      <p>Le même signe.</p>
-
-      <p>Tu poursuis le long du mur.</p>
-
-      <p><strong>ALDREN DE ROCHEBRUNE.</strong></p>
-
-      <p>Cette fois, l’œil fermé accompagne son nom.</p>
-
-      <p>La gravure est plus usée que celles de Gaspard et d’Anselme.</p>
-
-      <p>Tu ne sais pas ce que signifient encore ces marques, mais une chose devient difficile à ignorer :</p>
-
-      <p>Gaspard, Anselme et Aldren ne sont pas arrivés ici par hasard.</p>
-
-      <p>Les Veilleurs connaissaient les gens qui entendaient cet appel.</p>
-
-      <p>Ils inscrivaient leurs noms avant qu’ils ne descendent plus profondément sous la montagne.</p>
-
-      <p>Tu continues malgré toi à parcourir la liste.</p>
-
-      <p>Et tu trouves le tien.</p>
+      <p>Tu passes d’une niche à l’autre.</p>
+      <p>Une gourde écrasée. Un petit marteau de mineur. Un fourreau sans épée.</p>
+      <p>Dans une niche plus basse, une chaussure d’enfant repose près d’une bourse vide.</p>
+      <p>Il ne s’agit pas des richesses d’une tombe. Ce sont les affaires de personnes parties avec presque rien.</p>
+      <p>Sur les plaquettes, les mêmes mentions reviennent : <em>retrouvé près de la galerie</em>, <em>récupéré à l’escalier</em>, <em>aucun retour</em>.</p>
+      <p>Tu comprends que les Veilleurs recherchaient les voyageurs descendus jusqu’ici et rapportaient ce qu’ils pouvaient de leurs affaires.</p>
+      <p>Au bout de la rangée, plusieurs plaquettes ont été réunies sur une table.</p>
+      <p>Une inscription plus grande surmonte l’ensemble :</p>
+      <blockquote>CEUX QUI ONT FRANCHI LE DERNIER SEUIL NE SONT PAS REVENUS.</blockquote>
     `,
-    choices: [{ label: 'Lire ton nom', to: 'c72' }]
+    choices: [{ label: 'Lire les dernières plaquettes', to: 'c72' }]
   },
 
   c72: {
     number: 'PAGE 72',
     title: '',
-    image: 'Ton nom',
-    text: state => {
-      const hero = escapeHtml(heroName(state)).toUpperCase();
-      return `
-        <p><strong>${hero}.</strong></p>
-
-        <p>Ton nom est déjà gravé dans la pierre.</p>
-
-        <p>Tu restes immobile.</p>
-
-        <p>Les traits ne sont pas frais. Une fine poussière s’est déposée au fond des lettres.</p>
-
-        <p>Personne ici ne devrait connaître ton nom.</p>
-
-        <p>Personne ne t’a vu entrer dans la montagne.</p>
-
-        <p>Et pourtant il est là, parmi ceux de Gaspard, d’Anselme et d’Aldren.</p>
-
-        <p>À côté, le même signe que près du nom de Gaspard : trois entailles courtes.</p>
-
-        <p>Tu repenses à la poussière noire de la place.</p>
-
-        <p>À la terre sous les ongles.</p>
-
-        <p>Aux voix qui semblent parfois savoir plus de choses qu’elles ne devraient.</p>
-
-        <p>Pour la première fois, l’idée te vient que tu n’es peut-être plus seulement à la recherche d’Aldren.</p>
-
-        <p>Quelque chose, ici, t’a peut-être déjà reconnu.</p>
-      `;
-    },
-    choices: [
-      { label: 'Toucher ton nom', to: 'c73', effect: s => { s.flags.touchedOwnName = true; } },
-      { label: 'Ne pas le toucher et continuer', to: 'c73' }
-    ]
+    image: 'Les traces de la descente',
+    text: `
+      <p>Les dernières plaquettes sont différentes. Aucun objet ne les accompagne.</p>
+      <p>On y a noté des dates anciennes, des descriptions sommaires et l’endroit où chaque voyageur a été vu pour la dernière fois.</p>
+      <p>Les indications convergent toutes vers des galeries situées sous la cité.</p>
+      <p>Une plaquette mentionne un homme assez fort pour franchir une porte que plusieurs Veilleurs n’avaient pas réussi à soulever.</p>
+      <p>Une autre parle d’une femme qui avait résisté à plusieurs pièges avant de disparaître à son tour.</p>
+      <p>Tu penses à Aldren. Lui aussi est descendu sans revenir.</p>
+      <p>Mais ces inscriptions sont anciennes : rien ne prouve que les Veilleurs aient connu son passage.</p>
+      <p>Un étroit couloir mène au fond de la salle.</p>
+    `,
+    choices: [{ label: 'Suivre le couloir', to: 'c73' }]
   },
 
   c73: {
     number: 'PAGE 73',
     title: '',
     image: 'Le dernier Veilleur',
-    text: state => `
-      ${state.flags.touchedOwnName ? `
-        <p>La pierre est tiède sous tes doigts.</p>
-
-        <p>Tu retires aussitôt la main.</p>
-      ` : ''}
-
-      <p>Au bout de la galerie, un squelette est assis contre le mur.</p>
-
-      <p>Une cotte de mailles noircie recouvre encore ses épaules.</p>
-
-      <p>Autour de son cou pend une petite plaque de bronze portant l’œil fermé.</p>
-
-      <p>À côté de lui, une tablette de pierre a glissé au sol.</p>
-
-      <p>Quelques lignes restent lisibles :</p>
-
-      <blockquote>NE PAS LES LAISSER DESCENDRE APRÈS L’APPEL.</blockquote>
-
-      <blockquote>LES CONDUIRE AUX SALLES BLANCHES.</blockquote>
-
-      <blockquote>SI LA TERRE PARAÎT DANS LA BOUCHE OU SOUS LES ONGLES, COMMENCER L’EXTRACTION.</blockquote>
-
-      <p>Tu regardes de nouveau les milliers de noms.</p>
-
-      <p>Les Veilleurs ne se contentaient pas de surveiller la montagne.</p>
-
-      <p>Ils attendaient ceux qu’elle attirait.</p>
-
-      <p>Et ils essayaient de les arrêter avant qu’ils ne descendent plus bas.</p>
+    text: `
+      <p>Au bout du couloir, un squelette est assis contre un mur.</p>
+      <p>Une cotte de mailles noircie recouvre encore ses épaules. À son cou pend une petite plaque de bronze portant l’œil fermé.</p>
+      <p>Une tablette de pierre a glissé près de lui. Quelques lignes restent lisibles :</p>
+      <blockquote>RETROUVER CEUX QUI DESCENDENT.</blockquote>
+      <blockquote>NE PAS LES LAISSER FRANCHIR LE DERNIER SEUIL.</blockquote>
+      <blockquote>SI LA TERRE NOIRE PARAÎT DANS LA BOUCHE OU SOUS LES ONGLES, LES CONDUIRE AUX SALLES BLANCHES.</blockquote>
+      <p>Tu comprends à quoi servait cette salle : les Veilleurs cherchaient des voyageurs, recueillaient leurs affaires et tentaient d’arrêter ceux qui pouvaient encore l’être.</p>
+      <p>Leurs efforts n’ont pas suffi à sauver tous ceux qui ont poursuivi la descente.</p>
     `,
     choices: state => hasItem(state, 'plaque_veilleur')
-      ? [{ label: 'Quitter la salle des noms', to: 'c74' }]
+      ? [{ label: 'Quitter la salle des disparus', to: 'c74' }]
       : [
-          {
-            label: 'Prendre la Plaque du Veilleur',
-            to: 'c74',
-            effect: s => addItem(s, 'plaque_veilleur', 'Plaque du Veilleur', 'Une petite plaque de bronze portant l’œil fermé. Elle appartenait à l’un des Veilleurs qui recensait les personnes attirées sous la montagne.')
-          },
+          { label: 'Prendre la Plaque du Veilleur', to: 'c74', effect: s => addItem(s, 'plaque_veilleur', 'Plaque du Veilleur', 'Une plaque de bronze portant l’œil fermé. Elle appartenait à un Veilleur chargé de retrouver les voyageurs descendus sous la cité.') },
           { label: 'La laisser', to: 'c74' }
         ]
   },
@@ -3823,31 +3655,14 @@ const STORY = {
   c74: {
     number: 'PAGE 74',
     title: '',
-    image: 'Les appelés',
+    image: 'Le passage des disparus',
     text: `
-      <p>Avant de quitter la galerie, tu regardes une dernière fois les murs.</p>
-
-      <p>Tu comprends maintenant ce que représente cette liste.</p>
-
-      <p>Ce ne sont pas les noms des morts.</p>
-
-      <p>Ce sont les noms de ceux qui ont entendu quelque chose.</p>
-
-      <p>De ceux qui ont commencé à venir vers la montagne.</p>
-
-      <p>Les Veilleurs les recensaient, puis tentaient de les conduire vers leurs salles de soin avant qu’ils n’aillent plus loin.</p>
-
-      <p>Gaspard en faisait partie.</p>
-
-      <p>Anselme aussi.</p>
-
-      <p>Aldren également.</p>
-
-      <p>Et désormais, ton nom figure parmi les leurs.</p>
-
-      <p>La question n’est plus seulement de savoir ce qui se trouve sous la montagne.</p>
-
-      <p>Il faut aussi comprendre pourquoi elle connaît déjà ton nom.</p>
+      <p>Tu repasses devant les niches.</p>
+      <p>Les objets ne t’apprennent pas ce qui se trouve au fond de la montagne. Ils disent seulement combien de personnes sont parties à sa recherche.</p>
+      <p>Les Veilleurs ont retrouvé certaines d’entre elles. D’autres ont disparu au-delà du dernier seuil.</p>
+      <p>Tu ignores ce qui les appelait, mais tu sais désormais qu’il ne suffit pas d’atteindre le fond pour en revenir.</p>
+      <p>Aldren a peut-être emprunté le même chemin.</p>
+      <p>Tu rejoins une porte qui donne sur une salle ronde.</p>
     `,
     choices: [{ label: 'Poursuivre dans la cité', to: 'c85' }]
   },
@@ -4238,9 +4053,9 @@ const STORY = {
 
       <p>Ils tentaient de les sauver.</p>
 
-      <p>Ils avaient compris que l’appel et la terre noire faisaient partie du même mal.</p>
+      <p>Ils avaient compris que les voix poussaient les voyageurs à descendre, tandis que la terre noire les contaminait.</p>
 
-      <p>Et parfois, ils parvenaient à faire taire la voix.</p>
+      <p>Après certains traitements, les patients n’entendaient plus rien. Les gravures ne disent pas combien de temps cela durait.</p>
     `,
     choices: [{ label: 'Quitter le laboratoire', to: 'c85' }]
   },
@@ -4248,63 +4063,41 @@ const STORY = {
   c85: {
     number: 'PAGE 85',
     title: 'La salle de veille',
-    image: 'La salle de veille',
+    image: 'La fresque de la prison',
     text: state => {
       let routeMemory = '';
       if (state.flags.cityRoute === 'names') {
-        routeMemory = '<p>La liste des appelés te revient en mémoire. Ton propre nom parmi les leurs rend cette histoire beaucoup trop proche.</p>';
+        routeMemory = '<p>Tu repenses aux affaires rassemblées dans les niches. Tant de voyageurs ont disparu avant toi.</p>';
       } else if (state.flags.cityRoute === 'voices') {
-        routeMemory = '<p>Tu repenses aux voix derrière les portes. Tu sais maintenant qu’une partie de l’appel consiste à donner aux victimes une raison de continuer.</p>';
+        routeMemory = '<p>Tu repenses aux voix derrière les portes. Elles savaient exactement ce que tu voulais entendre.</p>';
       } else if (state.flags.cityRoute === 'laboratory') {
-        routeMemory = '<p>Les tables et les aiguilles du laboratoire te reviennent en mémoire. Les Veilleurs avaient trouvé un moyen d’arracher au moins une partie du mal.</p>';
+        routeMemory = '<p>Tu repenses aux aiguilles du laboratoire. Les Veilleurs tentaient de retirer la terre noire de leurs patients.</p>';
       }
       return `
-        <p>Le passage débouche dans une salle ronde.</p>
-
-        <p>Trois accès y arrivent.</p>
-
-        <p>Sur l’un, tu reconnais les noms gravés.</p>
-
-        <p>Un autre mène au couloir des portes.</p>
-
-        <p>Le troisième est marqué par les plaques blanches du laboratoire.</p>
-
+        <p>Tu débouches dans une salle ronde. Trois couloirs y aboutissent : l’un vient des niches où reposent les affaires des disparus, un autre du couloir des portes et le dernier des salles blanches.</p>
         <p>Les trois chemins se rejoignent ici.</p>
-
-        <p>Au centre, une grande dalle dressée porte quatre scènes simples.</p>
-
-        <p>Un homme entend quelque chose depuis la montagne.</p>
-
-        <p>Dans la scène suivante, de la matière noire apparaît autour de sa bouche et de ses mains.</p>
-
-        <p>Puis des Veilleurs le retiennent et tentent d’extraire cette matière.</p>
-
-        <p>Enfin, un œil fermé se dresse devant un passage qui descend sous terre.</p>
-
-        <p>Cette fois, tu n’as plus besoin de deviner l’essentiel.</p>
-
-        <p>Les disparus entendent un appel.</p>
-
-        <p>Quelque chose utilise leurs souvenirs, leurs voix ou leurs désirs pour les attirer jusqu’à la montagne.</p>
-
-        <p>La terre noire apparaît chez certains d’entre eux à mesure que le mal progresse.</p>
-
-        <p>Les Veilleurs les recensaient, les interceptaient ici et tentaient de les soigner avant qu’ils ne descendent plus profondément.</p>
-
+        <p>Au centre, une immense dalle porte une suite de scènes gravées.</p>
+        <p>La première représente une cité habitée. Des hommes et des femmes travaillent parmi les colonnes, les échafaudages et les outils.</p>
+        <p>Dans la suivante, ces mêmes hommes entourent une forme immense, couchée au fond d’une cavité. Sa silhouette est trop abîmée pour que tu comprennes ce qu’elle représente.</p>
+        <p>Sur les scènes suivantes, ils dressent des piliers et des murs autour de cette forme, condamnent les accès et ferment une dernière porte.</p>
+        <p>Ils portent tous le même signe sur leurs vêtements : <strong>l’œil fermé</strong>.</p>
+        <p>Tu reconnais le symbole des Veilleurs.</p>
+        <p><strong>Ce sont donc des hommes, les premiers Veilleurs, qui ont construit cette prison.</strong></p>
+        <p>Le dessin continue. La forme est enfermée, mais des traits partent d’elle, traversent les murs et atteignent la tête de voyageurs qui se mettent en marche.</p>
+        <p>Certains portent des armes. D’autres des outils. Tous se dirigent vers la porte scellée.</p>
+        <p>Tu comprends enfin le sens de l’appel : <strong>quelque chose d’emprisonné cherche des hommes capables de venir jusqu’à lui et d’ouvrir sa prison.</strong></p>
         ${routeMemory}
-
-        <p>Tu ne sais toujours pas ce qui appelle.</p>
-
-        <p>Mais tu sais désormais ce que les Veilleurs essayaient d’empêcher.</p>
-
-        <p>Au bas de la dalle, une dernière gravure montre une petite lame noire coupant plusieurs traits qui relient un homme à quelque chose laissé hors du dessin.</p>
-
-        <p>À côté, une flèche pointe vers les niveaux inférieurs de la cité.</p>
-
-        <p>Si Aldren a continué, c’est probablement par là.</p>
+        <p>Dans la partie basse de la fresque, des Veilleurs remplissent de sable noir des vasques reliées à la porte par d’étroits canaux.</p>
+        <p>Une inscription accompagne le dessin :</p>
+        <blockquote>LA TERRE NOIRE ENTRETIENT LE SCEAU. NE PAS LA TOUCHER.</blockquote>
+        <p>Tu revois la vasque de la place et cette voix qui t’a brutalement repoussé lorsque tu allais y plonger la main.</p>
+        <p>La chose enfermée voulait-elle t’éviter de mourir avant que tu atteignes sa porte ?</p>
+        <p>Pourquoi les Veilleurs l’ont-ils enfermée ? La fresque ne montre aucune réponse.</p>
+        <p>Au pied de la dalle, une petite lame noire est gravée sous l’œil fermé. Une flèche indique les niveaux inférieurs de la cité.</p>
+        <p>Aldren cherchait cette lame. S’il est encore en vie, sa piste descend probablement par là.</p>
       `;
     },
-    choices: [{ label: 'Suivre la direction indiquée par les Veilleurs', to: 'c86' }]
+    choices: [{ label: 'Descendre vers les niveaux inférieurs', to: 'c86' }]
   },
 
   c86: {
@@ -4611,7 +4404,7 @@ const STORY = {
   "c47": "L’îlot de l’œil fermé",
   "c48": "La rive basse",
   "c49": "La paroi friable",
-  "c50": "Les bâtisseurs",
+  "c50": "Ceux qui sont descendus",
   "c51": "La petite lame noire",
   "c52": "La silhouette au sommet",
   "c53": "L’appel",
@@ -4631,11 +4424,11 @@ const STORY = {
   "c67": "Les quartiers hauts",
   "c68": "La porte latérale",
   "c69": "La Cité morte",
-  "c70": "La salle des noms",
-  "c71": "Ceux qui sont venus",
-  "c72": "Ton nom",
+  "c70": "La salle des disparus",
+  "c71": "Les affaires retrouvées",
+  "c72": "Les traces de la descente",
   "c73": "Le dernier Veilleur",
-  "c74": "Les appelés",
+  "c74": "Le passage des disparus",
   "c75": "Le couloir des portes",
   "c76": "La porte d’Aldren",
   "c77": "Ceux qui ont répondu",
@@ -4646,7 +4439,7 @@ const STORY = {
   "c82": "Le bras de pierre",
   "c83": "L’ampoule blanche",
   "c84": "Ce qu’ils essayaient de sauver",
-  "c85": "La salle de veille",
+  "c85": "La fresque de la prison",
   "c86": "L’avenue basse",
   "c87": "Le passage de service",
   "c88": "Le puits des Veilleurs",
@@ -4828,7 +4621,7 @@ const STORY = {
     {
       id: 'plaque_veilleur',
       name: 'Plaque du Veilleur',
-      description: 'Une petite plaque de bronze portant l’œil fermé. Son usage reste inconnu.'
+      description: 'Plaque de bronze d’un Veilleur chargé de retrouver les voyageurs disparus.'
     },
     {
       id: 'ampoule_blanche',
@@ -4963,7 +4756,7 @@ const STORY = {
         api.showModal('Notes d’Aldren', `
           <img class="inventory-parchment-image" src="${api.book.assetBase}/objets/La-Grotte-de-Valombre-Parchemin.png" alt="Notes d’Aldren" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <div class="inventory-image-fallback">Ton image apparaîtra ici dès que tu ajouteras :<br><strong>books/ecuyer/01-la-grotte-de-valombre/images/objets/La-Grotte-de-Valombre-Parchemin.png</strong></div>
-          <div class="parchment-verse"><em>ne pas ouvrir l’œil</em><br><br><strong>soufre !!!</strong><br><small>Le mot « soufre » est entouré plusieurs fois, avec plusieurs traits nerveux et des points d’exclamation.</small><br><br><em>lame noire</em><br><br><em>derrière la paroi</em><br><em>terre noire</em><br><em>ne pas écouter</em><br><em>surtout ne pas—</em></div>
+          <div class="parchment-verse"><strong>IL FAUT OUVRIR L’ŒIL FERMÉ</strong><br><br><em>La lame noire. Trouver la lame noire.</em><br><br><s>La terre noire…</s><br><small>Ces mots sont barrés trois fois. Dans la marge, Aldren a ajouté : « ÉVITER ».</small><br><br><strong>SOUFRE !!! ☠</strong><br><small>Le mot est entouré trois fois de traits nerveux. Une tête de mort est dessinée à côté.</small></div>
           <button class="inventory-action-btn" data-action="back-inventory">Retour à l’inventaire</button>`);
         return true;
       }
@@ -5058,7 +4851,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 27,
+    contentVersion: 28,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
@@ -5069,6 +4862,9 @@ const STORY = {
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
     imageCandidatesForPage: n => {
       const current = `La-Grotte-de-Valombre-${padPage(n)}`;
+      // Images anciennes devenues inexactes après la réécriture V54 :
+      // charger uniquement une nouvelle illustration dans images/pages/.
+      if ([50, 51, 70, 71, 72, 73, 74, 85].includes(n)) return [`pages/${current}`];
       if (n <= 52) return [current];
       if (n <= 55) return [`pages/${current}`];
       return [`pages/${current}`, `La-Grotte-de-Valombre-${padPage(n - 3)}`];
