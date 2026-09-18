@@ -100,9 +100,9 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return defaultState();
     const previous = JSON.parse(saved);
-    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 55) {
+    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== (BOOK.pageMapVersion || 58)) {
       try {
-        if (!localStorage.getItem(`${STORAGE_KEY}.backup-v52`)) localStorage.setItem(`${STORAGE_KEY}.backup-v52`, saved);
+        if (!localStorage.getItem(`${STORAGE_KEY}.backup-v57`)) localStorage.setItem(`${STORAGE_KEY}.backup-v57`, saved);
       } catch (e) {}
       BOOK.migrateState(previous);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(previous));
@@ -150,9 +150,9 @@ function restartFromCheckpoint() {
     if (!saved) return restartGame();
     const journalBackup = state.journal || '';
     const previous = JSON.parse(saved);
-    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== 55) {
+    if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== (BOOK.pageMapVersion || 58)) {
       try {
-        if (!localStorage.getItem(`${CHECKPOINT_KEY}.backup-v52`)) localStorage.setItem(`${CHECKPOINT_KEY}.backup-v52`, saved);
+        if (!localStorage.getItem(`${CHECKPOINT_KEY}.backup-v57`)) localStorage.setItem(`${CHECKPOINT_KEY}.backup-v57`, saved);
       } catch (e) {}
       BOOK.migrateState(previous);
       localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(previous));
@@ -251,13 +251,13 @@ function render() {
   statusTags.innerHTML = '';
   if (!node.sheet) {
     const protection = BOOK.rules && typeof BOOK.rules.currentProtection === 'function' ? BOOK.rules.currentProtection(state) : 0;
-    const labels = [`♥ ${state.hp}/${state.maxHp}`, `🛡 ${protection}`, `Chance ${state.chance}`, `Force ${currentForce(state)}`, `Dextérité ${currentDexterity(state)}`, `Puissance de l’arme ${state.weapon === 'none' ? 0 : combatPower(state)}`];
+    const labels = [`♥ ${state.hp}/${state.maxHp}`, `🛡 ${protection}`, `Chance ${state.chance}`, `Force ${currentForce(state)}`, `Dextérité ${currentDexterity(state)}`, `Puissance de l’arme ${state.weapon === 'none' ? 0 : combatPower(state)}`, `Terre noire ${state.contamination || 0}/6`];
     if (state.silver > 0) labels.push(`${state.silver} argent`);
     if (state.goldCoins > 0) labels.push(`${state.goldCoins} or`);
     labels.forEach(label => { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = label; statusTags.appendChild(tag); });
   }
 
-  const availableChoices = typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
+  const availableChoices = state.hp <= 0 && !node.sheet ? fatalChoices() : typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
   choices.innerHTML = '';
   availableChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
@@ -268,7 +268,15 @@ function render() {
     btn.addEventListener('click', () => {
       if (choice.action === 'checkpoint') return restartFromCheckpoint();
       if (choice.action === 'restart') return restartGame();
-      if (choice.action === 'damage') { rollDamage(state, choice.damageKey || state.node, choice.damageSides || 6); saveState(); render(); return; }
+      if (choice.action === 'damage') {
+        const key = choice.damageKey || state.node;
+        rollDamage(state, key, choice.damageSides || 6);
+        if (key === 'c12' && !state.flags.gaspardEarthRegistered) {
+          state.flags.gaspardEarthRegistered = true;
+          if (typeof BOOK.rules.raiseContamination === 'function') BOOK.rules.raiseContamination(state, 1);
+        }
+        saveState(); render(); return;
+      }
       if (typeof choice.effect === 'function') choice.effect(state);
       if (choice.stay) { saveState(); render(); return; }
       enterNode(choice.to);
