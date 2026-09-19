@@ -205,7 +205,7 @@ function loadPageImage(pageNumber, title) {
   tryNext();
 }
 
-/* Carte narrative V60. Sauvegarde indépendante pour garder les découvertes entre les essais. */
+/* Carte narrative V62. Sauvegarde indépendante pour garder les découvertes entre les essais. */
 const ATLAS = BOOK.adventureMap;
 const ATLAS_KEY = `ldveh.book.${BOOK.id}.atlas.v1`;
 const atlasDetails = document.getElementById('atlasDetails');
@@ -218,7 +218,7 @@ const atlasPageAreas = new Map();
 for (const area of (ATLAS?.nodes || [])) for (const page of area.pages) atlasPageAreas.set(page, area.id);
 const atlasKnownEdges = new Set((ATLAS?.edges || []).map(([a,b]) => [a,b].sort().join('|')));
 function atlasEdgeKey(a,b) { return [a,b].sort().join('|'); }
-function atlasDefaultMemory() {return {version:1,visited:[],facts:[],edges:[],deaths:[],lastShown:''};}
+function atlasDefaultMemory() {return {version:2,pageMapVersion:62,visited:[],facts:[],edges:[],deaths:[],lastShown:''};}
 function atlasLoadMemory() {
   try {
     const saved = JSON.parse(localStorage.getItem(ATLAS_KEY));
@@ -228,6 +228,19 @@ function atlasLoadMemory() {
       initial[key] = Array.isArray(saved[key]) ? saved[key].filter(value => typeof value === 'string') : [];
     }
     initial.lastShown = typeof saved.lastShown === 'string' ? saved.lastShown : '';
+    // V62: migrate saved discovery keys and death markers along with the page numbers.
+    if (saved.pageMapVersion !== 62 && ATLAS?.mode === 'work') {
+      const map={c114:'c105',c115:'c106',c116:'c107',c105:'c108',c106:'c109',
+                 c107:'c110',c108:'c111',c109:'c112',c110:'c113',c111:'c114',
+                 c112:'c115',c113:'c116'};
+      const rename=id=>map[id]||id;
+      initial.facts=initial.facts.map(key=>{
+        const at=key.lastIndexOf(':');
+        return at < 0 ? key : key.slice(0,at+1)+rename(key.slice(at+1));
+      });
+      initial.deaths=initial.deaths.map(rename);
+    }
+    initial.pageMapVersion=ATLAS?.mode === 'work' ? 62 : 59;
     return initial;
   } catch {return atlasDefaultMemory();}
 }
@@ -297,7 +310,7 @@ function atlasSvgPath(start,end,stroke,dash,width) {
 function atlasStub(from,to) {
   const dx=to.x-from.x,dy=to.y-from.y;
   const length=Math.hypot(dx,dy)||1;
-  const distance=Math.min(48,length*.34);
+  const distance=Math.min(27,length*.39);
   atlasSvgPath(from,{x:from.x+dx/length*distance,y:from.y+dy/length*distance},'#907653','6 6',3);
 }
 function atlasShowDetails(area) {
@@ -344,8 +357,8 @@ function atlasDraw() {
   // sont dessinées sans révéler les pages ou les noms des lieux à venir.
   if (ATLAS.mode === 'player' && seen.has('monde')) {
     const origin=atlasNodes.get('monde');
-    for (const [dx,dy] of [[-145,95],[0,105],[145,95]]) {
-      const length=Math.hypot(dx,dy);atlasSvgPath(origin,{x:origin.x+dx/length*56,y:origin.y+dy/length*56},'#907653','6 6',3);
+    for (const [dx,dy] of [[-80,55],[0,65],[80,55]]) {
+      const length=Math.hypot(dx,dy);atlasSvgPath(origin,{x:origin.x+dx/length*31,y:origin.y+dy/length*31},'#907653','6 6',3);
     }
   }
   for (const area of ATLAS.nodes) {

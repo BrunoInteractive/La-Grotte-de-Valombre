@@ -1,17 +1,17 @@
-/* Carte narrative : seuls les lieux et indices réellement présents dans le récit. */
+/* Carte narrative V62 : compacte ; embranchements et découvertes conservés. */
 (function(){
   const book = BookRegistry.get("ecuyer-01");
   if (book) book.adventureMap = {
   "mode": "work",
-  "version": 1,
-  "width": 1060,
-  "height": 4230,
+  "version": 2,
+  "width": 680,
+  "height": 2434,
   "nodes": [
     {
       "id": "ecuries",
       "label": "Écuries",
-      "x": 500,
-      "y": 70,
+      "x": 309,
+      "y": 42,
       "pages": [
         "c0",
         "c1"
@@ -21,8 +21,8 @@
     {
       "id": "sacoche",
       "label": "Sacoche d’Aldren",
-      "x": 260,
-      "y": 155,
+      "x": 172,
+      "y": 90,
       "pages": [
         "c2"
       ],
@@ -36,8 +36,8 @@
     {
       "id": "place",
       "label": "Place de Valombre",
-      "x": 680,
-      "y": 160,
+      "x": 411,
+      "y": 92,
       "pages": [
         "c3"
       ],
@@ -46,8 +46,8 @@
     {
       "id": "marchand",
       "label": "Marchand",
-      "x": 865,
-      "y": 255,
+      "x": 517,
+      "y": 146,
       "pages": [
         "c4"
       ],
@@ -56,8 +56,8 @@
     {
       "id": "forge",
       "label": "Forge",
-      "x": 615,
-      "y": 275,
+      "x": 374,
+      "y": 157,
       "pages": [
         "c5"
       ],
@@ -66,8 +66,8 @@
     {
       "id": "ruelle",
       "label": "Ruelle",
-      "x": 950,
-      "y": 365,
+      "x": 565,
+      "y": 207,
       "pages": [
         "c6",
         "c7"
@@ -82,8 +82,8 @@
     {
       "id": "chemin",
       "label": "Chemin de la montagne",
-      "x": 465,
-      "y": 420,
+      "x": 289,
+      "y": 238,
       "pages": [
         "c8"
       ],
@@ -92,8 +92,8 @@
     {
       "id": "gaspard",
       "label": "Gaspard Vellin",
-      "x": 255,
-      "y": 535,
+      "x": 169,
+      "y": 302,
       "pages": [
         "c9",
         "c10",
@@ -115,8 +115,8 @@
     {
       "id": "foret",
       "label": "Forêt",
-      "x": 675,
-      "y": 525,
+      "x": 454,
+      "y": 297,
       "pages": [
         "c14"
       ],
@@ -125,8 +125,8 @@
     {
       "id": "rochebrume",
       "label": "Rochebrume",
-      "x": 755,
-      "y": 635,
+      "x": 454,
+      "y": 358,
       "pages": [
         "c15"
       ],
@@ -135,8 +135,8 @@
     {
       "id": "taverne",
       "label": "Taverne",
-      "x": 580,
-      "y": 730,
+      "x": 354,
+      "y": 412,
       "pages": [
         "c16",
         "c17",
@@ -153,8 +153,8 @@
     {
       "id": "etranger",
       "label": "Étranger",
-      "x": 945,
-      "y": 760,
+      "x": 562,
+      "y": 428,
       "pages": [
         "c19"
       ],
@@ -168,8 +168,8 @@
     {
       "id": "grotte",
       "label": "Entrée de la grotte",
-      "x": 460,
-      "y": 895,
+      "x": 286,
+      "y": 504,
       "pages": [
         "c20"
       ],
@@ -178,8 +178,8 @@
     {
       "id": "acide",
       "label": "Passage acide",
-      "x": 205,
-      "y": 1010,
+      "x": 141,
+      "y": 568,
       "pages": [
         "c21"
       ],
@@ -188,8 +188,8 @@
     {
       "id": "ombres",
       "label": "Salle des ombres",
-      "x": 675,
-      "y": 1010,
+      "x": 408,
+      "y": 568,
       "pages": [
         "c22",
         "c24",
@@ -204,8 +204,8 @@
     {
       "id": "fuite",
       "label": "Fuite",
-      "x": 895,
-      "y": 1110,
+      "x": 534,
+      "y": 624,
       "pages": [
         "c23"
       ],
@@ -214,8 +214,8 @@
     {
       "id": "camp",
       "label": "Camp sous la roche",
-      "x": 600,
-      "y": 1180,
+      "x": 366,
+      "y": 664,
       "pages": [
         "c28",
         "c30"
@@ -234,8 +234,8 @@
     {
       "id": "galerie",
       "label": "Galerie condamnée",
-      "x": 320,
-      "y": 1310,
+      "x": 206,
+      "y": 736,
       "pages": [
         "c31",
         "c32"
@@ -245,8 +245,8 @@
     {
       "id": "tunnel",
       "label": "Tunnel voisin",
-      "x": 885,
-      "y": 1310,
+      "x": 528,
+      "y": 736,
       "pages": [
         "c34",
         "c35",
@@ -256,15 +256,15 @@
       "notes": [
         {
           "page": "c35",
-          "text": "La silhouette du tunnel dit avoir suivi la voix de sa fille, avant d’affirmer qu’elle n’a pas de fille."
+          "text": "La silhouette du tunnel raconte que ses jambes l’ont conduit malgré lui vers la montagne, alors qu’il voulait rester chez lui."
         }
       ]
     },
     {
       "id": "fissures",
       "label": "Passage des fissures",
-      "x": 590,
-      "y": 1435,
+      "x": 360,
+      "y": 806,
       "pages": [
         "c37",
         "c39"
@@ -274,8 +274,8 @@
     {
       "id": "monde",
       "label": "Monde sous la montagne",
-      "x": 590,
-      "y": 1560,
+      "x": 360,
+      "y": 876,
       "pages": [
         "c40"
       ],
@@ -284,8 +284,8 @@
     {
       "id": "lac",
       "label": "Lac noir",
-      "x": 240,
-      "y": 1690,
+      "x": 161,
+      "y": 949,
       "pages": [
         "c41",
         "c42",
@@ -302,8 +302,8 @@
     {
       "id": "ilot",
       "label": "Îlot",
-      "x": 105,
-      "y": 1840,
+      "x": 84,
+      "y": 1033,
       "pages": [
         "c47"
       ],
@@ -317,8 +317,8 @@
     {
       "id": "rive",
       "label": "Quartiers noyés",
-      "x": 295,
-      "y": 1970,
+      "x": 192,
+      "y": 1106,
       "pages": [
         "c48",
         "c66"
@@ -328,8 +328,8 @@
     {
       "id": "marches",
       "label": "Grandes Marches",
-      "x": 580,
-      "y": 1690,
+      "x": 372,
+      "y": 949,
       "pages": [
         "c44",
         "c49"
@@ -339,8 +339,8 @@
     {
       "id": "fresques",
       "label": "Fresques",
-      "x": 565,
-      "y": 1840,
+      "x": 372,
+      "y": 1033,
       "pages": [
         "c50",
         "c51"
@@ -359,8 +359,8 @@
     {
       "id": "sommet",
       "label": "Fissure du sommet",
-      "x": 565,
-      "y": 1970,
+      "x": 372,
+      "y": 1106,
       "pages": [
         "c52",
         "c53",
@@ -373,8 +373,8 @@
     {
       "id": "hauts",
       "label": "Quartiers hauts",
-      "x": 535,
-      "y": 2100,
+      "x": 372,
+      "y": 1179,
       "pages": [
         "c57",
         "c67"
@@ -389,8 +389,8 @@
     {
       "id": "pont",
       "label": "Pont suspendu",
-      "x": 885,
-      "y": 1690,
+      "x": 528,
+      "y": 949,
       "pages": [
         "c58",
         "c59",
@@ -403,8 +403,8 @@
     {
       "id": "passerelle",
       "label": "Porte suspendue",
-      "x": 885,
-      "y": 1970,
+      "x": 528,
+      "y": 1106,
       "pages": [
         "c63",
         "c64",
@@ -416,8 +416,8 @@
     {
       "id": "cite",
       "label": "Cité morte",
-      "x": 610,
-      "y": 2240,
+      "x": 371,
+      "y": 1257,
       "pages": [
         "c69",
         "c70",
@@ -443,8 +443,8 @@
     {
       "id": "routes",
       "label": "Trois chemins",
-      "x": 610,
-      "y": 2380,
+      "x": 371,
+      "y": 1336,
       "pages": [
         "c74"
       ],
@@ -453,8 +453,8 @@
     {
       "id": "quartiers",
       "label": "Quartiers des Veilleurs",
-      "x": 245,
-      "y": 2510,
+      "x": 163,
+      "y": 1408,
       "pages": [
         "c75"
       ],
@@ -463,8 +463,8 @@
     {
       "id": "refectoire",
       "label": "Réfectoire",
-      "x": 95,
-      "y": 2640,
+      "x": 78,
+      "y": 1481,
       "pages": [
         "c76"
       ],
@@ -478,8 +478,8 @@
     {
       "id": "garde",
       "label": "Poste de garde",
-      "x": 245,
-      "y": 2760,
+      "x": 163,
+      "y": 1548,
       "pages": [
         "c77",
         "c78",
@@ -501,8 +501,8 @@
     {
       "id": "bureau",
       "label": "Bureau fermé",
-      "x": 375,
-      "y": 2640,
+      "x": 204,
+      "y": 1481,
       "pages": [
         "c82",
         "c83",
@@ -523,8 +523,8 @@
     {
       "id": "appartements",
       "label": "Appartements",
-      "x": 315,
-      "y": 2925,
+      "x": 204,
+      "y": 1641,
       "pages": [
         "c85",
         "c86",
@@ -542,10 +542,10 @@
       ]
     },
     {
-      "id": "voix",
-      "label": "Galerie des voix",
-      "x": 610,
-      "y": 2600,
+      "id": "observation",
+      "label": "Quartier d’observation",
+      "x": 375,
+      "y": 1459,
       "pages": [
         "c92",
         "c93",
@@ -554,16 +554,24 @@
       ],
       "notes": [
         {
+          "page": "c93",
+          "text": "Des prisonniers décrivent une force qui commande leurs mains et les pousse vers la prison, malgré leur volonté."
+        },
+        {
           "page": "c94",
-          "text": "Dans les cellules, un prisonnier a écrit qu’il entend encore une personne qu’il sait morte. Une notice décrit un disque capable de couper brièvement l’appel."
+          "text": "Les premières doses de terre noire leur permettent de retenir leurs gestes et affaiblissent l’emprise."
+        },
+        {
+          "page": "c95",
+          "text": "À fortes doses, la terre noire provoque des douleurs, des déformations, des décès et des transformations."
         }
       ]
     },
     {
-      "id": "sceau",
-      "label": "Sceau de silence",
-      "x": 610,
-      "y": 2880,
+      "id": "cahiers",
+      "label": "Cahiers des expériences",
+      "x": 375,
+      "y": 1616,
       "pages": [
         "c96",
         "c97",
@@ -571,16 +579,20 @@
       ],
       "notes": [
         {
+          "page": "c96",
+          "text": "Le remède blanc réduit les effets de la terre noire, mais l’emprise du Dormeur peut revenir."
+        },
+        {
           "page": "c97",
-          "text": "Une notice indique que le Sceau de silence peut interrompre une injonction de la voix une seule fois."
+          "text": "Les Veilleurs ont constaté qu’une contamination intermédiaire réduit l’emprise sans provoquer immédiatement les transformations les plus graves. Aucun dosage n’est sans risque."
         }
       ]
     },
     {
       "id": "laboratoire",
       "label": "Laboratoire",
-      "x": 930,
-      "y": 2520,
+      "x": 550,
+      "y": 1414,
       "pages": [
         "c99",
         "c100",
@@ -589,7 +601,7 @@
       "notes": [
         {
           "page": "c99",
-          "text": "Les Veilleurs ont d’abord essayé d’aider les voyageurs attirés par la voix. Ils ont ensuite expérimenté sur des corps avec de la terre noire."
+          "text": "Les Veilleurs ont d’abord essayé d’aider les voyageurs attirés par l’emprise. Ils ont ensuite expérimenté sur des corps avec de la terre noire."
         },
         {
           "page": "c100",
@@ -600,23 +612,23 @@
     {
       "id": "ampoule",
       "label": "Ampoule blanche",
-      "x": 930,
-      "y": 2700,
+      "x": 550,
+      "y": 1515,
       "pages": [
         "c102"
       ],
       "notes": [
         {
           "page": "c102",
-          "text": "Une ampoule blanche réduit de quatre points la contamination, sans guérir les blessures. La voix peut alors reprendre de la force."
+          "text": "Une ampoule blanche réduit de quatre points la contamination, sans guérir les blessures. L’emprise du Dormeur peut alors reprendre de la force."
         }
       ]
     },
     {
       "id": "registres",
       "label": "Registres des gardiens",
-      "x": 930,
-      "y": 2870,
+      "x": 550,
+      "y": 1610,
       "pages": [
         "c103"
       ],
@@ -630,8 +642,8 @@
     {
       "id": "sceau_salle",
       "label": "Salle du sceau",
-      "x": 610,
-      "y": 3070,
+      "x": 372,
+      "y": 1722,
       "pages": [
         "c104"
       ],
@@ -645,14 +657,14 @@
     {
       "id": "medecin",
       "label": "Registre du médecin",
-      "x": 610,
-      "y": 3220,
+      "x": 372,
+      "y": 1806,
       "pages": [
-        "c114"
+        "c105"
       ],
       "notes": [
         {
-          "page": "c114",
+          "page": "c105",
           "text": "La terre noire affaiblit l’appel, mais transforme les corps : 0–4, appel puissant ; 5–8, emprise réduite ; 9–12, transformation menaçante ; à 13, le sujet devient gardien."
         }
       ]
@@ -660,14 +672,14 @@
     {
       "id": "secours",
       "label": "Poste de secours",
-      "x": 465,
-      "y": 3360,
+      "x": 372,
+      "y": 1884,
       "pages": [
-        "c115"
+        "c106"
       ],
       "notes": [
         {
-          "page": "c115",
+          "page": "c106",
           "text": "Une ampoule blanche intacte permet de réduire la contamination de quatre points, sans soigner les blessures."
         }
       ]
@@ -675,47 +687,47 @@
     {
       "id": "reserve",
       "label": "Réserve de terre noire",
-      "x": 720,
-      "y": 3490,
+      "x": 372,
+      "y": 1957,
       "pages": [
-        "c116"
+        "c107"
       ],
       "notes": [
         {
-          "page": "c116",
+          "page": "c107",
           "text": "Une petite sacoche contient une dose de terre noire. L’absorber augmenterait la contamination de trois points."
         }
       ]
     },
     {
       "id": "grille",
-      "label": "Voix et grille",
-      "x": 610,
-      "y": 3630,
+      "label": "L’emprise et la grille",
+      "x": 372,
+      "y": 2036,
       "pages": [
-        "c105",
-        "c106",
-        "c107"
+        "c108",
+        "c109",
+        "c110"
       ],
       "notes": [
         {
-          "page": "c107",
-          "text": "Des tablettes indiquent que la voix a parfois protégé les Veilleurs de la terre noire, mais qu’elle cherche aussi à les conduire vers la porte. Son aide n’est pas toujours désintéressée."
+          "page": "c110",
+          "text": "Des tablettes indiquent que une force a parfois écarté les Veilleurs de la terre noire, mais qu’elle cherchait aussi à guider leurs gestes jusqu’à la porte."
         }
       ]
     },
     {
       "id": "avenue",
       "label": "Avenue basse",
-      "x": 610,
-      "y": 3770,
+      "x": 372,
+      "y": 2114,
       "pages": [
-        "c108",
-        "c109"
+        "c111",
+        "c112"
       ],
       "notes": [
         {
-          "page": "c108",
+          "page": "c111",
           "text": "Les marques des Veilleurs jalonnent la descente. Une maçonnerie plus ancienne apparaît sous les rues de la cité."
         }
       ]
@@ -723,25 +735,25 @@
     {
       "id": "puits",
       "label": "Puits des Veilleurs",
-      "x": 610,
-      "y": 3900,
+      "x": 372,
+      "y": 2187,
       "pages": [
-        "c110",
-        "c111"
+        "c113",
+        "c114"
       ],
       "notes": []
     },
     {
       "id": "porte",
       "label": "Porte sous la ville",
-      "x": 610,
-      "y": 4030,
+      "x": 372,
+      "y": 2260,
       "pages": [
-        "c112"
+        "c115"
       ],
       "notes": [
         {
-          "page": "c112",
+          "page": "c115",
           "text": "La porte porte l’œil fermé et une petite lame noire, gravée plus récemment. Une empreinte de botte mène vers l’intérieur."
         }
       ]
@@ -749,14 +761,14 @@
     {
       "id": "profondeurs",
       "label": "Sous la Cité morte",
-      "x": 610,
-      "y": 4150,
+      "x": 372,
+      "y": 2327,
       "pages": [
-        "c113"
+        "c116"
       ],
       "notes": [
         {
-          "page": "c113",
+          "page": "c116",
           "text": "Des marques de l’œil fermé et de la petite lame noire orientent la descente vers des niveaux anciens. Une autre empreinte suggère un passage récent."
         }
       ]
@@ -945,7 +957,7 @@
     ],
     [
       "routes",
-      "voix"
+      "observation"
     ],
     [
       "laboratoire",
@@ -980,15 +992,15 @@
       "sceau_salle"
     ],
     [
-      "sceau",
-      "voix"
+      "cahiers",
+      "observation"
     ],
     [
       "sceau_salle",
-      "voix"
+      "observation"
     ],
     [
-      "sceau",
+      "cahiers",
       "sceau_salle"
     ],
     [
@@ -1045,7 +1057,7 @@
     "c23"
   ],
   "endingPages": [
-    "c113"
+    "c116"
   ]
 };
 })();
