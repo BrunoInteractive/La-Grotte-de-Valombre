@@ -428,7 +428,7 @@
       "notes": [
         {
           "page": "c70",
-          "text": "La première gravure montre la cité habitée et ses bâtisseurs. Les routes menaient autrefois vers la surface ; les bâtisseurs se rassemblent ensuite autour d’une ouverture sous la cité."
+          "text": "Une fresque montre des hommes et des femmes construisant les maisons et les rues de la cité. D’anciennes routes la relient à la surface ; les bâtisseurs se rassemblent ensuite autour d’une ouverture sous la ville."
         },
         {
           "page": "c71",
@@ -722,12 +722,7 @@
         "c111",
         "c112"
       ],
-      "notes": [
-        {
-          "page": "c111",
-          "text": "Les marques des Veilleurs jalonnent la descente. Une maçonnerie plus ancienne apparaît sous les rues de la cité."
-        }
-      ]
+      "notes": []
     },
     {
       "id": "puits",
