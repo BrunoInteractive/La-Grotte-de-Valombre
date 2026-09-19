@@ -28,6 +28,12 @@ const ENEMIES = {
     maxHp: 12,
     force: 18,
     dexterity: 5
+  },
+  observationPrisoner: {
+    name: 'PRISONNIER TRANSFORMÉ',
+    maxHp: 8,
+    force: 8,
+    dexterity: 9
   }
 };
 
@@ -4002,73 +4008,131 @@ const STORY = {
   c92: {
     number: 'PAGE 92', title: 'Le quartier d’observation', image: 'Le quartier d’observation',
     text: `
-      <p>Un couloir étroit dessert plusieurs cellules. Chacune contient une table, une chaise et un petit volet dans la porte.</p>
-      <p>Une plaque porte l’œil fermé et quelques mots : <strong>ISOLER LES SUJETS. CONSIGNER LEURS RÉACTIONS.</strong></p>
-      <p>Les Veilleurs enfermaient ici toute personne contaminée et lui demandaient de consigner chaque jour ses sensations.</p>
-      <p>Des cahiers sont encore posés sur les tables. Au fond du couloir, une arche conduit à la salle où se rejoignent les trois chemins.</p>
-      <p>Tu peux lire les témoignages ou traverser le quartier sans t’arrêter.</p>`,
+      <p>Un couloir étroit dessert des cellules. À travers certains volets, tu aperçois une table, une chaise, parfois un cahier abandonné.</p>
+      <p>L’une des portes est rayée de marques irrégulières. Un bruit léger vient de l’intérieur, suivi d’un raclement.</p>
+      <p>Au bout du couloir, une arche permet de rejoindre la salle où convergent les trois chemins.</p>`,
     choices: [
-      { label: 'Lire les cahiers des prisonniers', to: 'c93' },
-      { label: 'Traverser le quartier sans fouiller', to: 'c98' }
+      { label: 'T’approcher de la cellule d’où vient le bruit', to: 'c93' },
+      { label: 'Garder tes distances et rejoindre la salle ronde', to: 'c98' }
     ]
   },
   c93: {
-    number: 'PAGE 93', title: 'Les premiers témoignages', image: 'Les cahiers des prisonniers',
+    number: 'PAGE 93', title: 'Derrière le volet', image: 'Le dernier prisonnier',
+    onEnter: s => { s.flags.observationMet = true; },
     text: `
-      <p>Le premier cahier est rempli d’une écriture hésitante :</p>
-      <blockquote>« Je veux rester assis. Pourtant, mes pieds se dirigent vers la porte. Mes mains cherchent le loquet sans que je le leur demande. »</blockquote>
-      <p>Plus loin, une autre personne décrit le même besoin de descendre sous la cité. Elle parvient encore à retenir ses gestes, mais de moins en moins longtemps.</p>
-      <p>Les Veilleurs exigeaient que chaque prisonnier note ce qu’il ressentait, jour après jour.</p>`,
-    choices: [{ label: 'Lire la suite des observations', to: 'c94' }]
+      <p>Un homme est assis derrière la porte, le dos courbé. Tu ne distingues pas son visage. Son bras droit repose sur la table, déformé sous la manche.</p>
+      <p>Il t’entend approcher.</p>
+      <blockquote>« Vous n’êtes pas un Veilleur ? »</blockquote>
+      <p>Tu réponds que non. Il souffle, sans paraître rassuré.</p>
+      <blockquote>« Alors… qu’est-ce que vous faites encore ici ? »</blockquote>
+      <p>Un cahier est ouvert près de lui. Il cache sa main sous la table lorsque tu regardes son bras.</p>`,
+    choices: [
+      { label: '« Pourquoi y a-t-il des cahiers dans toutes ces cellules ? »', to: 'c94' },
+      { label: '« Qu’est-il arrivé à votre bras ? »', to: 'c95' }
+    ]
   },
   c94: {
-    number: 'PAGE 94', title: 'Les premières doses', image: 'Les registres de terre noire',
+    number: 'PAGE 94', title: 'Le cahier du prisonnier', image: 'Le cahier du prisonnier',
+    onEnter: s => { s.flags.observationRecordsHeard = true; s.flags.observationRead = true; },
     text: `
-      <p>Les dates suivantes sont accompagnées d’un symbole représentant une pincée de terre noire.</p>
-      <blockquote>« Après la première dose, j’ai pu arrêter ma main avant qu’elle touche la serrure. Pour la première fois, j’ai choisi de rester. »</blockquote>
-      <p>Un Veilleur a noté que l’emprise venue de la prison faiblissait à mesure que la terre noire pénétrait dans l’organisme.</p>
-      <p>Les expériences ne se sont pas arrêtées là.</p>`,
-    choices: [{ label: 'Examiner les observations suivantes', to: 'c95' }]
+      <p>L’homme pose lentement une main sur le cahier.</p>
+      <blockquote>« C’était leur règle. Écrire chaque jour. Quand mes jambes avançaient toutes seules, quand je touchais une serrure sans le vouloir… »</blockquote>
+      <p>Il cherche une page, puis abandonne.</p>
+      <blockquote>« Au début, je croyais qu’ils lisaient pour nous aider. »</blockquote>
+      <p>Il ne tourne plus les pages. Tu attends qu’il reprenne, mais il regarde simplement la porte.</p>`,
+    choices: s => [
+      ...(!s.flags.observationBodyHeard ? [{ label: '« Et votre bras ? Que vous ont-ils donné ? »', to: 'c95' }] : []),
+      { label: '« Vous avez encore un traitement ? »', to: 'c96' }
+    ]
   },
   c95: {
-    number: 'PAGE 95', title: 'Le prix de la protection', image: 'Le journal des doses',
+    number: 'PAGE 95', title: 'La terre sous la peau', image: 'Le bras du prisonnier',
+    onEnter: s => { s.flags.observationBodyHeard = true; s.flags.observationRead = true; },
     text: `
-      <p>Les doses augmentent. L’écriture du prisonnier change.</p>
-      <blockquote>« Je n’avance plus vers la porte. Mais mes doigts restent raides. Je ne reconnais plus la forme de ma main. »</blockquote>
-      <p>Dans les marges, les Veilleurs ont consigné d’autres cas : douleurs, membres déformés, puis des décès et des transformations.</p>
-      <p>La terre noire protège de l’emprise, mais elle peut détruire ceux qui la portent.</p>`,
-    choices: [{ label: 'Chercher si les Veilleurs ont tenté de traiter les prisonniers', to: 'c96' }]
+      <p>Il écarte un peu sa manche. Sous la peau, des lignes noires montent jusqu’au coude.</p>
+      <blockquote>« La terre noire. Avec la première dose, j’ai pu retenir ma main. J’ai enfin cessé de marcher vers cette porte. »</blockquote>
+      <p>Il essaie de refermer les doigts. Deux d’entre eux restent immobiles.</p>
+      <blockquote>« Alors ils ont continué. »</blockquote>
+      <p>Tu observes le bras. Il le ramène contre lui avant que tu puisses poser une autre question.</p>`,
+    choices: s => [
+      ...(!s.flags.observationRecordsHeard ? [{ label: '« Pourquoi vous faisaient-ils écrire tout cela ? »', to: 'c94' }] : []),
+      { label: '« Vous avez encore un traitement ? »', to: 'c96' }
+    ]
   },
   c96: {
-    number: 'PAGE 96', title: 'Le remède blanc', image: 'Les expériences de traitement',
-    text: `
-      <p>Dans une cellule voisine, un second cahier accompagne un dessin d’ampoule remplie de liquide blanc.</p>
-      <blockquote>« Après le remède, la douleur a reculé. Mes doigts ont retrouvé leur forme. »</blockquote>
-      <p>Quelques lignes plus bas :</p>
-      <blockquote>« Ce matin, ma main a recommencé à chercher la porte. J’ai dû la retenir de toutes mes forces. »</blockquote>
-      <p>Le traitement réduit la terre noire. L’emprise de la chose enfermée peut alors revenir.</p>`,
-    choices: [{ label: 'Lire la conclusion des expériences', to: 'c97' }]
+    number: 'PAGE 96', title: 'La dernière dose', image: 'La dernière ampoule vide',
+    onEnter: s => { s.flags.observationRead = true; },
+    text: s => `
+      <p>À ta question, il cherche quelque chose près de sa chaise. Sa main revient avec une petite ampoule vide.</p>
+      <blockquote>« Le liquide blanc. Ça faisait reculer la terre noire… puis je sentais de nouveau mes pieds vouloir partir. »</blockquote>
+      <p>Il repose l’ampoule. Sa respiration est devenue courte.</p>
+      <blockquote>« Je n’en ai plus. »</blockquote>
+      ${s.flags.observationBalanceAsked ? `<p>Il te regarde longuement avant de répondre.</p>
+        <blockquote>« Ils parlaient d’une juste dose. Pendant quelques jours, j’ai tenu. Après, il fallait recommencer… et je n’y arrivais plus. »</blockquote>
+        <p>Il défait avec peine un bracelet métallique de son poignet.</p>
+        <blockquote>« Prenez-le. Je le serrais quand mes mains ne m’obéissaient plus. Le ressort est presque mort, mais il peut encore servir une fois. »</blockquote>
+        <p>Il te tend le bracelet à travers le volet.</p>
+        <blockquote>« Maintenant, partez. Fuyez la folie des Veilleurs. »</blockquote>` : '<p>Son regard se fixe brusquement sur le bras qu’il cache sous sa manche.</p>'}`,
+    choices: s => s.flags.observationBalanceAsked ? [
+      { label: 'Prendre le bracelet d’ancrage et reculer', to: 'c97', effect: t => { addItem(t, 'bracelet_ancrage', 'Bracelet d’ancrage', 'Usage unique : permet de retenter un test de résistance raté contre l’emprise du Dormeur.'); t.flags.observationBraceletTaken = true; } },
+      { label: 'Laisser le bracelet et reculer', to: 'c97', effect: t => { t.flags.observationBraceletDeclined = true; } }
+    ] : [
+      { label: '« Vous aviez trouvé une dose qui permettait de tenir ? »', stay: true, effect: t => { t.flags.observationBalanceAsked = true; } },
+      { label: 'Le laisser et te diriger vers la sortie', to: 'c97' }
+    ]
   },
   c97: {
-    number: 'PAGE 97', title: 'Un équilibre fragile', image: 'La synthèse des Veilleurs',
-    onEnter: s => { s.flags.observationRead = true; },
-    text: `
-      <p>Sur la dernière table, les Veilleurs ont rassemblé leurs observations.</p>
-      <p>Une contamination légère laisse une grande prise à l’emprise. Une contamination excessive écarte cette influence, mais transforme le corps.</p>
-      <p><strong>Entre les deux, ils ont trouvé une marge étroite : assez de terre noire pour retenir ses propres gestes, pas assez pour provoquer les transformations les plus graves.</strong></p>
-      <p>Ils n’ont pourtant jamais trouvé de dose sans risque. Certains prisonniers ont été sacrifiés pour établir ces résultats.</p>
-      <p>Un autre registre, plus complet, a été emporté vers la salle commune.</p>`,
-    choices: [{ label: 'Quitter les cellules', to: 'c98' }]
+    number: 'PAGE 97', title: 'Le dernier réflexe', image: 'La main derrière le volet',
+    text: s => `
+      <p>Un craquement résonne dans la cellule. L’homme se plie en deux. Ses doigts heurtent la porte, puis se referment sur le bord du volet.</p>
+      <blockquote>« Fuyez… »</blockquote>
+      <p>Une main jaillit soudain vers ton visage. Tu n’as qu’un instant pour te dérober.</p>
+      ${s.flags.observationReflexRolled ? `${diceResultHtml(s)}${s.flags.observationReflexPassed
+        ? '<p>Tu recules à temps. Ses doigts se referment sur le vide.</p>'
+        : `<p>Sa main t’agrippe avant que tu puisses reculer.</p>${damageAbsorptionHtml(s.flags.observationReflexDamage)}${s.flags.observationReflexContaminated ? '<p>De la terre noire s’est glissée dans la plaie.</p>' : ''}`}
+        <p>La porte tremble sous un nouveau choc. Son verrou cède.</p>` : ''}`,
+    choices: s => {
+      if (!s.flags.observationReflexRolled) return [{
+        label: 'Esquiver la main — épreuve de Dextérité (3D6)', to: 'c97', effect: t => {
+          if (t.flags.observationReflexRolled) return;
+          t.flags.observationReflexRolled = true;
+          t.flags.observationReflexPassed = roll3D6(t, 'Dextérité', currentDexterity(t));
+          if (!t.flags.observationReflexPassed) {
+            const damage = applyDamage(t, 1);
+            t.flags.observationReflexDamage = damage;
+            if (damage.hpLost > 0) {
+              raiseContamination(t, 1);
+              t.flags.observationReflexContaminated = true;
+              // Le réflexe et le combat appartiennent à une même rencontre.
+              combatState(t, 'observationPrisoner', ENEMIES.observationPrisoner).contaminated = true;
+            }
+          }
+        }
+      }];
+      if (s.hp <= 0) return fatalChoices();
+      return [{ label: 'Faire face au prisonnier qui force la porte', to: 'c98', effect: t => { t.flags.observationFight = true; } }];
+    }
   },
   c98: {
-    number: 'PAGE 98', title: 'La sortie du quartier', image: 'La sortie du quartier d’observation',
-    text: s => `
-      <p>Tu franchis l’arche au bout du quartier.</p>
-      ${s.flags.observationRead
-        ? '<p>Les cahiers restent derrière toi : la terre noire peut briser l’emprise, mais les Veilleurs ont payé cher pour mesurer jusqu’où.</p>'
-        : '<p>Tu laisses les portes fermées et les cahiers derrière toi.</p>'}
-      <p>Le couloir débouche sur une salle ronde où convergent les trois chemins.</p>`,
-    choices: [{ label: 'Rejoindre la salle ronde', to: 'c104' }]
+    number: 'PAGE 98', title: 'La sortie du quartier', image: 'La fuite du quartier d’observation',
+    text: s => {
+      if (!s.flags.observationFight) return `<p>Tu gardes tes distances et franchis l’arche au bout du couloir.</p><p>Tu débouches dans une salle ronde où convergent trois chemins.</p>`;
+      const enemy = ENEMIES.observationPrisoner;
+      const combat = combatState(s, 'observationPrisoner', enemy);
+      const card = enemyCardHtml(s, 'observationPrisoner', enemy);
+      const result = combat.lastBlade ? throwingBladeResultHtml(s, 'observationPrisoner', enemy) : combatRoundHtml(s, 'observationPrisoner', enemy);
+      if (combat.hp <= 0) return `${card}${result}<p>Tu parviens à le repousser contre le chambranle. Il s’effondre, le souffle encore audible. Tu ne sais pas s’il te reconnaît.</p><p>Sans attendre qu’il se relève, tu rejoins la salle ronde par l’arche.</p>`;
+      if (s.hp <= 0) return `${card}${result}<p>Sa main t’a retenu trop longtemps. Tu t’effondres avant d’atteindre l’arche.</p>`;
+      if (!combat.last && !combat.lastBlade) return `<p>La porte se fracasse contre le mur. Le prisonnier surgit, son bras déformé tendu devant lui.</p><p>Tu ne peux plus passer : il bloque le couloir entre toi et l’arche.</p>${card}`;
+      return `${card}${result}${combat.last?.outcome === 'enemy' ? '<p>Ses ongles raclent ton bras. Il revient aussitôt vers toi.</p>' : combat.last?.outcome === 'tie' ? '<p>Tu dévies son bras, mais il te barre toujours le passage.</p>' : '<p>Il chancelle, puis revient se jeter devant l’arche.</p>'}`;
+    },
+    choices: s => {
+      if (!s.flags.observationFight) return [{ label: 'Rejoindre la salle ronde', to: 'c104' }];
+      const combat = combatState(s, 'observationPrisoner', ENEMIES.observationPrisoner);
+      if (combat.hp <= 0) return [{ label: 'Quitter le quartier d’observation', to: 'c104' }];
+      if (s.hp <= 0) return fatalChoices();
+      return combatActionChoices(s, 'observationPrisoner', ENEMIES.observationPrisoner, 'c98');
+    }
   },
   c99: {
     number: 'PAGE 99', title: 'Le laboratoire des Veilleurs', image: 'Le dispensaire',
@@ -4141,9 +4205,11 @@ const STORY = {
           ? '<p>Tu repenses aux premières consignes de secours, puis aux décisions de plus en plus sévères des Veilleurs. Leurs raisons demeurent obscures.</p>'
           : '<p>Tu repenses aux quartiers dévastés et aux rapports contradictoires des Veilleurs. Leurs raisons demeurent obscures.</p>';
       } else if (state.flags.cityRoute === 'observation' || state.flags.cityRoute === 'voices') {
-        routeMemory = state.flags.observationRead
-          ? '<p>Les cahiers du quartier d’observation t’ont montré comment les Veilleurs testaient la terre noire et le remède blanc sur des prisonniers. Leur recherche d’un équilibre a coûté des vies.</p>'
-          : '<p>Tu repenses aux cellules du quartier d’observation. Tu n’as pas consulté les cahiers laissés à l’intérieur.</p>';
+        routeMemory = state.flags.observationMet
+          ? `<p>Tu repenses au prisonnier : ${state.flags.observationBodyHeard ? 'la terre noire lui avait permis de retenir ses gestes, avant de déformer son bras. ' : ''}${state.flags.observationRecordsHeard ? 'Les Veilleurs lui imposaient de consigner ses sensations dans un cahier. ' : ''}${state.flags.observationBalanceAsked ? 'Il ne parvenait plus à maintenir l’équilibre entre la terre noire et son remède.' : 'Il n’avait plus de remède blanc.'}</p>`
+          : state.flags.observationLegacyVisit
+            ? '<p>Tu repenses aux cellules du quartier d’observation, traversées avant de rejoindre cette salle.</p>'
+            : '<p>Tu repenses aux cellules du quartier d’observation. Tu as poursuivi ton chemin sans t’arrêter.</p>';
       } else if (state.flags.cityRoute === 'laboratory') {
         routeMemory = '<p>Tu repenses aux salles blanches : les tentatives pour faire taire l’appel ont échoué. Les Veilleurs ont ensuite utilisé la terre noire pour obtenir des gardiens.</p>';
       }
@@ -4231,10 +4297,23 @@ const STORY = {
         ? '<p>Tu brises le vieux disque dans ta main. La pression qui guidait tes membres se relâche d’un coup. Tu peux de nouveau décider où aller.</p>'
         : `${diceResultHtml(s)}${s.flags.commonVoiceChoice === 'resisted'
           ? '<p>Tu plantes les pieds dans le sol et retiens ton bras. Peu à peu, la pression cède. Tu es libre de choisir.</p>'
-          : '<p>Malgré tes efforts, tes jambes repartent vers l’avenue. Tu ne parviens pas à te retourner vers la grille.</p>'}`}`,
-    choices: s => (s.flags.commonVoiceChoice === 'resisted' || s.flags.commonVoiceChoice === 'seal')
+          : s.flags.commonVoiceChoice === 'bracelet'
+            ? '<p>Le bracelet se resserre sur ton poignet. La douleur aiguë te rend le contrôle de ta main ; son ressort se brise aussitôt.</p>'
+            : s.flags.observationBraceletUsed
+              ? '<p>Le bracelet se referme sur ton poignet, mais l’emprise ne cède pas. Le mécanisme se brise. Tes pas te ramènent vers l’avenue.</p>'
+              : '<p>Malgré tes efforts, tes jambes repartent vers l’avenue. Tu ne parviens pas à te retourner vers la grille.</p>'}`}`,
+    choices: s => (s.flags.commonVoiceChoice === 'resisted' || s.flags.commonVoiceChoice === 'seal' || s.flags.commonVoiceChoice === 'bracelet')
       ? [ { label: 'Examiner les tablettes derrière la grille', to: 'c110' }, { label: 'Ne pas insister et gagner l’avenue', to: 'c111' } ]
-      : [{ label: 'Poursuivre dans l’avenue', to: 'c111' }]
+      : [
+          ...(s.flags.commonVoiceChoice === 'forced' && hasItem(s, 'bracelet_ancrage')
+            ? [{ label: 'Activer le bracelet d’ancrage et retenter une seule fois le test de résistance', to: 'c109', effect: t => {
+                removeItem(t, 'bracelet_ancrage');
+                t.flags.observationBraceletUsed = true;
+                t.flags.commonVoiceChoice = rollWillAgainstCall(t) ? 'bracelet' : 'forced';
+              } }]
+            : []),
+          { label: 'Poursuivre dans l’avenue', to: 'c111' }
+        ]
   },
   c110: {
     number: 'PAGE 110', title: 'Ce que l’on voulait taire', image: 'Les tablettes des Veilleurs',
@@ -4608,11 +4687,11 @@ const STORY = {
     "c90": "La fuite",
     "c91": "Quitter les quartiers",
     "c92": "Le quartier d’observation",
-    "c93": "Les premiers témoignages",
-    "c94": "Les premières doses",
-    "c95": "Le prix de la protection",
-    "c96": "Le remède blanc",
-    "c97": "Un équilibre fragile",
+    "c93": "Derrière le volet",
+    "c94": "Le cahier du prisonnier",
+    "c95": "La terre sous la peau",
+    "c96": "La dernière dose",
+    "c97": "Le dernier réflexe",
     "c98": "La sortie du quartier",
     "c99": "Le laboratoire des Veilleurs",
     "c100": "La machine d’injection",
@@ -4690,7 +4769,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 62,
+      pageMapVersion: 63,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -4832,6 +4911,27 @@ const STORY = {
     state.pageMapVersion=62;
     return state;
   }
+  // V63 : les pages 092–098 sont entièrement réécrites. Une sauvegarde V62.1
+  // prise dans ce passage revient à son entrée pour ne pas mélanger les deux scènes.
+  function migratePageNumbersV63(state) {
+    migratePageNumbersV62(state);
+    if (state.pageMapVersion >= 63) return state;
+    if (!state.flags || typeof state.flags !== 'object') state.flags = {};
+    const insideRewrittenScene = /^c9[2-8]$/.test(state.node || '');
+    const exploredOldScene = !!(state.visited && ['c93','c94','c95','c96','c97'].some(id => state.visited[id]));
+    if (insideRewrittenScene || exploredOldScene) {
+      if (insideRewrittenScene) state.node = 'c92';
+      if (!insideRewrittenScene) state.flags.observationLegacyVisit = true;
+      for (let n = 92; n <= 98; n++) if (state.visited) delete state.visited[`c${n}`];
+      if (Array.isArray(state.history)) state.history = state.history.filter(id => !/^c9[2-8]$/.test(id));
+      for (const field of ['observationRead', 'observationMet', 'observationRecordsHeard',
+        'observationBodyHeard', 'observationReflexRolled', 'observationReflexPassed',
+        'observationReflexDamage', 'observationReflexContaminated', 'observationFight',
+        'observationBraceletTaken', 'observationBraceletDeclined', 'observationBalanceAsked']) delete state.flags[field];
+    }
+    state.pageMapVersion = 63;
+    return state;
+  }
   const TEST_ITEM_CATALOG = [
     {
       id: 'parchemin',
@@ -4896,6 +4996,11 @@ const STORY = {
       id: 'ampoule_blanche',
       name: 'Ampoule blanche',
       description: 'Traitement des Veilleurs : retire 4 points de terre noire (minimum zéro). Ne restaure pas la Vie.'
+      },
+    {
+      id: 'bracelet_ancrage',
+      name: 'Bracelet d’ancrage',
+      description: 'Usage unique : permet de retenter un test de résistance raté contre l’emprise.'
     }
   ];
 
@@ -5002,6 +5107,7 @@ const STORY = {
       if (id === 'sceau_silence') {
         return '<p>Ancien objet V60 : usage unique. Lorsqu’une force tente de contrôler ton corps, un choix dédié te permet de briser ce sceau.</p>';
       }
+      if (id === 'bracelet_ancrage') return '<p>Usage unique : si ton test de résistance à l’emprise échoue, tu pourras le relancer une fois au moment de la confrontation.</p>';
       if (PROTECTION_ITEMS[id]) {
         ensureProtectionState(state);
         const source = state.protectionItems[id] || { remaining: 0, max: PROTECTION_ITEMS[id].max };
@@ -5167,8 +5273,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 35,
-    pageMapVersion: 62,
+    contentVersion: 37,
+    pageMapVersion: 63,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
@@ -5179,7 +5285,7 @@ const STORY = {
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
     imageCandidatesForPage: n => {
       const name = m => `La-Grotte-de-Valombre-${padPage(m)}`;
-      if (n >= 92 && n <= 98) return [`pages/${name(n)}-V61`];
+      if (n >= 92 && n <= 98) return [`pages/${name(n)}-V63`];
       if (n === 0 || [50, 51, 70, 71, 72, 73, 74].includes(n)) return [`pages/${name(n)}`];
       if (n <= 52) return [name(n)];
       if (n <= 55) return [`pages/${name(n)}`];
@@ -5195,7 +5301,7 @@ const STORY = {
     },
     imageExtensions: ['webp', 'png'],
     createInitialState,
-    migrateState: migratePageNumbersV62,
+    migrateState: migratePageNumbersV63,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,

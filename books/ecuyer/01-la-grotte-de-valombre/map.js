@@ -554,22 +554,18 @@
       ],
       "notes": [
         {
-          "page": "c93",
-          "text": "Des prisonniers décrivent une force qui commande leurs mains et les pousse vers la prison, malgré leur volonté."
-        },
-        {
           "page": "c94",
-          "text": "Les premières doses de terre noire leur permettent de retenir leurs gestes et affaiblissent l’emprise."
+          "text": "Le prisonnier raconte que les Veilleurs lui imposaient de consigner dans un cahier ses gestes involontaires et ses sensations."
         },
         {
           "page": "c95",
-          "text": "À fortes doses, la terre noire provoque des douleurs, des déformations, des décès et des transformations."
+          "text": "Selon le prisonnier, la terre noire lui a permis de retenir ses gestes, puis les doses répétées ont déformé son bras."
         }
       ]
     },
     {
       "id": "cahiers",
-      "label": "Cahiers des expériences",
+      "label": "La dernière cellule",
       "x": 375,
       "y": 1616,
       "pages": [
@@ -580,11 +576,12 @@
       "notes": [
         {
           "page": "c96",
-          "text": "Le remède blanc réduit les effets de la terre noire, mais l’emprise du Dormeur peut revenir."
+          "text": "Le prisonnier raconte que le remède blanc faisait reculer la terre noire, mais laissait revenir l’emprise. Il n’a plus de remède."
         },
         {
           "page": "c97",
-          "text": "Les Veilleurs ont constaté qu’une contamination intermédiaire réduit l’emprise sans provoquer immédiatement les transformations les plus graves. Aucun dosage n’est sans risque."
+          "requiresFlag": "observationBalanceAsked",
+          "text": "Selon le prisonnier, les Veilleurs cherchaient une juste dose, mais il devenait de plus en plus difficile de maintenir cet équilibre dans la durée."
         }
       ]
     },

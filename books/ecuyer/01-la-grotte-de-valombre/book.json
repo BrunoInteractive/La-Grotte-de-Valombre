@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 36,
+  "contentVersion": 37,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V62 — Carte compacte · Travail · 116 pages",
-  "pageMapVersion": 62
+  "buildLabel": "V63 — Dernier prisonnier · Travail · 116 pages",
+  "pageMapVersion": 63
 }
