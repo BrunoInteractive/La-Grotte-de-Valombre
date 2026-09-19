@@ -314,8 +314,8 @@ function atlasSvgPath(start,end,stroke,dash,width) {
 function atlasStub(from,to) {
   const dx=to.x-from.x,dy=to.y-from.y;
   const length=Math.hypot(dx,dy)||1;
-  const distance=Math.min(27,length*.39);
-  atlasSvgPath(from,{x:from.x+dx/length*distance,y:from.y+dy/length*distance},'#907653','6 6',3);
+  const distance=Math.min(23,length*.39);
+  atlasSvgPath(from,{x:from.x+dx/length*distance,y:from.y+dy/length*distance},'#907653','5 5',1);
 }
 function atlasShowDetails(area) {
   atlasDetails.replaceChildren();
@@ -339,8 +339,10 @@ function atlasShowDetails(area) {
 let atlasPositions = new Map();
 function atlasLayout() {
   const available=atlasScroller.clientWidth;
-  if (!available || available>620) {
-    return {width:ATLAS.width,height:ATLAS.height,positions:new Map(ATLAS.nodes.map(n=>[n.id,{x:n.x,y:n.y}]))};
+  if (!available || window.innerWidth>620) {
+    const width=Math.min(600,Math.max(280,(available||608)-8));
+    const scale=width/ATLAS.width;
+    return {width,height:ATLAS.height,positions:new Map(ATLAS.nodes.map(n=>[n.id,{x:Math.round(n.x*scale),y:n.y}]))};
   }
   const width=Math.min(400,Math.max(280,available-8));
   const rows=[];
@@ -355,7 +357,7 @@ function atlasLayout() {
     const group=row.nodes.slice().sort((a,b)=>a.x-b.x);
     const left=width/2;
     const factor=(width-80)/520;
-    const xs=group.map(node=>group.length===1 && node.x>=260 && node.x<=460
+    const xs=group.map(node=>group.length===1
       ?left : left+(node.x-340)*factor);
     for (let i=1;i<xs.length;i++) xs[i]=Math.max(xs[i],xs[i-1]+85);
     if (xs[xs.length-1]>width-42) {
@@ -388,8 +390,8 @@ function atlasDraw() {
     const first=atlasPositions.get(a),second=atlasPositions.get(b);
     if (!first || !second) return;
     const used=walked.has(atlasEdgeKey(a,b)),active=currentEdges.has(atlasEdgeKey(a,b));
-    if (used && visible(a) && visible(b)) atlasSvgPath(first,second,active?'#795632':'#a58a62','',active?5:3);
-    else if (fullyVisible) atlasSvgPath(first,second,'#baaa8b','5 7',2);
+    if (used && visible(a) && visible(b)) atlasSvgPath(first,second,active?'#795632':'#a58a62','',active?1.8:1.25);
+    else if (fullyVisible) atlasSvgPath(first,second,'#baaa8b','4 6',.9);
     else {
       if (visible(a)) atlasStub(first,second);
       if (visible(b)) atlasStub(second,first);
@@ -400,7 +402,7 @@ function atlasDraw() {
   if (ATLAS.mode === 'player' && seen.has('monde')) {
     const origin=atlasPositions.get('monde');
     for (const [dx,dy] of [[-80,55],[0,65],[80,55]]) {
-      const length=Math.hypot(dx,dy);atlasSvgPath(origin,{x:origin.x+dx/length*31,y:origin.y+dy/length*31},'#907653','6 6',3);
+      const length=Math.hypot(dx,dy);atlasSvgPath(origin,{x:origin.x+dx/length*31,y:origin.y+dy/length*31},'#907653','5 5',1);
     }
   }
   for (const area of ATLAS.nodes) {
@@ -417,7 +419,7 @@ function atlasDraw() {
     const dot=document.createElement('span');dot.className='atlas-dot';dot.setAttribute('aria-hidden','true');el.appendChild(dot);
     const label=document.createElement('span');label.className='atlas-name';label.textContent=area.label;el.appendChild(label);
     if (clickable){const clue=document.createElement('span');clue.className='atlas-clue';clue.textContent='◆';clue.setAttribute('aria-hidden','true');el.appendChild(clue);}
-    if (area.pages.some(page=>atlasMemory.deaths.includes(page))){const cross=document.createElement('span');cross.className='atlas-death';cross.textContent='×';cross.setAttribute('aria-label','Mort sur ce chemin');el.appendChild(cross);}
+    if (area.pages.some(page=>atlasMemory.deaths.includes(page))){const cross=document.createElement('span');cross.className='atlas-death';cross.textContent='☠';cross.setAttribute('aria-label','Mort sur ce chemin');el.appendChild(cross);}
     atlasPoints.appendChild(el);
   }
   const hint=document.createElement('p');hint.className='atlas-hint';

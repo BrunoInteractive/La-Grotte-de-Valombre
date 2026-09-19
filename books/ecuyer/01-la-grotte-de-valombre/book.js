@@ -2901,7 +2901,7 @@ const STORY = {
       <p>Au-delà, tu distingues des maisons serrées les unes contre les autres. Une fenêtre donne sur l’eau ; plus haut, des escaliers rejoignent une ruelle.</p>
 
       <p>Tout est à taille humaine. Quelqu’un a bâti ce quartier pour y habiter.</p>
-      <p>Une mousse aux reflets bleu pâle pousse dans des niches le long des murs. Sa faible clarté dessine le bord des marches noyées.</p>
+      <p>Dans la pénombre, tu distingues à peine le bord des marches noyées.</p>
       <p>Plus haut, au bout des rues, une lumière dorée atteint le sommet des façades.</p>
       <p>Il ne reste pourtant personne pour accueillir la barque.</p>
     `,
@@ -2913,6 +2913,7 @@ const STORY = {
   c49: {
     number: 'PAGE 49',
     title: '',
+    noImage: true,
     image: 'La paroi friable',
     text: state => {
       const r = diceResultHtml(state);
@@ -2957,6 +2958,7 @@ const STORY = {
   c50: {
     number: 'PAGE 50',
     title: '',
+    noImage: true,
     image: 'Ceux qui sont descendus',
     text: `
       <p>L’escalier débouche sur une terrasse taillée dans la falaise.</p>
@@ -2977,6 +2979,7 @@ const STORY = {
   c51: {
     number: 'PAGE 51',
     title: '',
+    noImage: true,
     image: 'La lame gravée',
     text: `
       <p>Un petit panneau a été gravé à part, près du bord de la terrasse.</p>
@@ -2994,6 +2997,7 @@ const STORY = {
   c52: {
     number: 'PAGE 52',
     title: '',
+    noImage: true,
     image: 'La silhouette au sommet',
     text: `
       <p>Tu quittes les fresques et reprends l’ascension.</p>
@@ -3019,6 +3023,7 @@ const STORY = {
   c53: {
     number: 'PAGE 53',
     title: '',
+    noImage: true,
     image: 'L’appel',
     text: `
       <p>« Aldren ! »</p>
@@ -3043,6 +3048,7 @@ const STORY = {
   c54: {
     number: 'PAGE 54',
     title: '',
+    noImage: true,
     image: 'La silhouette inhumaine',
     text: `
       <p>Tu avances lentement, en prenant soin de ne pas faire rouler les pierres sous tes pas.</p>
@@ -3073,6 +3079,7 @@ const STORY = {
   c55: {
     number: 'PAGE 55',
     title: 'Devant la fissure',
+    noImage: true,
     image: 'Devant la fissure',
     text: state => `
       <p>Tu t’arrêtes devant l’ouverture. La paroi est fendue sur toute la hauteur d’un homme, mais la fissure est à peine assez large pour te laisser passer de profil.</p>
@@ -3149,10 +3156,6 @@ const STORY = {
 
       <p>Tu restes à genoux contre la roche, les paumes ouvertes sur la pierre, incapable de reprendre ton souffle.</p>
 
-      <p>Tu sais que tu t’en es sorti par toi-même.</p>
-
-      <p>Pourtant, les derniers instants refusent déjà de reprendre une forme nette dans ta mémoire.</p>
-
       ${damageAbsorptionHtml(state.flags.stairsCrackDamage)}
 
       <p>De la terre noire est tassée sous tes ongles, jusque dans les chairs.</p>
@@ -3162,6 +3165,8 @@ const STORY = {
       <p>Tu t’essuies du mieux que tu peux. Tu frottes tes doigts contre tes vêtements, puis contre la pierre.</p>
 
       <p>Il en reste toujours.</p>
+
+      <p><strong>Terre noire : +2.</strong></p>
 
       <p><strong>Tu perds 1 point de Dextérité.</strong></p>
 
@@ -3190,7 +3195,7 @@ const STORY = {
       <p>De petites maisons bordent des rues étroites. Tu distingues une place, des escaliers entre les habitations et ce qui ressemble à des ateliers.</p>
 
       <p>Très haut dans la voûte, une faille laisse descendre un rayon de jour. Il frappe la place au milieu des maisons ; le reste de la caverne demeure dans la pénombre.</p>
-      <p>De faibles lueurs bleu pâle soulignent les ruelles éloignées de cette clarté. À cette distance, les portes et les fenêtres paraissent presque accueillantes.</p>
+      <p>Au-delà de la place ensoleillée, les ruelles se perdent dans la pénombre. À cette distance, les portes et les fenêtres paraissent presque accueillantes.</p>
       <p>Un escalier taillé dans la falaise descend vers une porte du quartier haut.</p>
 
       <p>Juste avant la porte repose le squelette d’un homme.</p>
@@ -3538,7 +3543,7 @@ const STORY = {
     text: `
       <p>Une porte de bois renforcé ferme le passage creusé dans la falaise. Sa hauteur suffit à peine à laisser passer un homme en armure.</p>
 
-      <p>Derrière elle, un escalier descend en suivant la roche. Dans de petites niches, une mousse lumineuse permet encore de distinguer les marches.</p>
+      <p>Derrière elle, un escalier descend en suivant la roche. La lumière du jour s’y fait de plus en plus rare.</p>
 
       <p>Tu aperçois maintenant les toits de pierre, des cheminées et les fenêtres du quartier haut. Rien ne distingue ces maisons de celles d’un village ordinaire, sinon l’immense caverne qui les abrite.</p>
 
@@ -3556,7 +3561,7 @@ const STORY = {
     text: `
       <p>La passerelle débouche sur une rue étroite du quartier haut. Un parapet la sépare du vide ; de l’autre côté, des maisons s’appuient contre la falaise.</p>
 
-      <p>Une mousse bleu pâle éclaire faiblement les murs, là où le soleil n’entre pas. Des lanternes à huile éteintes pendent encore près de quelques portes.</p>
+      <p>À l’écart du soleil, la rue reste sombre. Des lanternes à huile éteintes pendent encore près de quelques portes.</p>
       <p>Une porte est restée entrouverte. Tu distingues une table à l’intérieur, et deux seaux abandonnés près du seuil.</p>
       <p>Un escalier longe les maisons et descend vers la place que tu as aperçue d’en haut. La lumière du jour gagne peu à peu les façades.</p>
 
@@ -3570,6 +3575,7 @@ const STORY = {
   c66: {
     number: 'PAGE 66',
     title: 'Les quartiers noyés',
+    noImage: true,
     image: 'Les quartiers noyés',
     text: state => `
       <p>Tu passes sous les arches basses.</p>
@@ -3580,7 +3586,7 @@ const STORY = {
 
       <p>Tu avances sur les portions sèches de la rue. De petites enseignes de bois pourrissent au-dessus d’anciens ateliers ; les seuils sont usés par des années de passage.</p>
 
-      <p>La mousse qui borde les murs éclaire à peine l’eau sombre. Le clapotis de tes bottes est le seul bruit dans ce quartier désert.</p>
+      <p>L’eau sombre se confond presque avec les pierres. Le clapotis de tes bottes est le seul bruit dans ce quartier désert.</p>
       <p>Une rampe de pierre finit par remonter vers une rue plus élevée. Un peu de lumière chaude apparaît à son sommet.</p>
 
       <p>Au sommet, les rues deviennent sèches.</p>
@@ -3598,12 +3604,12 @@ const STORY = {
       <p>Tu entres dans la cité par le haut.</p>
 
       <p>Les maisons sont bâties en terrasses le long de la pente. Un petit escalier mène d’une rue à l’autre ; des murets retiennent les jardins aujourd’hui desséchés.</p>
-      <p>Dans les passages couverts, des bandes de mousse répandent une clarté bleutée. Plus bas, un rayon de soleil tombe sur la place centrale.</p>
+      <p>Les passages couverts restent dans l’ombre. Plus bas, un rayon de soleil tombe sur la place centrale.</p>
       <p>Tu passes devant un atelier. Des outils sont encore posés sur l’établi, près d’une porte fermée.</p>
 
       <p>Plus bas, des marques de craie et de petits symboles de l’œil fermé indiquent les passages utilisés par les Veilleurs.</p>
 
-      <p>Tu les suis jusqu’à la grande rue centrale. Les maisons sont intactes, mais aucune voix ne vient des fenêtres.</p>
+      <p>Tu les suis jusqu’à la grande rue centrale.</p>
     `,
     choices: [
       { label: 'Suivre la grande rue', to: 'c69' }
@@ -3620,7 +3626,7 @@ const STORY = {
       <p>De l’autre côté, une rue pavée longe des façades basses. Au-dessus de toi, une passerelle relie deux maisons de part et d’autre de la pente.</p>
 
       <p>Un banc est resté contre un mur. Plus loin, une fenêtre donne sur une pièce vide.</p>
-      <p>La ruelle s’éclaircit à mesure que tu approches de la place. Aux coins des murs, la mousse pâle prend le relais là où les façades coupent encore le jour.</p>
+      <p>La ruelle s’éclaircit à mesure que tu approches de la place. Entre les façades, tu aperçois une bande de soleil sur les pavés.</p>
       <p>Sur une dalle, tu retrouves un petit œil fermé gravé à côté d’une flèche qui indique le centre.</p>
 
       <p>Tu la suis.</p>
@@ -3651,7 +3657,7 @@ const STORY = {
         <p>Des maisons de pierre se serrent de chaque côté. Leurs portes, leurs fenêtres et leurs cheminées ont des dimensions familières. Sous un auvent, des outils attendent encore sur un établi.</p>
         ${routesLine}
         <p>Une chaise est restée près d’un seuil. Tu pourrais presque croire que quelqu’un va sortir pour la rentrer.</p>
-        <p>Des lanternes à huile, toutes éteintes, pendent devant certaines maisons. Dans les passages couverts, une mousse bleu pâle éclaire les murs sans dissiper les ombres.</p>
+        <p>Des lanternes à huile, toutes éteintes, pendent devant certaines maisons.</p>
         <p>Mais aucune porte ne s’ouvre.</p>
         <p>La rue débouche sur une petite place circulaire. Très haut au-dessus des toits, une faille fend la voûte : un rayon de soleil traverse la cavité et tombe sur les pavés.</p>
         <p>Au-delà de cette trouée lumineuse, la caverne demeure immense et sombre. Le village, lui, paraît presque prêt à reprendre vie.</p>
@@ -3681,7 +3687,7 @@ const STORY = {
     title: 'Les bâtisseurs',
     image: 'Les bâtisseurs de la cité',
     text: `
-      <p>Tu t'approches de la paroi sculptée. La lumière de la faille en éclaire une partie ; plus loin, tu distingues les formes dans la clarté pâle de la mousse.</p>
+      <p>Tu t'approches de la paroi sculptée. La lumière de la faille en éclaire une partie ; les scènes suivantes se prolongent dans la pénombre.</p>
       <p>La première scène montre des hommes et des femmes bâtissant les maisons de la cité. Ils portent des blocs, posent des poutres et aménagent les rues.</p>
       <p>Tu reconnais la place et les façades qui l’entourent. Ce sont leurs ouvrages.</p>
       <p>Au bord de la gravure, plusieurs routes quittent la cité vers des vallées de surface. L’une semble suivre les collines de Valombre. Tu n’en es pas certain.</p>
@@ -3751,20 +3757,20 @@ const STORY = {
       <p>Tu atteins un carrefour où trois passages s'éloignent de la place.</p>
       <p>Le premier conduit vers des pièces à taille humaine. Des tables et des bancs sont visibles derrière une porte restée ouverte.</p>
       <p>Le deuxième est bordé de cellules aux portes épaisses. Une plaque indique : QUARTIER D’OBSERVATION.</p>
-      <p>Le troisième reçoit une faible clarté bleu pâle de niches aménagées sous une arche portant l’œil fermé.</p>
+      <p>Le troisième s’enfonce sous une arche de pierre portant l’œil fermé.</p>
       <p>Tu dois choisir par où continuer.</p>
     `,
     choices: [
       { label: 'Explorer les anciens quartiers des Veilleurs', to: 'c75', effect: s => { s.flags.cityRoute = 'quarters'; } },
       { label: 'Explorer le quartier d’observation', to: 'c92', effect: s => { s.flags.cityRoute = 'observation'; } },
-      { label: 'Suivre la clarté sous l’arche', to: 'c99', effect: s => { s.flags.cityRoute = 'laboratory'; } }
+      { label: 'Passer sous l’arche à l’œil fermé', to: 'c99', effect: s => { s.flags.cityRoute = 'laboratory'; } }
     ]
   },
 
   c75: {
     number: 'PAGE 75', title: 'Les quartiers des Veilleurs', image: 'Le carrefour des quartiers',
     text: state => `
-      <p>Les anciennes salles d'habitation se déploient autour d'un petit vestibule. Une odeur de cendre froide flotte encore dans l'air. Des lampes à huile éteintes sont accrochées aux murs ; une mousse pâle éclaire seulement les passages.</p>
+      <p>Les anciennes salles d'habitation se déploient autour d'un petit vestibule. Une odeur de cendre froide flotte encore dans l'air. Des lampes à huile éteintes sont accrochées aux murs ; les passages restent dans la pénombre.</p>
       <p>À gauche, des tables sont visibles derrière une arche. À droite, une porte mène à un poste de garde encombré de registres.</p>
       <p>Au fond, un passage rejoint les pièces du commandement.</p>
       ${state.flags.quartersRefectory ? '<p>Tu as déjà parcouru le réfectoire.</p>' : ''}
@@ -4097,7 +4103,7 @@ const STORY = {
   c99: {
     number: 'PAGE 99', title: 'Le laboratoire des Veilleurs', image: 'Le dispensaire',
     text: `
-      <p>Des niches aménagées dans les murs abritent une mousse aux reflets bleu pâle. Sa lumière permet de distinguer des lits étroits et une cheminée éteinte.</p>
+      <p>Dans la pénombre, tu distingues des lits étroits et une cheminée éteinte. Des niches vides sont creusées dans les murs.</p>
       <blockquote>QUE NUL NE SOIT LIVRÉ À L'APPEL SANS SECOURS.</blockquote>
       <p>Les premiers carnets décrivent des voyageurs accueillis pour empêcher qu’ils ne descendent vers la prison. Les Veilleurs ont tenté d’apaiser cette emprise, sans résultat durable.</p>
       <p>Dans la salle suivante, des tables à sangles entourent une cuve de terre noire. Les conduits aboutissent à des aiguilles dirigées vers les corps.</p>
@@ -4186,7 +4192,7 @@ const STORY = {
       const recognition = echoes.length ? `<p>${echoes.join(' ')}</p>` : '';
       return `
         <p>Tu débouches dans une salle ronde. Trois couloirs y aboutissent : les anciens quartiers des Veilleurs, le quartier d’observation et les salles blanches.</p>
-        <p>Quelques niches de mousse pâle éclairent encore le plan posé au centre de la pièce.</p>
+        <p>Dans la pénombre, tu distingues un plan posé au centre de la pièce.</p>
         <p>Au centre, une table de pierre porte le plan d'une porte entourée de canaux. Les canaux mènent à des vasques emplies de grains noirs.</p>
         <p>Sous le plan, une inscription est encore lisible :</p>
         <blockquote>LA TERRE NOIRE ENTRETIENT LE SCEAU. NE PAS LA TOUCHER.</blockquote>
@@ -4297,7 +4303,7 @@ const STORY = {
       <p>Ici, la cité paraît moins intacte.</p>
 
       <p>Des pierres se sont détachées des façades. Les dalles sont fendues ; l’eau a creusé les joints entre les pavés.</p>
-      <p>La lumière du jour n’atteint plus ce quartier. Seules quelques touffes de mousse éclairent encore les passages entre les maisons.</p>
+      <p>La lumière du jour n’atteint plus ce quartier. Les passages entre les maisons restent plongés dans l’ombre.</p>
       <p>Tu avances entre les débris.</p>
 
       <p>Sur plusieurs pierres, tu retrouves l’œil fermé.</p>
@@ -4513,7 +4519,7 @@ const STORY = {
 
       <p>Tu descends.</p>
 
-      <p>La lumière du village est désormais loin derrière toi. Quelques niches de mousse faiblissante permettent encore de suivre les marches.</p>
+      <p>La lumière du village est désormais loin derrière toi. Tu descends lentement, une main contre la paroi pour ne pas manquer les marches.</p>
       <p>La pierre travaillée de la cité disparaît rapidement. Ici, les galeries ont été creusées à la main puis renforcées là où la montagne menaçait de reprendre sa place.</p>
       <p>Des rainures courent au sol pour évacuer une eau qui ne coule plus.</p>
 
@@ -5232,7 +5238,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 39,
+    contentVersion: 41,
     pageMapVersion: 63,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
