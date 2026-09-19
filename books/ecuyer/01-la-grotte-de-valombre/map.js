@@ -1,0 +1,1051 @@
+/* Carte narrative : seuls les lieux et indices réellement présents dans le récit. */
+(function(){
+  const book = BookRegistry.get("ecuyer-01");
+  if (book) book.adventureMap = {
+  "mode": "work",
+  "version": 1,
+  "width": 1060,
+  "height": 4230,
+  "nodes": [
+    {
+      "id": "ecuries",
+      "label": "Écuries",
+      "x": 500,
+      "y": 70,
+      "pages": [
+        "c0",
+        "c1"
+      ],
+      "notes": []
+    },
+    {
+      "id": "sacoche",
+      "label": "Sacoche d’Aldren",
+      "x": 260,
+      "y": 155,
+      "pages": [
+        "c2"
+      ],
+      "notes": [
+        {
+          "page": "c2",
+          "text": "Les notes d’Aldren demandent d’ouvrir l’œil fermé et de trouver une lame noire. Elles mettent en garde contre la terre noire et le soufre."
+        }
+      ]
+    },
+    {
+      "id": "place",
+      "label": "Place de Valombre",
+      "x": 680,
+      "y": 160,
+      "pages": [
+        "c3"
+      ],
+      "notes": []
+    },
+    {
+      "id": "marchand",
+      "label": "Marchand",
+      "x": 865,
+      "y": 255,
+      "pages": [
+        "c4"
+      ],
+      "notes": []
+    },
+    {
+      "id": "forge",
+      "label": "Forge",
+      "x": 615,
+      "y": 275,
+      "pages": [
+        "c5"
+      ],
+      "notes": []
+    },
+    {
+      "id": "ruelle",
+      "label": "Ruelle",
+      "x": 950,
+      "y": 365,
+      "pages": [
+        "c6",
+        "c7"
+      ],
+      "notes": [
+        {
+          "page": "c7",
+          "text": "L’inconnu semble terrifié par quelque chose qu’il annonce en répétant : « Ils arrivent. » Quelque chose remue sous la peau de son cou."
+        }
+      ]
+    },
+    {
+      "id": "chemin",
+      "label": "Chemin de la montagne",
+      "x": 465,
+      "y": 420,
+      "pages": [
+        "c8"
+      ],
+      "notes": []
+    },
+    {
+      "id": "gaspard",
+      "label": "Gaspard Vellin",
+      "x": 255,
+      "y": 535,
+      "pages": [
+        "c9",
+        "c10",
+        "c11",
+        "c12",
+        "c13"
+      ],
+      "notes": [
+        {
+          "page": "c9",
+          "text": "Gaspard Vellin a été retrouvé au bord du chemin. Sa gorge contient une terre noire et son corps dégage une odeur de soufre."
+        },
+        {
+          "page": "c13",
+          "text": "La fiole retrouvée sur Gaspard ressemble à une potion de guérison, mais son liquide est anormalement sombre."
+        }
+      ]
+    },
+    {
+      "id": "foret",
+      "label": "Forêt",
+      "x": 675,
+      "y": 525,
+      "pages": [
+        "c14"
+      ],
+      "notes": []
+    },
+    {
+      "id": "rochebrume",
+      "label": "Rochebrume",
+      "x": 755,
+      "y": 635,
+      "pages": [
+        "c15"
+      ],
+      "notes": []
+    },
+    {
+      "id": "taverne",
+      "label": "Taverne",
+      "x": 580,
+      "y": 730,
+      "pages": [
+        "c16",
+        "c17",
+        "c18",
+        "c43"
+      ],
+      "notes": [
+        {
+          "page": "c17",
+          "text": "À l’annonce de la mort de Gaspard, Élias murmure : « Pas lui aussi. » Il refuse ensuite de répondre aux questions."
+        }
+      ]
+    },
+    {
+      "id": "etranger",
+      "label": "Étranger",
+      "x": 945,
+      "y": 760,
+      "pages": [
+        "c19"
+      ],
+      "notes": [
+        {
+          "page": "c19",
+          "text": "Un étranger raconte que les habitants de Rochebrume disparaissent un par un. Son propre visage devient impossible à se rappeler dès qu’on détourne les yeux."
+        }
+      ]
+    },
+    {
+      "id": "grotte",
+      "label": "Entrée de la grotte",
+      "x": 460,
+      "y": 895,
+      "pages": [
+        "c20"
+      ],
+      "notes": []
+    },
+    {
+      "id": "acide",
+      "label": "Passage acide",
+      "x": 205,
+      "y": 1010,
+      "pages": [
+        "c21"
+      ],
+      "notes": []
+    },
+    {
+      "id": "ombres",
+      "label": "Salle des ombres",
+      "x": 675,
+      "y": 1010,
+      "pages": [
+        "c22",
+        "c24",
+        "c25",
+        "c26",
+        "c27",
+        "c29",
+        "c33"
+      ],
+      "notes": []
+    },
+    {
+      "id": "fuite",
+      "label": "Fuite",
+      "x": 895,
+      "y": 1110,
+      "pages": [
+        "c23"
+      ],
+      "notes": []
+    },
+    {
+      "id": "camp",
+      "label": "Camp sous la roche",
+      "x": 600,
+      "y": 1180,
+      "pages": [
+        "c28",
+        "c30"
+      ],
+      "notes": [
+        {
+          "page": "c28",
+          "text": "Anselme Varn affirme que ceux qui disparaissent viennent d’eux-mêmes dans la grotte. Il avertit de ne pas laisser la terre noire pénétrer dans le corps."
+        },
+        {
+          "page": "c30",
+          "text": "Le carnet d’Anselme indique qu’il entend sa femme, morte depuis onze ans. Les dates contredisent son impression de n’être ici que depuis quelques jours."
+        }
+      ]
+    },
+    {
+      "id": "galerie",
+      "label": "Galerie condamnée",
+      "x": 320,
+      "y": 1310,
+      "pages": [
+        "c31",
+        "c32"
+      ],
+      "notes": []
+    },
+    {
+      "id": "tunnel",
+      "label": "Tunnel voisin",
+      "x": 885,
+      "y": 1310,
+      "pages": [
+        "c34",
+        "c35",
+        "c36",
+        "c38"
+      ],
+      "notes": [
+        {
+          "page": "c35",
+          "text": "La silhouette du tunnel dit avoir suivi la voix de sa fille, avant d’affirmer qu’elle n’a pas de fille."
+        }
+      ]
+    },
+    {
+      "id": "fissures",
+      "label": "Passage des fissures",
+      "x": 590,
+      "y": 1435,
+      "pages": [
+        "c37",
+        "c39"
+      ],
+      "notes": []
+    },
+    {
+      "id": "monde",
+      "label": "Monde sous la montagne",
+      "x": 590,
+      "y": 1560,
+      "pages": [
+        "c40"
+      ],
+      "notes": []
+    },
+    {
+      "id": "lac",
+      "label": "Lac noir",
+      "x": 240,
+      "y": 1690,
+      "pages": [
+        "c41",
+        "c42",
+        "c45",
+        "c46"
+      ],
+      "notes": [
+        {
+          "page": "c42",
+          "text": "Très loin sous la surface noire du lac apparaissent des lueurs et des formes qui évoquent une construction engloutie."
+        }
+      ]
+    },
+    {
+      "id": "ilot",
+      "label": "Îlot",
+      "x": 105,
+      "y": 1840,
+      "pages": [
+        "c47"
+      ],
+      "notes": [
+        {
+          "page": "c47",
+          "text": "Sur l’îlot, une dalle porte le symbole de l’œil fermé. Une créature aux proportions anormales garde les ruines."
+        }
+      ]
+    },
+    {
+      "id": "rive",
+      "label": "Quartiers noyés",
+      "x": 295,
+      "y": 1970,
+      "pages": [
+        "c48",
+        "c66"
+      ],
+      "notes": []
+    },
+    {
+      "id": "marches",
+      "label": "Grandes Marches",
+      "x": 580,
+      "y": 1690,
+      "pages": [
+        "c44",
+        "c49"
+      ],
+      "notes": []
+    },
+    {
+      "id": "fresques",
+      "label": "Fresques",
+      "x": 565,
+      "y": 1840,
+      "pages": [
+        "c50",
+        "c51"
+      ],
+      "notes": [
+        {
+          "page": "c50",
+          "text": "Une fresque montre des voyageurs venus d’horizons différents, marchant vers la montagne puis franchissant une arche marquée de l’œil fermé."
+        },
+        {
+          "page": "c51",
+          "text": "Une autre gravure représente un voyageur levant une petite lame noire vers l’œil fermé d’une porte. La suite de la scène a été détruite."
+        }
+      ]
+    },
+    {
+      "id": "sommet",
+      "label": "Fissure du sommet",
+      "x": 565,
+      "y": 1970,
+      "pages": [
+        "c52",
+        "c53",
+        "c54",
+        "c55",
+        "c56"
+      ],
+      "notes": []
+    },
+    {
+      "id": "hauts",
+      "label": "Quartiers hauts",
+      "x": 535,
+      "y": 2100,
+      "pages": [
+        "c57",
+        "c67"
+      ],
+      "notes": [
+        {
+          "page": "c67",
+          "text": "Des symboles de l’œil fermé et des marques de craie indiquent les passages utilisés par les Veilleurs dans la cité."
+        }
+      ]
+    },
+    {
+      "id": "pont",
+      "label": "Pont suspendu",
+      "x": 885,
+      "y": 1690,
+      "pages": [
+        "c58",
+        "c59",
+        "c60",
+        "c61",
+        "c62"
+      ],
+      "notes": []
+    },
+    {
+      "id": "passerelle",
+      "label": "Porte suspendue",
+      "x": 885,
+      "y": 1970,
+      "pages": [
+        "c63",
+        "c64",
+        "c65",
+        "c68"
+      ],
+      "notes": []
+    },
+    {
+      "id": "cite",
+      "label": "Cité morte",
+      "x": 610,
+      "y": 2240,
+      "pages": [
+        "c69",
+        "c70",
+        "c71",
+        "c72",
+        "c73"
+      ],
+      "notes": [
+        {
+          "page": "c70",
+          "text": "La première gravure montre la cité habitée et ses bâtisseurs. Les routes menaient autrefois vers la surface ; les bâtisseurs se rassemblent ensuite autour d’une ouverture sous la cité."
+        },
+        {
+          "page": "c71",
+          "text": "Une fresque montre les premiers Veilleurs bâtissant une prison autour d’une forme immense, puis fermant une porte marquée de l’œil fermé. Leur raison reste inconnue."
+        },
+        {
+          "page": "c72",
+          "text": "Les gravures montrent une influence traversant les murs de la prison jusqu’aux esprits de personnes qui partent ensuite vers la porte scellée."
+        }
+      ]
+    },
+    {
+      "id": "routes",
+      "label": "Trois chemins",
+      "x": 610,
+      "y": 2380,
+      "pages": [
+        "c74"
+      ],
+      "notes": []
+    },
+    {
+      "id": "quartiers",
+      "label": "Quartiers des Veilleurs",
+      "x": 245,
+      "y": 2510,
+      "pages": [
+        "c75"
+      ],
+      "notes": []
+    },
+    {
+      "id": "refectoire",
+      "label": "Réfectoire",
+      "x": 95,
+      "y": 2640,
+      "pages": [
+        "c76"
+      ],
+      "notes": [
+        {
+          "page": "c76",
+          "text": "Une devise des Veilleurs affirme que leur veille doit préserver les habitants de la surface."
+        }
+      ]
+    },
+    {
+      "id": "garde",
+      "label": "Poste de garde",
+      "x": 245,
+      "y": 2760,
+      "pages": [
+        "c77",
+        "c78",
+        "c79",
+        "c80",
+        "c81"
+      ],
+      "notes": [
+        {
+          "page": "c77",
+          "text": "Une consigne demande d’éviter la terre noire et de conduire les personnes contaminées aux salles de soins ; une autre ordonne d’isoler les personnes attirées vers la prison."
+        },
+        {
+          "page": "c78",
+          "text": "Un registre décrit deux gardes volontairement contaminés. Ils ne répondent plus à l’appel ; leurs corps se sont déformés et ils ont été enfermés près du poste."
+        }
+      ]
+    },
+    {
+      "id": "bureau",
+      "label": "Bureau fermé",
+      "x": 375,
+      "y": 2640,
+      "pages": [
+        "c82",
+        "c83",
+        "c84"
+      ],
+      "notes": [
+        {
+          "page": "c83",
+          "text": "Le bureau du commandement contient des instructions devenues plus sévères, allant jusqu’à ordonner des exécutions au premier soupçon. Une autre main a contesté ces ordres.",
+          "requiresFlag": "officeOpened"
+        },
+        {
+          "page": "c84",
+          "text": "Deux rapports des appartements révèlent un conflit entre les Veilleurs : certains réclament des exécutions, d’autres des preuves et la poursuite des soins."
+        }
+      ]
+    },
+    {
+      "id": "appartements",
+      "label": "Appartements",
+      "x": 315,
+      "y": 2925,
+      "pages": [
+        "c85",
+        "c86",
+        "c87",
+        "c88",
+        "c89",
+        "c90",
+        "c91"
+      ],
+      "notes": [
+        {
+          "page": "c88",
+          "text": "Un collier a été laissé sur un prisonnier enfermé dans les anciens appartements."
+        }
+      ]
+    },
+    {
+      "id": "voix",
+      "label": "Galerie des voix",
+      "x": 610,
+      "y": 2600,
+      "pages": [
+        "c92",
+        "c93",
+        "c94",
+        "c95"
+      ],
+      "notes": [
+        {
+          "page": "c94",
+          "text": "Dans les cellules, un prisonnier a écrit qu’il entend encore une personne qu’il sait morte. Une notice décrit un disque capable de couper brièvement l’appel."
+        }
+      ]
+    },
+    {
+      "id": "sceau",
+      "label": "Sceau de silence",
+      "x": 610,
+      "y": 2880,
+      "pages": [
+        "c96",
+        "c97",
+        "c98"
+      ],
+      "notes": [
+        {
+          "page": "c97",
+          "text": "Une notice indique que le Sceau de silence peut interrompre une injonction de la voix une seule fois."
+        }
+      ]
+    },
+    {
+      "id": "laboratoire",
+      "label": "Laboratoire",
+      "x": 930,
+      "y": 2520,
+      "pages": [
+        "c99",
+        "c100",
+        "c101"
+      ],
+      "notes": [
+        {
+          "page": "c99",
+          "text": "Les Veilleurs ont d’abord essayé d’aider les voyageurs attirés par la voix. Ils ont ensuite expérimenté sur des corps avec de la terre noire."
+        },
+        {
+          "page": "c100",
+          "text": "La machine du laboratoire est conçue pour injecter de la terre noire directement dans le corps."
+        }
+      ]
+    },
+    {
+      "id": "ampoule",
+      "label": "Ampoule blanche",
+      "x": 930,
+      "y": 2700,
+      "pages": [
+        "c102"
+      ],
+      "notes": [
+        {
+          "page": "c102",
+          "text": "Une ampoule blanche réduit de quatre points la contamination, sans guérir les blessures. La voix peut alors reprendre de la force."
+        }
+      ]
+    },
+    {
+      "id": "registres",
+      "label": "Registres des gardiens",
+      "x": 930,
+      "y": 2870,
+      "pages": [
+        "c103"
+      ],
+      "notes": [
+        {
+          "page": "c103",
+          "text": "Les registres indiquent que les Veilleurs ont délibérément transformé des êtres vivants en gardiens. Plusieurs sujets sont morts ; d’autres ne répondent plus à l’appel."
+        }
+      ]
+    },
+    {
+      "id": "sceau_salle",
+      "label": "Salle du sceau",
+      "x": 610,
+      "y": 3070,
+      "pages": [
+        "c104"
+      ],
+      "notes": [
+        {
+          "page": "c104",
+          "text": "Un plan indique que la terre noire entretient le sceau de la prison. Les Veilleurs avaient condamné certains accès vers la surface."
+        }
+      ]
+    },
+    {
+      "id": "medecin",
+      "label": "Registre du médecin",
+      "x": 610,
+      "y": 3220,
+      "pages": [
+        "c114"
+      ],
+      "notes": [
+        {
+          "page": "c114",
+          "text": "La terre noire affaiblit l’appel, mais transforme les corps : 0–4, appel puissant ; 5–8, emprise réduite ; 9–12, transformation menaçante ; à 13, le sujet devient gardien."
+        }
+      ]
+    },
+    {
+      "id": "secours",
+      "label": "Poste de secours",
+      "x": 465,
+      "y": 3360,
+      "pages": [
+        "c115"
+      ],
+      "notes": [
+        {
+          "page": "c115",
+          "text": "Une ampoule blanche intacte permet de réduire la contamination de quatre points, sans soigner les blessures."
+        }
+      ]
+    },
+    {
+      "id": "reserve",
+      "label": "Réserve de terre noire",
+      "x": 720,
+      "y": 3490,
+      "pages": [
+        "c116"
+      ],
+      "notes": [
+        {
+          "page": "c116",
+          "text": "Une petite sacoche contient une dose de terre noire. L’absorber augmenterait la contamination de trois points."
+        }
+      ]
+    },
+    {
+      "id": "grille",
+      "label": "Voix et grille",
+      "x": 610,
+      "y": 3630,
+      "pages": [
+        "c105",
+        "c106",
+        "c107"
+      ],
+      "notes": [
+        {
+          "page": "c107",
+          "text": "Des tablettes indiquent que la voix a parfois protégé les Veilleurs de la terre noire, mais qu’elle cherche aussi à les conduire vers la porte. Son aide n’est pas toujours désintéressée."
+        }
+      ]
+    },
+    {
+      "id": "avenue",
+      "label": "Avenue basse",
+      "x": 610,
+      "y": 3770,
+      "pages": [
+        "c108",
+        "c109"
+      ],
+      "notes": [
+        {
+          "page": "c108",
+          "text": "Les marques des Veilleurs jalonnent la descente. Une maçonnerie plus ancienne apparaît sous les rues de la cité."
+        }
+      ]
+    },
+    {
+      "id": "puits",
+      "label": "Puits des Veilleurs",
+      "x": 610,
+      "y": 3900,
+      "pages": [
+        "c110",
+        "c111"
+      ],
+      "notes": []
+    },
+    {
+      "id": "porte",
+      "label": "Porte sous la ville",
+      "x": 610,
+      "y": 4030,
+      "pages": [
+        "c112"
+      ],
+      "notes": [
+        {
+          "page": "c112",
+          "text": "La porte porte l’œil fermé et une petite lame noire, gravée plus récemment. Une empreinte de botte mène vers l’intérieur."
+        }
+      ]
+    },
+    {
+      "id": "profondeurs",
+      "label": "Sous la Cité morte",
+      "x": 610,
+      "y": 4150,
+      "pages": [
+        "c113"
+      ],
+      "notes": [
+        {
+          "page": "c113",
+          "text": "Des marques de l’œil fermé et de la petite lame noire orientent la descente vers des niveaux anciens. Une autre empreinte suggère un passage récent."
+        }
+      ]
+    }
+  ],
+  "edges": [
+    [
+      "ecuries",
+      "sacoche"
+    ],
+    [
+      "ecuries",
+      "place"
+    ],
+    [
+      "chemin",
+      "ecuries"
+    ],
+    [
+      "place",
+      "sacoche"
+    ],
+    [
+      "chemin",
+      "sacoche"
+    ],
+    [
+      "marchand",
+      "place"
+    ],
+    [
+      "forge",
+      "place"
+    ],
+    [
+      "place",
+      "ruelle"
+    ],
+    [
+      "chemin",
+      "ruelle"
+    ],
+    [
+      "chemin",
+      "place"
+    ],
+    [
+      "chemin",
+      "gaspard"
+    ],
+    [
+      "chemin",
+      "foret"
+    ],
+    [
+      "chemin",
+      "grotte"
+    ],
+    [
+      "foret",
+      "gaspard"
+    ],
+    [
+      "gaspard",
+      "grotte"
+    ],
+    [
+      "foret",
+      "rochebrume"
+    ],
+    [
+      "rochebrume",
+      "taverne"
+    ],
+    [
+      "etranger",
+      "rochebrume"
+    ],
+    [
+      "etranger",
+      "taverne"
+    ],
+    [
+      "grotte",
+      "taverne"
+    ],
+    [
+      "etranger",
+      "grotte"
+    ],
+    [
+      "grotte",
+      "rochebrume"
+    ],
+    [
+      "acide",
+      "grotte"
+    ],
+    [
+      "grotte",
+      "ombres"
+    ],
+    [
+      "fuite",
+      "ombres"
+    ],
+    [
+      "camp",
+      "ombres"
+    ],
+    [
+      "camp",
+      "galerie"
+    ],
+    [
+      "camp",
+      "tunnel"
+    ],
+    [
+      "camp",
+      "fissures"
+    ],
+    [
+      "fissures",
+      "monde"
+    ],
+    [
+      "lac",
+      "monde"
+    ],
+    [
+      "marches",
+      "monde"
+    ],
+    [
+      "monde",
+      "pont"
+    ],
+    [
+      "ilot",
+      "lac"
+    ],
+    [
+      "lac",
+      "rive"
+    ],
+    [
+      "ilot",
+      "rive"
+    ],
+    [
+      "fresques",
+      "marches"
+    ],
+    [
+      "fresques",
+      "sommet"
+    ],
+    [
+      "hauts",
+      "sommet"
+    ],
+    [
+      "passerelle",
+      "pont"
+    ],
+    [
+      "cite",
+      "passerelle"
+    ],
+    [
+      "cite",
+      "hauts"
+    ],
+    [
+      "cite",
+      "rive"
+    ],
+    [
+      "cite",
+      "routes"
+    ],
+    [
+      "quartiers",
+      "routes"
+    ],
+    [
+      "routes",
+      "voix"
+    ],
+    [
+      "laboratoire",
+      "routes"
+    ],
+    [
+      "quartiers",
+      "refectoire"
+    ],
+    [
+      "garde",
+      "quartiers"
+    ],
+    [
+      "bureau",
+      "quartiers"
+    ],
+    [
+      "bureau",
+      "garde"
+    ],
+    [
+      "appartements",
+      "bureau"
+    ],
+    [
+      "appartements",
+      "sceau_salle"
+    ],
+    [
+      "quartiers",
+      "sceau_salle"
+    ],
+    [
+      "sceau",
+      "voix"
+    ],
+    [
+      "sceau_salle",
+      "voix"
+    ],
+    [
+      "sceau",
+      "sceau_salle"
+    ],
+    [
+      "ampoule",
+      "laboratoire"
+    ],
+    [
+      "ampoule",
+      "registres"
+    ],
+    [
+      "registres",
+      "sceau_salle"
+    ],
+    [
+      "laboratoire",
+      "registres"
+    ],
+    [
+      "medecin",
+      "sceau_salle"
+    ],
+    [
+      "medecin",
+      "secours"
+    ],
+    [
+      "reserve",
+      "secours"
+    ],
+    [
+      "grille",
+      "reserve"
+    ],
+    [
+      "avenue",
+      "grille"
+    ],
+    [
+      "avenue",
+      "puits"
+    ],
+    [
+      "porte",
+      "puits"
+    ],
+    [
+      "porte",
+      "profondeurs"
+    ]
+  ],
+  "deathPages": [
+    "c21",
+    "c23"
+  ],
+  "endingPages": [
+    "c113"
+  ]
+};
+})();

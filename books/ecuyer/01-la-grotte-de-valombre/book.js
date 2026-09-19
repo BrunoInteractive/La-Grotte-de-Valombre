@@ -523,7 +523,6 @@ const STORY = {
         <div class="hero-sheet-grid">
           <div class="hero-stat"><strong>Vie</strong><span>${state.hp} / ${state.maxHp}</span></div>
           <div class="hero-stat"><strong>Protection</strong><span>${currentProtection(state)}</span></div>
-          <div class="hero-stat"><strong>Chance</strong><span>${state.chance}</span></div>
           <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)}</span></div>
           <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)}</span></div>
           ${contaminationLevel(state)>0 ? `<div class="hero-stat"><strong>Terre noire</strong><span>${contaminationLevel(state)}/13 · ${state.flags.physicianNotesRead ? contaminationLevel(state)>=9 ? "Danger" : contaminationLevel(state)>=5 ? "Équilibre précaire" : "Appel puissant" : "Effets inconnus"}</span></div>` : ""}
@@ -534,7 +533,6 @@ const STORY = {
           <div class="hero-info-title">Tes caractéristiques</div>
           <p><strong>Vie :</strong> indique la santé du personnage. Lorsqu’elle atteint zéro, c’est la fin de votre aventure.</p>
           <p><strong>Protection :</strong> provient de certaines pièces d’équipement. Elle absorbe les dégâts avant la Vie et diminue lorsqu’elle encaisse un choc.</p>
-          <p><strong>Chance :</strong> permet de se sortir habilement d’un mauvais tour ou d’une situation qui semblait mal engagée.</p>
           <p><strong>Force :</strong> représente sa puissance physique. Elle contribue aux dégâts infligés et permet de forcer, retenir ou briser ce qui barre la route.</p>
           ${state.flags.physicianNotesRead ? "<p><strong>Terre noire :</strong> 0–4 : appel puissant ; 5–8 : équilibre précaire ; 9–12 : transformation imminente ; 13 : transformation définitive.</p>" : ""}
           <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. Elle peut être affectée par ce qui est porté, par exemple une arme lourde.</p>
@@ -4707,7 +4705,6 @@ const STORY = {
       journal: '',
       hp: base.maxHp || 18,
       maxHp: base.maxHp || 18,
-      chance: base.chance || 12,
       baseForce: base.force || 8,
       baseDexterity: base.dexterity || 13,
       forceBonus: 0,
@@ -5140,7 +5137,6 @@ const STORY = {
         <div class="character-modal-stats">
           <div><span>♥ Vie</span><strong>${state.hp} / ${state.maxHp}</strong></div>
           <div><span>🛡 Protection</span><strong>${currentProtection(state)} / ${maxProtection(state)}</strong></div>
-          <div><span>Chance</span><strong>${state.chance}</strong></div>
           <div><span>Force</span><strong>${force}</strong></div>
           <div><span>Dextérité</span><strong>${dexterity}</strong></div>
           ${contaminationLevel(state)>0 ? `<div><span>Terre noire</span><strong>${contaminationLevel(state)} / 13 · ${state.flags.physicianNotesRead ? "Voir les notes du médecin" : "Effets inconnus"}</strong></div>` : ""}
