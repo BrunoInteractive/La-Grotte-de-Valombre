@@ -2904,7 +2904,6 @@ const STORY = {
 
       <p>Ici, au bord de l’eau, les arches et les marches noyées restent dans l’ombre. Tu distingues à peine le bord de la pierre sous tes pieds.</p>
 
-      <p>Personne ne vient accueillir la barque.</p>
     `,
     choices: [
       { label: 'Entrer par les arches noyées', to: 'c66' }
@@ -3688,7 +3687,6 @@ const STORY = {
     title: 'Les bâtisseurs',
     image: 'Les bâtisseurs de la cité',
     text: `
-      <p>Tu t'approches de la paroi sculptée. La lumière de la faille en éclaire une partie ; les scènes suivantes se prolongent dans la pénombre.</p>
       <p>La première scène montre des hommes et des femmes bâtissant les maisons de la cité. Ils portent des blocs, posent des poutres et aménagent les rues.</p>
       <p>Tu reconnais la place et les façades qui l’entourent. Ce sont leurs ouvrages.</p>
       <p>Au bord de la gravure, plusieurs routes quittent la cité vers des vallées de surface. L’une semble suivre les collines de Valombre. Tu n’en es pas certain.</p>
@@ -3718,6 +3716,7 @@ const STORY = {
   c72: {
     number: 'PAGE 72',
     title: 'L’appel',
+    noImage: true,
     image: 'L’appel à travers la pierre',
     text: `
       <p>La prison est achevée sur la scène suivante.</p>
@@ -3736,6 +3735,7 @@ const STORY = {
   c73: {
     number: 'PAGE 73',
     title: 'Le seuil',
+    noImage: true,
     image: 'Les voyageurs au seuil',
     text: `
       <p>La dernière scène représente plusieurs voyageurs au pied de la porte.</p>
@@ -5239,7 +5239,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 43,
+    contentVersion: 45,
     pageMapVersion: 63,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
@@ -5251,19 +5251,19 @@ const STORY = {
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
     imageCandidatesForPage: n => {
       const name = m => `La-Grotte-de-Valombre-${padPage(m)}`;
+      // Une image ne peut plus être choisie par simple décalage numérique :
+      // la page 082 pouvait, par exemple, finir sur l'ancienne image 057.
+      // Pour les pages inchangées, on accepte uniquement leur numéro exact.
       if (n >= 92 && n <= 98) return [`pages/${name(n)}-V63`];
       if (n === 0 || [50, 51, 70, 71, 72, 73, 74].includes(n)) return [`pages/${name(n)}`];
       if (n <= 52) return [name(n)];
       if (n <= 55) return [`pages/${name(n)}`];
-      if (n <= 69) return [`pages/${name(n)}`, name(n-3)];
-      // Les scènes réécrites exigent une illustration neuve plutôt que d'afficher une
-      // image d'une scène devenue sans rapport. Les anciens PNG restent sur GitHub.
-      // Existing V61 illustrations follow their scenes, not their old page numbers.
-      const previousNumbers = {105:114,106:115,107:116,108:105,109:106,110:107,
-                               111:108,112:109,113:110,114:111,115:112,116:113};
-      if (previousNumbers[n]) return [`pages/${name(previousNumbers[n])}`];
-      const old = n - 17;
-      return [`pages/${name(n)}`, `pages/${name(old)}`, name(old-8)];
+      if (n <= 104) return [`pages/${name(n)}`, name(n)];
+      // V62 a explicitement renuméroté ces douze scènes : correspondances
+      // documentées, même scène, à préserver pour les illustrations existantes.
+      const originalScene = {105:114,106:115,107:116,108:105,109:106,110:107,
+                             111:108,112:109,113:110,114:111,115:112,116:113};
+      return originalScene[n] ? [`pages/${name(originalScene[n])}`] : [`pages/${name(n)}`];
     },
     imageExtensions: ['webp', 'png'],
     createInitialState,

@@ -182,7 +182,9 @@ function enterNode(id) {
   saveState(); render(); window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+let pageImageLoadToken = 0;
 function loadPageImage(pageNumber, title) {
+  const token = ++pageImageLoadToken;
   const base = BOOK.imageBaseForPage(pageNumber);
   const candidates = typeof BOOK.imageCandidatesForPage === 'function'
     ? BOOK.imageCandidatesForPage(pageNumber)
@@ -195,10 +197,20 @@ function loadPageImage(pageNumber, title) {
   const attempts = candidates.flatMap(candidate => extensions.map(ext => `${BOOK.assetBase}/${candidate}.${ext}`));
   let index = 0;
   const tryNext = () => {
+    if (token !== pageImageLoadToken) return;
     if (index >= attempts.length) {
-      storyImage.removeAttribute('src'); storyImage.classList.add('hidden'); imagePlaceholder.style.display = 'grid'; return;
+      // Illustration absente : aucune vignette trompeuse et pas de grand encadré vide.
+      storyImage.removeAttribute('src');
+      storyImage.classList.add('hidden');
+      imagePlaceholder.style.display = 'none';
+      imageFrame.classList.add('hidden');
+      return;
     }
-    storyImage.onload = () => { storyImage.classList.remove('hidden'); imagePlaceholder.style.display = 'none'; };
+    storyImage.onload = () => {
+      if (token !== pageImageLoadToken) return;
+      storyImage.classList.remove('hidden');
+      imagePlaceholder.style.display = 'none';
+    };
     storyImage.onerror = tryNext;
     storyImage.src = attempts[index++];
   };
@@ -452,6 +464,7 @@ function closeAtlas() {journalPanel.classList.add('hidden');journalPanel.setAttr
 function render() {
   const node = STORY[state.node] || STORY.start;
   if (node.sheet) {
+    ++pageImageLoadToken; // annule une éventuelle image de la page précédente
     chapterNumber.textContent = 'FICHE DU HÉROS';
     imageFrame.classList.add('hidden');
   } else {
@@ -460,6 +473,7 @@ function render() {
     const pageNumber = Number.isInteger(mappedPage) ? mappedPage : (Number.isFinite(declaredPage) ? declaredPage : 1);
     chapterNumber.textContent = pageNumber === 0 ? 'PROLOGUE · 000' : `PAGE ${padPage(pageNumber)}`;
     if (node.noImage) {
+      ++pageImageLoadToken;
       imageFrame.classList.add('hidden');
       storyImage.removeAttribute('src');
       storyImage.classList.add('hidden');
