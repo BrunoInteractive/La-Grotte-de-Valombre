@@ -2902,7 +2902,7 @@ const STORY = {
 
       <p>Tout est à taille humaine. Quelqu’un a bâti ce quartier pour y habiter.</p>
       <p>Dans la pénombre, tu distingues à peine le bord des marches noyées.</p>
-      <p>Plus haut, au bout des rues, une lumière dorée atteint le sommet des façades.</p>
+      <p>En levant les yeux, tu découvres une immense faille dans la voûte de la grotte. Le soleil s'y engouffre et inonde de lumière les toits et les rues du village, au-delà des arches. La rive basse où tu te tiens reste dans l'ombre.</p>
       <p>Il ne reste pourtant personne pour accueillir la barque.</p>
     `,
     choices: [
@@ -5238,7 +5238,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 41,
+    contentVersion: 42,
     pageMapVersion: 63,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
