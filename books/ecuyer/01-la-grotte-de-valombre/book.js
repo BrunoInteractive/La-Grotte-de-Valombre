@@ -2896,14 +2896,15 @@ const STORY = {
 
       <p>Tu descends dans quelques centimètres d’eau noire et tires l’embarcation derrière toi.</p>
 
-      <p>Devant toi, des arches de pierre soutiennent une rue qui remonte depuis la rive.</p>
+      <p>Devant toi, des arches de pierre portent une rue au-dessus de l’eau. Un escalier remonte depuis les quais, entre les maisons serrées sur la pente.</p>
 
-      <p>Au-delà, tu distingues des maisons serrées les unes contre les autres. Une fenêtre donne sur l’eau ; plus haut, des escaliers rejoignent une ruelle.</p>
+      <p>Plus haut, tu distingues des ponts, des ruelles et des terrasses. Tout est à taille humaine : quelqu’un a bâti ce quartier pour y vivre.</p>
 
-      <p>Tout est à taille humaine. Quelqu’un a bâti ce quartier pour y habiter.</p>
-      <p>Dans la pénombre, tu distingues à peine le bord des marches noyées.</p>
-      <p>En levant les yeux, tu découvres une immense faille dans la voûte de la grotte. Le soleil s'y engouffre et inonde de lumière les toits et les rues du village, au-delà des arches. La rive basse où tu te tiens reste dans l'ombre.</p>
-      <p>Il ne reste pourtant personne pour accueillir la barque.</p>
+      <p>En levant les yeux, tu découvres une immense ouverture dans la voûte de la grotte. Le ciel apparaît très loin au-dessus du village. Le soleil entre à flots et éclaire les toits, les façades et les rues hautes.</p>
+
+      <p>Ici, au bord de l’eau, les arches et les marches noyées restent dans l’ombre. Tu distingues à peine le bord de la pierre sous tes pieds.</p>
+
+      <p>Personne ne vient accueillir la barque.</p>
     `,
     choices: [
       { label: 'Entrer par les arches noyées', to: 'c66' }
@@ -3190,12 +3191,12 @@ const STORY = {
 
       <p>Et, très loin en contrebas, tu vois enfin où mènent les constructions.</p>
 
-      <p>Un village de pierre occupe le fond de la cavité.</p>
+      <p>Un village de pierre s’étage sur les pentes de la cavité.</p>
 
       <p>De petites maisons bordent des rues étroites. Tu distingues une place, des escaliers entre les habitations et ce qui ressemble à des ateliers.</p>
 
-      <p>Très haut dans la voûte, une faille laisse descendre un rayon de jour. Il frappe la place au milieu des maisons ; le reste de la caverne demeure dans la pénombre.</p>
-      <p>Au-delà de la place ensoleillée, les ruelles se perdent dans la pénombre. À cette distance, les portes et les fenêtres paraissent presque accueillantes.</p>
+      <p>Très haut, une immense ouverture laisse voir le ciel. Le soleil éclaire les toits, les terrasses et une grande partie des rues. Seuls les passages couverts et les quartiers adossés à la roche restent dans l’ombre.</p>
+      <p>À cette distance, les portes et les fenêtres paraissent presque accueillantes.</p>
       <p>Un escalier taillé dans la falaise descend vers une porte du quartier haut.</p>
 
       <p>Juste avant la porte repose le squelette d’un homme.</p>
@@ -3604,7 +3605,7 @@ const STORY = {
       <p>Tu entres dans la cité par le haut.</p>
 
       <p>Les maisons sont bâties en terrasses le long de la pente. Un petit escalier mène d’une rue à l’autre ; des murets retiennent les jardins aujourd’hui desséchés.</p>
-      <p>Les passages couverts restent dans l’ombre. Plus bas, un rayon de soleil tombe sur la place centrale.</p>
+      <p>Les passages couverts restent dans l’ombre. Plus bas, le soleil éclaire la place et les toits des maisons qui l’entourent.</p>
       <p>Tu passes devant un atelier. Des outils sont encore posés sur l’établi, près d’une porte fermée.</p>
 
       <p>Plus bas, des marques de craie et de petits symboles de l’œil fermé indiquent les passages utilisés par les Veilleurs.</p>
@@ -3659,7 +3660,7 @@ const STORY = {
         <p>Une chaise est restée près d’un seuil. Tu pourrais presque croire que quelqu’un va sortir pour la rentrer.</p>
         <p>Des lanternes à huile, toutes éteintes, pendent devant certaines maisons.</p>
         <p>Mais aucune porte ne s’ouvre.</p>
-        <p>La rue débouche sur une petite place circulaire. Très haut au-dessus des toits, une faille fend la voûte : un rayon de soleil traverse la cavité et tombe sur les pavés.</p>
+        <p>La rue débouche sur une petite place circulaire. Très haut au-dessus des toits, la grande ouverture de la voûte laisse entrer le jour. Le soleil éclaire les pavés, les façades et les terrasses alentour.</p>
         <p>Au-delà de cette trouée lumineuse, la caverne demeure immense et sombre. Le village, lui, paraît presque prêt à reprendre vie.</p>
         <p>Au centre repose une large vasque de pierre. Une fine couche de sable noir en tapisse le fond.</p>
         <p>Tu t’en approches.</p>
@@ -5238,7 +5239,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 42,
+    contentVersion: 43,
     pageMapVersion: 63,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
