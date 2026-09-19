@@ -189,7 +189,7 @@ function fightRound(state, key, enemy) {
     outcome = 'enemy';
     damage = enemyDamage;
     const resolution = applyDamage(state, damage);
-    if (resolution.hpLost > 0) raiseContamination(state, 1);
+    if (resolution.hpLost > 0 && !combat.contaminated) { raiseContamination(state, 1); combat.contaminated = true; }
     protectionAbsorbed = resolution.absorbed;
     hpLost = resolution.hpLost;
     protectionBefore = resolution.protectionBefore;
@@ -338,10 +338,11 @@ function combatRoundHtml(state, key, enemy) {
 // mais sa progression expose à la transformation. Pas de mort automatique au plafond
 // tant que la suite du livre et son traitement définitif ne sont pas publiés.
 function contaminationLevel(state) {
-  return Math.max(0, Math.min(6, Number.isFinite(state.contamination) ? Math.floor(state.contamination) : (state.flags?.blackEarthContamination ? 2 : 0)));
+  return Math.max(0, Math.min(13, Number.isFinite(state.contamination) ? Math.floor(state.contamination) : (state.flags?.blackEarthContamination ? 2 : 0)));
 }
 function raiseContamination(state, amount = 1) {
-  state.contamination = Math.min(6, contaminationLevel(state) + amount);
+  state.contamination = Math.min(13, contaminationLevel(state) + Math.max(0, amount));
+  if (state.contamination >= 13) state.flags.blackEarthTransformed = true;
   state.flags.blackEarthContamination = state.contamination > 0;
 }
 function blackEarthTreatment(state) {
@@ -350,7 +351,7 @@ function blackEarthTreatment(state) {
   // L'injection est une modification indépendante des anciennes blessures.
   if (state.flags.labInjected) state.flags.labInjected = false;
   if ((state.dexPenalty || 0) > 0) state.dexPenalty -= 1;
-  state.contamination = Math.max(0, contaminationLevel(state) - 2);
+  state.contamination = Math.max(0, contaminationLevel(state) - 4);
   state.flags.blackEarthContamination = state.contamination > 0;
   state.flags.usedWhiteAmpoule = true;
 }
@@ -412,7 +413,7 @@ function sentinelRound(state, target, blade) {
       report.push(`Tu touches la sentinelle ${target+1} : ${originalTargetDamage} dégâts.`);
     } else if (heroScore < enemyScore) {
       const result = applyDamage(state, 1);
-      if (result.hpLost > 0) raiseContamination(state, 1);
+      if (result.hpLost > 0 && !f.contaminated) { raiseContamination(state, 1); f.contaminated = true; }
       report.push(`La sentinelle ${target+1} te touche : ${result.absorbed} absorbé, ${result.hpLost} Vie perdue.`);
     } else report.push(`Tu pares la sentinelle ${target+1} : égalité, aucun dégât.`);
   }
@@ -424,7 +425,7 @@ function sentinelRound(state, target, blade) {
     const enemyScore = SENTINELS.dexterity + enemyDice[0] + enemyDice[1];
     if (enemyScore > heroScore) {
       const result = applyDamage(state, 1);
-      if (result.hpLost > 0) raiseContamination(state, 1);
+      if (result.hpLost > 0 && !f.contaminated) { raiseContamination(state, 1); f.contaminated = true; }
       report.push(`La sentinelle ${i+1} t'attaque : ${result.absorbed} absorbé, ${result.hpLost} Vie perdue.`);
     } else report.push(`Tu évites l'attaque de la sentinelle ${i+1}.`);
   }
@@ -446,7 +447,7 @@ function sentinelChoices(state) {
 function sentinelResultHtml(state) {
   const f = ensureSentinels(state);
   if (!f.last) return '';
-  return `<div class="combat-roll-result"><div class="combat-roll-title">Échange n° ${f.round}</div><p>Ton jet : ${f.last.heroDice.join(' + ')} · Attaque : ${f.last.heroScore}</p>${f.last.report.map(r=>`<p>${r}</p>`).join('')}<p><strong>Ta Vie : ${state.hp}/${state.maxHp}. Contamination : ${contaminationLevel(state)}/6.</strong></p></div>`;
+  return `<div class="combat-roll-result"><div class="combat-roll-title">Échange n° ${f.round}</div><p>Ton jet : ${f.last.heroDice.join(' + ')} · Attaque : ${f.last.heroScore}</p>${f.last.report.map(r=>`<p>${r}</p>`).join('')}<p><strong>Ta Vie : ${state.hp}/${state.maxHp}. Terre noire : ${contaminationLevel(state)}/13.</strong></p></div>`;
 }
 
 function heroGender(state) {
@@ -525,7 +526,7 @@ const STORY = {
           <div class="hero-stat"><strong>Chance</strong><span>${state.chance}</span></div>
           <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)}</span></div>
           <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)}</span></div>
-          <div class="hero-stat"><strong>Terre noire</strong><span>${contaminationLevel(state)}/6</span></div>
+          ${contaminationLevel(state)>0 ? `<div class="hero-stat"><strong>Terre noire</strong><span>${contaminationLevel(state)}/13 · ${state.flags.physicianNotesRead ? contaminationLevel(state)>=9 ? "Danger" : contaminationLevel(state)>=5 ? "Équilibre précaire" : "Appel puissant" : "Effets inconnus"}</span></div>` : ""}
           <div class="hero-stat hero-stat-wide"><strong>Puissance de l’arme</strong><span>${state.weapon === 'none' ? 0 : combatPower(state)}</span></div>
         </div>
 
@@ -535,7 +536,7 @@ const STORY = {
           <p><strong>Protection :</strong> provient de certaines pièces d’équipement. Elle absorbe les dégâts avant la Vie et diminue lorsqu’elle encaisse un choc.</p>
           <p><strong>Chance :</strong> permet de se sortir habilement d’un mauvais tour ou d’une situation qui semblait mal engagée.</p>
           <p><strong>Force :</strong> représente sa puissance physique. Elle contribue aux dégâts infligés et permet de forcer, retenir ou briser ce qui barre la route.</p>
-          <p><strong>Terre noire :</strong> contamination croissante. Elle réduit l’emprise des voix, mais menace le corps. À un niveau critique, la transformation guette.</p>
+          ${state.flags.physicianNotesRead ? "<p><strong>Terre noire :</strong> 0–4 : appel puissant ; 5–8 : équilibre précaire ; 9–12 : transformation imminente ; 13 : transformation définitive.</p>" : ""}
           <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. Elle peut être affectée par ce qui est porté, par exemple une arme lourde.</p>
           <p><strong>Puissance de l’arme :</strong> valeur propre à l’arme équipée. Elle s’ajoute au bonus de Force lorsque le personnage remporte un échange.</p>
         </div>
@@ -1113,8 +1114,8 @@ const STORY = {
         addItem(
           s,
           'potion_sombre',
-          'Potion de guérison sombre',
-          'Une potion de guérison dont le liquide paraît presque noir. Quelque chose semble parfois flotter à l’intérieur.'
+          'Fiole rouge sombre',
+          'Une fiole trouvée sur Gaspard. Elle restaure 3 Vie mais ajoute 2 points de terre noire.'
         );
       }
     },
@@ -2536,7 +2537,7 @@ const STORY = {
         effect: s => {
           s.flags.lakeTentacleOutcome = 'surprised';
           rollDamage(s, 'lakeTentacleSurprised', 3);
-          if (s.damageRollResults?.lakeTentacleSurprised?.hpLost > 0) raiseContamination(s, 1);
+          /* Tentacule : choc physique, aucune contamination. */
         }
       }
     ]
@@ -2583,7 +2584,7 @@ const STORY = {
         const success = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.lakeTentacleOutcome = success ? 'counter' : 'lookHit';
         if (!success) rollDamage(s, 'lakeTentacleLookHit', 3);
-          if (s.damageRollResults?.lakeTentacleLookHit?.hpLost > 0) raiseContamination(s, 1);
+          /* Tentacule : choc physique, aucune contamination. */
       }
     }]
   },
@@ -3307,7 +3308,7 @@ const STORY = {
           effect: s => {
             const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
             s.flags.bridgeRun = ok ? 'success' : 'fail';
-            if (!ok) { s.flags.bridgeRunDamage = applyDamage(s, 1); if (s.flags.bridgeRunDamage.hpLost > 0) raiseContamination(s, 1); }
+            if (!ok) { s.flags.bridgeRunDamage = applyDamage(s, 1); /* Chute ordinaire : aucune contamination. */ }
           }
         },
         { label: 'Frapper la chose à travers les planches', to: 'c61' }
@@ -4114,13 +4115,13 @@ const STORY = {
   c102: {
     number: 'PAGE 102', title: 'L’ampoule blanche', image: 'L’ampoule blanche',
     text: `
-      <p>Une seule ampoule a résisté au temps. Son liquide blanc servait à rincer les instruments souillés de terre noire, puis à nettoyer les plaies récentes.</p>
-      <p>Une annotation décrit comment verser ce liquide sur une plaie récente pour en faire refluer les grains noirs avant qu'ils se fixent. Sur une contamination ancienne, son efficacité est limitée.</p>
+      <p>Une seule ampoule a résisté au temps. Son liquide blanc a été mis au point pour réduire la contamination.</p>
+      <p>Une annotation décrit un traitement qui fait reculer la terre noire de quatre points, sans soigner les blessures. La voix du prisonnier peut alors reprendre de la force.</p>
       <p>Tu peux l'emporter ou la laisser. Des registres attendent plus loin.</p>`,
     choices: s => hasItem(s, 'ampoule_blanche')
       ? [{ label: 'Consulter les derniers registres', to: 'c103' }]
       : [
-          { label: 'Prendre l’Ampoule blanche', to: 'c103', effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Liquide permettant de neutraliser les traces de terre noire et les effets de l’injection récente ; il ne guérit pas l’appel.') },
+          { label: 'Prendre l’Ampoule blanche', to: 'c103', effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Remède des Veilleurs : −4 terre noire, sans restaurer la Vie.') },
           { label: 'Laisser l’ampoule et lire les registres', to: 'c103' }
         ]
   },
@@ -4183,9 +4184,38 @@ const STORY = {
         <p>Sur le plan, une petite lame noire est dessinée près d'un passage menant aux niveaux inférieurs. Tu penses à Aldren.</p>
       `;
     },
-    choices: [{ label: 'Quitter la salle du sceau', to: 'c105' }]
+    choices: [{ label: 'Consulter les registres médicaux', to: 'c114' }]
   },
 
+  c114: {
+    number: 'PAGE 114', title: 'Le registre du médecin', image: 'Le registre du médecin',
+    onEnter: s => { s.flags.physicianNotesRead=true; },
+    text: `<p>Dans le couloir commun, un registre repose sur le pupitre d’un médecin des Veilleurs. Ses pages détaillent les effets de la terre noire sur ceux qui entendent l’appel.</p>
+      <blockquote>« La terre noire affaiblit sa voix. Plus elle gagne le corps, moins le prisonnier peut atteindre l’esprit de celui qui la porte. Mais elle finit par prendre sa place. »</blockquote>
+      <p><strong>De 0 à 4 :</strong> l’appel reste puissant ; le corps est relativement préservé.</p>
+      <p><strong>De 5 à 8 :</strong> l’emprise diminue. Le malade peut parfois opposer sa volonté, sans être hors de danger.</p>
+      <p><strong>De 9 à 12 :</strong> la transformation menace. Le prisonnier peine à atteindre l’esprit, mais le corps change.</p>
+      <p><strong>À 13 :</strong> aucun retour n’a été observé. Le sujet devient un gardien.</p>
+      <blockquote>« Sans la terre noire, ils lui appartiennent. Avec elle, ils finissent par nous échapper également. »</blockquote>
+      <p>Tu comprends le piège : il te faudra peut-être accepter une part de contamination pour rester libre à l’approche de la prison, mais jamais au point de perdre ton humanité.</p>`,
+    choices: [{label:'Continuer vers l’ancien poste de secours',to:'c115'}]
+  },
+  c115: {
+    number:'PAGE 115', title:'Le poste de secours', image:'Le poste de secours',
+    text:`<p>Tu traverses un ancien poste de secours des Veilleurs. Une armoire éventrée contient une dernière ampoule intacte, remplie d’un liquide blanc.</p><p>Les notes du médecin précisent qu’elle retire quatre points de terre noire sans guérir les blessures. Tu peux la garder pour plus tard, ou la laisser.</p>`,
+    choices:s => s.flags.commonAmpouleOffered ? [{label:'Poursuivre',to:'c116'}] : [
+      {label:'Prendre l’Ampoule blanche',to:'c116',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Remède : −4 terre noire, sans restaurer la Vie.');t.flags.commonAmpouleOffered=true;}},
+      {label:'Laisser l’ampoule',to:'c116',effect:t=>{t.flags.commonAmpouleOffered=true;}}
+    ]
+  },
+  c116: {
+    number:'PAGE 116',title:'La réserve de terre noire',image:'La réserve de terre noire',
+    text:`<p>Dans la pièce suivante, une petite sacoche fermée par une cordelette repose sur une étagère. Elle contient une poudre noire, fine et sèche.</p><p>Tu repenses au registre : l’absorber pourrait affaiblir la voix, mais accélérerait ta transformation. Cette dose ajouterait trois points de terre noire.</p>`,
+    choices:s=>s.flags.blackEarthBagOffered ? [{label:'Rejoindre le couloir de la grille',to:'c105'}] : [
+      {label:'Prendre la sacoche sans la consommer',to:'c105',effect:t=>{addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
+      {label:'Laisser la sacoche',to:'c105',effect:t=>{t.flags.blackEarthBagOffered=true;}}
+    ]
+  },
   c105: {
     number: 'PAGE 105', title: 'La voix et la grille', image: 'La grille des anciens registres',
     text: state => `
@@ -4194,7 +4224,7 @@ const STORY = {
       <blockquote>« Laisse cela. Continue. »</blockquote>
       <p>La voix n'a rien d'hostile. Elle te désigne l'avenue qui descend vers la prison.</p>
       <p>Peut-être cherche-t-elle à t'épargner une perte de temps. Peut-être ne veut-elle pas que tu lises ces documents.</p>
-      <p><strong>Contamination : ${contaminationLevel(state)}/6.</strong> Plus elle est élevée, moins l'appel peut s'imposer.</p>`,
+      <p><strong>Terre noire : ${contaminationLevel(state)}/13.</strong> Tu te souviens des notes du médecin : la terre noire affaiblit l’appel, mais menace ton corps.</p>`,
     choices: s => [
       { label: 'Suivre la voix et descendre sans t’arrêter', to: 'c108', effect: t => { t.flags.commonVoiceChoice = 'obeyed'; } },
       { label: `Résister à la voix — test de Volonté (3D6 ≥ ${Math.max(6, 12-contaminationLevel(s))})`, to: 'c106', effect: t => { t.flags.commonVoiceChoice = rollWillAgainstCall(t) ? 'resisted' : 'forced'; } },
@@ -4414,7 +4444,7 @@ const STORY = {
 
         <p>Le goût terreux au fond de ta gorge finit lui aussi par s’atténuer.</p>
 
-        <p>Les traces superficielles se détachent et la gêne s’atténue. Tu ignores ce qui peut subsister plus profondément, et rien ne prouve que l’appel ait disparu.</p>
+        <p>La contamination recule de quatre points. Tu sens la voix retrouver de sa netteté : la guérison a son prix.</p>
       ` : ''}
 
       <p>Tu suis la galerie indiquée par les Veilleurs.</p>
@@ -4491,6 +4521,7 @@ const STORY = {
   // Libellés complets de l’outil de navigation TEST.
   // Les titres narratifs de STORY restent volontairement masqués sur certaines pages.
   const PAGE_NAV_TITLES = {
+    'c114': 'Le registre du médecin', 'c115': 'Le poste de secours', 'c116': 'La réserve de terre noire',
     "c0": "Prologue — Valombre",
     "c1": "Les écuries de Valombre",
     "c2": "La sacoche de Sir Aldren",
@@ -4607,7 +4638,7 @@ const STORY = {
     "c113": "Sous la Cité morte"
 };
 
-  const PAGE_ORDER = ['c0', ...Array.from({ length: 113 }, (_, i) => `c${i + 1}`)];
+  const PAGE_ORDER = ['c0', ...Array.from({ length: 116 }, (_, i) => `c${i + 1}`)];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -4666,7 +4697,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 58,
+      pageMapVersion: 59,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -4781,6 +4812,17 @@ const STORY = {
     state.pageMapVersion = 58;
     return state;
   }
+  function migratePageNumbersV59(state) {
+    migratePageNumbersV58(state);
+    if (!state.flags || typeof state.flags !== 'object') state.flags = {};
+    if (state.pageMapVersion >= 59) return state;
+    if (state.node === 'c105' && !state.flags.physicianNotesRead) state.node='c114';
+    // The original 113 page numbers are stable. Only new pages 114–116 are added.
+    state.contamination = Math.max(0, Math.min(13, Math.floor(Number(state.contamination)||0)));
+    if (state.contamination >= 13) state.flags.blackEarthTransformed = true;
+    state.pageMapVersion = 59;
+    return state;
+  }
   const TEST_ITEM_CATALOG = [
     {
       id: 'parchemin',
@@ -4799,8 +4841,8 @@ const STORY = {
     },
     {
       id: 'potion_sombre',
-      name: 'Potion de guérison sombre',
-      description: 'La fiole trouvée sur Gaspard. Son liquide est presque noir.'
+      name: 'Fiole rouge sombre',
+      description: 'Restaure 3 Vie, sans dépasser le maximum ; augmente la terre noire de 2.'
     },
     {
       id: 'brassard_veilleurs',
@@ -4849,7 +4891,7 @@ const STORY = {
     {
       id: 'ampoule_blanche',
       name: 'Ampoule blanche',
-      description: 'Un liquide de rinçage des instruments souillés de terre noire : il peut atténuer la contamination superficielle, mais ne guérit pas l’appel.'
+      description: 'Traitement des Veilleurs : retire 4 points de terre noire (minimum zéro). Ne restaure pas la Vie.'
     }
   ];
 
@@ -4927,7 +4969,7 @@ const STORY = {
         ? `<div class="dice-result"><p class="roll-number">Dernière potion</p><div class="dice-faces">${renderDie(state.lastHealingDie)}</div><p><strong>+${state.lastHealingDie} point${state.lastHealingDie > 1 ? 's' : ''} de Vie</strong></p><p>Vie : <strong>${state.hp} / ${state.maxHp}</strong></p></div>`
         : '';
       const testPanel = testInventoryHtml(state);
-      const earth = `<div class="inventory-equipment-card"><strong>Terre noire : ${contaminationLevel(state)}/6</strong><p>Elle réduit l’emprise de la voix, mais menace le corps. À 6/6, l’état devient critique.</p></div>`;
+      const earth = contaminationLevel(state)>0 ? `<div class="inventory-equipment-card"><strong>Terre noire : ${contaminationLevel(state)}/13</strong><p>${state.flags.physicianNotesRead ? "0–4 : appel puissant · 5–8 : équilibre précaire · 9–12 : transformation imminente · 13 : transformation." : "Effets inconnus."}</p></div>` : "";
       return equipment + earth + testPanel + healing;
     },
 
@@ -4941,6 +4983,9 @@ const STORY = {
       if (id === 'lame_noire') {
         return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="equip-black-blade">Équiper la lame noire</button></div>`;
       }
+      if (id === 'potion_sombre') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-dark-potion" ${state.hp>=state.maxHp ? 'disabled' : ''}>Boire : +3 Vie, +2 terre noire${contaminationLevel(state)+2>=13 ? " — TRANSFORMATION" : ""}</button></div>`;
+      if (id === 'sacoche_terre_noire') return `<div class="inventory-actions"><p>Usage unique : +3 terre noire. Après absorption : ${Math.min(13, contaminationLevel(state)+3)}/13.</p><button class="inventory-action-btn" data-action="use-black-earth">Absorber la terre noire</button></div>`;
+      if (id === 'ampoule_blanche_commune') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule-common" ${contaminationLevel(state)>0 ? '' : 'disabled'}>Utiliser : −4 terre noire</button></div>`;
       if (id === 'ampoule_blanche') {
         const useful = ((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state) > 0);
         return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule" ${useful ? '' : 'disabled'}>Rincer les traces de terre noire</button></div>`;
@@ -5038,6 +5083,22 @@ const STORY = {
         return true;
       }
 
+      if (action === 'use-dark-potion') {
+        if (hasItem(state, 'potion_sombre') && state.hp < state.maxHp) { state.hp=Math.min(state.maxHp,state.hp+3); removeItem(state,'potion_sombre'); raiseContamination(state,2); api.saveState(); api.render(); }
+        api.openInventory(); return true;
+      }
+      if (action === 'use-black-earth') {
+        if (hasItem(state,'sacoche_terre_noire')) {
+          if (!state.flags.blackEarthUseConfirmed) { state.flags.blackEarthUseConfirmed=true; api.showModal('Absorber la terre noire ?', `<p>Ton niveau passerait de ${contaminationLevel(state)} à ${Math.min(13,contaminationLevel(state)+3)}/13. ${contaminationLevel(state)+3>=13 ? 'Tu te transformerais immédiatement : fin de partie.' : 'Cette décision est irréversible sans traitement.'}</p><button class="inventory-action-btn" data-action="confirm-black-earth">Confirmer</button>`); return true; }
+          removeItem(state,'sacoche_terre_noire'); raiseContamination(state,3); state.flags.blackEarthUseConfirmed=false; api.saveState(); api.render();
+        } api.openInventory(); return true;
+      }
+      if (action === 'confirm-black-earth') {
+        if (hasItem(state,'sacoche_terre_noire') && state.flags.blackEarthUseConfirmed) { removeItem(state,'sacoche_terre_noire'); raiseContamination(state,3); state.flags.blackEarthUseConfirmed=false; api.saveState(); api.render(); } return true;
+      }
+      if (action === 'use-white-ampoule-common') {
+        if (hasItem(state,'ampoule_blanche_commune') && contaminationLevel(state)>0) {removeItem(state,'ampoule_blanche_commune');state.contamination=Math.max(0,contaminationLevel(state)-4);state.flags.blackEarthContamination=state.contamination>0;api.saveState();api.render();} api.openInventory();return true;
+      }
       if (action === 'use-white-ampoule') {
         if (!hasItem(state, 'ampoule_blanche') || !((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state) > 0)) {
           api.openInventory();
@@ -5082,7 +5143,7 @@ const STORY = {
           <div><span>Chance</span><strong>${state.chance}</strong></div>
           <div><span>Force</span><strong>${force}</strong></div>
           <div><span>Dextérité</span><strong>${dexterity}</strong></div>
-          <div><span>Terre noire</span><strong>${contaminationLevel(state)} / 6</strong></div>
+          ${contaminationLevel(state)>0 ? `<div><span>Terre noire</span><strong>${contaminationLevel(state)} / 13 · ${state.flags.physicianNotesRead ? "Voir les notes du médecin" : "Effets inconnus"}</strong></div>` : ""}
           <div><span>Puissance de l’arme</span><strong>${weaponPower}</strong></div>
         </div>
         <div class="character-modal-equipment">
@@ -5103,8 +5164,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 32,
-    pageMapVersion: 58,
+    contentVersion: 33,
+    pageMapVersion: 59,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     story: STORY,
@@ -5121,13 +5182,14 @@ const STORY = {
       if (n <= 69) return [`pages/${name(n)}`, name(n-3)];
       // Les scènes réécrites exigent une illustration neuve plutôt que d'afficher une
       // image d'une scène devenue sans rapport. Les anciens PNG restent sur GitHub.
+      if (n >= 114) return [`pages/${name(n)}`];
       if (n <= 107) return [`pages/${name(n)}`];
       const old = n - 17;
       return [`pages/${name(n)}`, `pages/${name(old)}`, name(old-8)];
     },
-    imageExtensions: ['png'],
+    imageExtensions: ['webp', 'png'],
     createInitialState,
-    migrateState: migratePageNumbersV58,
+    migrateState: migratePageNumbersV59,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,
