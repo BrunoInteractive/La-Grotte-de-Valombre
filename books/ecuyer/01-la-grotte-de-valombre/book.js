@@ -5200,10 +5200,11 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 47,
+    contentVersion: 48,
     pageMapVersion: 63,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
+    showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
     story: STORY,
     pageOrder: PAGE_ORDER,
     pageByNode: PAGE_BY_NODE,
@@ -5212,21 +5213,27 @@ const STORY = {
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
     imageCandidatesForPage: n => {
       const name = m => `La-Grotte-de-Valombre-${padPage(m)}`;
-      // Une image ne peut plus être choisie par simple décalage numérique :
-      // la page 082 pouvait, par exemple, finir sur l'ancienne image 057.
-      // Pour les pages inchangées, on accepte uniquement leur numéro exact.
-      if (n >= 92 && n <= 98) return [`pages/${name(n)}-V63`];
-      if (n === 0 || [50, 51, 70, 71, 72, 73, 74].includes(n)) return [`pages/${name(n)}`];
-      if (n <= 52) return [name(n)];
-      if (n <= 55) return [`pages/${name(n)}`];
-      if (n <= 104) return [`pages/${name(n)}`, name(n)];
-      // V62 a explicitement renuméroté ces douze scènes : correspondances
-      // documentées, même scène, à préserver pour les illustrations existantes.
+      // N'utiliser que la scène demandée, jamais un numéro obtenu par décalage
+      // (ex. l'ancienne image 057 ne doit jamais illustrer la page 082).
+      const samePage = n <= 47
+        ? [name(n), `pages/${name(n)}`]
+        : [`pages/${name(n)}`, name(n)];
+      // Ces sept scènes ont été réécrites en V63 : ne pas reprendre
+      // leurs illustrations de la précédente galerie des voix.
+      if (n >= 92 && n <= 98) {
+        return [`pages/${name(n)}-V63`, `${name(n)}-V63`];
+      }
+      // Renumérotation V62 documentée : même scène, ancien numéro connu.
+      // Donner priorité à cette correspondance plutôt qu'à un fichier portant
+      // le numéro actuel mais illustrant potentiellement une autre scène.
       const originalScene = {105:114,106:115,107:116,108:105,109:106,110:107,
                              111:108,112:109,113:110,114:111,115:112,116:113};
-      return originalScene[n] ? [`pages/${name(originalScene[n])}`] : [`pages/${name(n)}`];
+      if (originalScene[n]) {
+        return [`pages/${name(originalScene[n])}`, name(originalScene[n])];
+      }
+      return samePage;
     },
-    imageExtensions: ['webp', 'png'],
+    imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
     migrateState: migratePageNumbersV63,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },

@@ -189,7 +189,7 @@ function loadPageImage(pageNumber, title) {
   const candidates = typeof BOOK.imageCandidatesForPage === 'function'
     ? BOOK.imageCandidatesForPage(pageNumber)
     : [base];
-  imageLabel.textContent = base;
+  imageLabel.textContent = candidates[0]?.split('/').pop() || base;
   storyImage.classList.add('hidden');
   imagePlaceholder.style.display = 'grid';
   storyImage.alt = title ? `Illustration — ${title}` : `Illustration page ${padPage(pageNumber)}`;
@@ -199,11 +199,18 @@ function loadPageImage(pageNumber, title) {
   const tryNext = () => {
     if (token !== pageImageLoadToken) return;
     if (index >= attempts.length) {
-      // Illustration absente : aucune vignette trompeuse et pas de grand encadré vide.
+      // En Travail, distinguer visuellement une illustration manquante
+      // d'une illustration que Bruno a explicitement demandé de masquer.
+      // Pour les Joueurs, conserver l'ancien comportement discret.
       storyImage.removeAttribute('src');
       storyImage.classList.add('hidden');
-      imagePlaceholder.style.display = 'none';
-      imageFrame.classList.add('hidden');
+      if (BOOK.showMissingIllustrationPlaceholder) {
+        imageFrame.classList.remove('hidden');
+        imagePlaceholder.style.display = 'grid';
+      } else {
+        imagePlaceholder.style.display = 'none';
+        imageFrame.classList.add('hidden');
+      }
       return;
     }
     storyImage.onload = () => {
