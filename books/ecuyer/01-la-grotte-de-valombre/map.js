@@ -647,7 +647,7 @@
       "notes": [
         {
           "page": "c104",
-          "text": "Un plan indique que la terre noire entretient le sceau de la prison. Les Veilleurs avaient condamné certains accès vers la surface."
+          "text": "Un plan gravé montre des routes vers la surface, barrées. Une inscription indique que la terre noire entretient le sceau de la prison."
         }
       ]
     },

@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 45,
+  "contentVersion": 47,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V67.4 — Correspondances d’images sécurisées ; aucun repli vers une scène sans rapport · Travail · 116 pages",
+  "buildLabel": "V67.6 — Page 091 sans image ; page 104 simplifiée · Travail · 116 pages",
   "pageMapVersion": 63
 }

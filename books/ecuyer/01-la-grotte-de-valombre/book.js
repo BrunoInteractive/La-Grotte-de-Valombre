@@ -3769,7 +3769,7 @@ const STORY = {
   },
 
   c75: {
-    number: 'PAGE 75', title: 'Les quartiers des Veilleurs', image: 'Le carrefour des quartiers',
+    number: 'PAGE 75', title: 'Les quartiers des Veilleurs', noImage: true, image: 'Le carrefour des quartiers',
     text: state => `
       <p>Les anciennes salles d'habitation se déploient autour d'un petit vestibule. Une odeur de cendre froide flotte encore dans l'air. Des lampes à huile éteintes sont accrochées aux murs ; les passages restent dans la pénombre.</p>
       <p>À gauche, des tables sont visibles derrière une arche. À droite, une porte mène à un poste de garde encombré de registres.</p>
@@ -3853,7 +3853,7 @@ const STORY = {
     ]
   },
   c82: {
-    number: 'PAGE 82', title: 'Le bureau fermé', image: 'La porte du commandement',
+    number: 'PAGE 82', title: 'Le bureau fermé', noImage: true, image: 'La porte du commandement',
     text: `
       <p>Une porte renforcée ferme le bureau du commandement. Sa serrure ne répond plus. Au-delà, un passage permet de rejoindre les appartements sans y entrer.</p>
       <p>Des marques de coups autour du verrou montrent que quelqu'un a déjà essayé de forcer l'entrée.</p>
@@ -3866,7 +3866,7 @@ const STORY = {
         ]
   },
   c83: {
-    number: 'PAGE 83', title: 'Les ordres du commandement', image: 'Le bureau des ordres',
+    number: 'PAGE 83', title: 'Les ordres du commandement', noImage: true, image: 'Le bureau des ordres',
     text: s => s.flags.officeOpened || s.visited?.c83 && !s.flags.officeAttempted ? `
       ${s.flags.officeAttempted ? diceResultHtml(s) : ''}
       <p>La porte cède. Des tablettes et des registres sont restés ouverts sur un pupitre.</p>
@@ -3882,7 +3882,7 @@ const STORY = {
   c84: {
     number: 'PAGE 84', title: 'Les derniers jours', image: 'Les appartements désertés',
     text: `
-      <p>Les lits sont renversés. Des vêtements gisent dans les couloirs. Une porte porte la marque d'un coup de hache.</p>
+      <p>Les lits sont renversés. Des vêtements gisent dans les couloirs. Un coup de hache a entaillé une porte.</p>
       <p>Dans une chambre, deux rapports datés du même jour se contredisent.</p>
       <p>L'un exige l'élimination de tous ceux qui refusent les condamnations. L'autre réclame des preuves avant de tuer, et la poursuite des soins.</p>
       <p>Au bas de ce second rapport : « Arrêté pour refus d'obéir. »</p>
@@ -3891,13 +3891,11 @@ const STORY = {
     choices: [{ label: 'Gagner la galerie de sortie', to: 'c85' }]
   },
   c85: {
-    number: 'PAGE 85', title: 'La fissure des appartements', image: 'La fissure derrière l’armoire',
-    text: state => `
+    number: 'PAGE 85', title: 'La fissure des appartements', noImage: true, image: 'La fissure derrière l’armoire',
+    text: `
       <p>Tu t'apprêtes à quitter les appartements lorsqu'un grattement résonne derrière le mur.</p>
       <p>Une fissure étroite traverse la pierre, presque dissimulée par une armoire renversée.</p>
-      ${state.flags.worldRoute === 'stairs'
-        ? '<p>Cela te rappelle la fissure aperçue sur les Grandes Marches. Les deux passages communiquent-ils ?</p>'
-        : '<p>Tu ignores où cette faille mène. Le grattement pourrait venir de très loin derrière la paroi.</p>'}
+      <p>Tu ignores où cette faille mène. Le grattement pourrait venir de très loin derrière la paroi.</p>
       <p>L'ouverture paraît juste assez large pour t'y glisser de profil. La sortie des quartiers est derrière toi.</p>`,
     choices: [
       { label: 'T’aventurer dans la fissure', to: 'c86' },
@@ -3905,7 +3903,7 @@ const STORY = {
     ]
   },
   c86: {
-    number: 'PAGE 86', title: 'Entre les parois', image: 'Le passage trop étroit',
+    number: 'PAGE 86', title: 'Entre les parois', noImage: true, image: 'Le passage trop étroit',
     text: `
       <p>Tu progresses de profil. La roche frotte contre tes épaules et tu dois parfois tourner la tête pour avancer.</p>
       <p>Après plusieurs mètres, l'ouverture s'élargit.</p>
@@ -3928,7 +3926,7 @@ const STORY = {
     ]
   },
   c88: {
-    number: 'PAGE 88', title: 'Le collier du prisonnier', image: 'Le collier de vitalité',
+    number: 'PAGE 88', title: 'Le collier du prisonnier', noImage: true, image: 'Le collier de vitalité',
     text: `
       <p>Tu frappes d'un seul coup, sans laisser à l'homme le temps de se redresser.</p>
       <p>Sa tête roule sur les dalles. Le corps retombe.</p>
@@ -3954,7 +3952,7 @@ const STORY = {
     choices: [{ label: 'Fuir par la fissure', to: 'c91' }]
   },
   c90: {
-    number: 'PAGE 90', title: 'La fuite', image: 'Les corps qui remuent',
+    number: 'PAGE 90', title: 'La fuite', noImage: true, image: 'Les corps qui remuent',
     text: `
       <p>Tu recules vers la fissure.</p>
       <p>Derrière toi, plusieurs corps commencent à bouger. Une main racle les dalles.</p>
@@ -3963,7 +3961,7 @@ const STORY = {
     choices: [{ label: 'Quitter les anciens quartiers', to: 'c91' }]
   },
   c91: {
-    number: 'PAGE 91', title: 'Quitter les quartiers', image: 'La galerie de service',
+    number: 'PAGE 91', title: 'Quitter les quartiers', noImage: true, image: 'La galerie de service',
     text: s => `
       <p>Tu retrouves la galerie de sortie des appartements.</p>
       ${s.flags.isolationChoice === 'flee' ? '<p>Le grattement de la chambre d’isolement s’est tu derrière les parois.</p>' : ''}
@@ -4165,52 +4163,15 @@ const STORY = {
     number: 'PAGE 104',
     title: 'Les défenses du sceau',
     image: 'Le mécanisme des gardiens',
-    text: state => {
-      let routeMemory = '';
-      if (state.flags.cityRoute === 'quarters' || state.flags.cityRoute === 'names') {
-        routeMemory = state.flags.quartersGuard
-          ? '<p>Tu repenses aux premières consignes de secours, puis aux décisions de plus en plus sévères des Veilleurs. Leurs raisons demeurent obscures.</p>'
-          : '<p>Tu repenses aux quartiers dévastés et aux rapports contradictoires des Veilleurs. Leurs raisons demeurent obscures.</p>';
-      } else if (state.flags.cityRoute === 'observation' || state.flags.cityRoute === 'voices') {
-        routeMemory = state.flags.observationMet
-          ? `<p>Tu repenses au prisonnier : ${state.flags.observationBodyHeard ? 'la terre noire lui avait permis de retenir ses gestes, avant de déformer son bras. ' : ''}${state.flags.observationRecordsHeard ? 'Les Veilleurs lui imposaient de consigner ses sensations dans un cahier. ' : ''}${state.flags.observationBalanceAsked ? 'Il ne parvenait plus à maintenir l’équilibre entre la terre noire et son remède.' : 'Il n’avait plus de remède blanc.'}</p>`
-          : state.flags.observationLegacyVisit
-            ? '<p>Tu repenses aux cellules du quartier d’observation, traversées avant de rejoindre cette salle.</p>'
-            : '<p>Tu repenses aux cellules du quartier d’observation. Tu as poursuivi ton chemin sans t’arrêter.</p>';
-      } else if (state.flags.cityRoute === 'laboratory') {
-        routeMemory = '<p>Tu repenses aux salles blanches : les tentatives pour faire taire l’appel ont échoué. Les Veilleurs ont ensuite utilisé la terre noire pour obtenir des gardiens.</p>';
-      }
-      const echoes = [];
-      if (state.visited?.c24 || state.visited?.c26 || state.visited?.c27) {
-        echoes.push('Tu reconnais dans la première forme la masse rencontrée à l’entrée de la grotte.');
-      }
-      if (state.visited?.c47) {
-        echoes.push('Une autre rappelle la créature qui gardait l’îlot.');
-      }
-      if (state.flags.worldRoute === 'bridge' || state.visited?.c61) {
-        echoes.push('La dernière ressemble au marcheur du pont.');
-      }
-      const recognition = echoes.length ? `<p>${echoes.join(' ')}</p>` : '';
-      return `
-        <p>Tu débouches dans une salle ronde. Trois couloirs y aboutissent : les anciens quartiers des Veilleurs, le quartier d’observation et les salles blanches.</p>
-        <p>Dans la pénombre, tu distingues un plan posé au centre de la pièce.</p>
-        <p>Au centre, une table de pierre porte le plan d'une porte entourée de canaux. Les canaux mènent à des vasques emplies de grains noirs.</p>
-        <p>Sous le plan, une inscription est encore lisible :</p>
-        <blockquote>LA TERRE NOIRE ENTRETIENT LE SCEAU. NE PAS LA TOUCHER.</blockquote>
-        <p>Le sable noir de la place semble être cette même matière, réduite en grains et disposée dans les canaux de la prison.</p>
-        <p>Sur le bord du plan, des chemins conduisant vers la surface sont barrés, comme si les Veilleurs en avaient condamné les accès.</p>
-        <p>Tu repenses aux anciennes routes de Valombre. Ont-elles été fermées pour protéger la vallée ? Leur fermeture a-t-elle participé à son déclin ? Ce plan ne permet pas de le savoir.</p>
-        <p>Un panneau voisin représente des personnes qui approchent des accès à la prison. Certaines s'effondrent au contact de la terre. Sur d'autres, la matière gagne les bras et la poitrine, puis déforme leurs silhouettes.</p>
-        <p>Dans la dernière scène, les formes transformées sont placées devant trois passages. L’une est une masse lourde ; une autre rampe au ras du sol ; la troisième se tient accrochée sous une passerelle.</p>
-        ${recognition}
-        <p><strong>La terre noire tue ceux qui ne lui résistent pas et transforme les survivants en gardiens.</strong> À mesure qu’elle gagne le corps, elle coupe l’appel. Les Veilleurs ont organisé ces défenses autour de la prison.</p>
-        ${routeMemory}
-        <p>Tu repenses à la vasque : une force étrangère a brusquement rejeté ta main avant que tu touches la terre noire. Elle t’a peut-être empêché de mourir ou de devenir l’un de ces gardiens.</p>
-        <p>Si la chose enfermée a provoqué ce geste, elle avait une raison de te garder en vie : elle cherche encore quelqu’un pour atteindre sa porte.</p>
-        <p>Mais cela ne te dit toujours pas pourquoi les Veilleurs l'ont emprisonnée, ni ce qui arriverait si tu l'ouvrais.</p>
-        <p>Sur le plan, une petite lame noire est dessinée près d'un passage menant aux niveaux inférieurs. Tu penses à Aldren.</p>
-      `;
-    },
+    text: `
+      <p>Les trois chemins débouchent dans une salle ronde.</p>
+      <p>Au centre, une table de pierre porte un plan gravé de la grotte. Plusieurs chemins mènent vers la surface. Ils sont barrés d'un trait profond, comme si les Veilleurs en avaient condamné les accès.</p>
+      <p>Ont-ils été fermés pour protéger la vallée ? Leur fermeture a-t-elle participé à son déclin ?</p>
+      <p>Plus bas sur le plan, une porte monumentale est dessinée. À côté, une inscription :</p>
+      <blockquote>LA TERRE NOIRE ENTRETIENT LE SCEAU. NE PAS LA TOUCHER.</blockquote>
+      <p>Sur un panneau voisin, des silhouettes s'effondrent au contact d'une matière sombre. D'autres restent debout, le corps déformé.</p>
+      <p>Près d'un passage vers les niveaux inférieurs, une petite lame noire est dessinée.</p>
+    `,
     choices: [{ label: 'Consulter les registres médicaux', to: 'c105' }]
   },
 
@@ -5239,7 +5200,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 45,
+    contentVersion: 47,
     pageMapVersion: 63,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
