@@ -4068,7 +4068,7 @@ const STORY = {
       <p>La porte possède une ouverture à hauteur de visage. À travers cette ouverture, tu regardes à l’intérieur.</p>
       <p>Un homme en armure est assis à l’intérieur. Son visage reste dans l’ombre. Sous la table, une masse déformée heurte lentement les dalles.</p>
       <blockquote>« Aidez-moi… »</blockquote>
-      <blockquote>« Je suis chevalier. Je viens d’un village au-delà de la vallée. J’ai entendu l’appel… Je suis arrivé ici il y a quelques jours. »</blockquote>
+      <blockquote>« Je suis chevalier… Je suis arrivé ici il y a quelques jours. »</blockquote>
       <p>Il se rapproche de la porte et s’y agrippe.</p>
       <blockquote>« Vous pouvez m’aider ? Je vous en prie… »</blockquote>
       <p>Un ancien carnet médical est ouvert près de lui.</p>`,
@@ -4078,16 +4078,16 @@ const STORY = {
     ]
   },
   c94: {
-    number: 'PAGE 94', title: '', image: 'Le cahier du prisonnier',
+    number: 'PAGE 94', title: '', noImage: true, image: 'Le cahier du prisonnier',
     onEnter: s => { s.flags.observationRecordsHeard = true; s.flags.observationBodyHeard = true; s.flags.observationRead = true; },
     text: `
-      <p>Il pose une main tremblante sur les feuillets.</p>
-      <blockquote>« Les Veilleurs étudiaient des voyageurs qui entendaient l’appel. Ils notaient leurs gestes, leurs tentatives pour rejoindre la prison… Puis ils ont essayé la terre noire. »</blockquote>
+      <blockquote>« Je viens d’un village au-delà de la vallée. Une voix m’appelait. Elle me demandait de la libérer. J’ai toujours répondu aux appels à l’aide. »</blockquote>
+      <blockquote>« Mais une fois arrivé ici, j’ai compris que quelque chose n’allait pas. Cet appel… c’est une malédiction. »</blockquote>
+      <p>Il pose une main tremblante sur le carnet ouvert près de lui.</p>
+      <blockquote>« J’ai trouvé ce carnet des Veilleurs. Ils étudiaient les voyageurs qui entendaient la voix. Ils notaient leurs gestes, leurs tentatives pour rejoindre la prison… Puis ils ont essayé la terre noire. »</blockquote>
       <p>Il te montre une ligne soulignée : l’emprise diminuait après l’injection, puis revenait.</p>
-      <blockquote>« J’ai trouvé leurs aiguilles et leur réserve. J’ai cru pouvoir reprendre ma route. »</blockquote>
-      <p>Il soulève un pan de sa tunique. Ses jambes ont perdu leur forme humaine. Une masse sombre et noueuse les relie désormais au sol.</p>
-      <blockquote>« J’ai compris, grâce à ces carnets, que la terre noire pouvait étouffer l’appel. Je me suis injecté une première dose. J’ai repris le contrôle de mes gestes… pour un temps. Quand l’appel est revenu, j’ai recommencé. Encore et encore. »</blockquote>
-      <p>Ses membres inférieurs raclent la pierre sans lui obéir.</p>
+      <blockquote>« J’ai trouvé leurs aiguilles et leur réserve. J’ai cru pouvoir reprendre ma route. Je me suis injecté une première dose. J’ai repris le contrôle de mes gestes… pour un temps. Quand l’appel est revenu, j’ai recommencé. Encore et encore. »</blockquote>
+      <p>Il soulève un pan de sa tunique. Ses jambes ont perdu leur forme humaine. Une masse sombre et noueuse les relie désormais au sol. Ses membres inférieurs raclent la pierre sans lui obéir.</p>
       <blockquote>« J’ai fermé cette porte avant de ne plus pouvoir me contrôler. Je ne veux pas finir comme eux… »</blockquote>`,
     choices: [{ label: 'Lui demander comment l’aider', to: 'c96' }]
   },
@@ -4101,7 +4101,7 @@ const STORY = {
     choices: [{ label: 'Lui demander comment l’aider', to: 'c96' }]
   },
   c96: {
-    number: 'PAGE 96', title: '', image: 'La dernière ampoule vide',
+    number: 'PAGE 96', title: '', noImage: true, image: 'La dernière ampoule vide',
     onEnter: s => { s.flags.observationRead = true; },
     text: `
       <p>Près de sa chaise, une ampoule blanche vide roule entre les pierres.</p>
@@ -4724,19 +4724,20 @@ const STORY = {
     choices: [{ label: 'Quitter le quartier d’observation', to: 'c98' }]
   },
   c145: {
-    number: 'PAGE 145', title: '', noImage: true,
+    number: 'PAGE 145', title: '', image: 'Le bouclier du chevalier',
     text: s => hasItem(s, 'bouclier_chevalier')
-      ? `<p>Tu as déjà récupéré le bouclier du chevalier. Rien d’autre ne retient ton attention dans la cellule.</p>`
+      ? `<p>Tu passes l’avant-bras dans les sangles du petit bouclier. Il est désormais dans ton équipement.</p>`
       : `<p>Contre le pied de la table repose un petit bouclier de métal cabossé. Ses sangles tiennent encore.</p>
-         <p>Il pourrait absorber plusieurs coups, mais son poids ralentira tes mouvements.</p>
-         <p><strong>Protection : +6 au total. Dextérité : −1 tant que le bouclier protège.</strong></p>`,
+         <p>Il pourrait absorber plusieurs coups, mais son poids ralentira tes mouvements.</p>`,
     choices: s => hasItem(s, 'bouclier_chevalier')
       ? [{ label: 'Quitter la cellule', to: 'c98' }]
       : [
-        { label: 'Prendre le bouclier', to: 'c146', effect: addKnightShield },
+        { label: 'Prendre le bouclier (Protection +6, Dextérité −1)', stay: true, effect: addKnightShield },
         { label: 'Laisser le bouclier et partir', to: 'c98' }
       ]
   },
+  // Conservée uniquement pour reprendre les anciennes sauvegardes déjà situées page 146.
+  // Aucun choix de la nouvelle version ne conduit ici.
   c146: {
     number: 'PAGE 146', title: '', noImage: true,
     text: `<p>Tu passes l’avant-bras dans les sangles du bouclier et regagnes le couloir. Son poids ralentit légèrement tes gestes, mais il pourra te protéger des prochains coups.</p>`,
@@ -4766,7 +4767,7 @@ const STORY = {
     choices: [{ label: 'Examiner le coffre', to: 'c110' }]
   },
   c149: {
-    number: 'PAGE 149', title: '', noImage: true,
+    number: 'PAGE 149', title: '', image: 'Le chevalier enragé',
     onEnter: s => { if (!s.flags.knightFate) s.flags.knightFate = 'hostile'; },
     text: s => {
       const enemy = ENEMIES.observationPrisonerCorridor;
