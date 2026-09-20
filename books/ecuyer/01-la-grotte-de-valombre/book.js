@@ -4100,16 +4100,16 @@ const STORY = {
       <p>La salle est vaste, ordonnée, presque paisible au premier regard. Des rangées de pupitres, d’étagères et de casiers remplissent l’espace jusqu’au fond.</p>
       <p>Partout, des carnets s’empilent par dizaines. Certains sont rangés avec soin. D’autres sont ouverts, annotés, repliés sur eux-mêmes. Leur nombre dépasse tout ce que tu imaginais.</p>
       <p>Sur un panneau de bois est gravée une phrase simple :</p>
-      <blockquote>QUE NUL NE SOIT LIVRÉ À L’APPEL SANS SECOURS.</blockquote>
+      <blockquote>Que nul ne soit livré à l’appel sans secours.</blockquote>
       <p>Les premiers cahiers accessibles ressemblent à des dossiers de suivi. Chaque volume porte un nom, une date d’arrivée et plusieurs observations successives.</p>`,
     choices: [{ label: 'Lire un des carnets', to: 'c100' }]
   },
   c100: {
     number: 'PAGE 100', title: 'Un carnet de suivi', image: 'Les carnets du dispensaire',
     text: `
-      <p>Tu ouvres l’un des carnets. L’écriture est régulière, presque clinique. Tout montre que les Veilleurs recevaient ici ceux qui entendaient l’appel, les interrogeaient, les soignaient et notaient l’évolution de leurs symptômes.</p>
+      <p>Tu ouvres l’un des carnets. Sous le nom d’un homme venu chercher secours, une écriture régulière énumère les observations du médecin :</p>
       <blockquote>Jour 01 : Armand Varel est arrivé. Il entend la voix. Son corps résiste encore, son esprit aussi.</blockquote>
-      <blockquote>Jour 02 : Le sujet a disparu pendant la nuit. Nous l’avons retrouvé près à descendre sous la cité. Nous l’avons stoppé juste à temps.</blockquote>
+      <blockquote>Jour 02 : Le sujet a disparu pendant la nuit. Nous l’avons retrouvé prêt à descendre sous la cité. Nous l’avons stoppé juste à temps.</blockquote>
       <blockquote>Jour 03 : Première administration de terre noire. Il réagit plutôt bien. Il n’entend plus la voix.</blockquote>
       <blockquote>Jour 05 : Les voix reprennent. Nouvelle dose de terre noire.</blockquote>
       <blockquote>Jour 10 : Apparition de taches brunâtres sur tout le corps. Le médecin ne peut rien diagnostiquer pour l’instant.</blockquote>
@@ -4122,12 +4122,14 @@ const STORY = {
     number: 'PAGE 101', title: 'Les derniers registres', image: 'Le registre des expériences',
     text: `
       <p>Les derniers registres ne parlent plus vraiment de soins.</p>
-      <blockquote>SUJET 17 : DÉCÈS.</blockquote>
-      <blockquote>SUJET 18 : DÉCÈS.</blockquote>
-      <blockquote>SUJET 19 : TRANSFORMATION. NE RÉPOND PLUS À L'APPEL.</blockquote>
-      <blockquote>SUJET 20 : TRANSFORMATION. OBÉIT AUX SIGNAUX DE GARDE.</blockquote>
-      <blockquote>DÉBUT DU PROTOCOLE DE TRANSFORMATION POUR LES SUJETS 122 À 127. NOUS LES ASSIGNERONS À LA SURVEILLANCE DU PONT. À DÉFAUT DE REVENIR PARMI NOUS, AU MOINS ILS SERONT UTILES À NOTRE CAUSE.</blockquote>
-      <p>Dans la marge, quelqu’un a écrit : « Ce sont encore des hommes. » Une autre main a répondu : « Plus pour longtemps. »</p>
+      <blockquote>Sujet 17 : décès.</blockquote>
+      <blockquote>Sujet 18 : décès.</blockquote>
+      <blockquote>Sujet 19 : transformation. Ne répond plus à l’appel.</blockquote>
+      <blockquote>Sujet 20 : transformation. Obéit aux signaux de garde.</blockquote>
+      <p>Plus bas, une nouvelle instruction apparaît :</p>
+      <blockquote>Début du protocole de transformation pour les sujets 122 à 127. Ils seront affectés à la surveillance du pont. À défaut de revenir parmi nous, ils seront au moins utiles à notre cause.</blockquote>
+      <p>Dans la marge, quelqu’un a écrit : « Ce sont encore des hommes. »</p>
+      <p>Une autre main a répondu : « Plus pour longtemps. »</p>
       <p>Au-delà d’une cloison, un bruit métallique résonne dans la salle suivante.</p>`,
     choices: [{ label: 'Passer dans la salle suivante', to: 'c102' }]
   },
@@ -4148,26 +4150,26 @@ const STORY = {
     text: s => `
       <p>Le bruit vient d’un contrepoids suspendu à une chaîne. Le levier est resté à demi abaissé.</p>
       <p>Des schémas représentent un crâne traversé de lignes semblables à celles de la fresque de l’appel.</p>
-      <blockquote>LE SUJET PEUT À NOUVEAU RETENIR SES GESTES.</blockquote>
-      <blockquote>L’EMPRISE A REPRIS AU TROISIÈME JOUR.</blockquote>
+      <blockquote>Le sujet peut à nouveau retenir ses gestes.</blockquote>
+      <blockquote>L’emprise a repris au troisième jour.</blockquote>
       <p>Le réservoir contient encore de la terre noire. Ses conduits sont faits pour l’injecter.</p>
-      ${diceResultHtml(s)}
-      ${s.flags.labLeverTried
-        ? (s.flags.injectionDodged
-            ? '<p>Tu actionnes le levier avec prudence, puis te jettes sur le côté. L’aiguille frappe la table et le mécanisme se bloque.</p><p>Le contrepoids cesse enfin de heurter la cloison.</p>'
-            : '<p>À peine le levier bouge-t-il que l’aiguille se détend et s’enfonce dans ton bras. Une brûlure remonte jusqu’à l’épaule.</p><p>Tu te dégages et recules. Tes muscles se contractent : une force nouvelle les parcourt. Pendant quelques secondes, tu ne sais plus où tu es. Tes gestes perdent en précision.</p><p><strong>+2 Force, −1 Dextérité. Terre noire : contamination accrue.</strong> Ces effets durent tant que l’injection n’a pas été traitée.</p>')
-        : '<p>Tu n’as pas encore touché au levier.</p>'}
+      ${s.flags.labLeverTried ? '<p>Le levier porte les marques de ta précédente tentative.</p>' : '<p>Le levier n’a pas encore été actionné depuis ton arrivée.</p>'}
       <p>Derrière le mécanisme, une étagère mène vers les réserves médicales.</p>`,
-    choices: s => s.flags.labLeverTried
-      ? [
-          { label: 'Fouiller les réserves médicales', to: 'c138' },
-          { label: 'Quitter le laboratoire', to: 'c104' }
-        ]
-      : [
-          { label: 'Actionner le levier avec prudence', to: 'c103', effect: t => { t.flags.labLeverTried = true; t.flags.injectionDodged = roll3D6(t, 'Dextérité', currentDexterity(t)); if (!t.flags.injectionDodged) injectBlackEarth(t); } },
-          { label: 'Renoncer et fouiller les réserves médicales', to: 'c138' },
-          { label: 'Laisser la machine et quitter le laboratoire', to: 'c104' }
-        ]
+    choices: s => [
+      {
+        label: s.flags.labLeverTried ? 'Retenter le levier (version Travail)' : 'Actionner le levier avec prudence',
+        to: 'c151',
+        effect: t => {
+          t.flags.labLeverTried = true;
+          t.flags.injectionDodged = roll3D6(t, 'Dextérité', currentDexterity(t));
+          t.flags.labLeverRollCount = t.rollCount;
+          t.flags.labLeverResultReady = true;
+          if (!t.flags.injectionDodged) injectBlackEarth(t);
+        }
+      },
+      { label: 'Fouiller les réserves médicales', to: 'c138' },
+      { label: 'Laisser la machine et quitter le laboratoire', to: 'c104' }
+    ]
   },
   c104: {
     number: 'PAGE 104',
@@ -4647,14 +4649,21 @@ const STORY = {
     choices: [{ label: 'T’éloigner de la cellule', to: 'c147' }]
   },
   c138: {
-    number: 'PAGE 138', title: "Le remède du laboratoire", noImage: true,
-    text: `<p>L’armoire a été fouillée dans la hâte. Des tiroirs pendent de travers, et le loquet porte une marque de lame.</p><p>Une seule ampoule blanche est restée intacte. Son liquide a été mis au point pour réduire la contamination, sans soigner les blessures.</p>`,
-    choices: s => hasItem(s, 'ampoule_blanche') || s.visited?.c138Taken
-      ? [{ label: 'Quitter le laboratoire', to: 'c104' }]
-      : [
-          { label: 'Prendre l’Ampoule blanche', to: 'c138', effect: t => { addItem(t, 'ampoule_blanche', 'Ampoule blanche', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.'); t.visited = t.visited || {}; t.visited.c138Taken = true; } },
-          { label: 'Laisser l’ampoule et quitter le laboratoire', to: 'c104' }
-        ]
+    number: 'PAGE 138', title: 'Le remède du laboratoire', noImage: true,
+    text: s => `<p>L’armoire a été fouillée dans la hâte. Des tiroirs pendent de travers, et le loquet porte une marque de lame.</p>
+      ${hasItem(s, 'ampoule_blanche') || s.flags.labAmpouleTaken
+        ? '<p>L’emplacement de l’unique ampoule intacte est vide : tu l’as déjà emportée.</p>'
+        : '<p>Une seule ampoule blanche est restée intacte. Son liquide a été mis au point pour réduire la contamination, sans soigner les blessures.</p>'}`,
+    choices: s => [
+      ...(!hasItem(s, 'ampoule_blanche') && !s.flags.labAmpouleTaken && !s.visited?.c138Taken
+        ? [{ label: 'Prendre l’Ampoule blanche', stay: true, effect: t => {
+            addItem(t, 'ampoule_blanche', 'Ampoule blanche', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');
+            t.flags.labAmpouleTaken = true;
+          } }]
+        : []),
+      { label: 'Revenir dans la salle des injections', to: 'c102' },
+      { label: 'Quitter le laboratoire', to: 'c104' }
+    ]
   },
 
   c139: {
@@ -4761,6 +4770,21 @@ const STORY = {
     number: 'PAGE 150', title: '', noImage: true,
     text: `<p>Tu projettes une lame vers le chevalier transformé. La lame le frappe dans le couloir, au milieu des débris de la porte.</p>`,
     choices: [{ label: 'Voir le résultat du tir', to: 'c149' }]
+  },
+  c151: {
+    number: 'PAGE 151', title: '', noImage: true,
+    text: s => !s.flags.labLeverResultReady || !Number.isInteger(s.flags.labLeverRollCount) ||
+      s.flags.labLeverRollCount !== s.rollCount
+      ? '<p>Aucun résultat du levier n’est disponible ici. Le mécanisme se trouve dans la salle voisine.</p>'
+      : `${diceResultHtml(s)}
+        ${s.flags.injectionDodged
+          ? '<p>Tu actionnes le levier avec prudence, puis te jettes sur le côté. L’aiguille frappe la table et le mécanisme se bloque. Le contrepoids cesse enfin de heurter la cloison.</p>'
+          : '<p>À peine le levier bouge-t-il que l’aiguille se détend et s’enfonce dans ton bras. Une brûlure remonte jusqu’à l’épaule.</p><p>Tu te dégages et recules. Tes muscles se contractent : une force nouvelle les parcourt. Pendant quelques secondes, tu ne sais plus où tu es. Tes gestes perdent en précision.</p><p><strong>+2 Force, −1 Dextérité. Terre noire : contamination accrue.</strong> Ces effets durent tant que l’injection n’a pas été traitée.</p>'}`,
+    choices: [
+      { label: 'Revenir examiner le mécanisme', to: 'c103' },
+      { label: 'Fouiller les réserves médicales', to: 'c138' },
+      { label: 'Quitter le laboratoire', to: 'c104' }
+    ]
   },
   c129: {
     number: 'PAGE 129', title: 'Avancer sans bruit', noImage: true,
@@ -4952,7 +4976,7 @@ const STORY = {
     "c150": "Une lame dans le couloir"
 };
 
-  const PAGE_ORDER = ['c0', ...Array.from({ length: 150 }, (_, i) => `c${i + 1}`)];
+  const PAGE_ORDER = ['c0', ...Array.from({ length: 151 }, (_, i) => `c${i + 1}`)];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -5619,7 +5643,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 60,
+    contentVersion: 61,
     pageMapVersion: 72,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
