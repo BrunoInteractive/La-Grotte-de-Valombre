@@ -351,6 +351,15 @@ function raiseContamination(state, amount = 1) {
   if (state.contamination >= 13) state.flags.blackEarthTransformed = true;
   state.flags.blackEarthContamination = state.contamination > 0;
 }
+// Le coffre derrière la grille est une prise de risque volontaire.
+// Une seule exposition par partie, même si l'on revient lire les tablettes.
+function exposeTabletGate(state) {
+  if (!state.flags || typeof state.flags !== 'object') state.flags = {};
+  if (state.flags.tabletsDustExposure) return;
+  state.flags.tabletsDustExposure = true;
+  state.flags.tabletsExamined = true;
+  raiseContamination(state, 2);
+}
 function blackEarthTreatment(state) {
   if (!hasItem(state, 'ampoule_blanche')) return;
   removeItem(state, 'ampoule_blanche');
@@ -4227,23 +4236,35 @@ const STORY = {
     ]
   },
   c109: {
-    number: 'PAGE 109', title: 'La grille et les tablettes', noImage: true, image: 'La grille des anciens registres',
-    text: s => `<p>Au bas de l'escalier, une niche derrière une grille abrite plusieurs tablettes de pierre. La grille est entrouverte.</p>
-      <p>Une avenue descend vers les parties profondes de la cité. Tu ressens une pression dans tes jambes, comme une envie de t'y engager. Tu peux pourtant t'arrêter devant les tablettes.</p>
-      ${s.flags.silenceSealUsed ? '<p>Le Sceau de silence que tu as brisé a interrompu cette sensation quelques instants.</p>' : ''}`,
-    choices: s => [
-      {label:'Fouiller les tablettes',to:'c110',effect:t=>{t.flags.tabletsExamined=true;}},
-      {label:'Poursuivre vers la prison',to:'c111'},
-      ...(hasItem(s,'sceau_silence') ? [{label:'Briser le vieux Sceau de silence et examiner les tablettes',to:'c110',effect:t=>{removeItem(t,'sceau_silence');t.flags.silenceSealUsed=true;t.flags.tabletsExamined=true;}}] : [])
+    number: 'PAGE 109', title: 'La grille condamnée', noImage: true, image: 'La grille condamnée',
+    text: `<p>Au bas de l’escalier, une épaisse grille de fer ferme l’accès à une petite pièce. Derrière les barreaux, tu aperçois un coffre de bois.</p>
+      <p>La grille est recouverte d’une épaisse couche de terre noire, sèche et poudreuse. Quelques grains se détachent au moindre courant d’air.</p>
+      <p>Pour atteindre le coffre, il faudrait forcer la grille. Tu risques alors de soulever cette poussière et d’en respirer.</p>
+      <p>Une avenue descend vers les profondeurs de la cité.</p>`,
+    choices: [
+      {label:'Forcer la grille malgré la terre noire et examiner le coffre',to:'c110',effect:exposeTabletGate},
+      {label:'Ne pas prendre ce risque et poursuivre la route',to:'c111'}
     ]
   },
   c110: {
-    number: 'PAGE 110', title: 'Les tablettes des Veilleurs', image: 'Les tablettes des Veilleurs',
-    text: `<p>Plusieurs tablettes portent la même écriture.</p>
-      <blockquote>LA FORCE NOUS A RETIRÉS DE LA VASQUE. TROIS GARDES ONT ÉTÉ ÉPARGNÉS.</blockquote>
-      <p>Sur une autre tablette :</p>
-      <blockquote>ELLE GUIDAIT ENSUITE NOS MAINS ET NOS PAS VERS LA PORTE. SON AIDE NE SIGNIFIE PAS QUE NOUS DEVONS LUI OBÉIR.</blockquote>
-      <p>Au bout du passage, l'avenue s'enfonce sous la cité.</p>`,
+    number: 'PAGE 110', title: 'Les tablettes confisquées', image: 'Les tablettes confisquées',
+    // La navigation libre en Travail doit aussi appliquer l'exposition au premier accès.
+    // Une ancienne sauvegarde ayant déjà lu l'ancienne page 110 n'est pas contaminée rétroactivement.
+    onEnter: s => { if (!s.flags.tabletsExamined) exposeTabletGate(s); },
+    text: s => `${s.flags.tabletsDustExposure
+      ? `<p>Tu tires de toutes tes forces sur la grille. Les gonds cèdent et une épaisse poussière noire se répand dans l’air.</p>
+         <p>Tu recules en toussant. La poussière pénètre dans ta bouche et ta gorge.</p>
+         <p><strong>Terre noire : +2.</strong></p>`
+      : `<p>La grille est ouverte. Tu peux atteindre le coffre.</p>`}
+      <p>Le coffre n’est pas verrouillé. À l’intérieur, des dizaines de petites tablettes de pierre, de même taille, sont soigneusement empilées. Chacune porte le même message.</p>
+      <p>Tu en prends une et lis :</p>
+      <blockquote>« L’esprit enfermé derrière cette porte n’est pas mauvais.<br><br>
+      On nous ordonne de garder cette prison sans poser de questions. Nous obéissons parce que nos pères ont obéi avant nous. Nous voulons des preuves.<br><br>
+      Cessez de croire aveuglément ce qu’on vous enseigne.<br><br>
+      Ouvrez les yeux. Ouvrez la porte. Libérez l’esprit.<br><br>
+      Nous voulons vivre libres. »</blockquote>
+      <p>Les autres tablettes portent exactement ces mêmes mots. Pourtant, elles ont toutes été enfermées ici.</p>
+      <p>Tu retrouves l’avenue qui descend sous la cité.</p>`,
     choices: [{label:'Poursuivre vers les niveaux inférieurs',to:'c111'}]
   },
   c111: {
@@ -4632,8 +4653,8 @@ const STORY = {
     "c102": "L’ampoule blanche",
     "c103": "La fabrication des gardiens",
     "c104": "Les défenses du sceau",
-    "c109": "La grille et les tablettes",
-    "c110": "Les tablettes des Veilleurs",
+    "c109": "La grille condamnée",
+    "c110": "Les tablettes confisquées",
     "c111": "L’avenue basse",
     "c112": "Le passage de service",
     "c113": "Le puits des Veilleurs",
@@ -5226,7 +5247,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 51,
+    contentVersion: 52,
     pageMapVersion: 68,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',

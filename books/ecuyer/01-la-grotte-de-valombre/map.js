@@ -708,7 +708,7 @@
     },
     {
       "id": "grille",
-      "label": "Grille et tablettes",
+      "label": "Grille condamnée",
       "x": 372,
       "y": 2027,
       "pages": [
@@ -718,7 +718,7 @@
       "notes": [
         {
           "page": "c110",
-          "text": "Les tablettes affirment que la force a épargné des gardes, puis guidé leurs gestes vers la prison. Les Veilleurs avertissent que son aide ne commande pas l’obéissance."
+          "text": "Un coffre contient des dizaines de tablettes identiques appelant à libérer l’esprit. Leur auteur conteste les enseignements des Veilleurs et réclame des preuves."
         }
       ]
     },

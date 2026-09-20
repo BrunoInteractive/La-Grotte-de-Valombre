@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 51,
+  "contentVersion": 52,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.2 — Images 105/109 masquées, ampoule décrite dans l’inventaire · Travail · 116 pages",
+  "buildLabel": "V68.3 — Coffre des tablettes dissidentes, grille contaminante (+2 une seule fois) · Travail · 116 pages",
   "pageMapVersion": 68
 }
