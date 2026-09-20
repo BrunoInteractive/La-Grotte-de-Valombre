@@ -4264,11 +4264,31 @@ const STORY = {
       Ouvrez les yeux. Ouvrez la porte. Libérez l’esprit.<br><br>
       Nous voulons vivre libres. »</blockquote>
       <p>Les autres tablettes portent exactement ces mêmes mots. Pourtant, elles ont toutes été enfermées ici.</p>
-      <p>Tu retrouves l’avenue qui descend sous la cité.</p>`,
-    choices: [{label:'Poursuivre vers les niveaux inférieurs',to:'c111'}]
+      <p>À côté du coffre, un petit journal de bord repose sur un pupitre.</p>`,
+    choices: [
+      {label:'Lire le journal de bord',to:'c117'},
+      {label:'Laisser le journal et poursuivre vers les niveaux inférieurs',to:'c111'}
+    ]
   },
-  c111: {
+
+  c117: {
     number: 'PAGE 111',
+    title: 'Le journal des confiscations',
+    noImage: true,
+    image: 'Le journal des confiscations',
+    text: `<p>À côté du coffre, un petit journal de bord repose sur un pupitre.</p>
+      <p>Les premières lignes ne sont que des listes de saisies, de fouilles et d’interrogatoires.</p>
+      <p>Puis le ton change.</p>
+      <p><em>« De nouvelles tablettes ont été découvertes sur la place. J’ai fait confisquer l’ensemble et arrêter les responsables. »</em></p>
+      <p><em>« Les appels à ouvrir la prison se multiplient. Plusieurs gardes refusent désormais d’obéir. Nous ne parvenons plus à contenir les troubles. »</em></p>
+      <p><em>« J’ai interrogé l’un des prisonniers. Il m’a demandé si j’avais moi-même vu ce que nous gardons derrière cette porte. Je n’ai pas su lui répondre. »</em></p>
+      <p><em>« J’ai passé ma vie à confisquer ces écrits. Aujourd’hui, je commence à douter… Et s’ils avaient raison ? »</em></p>
+      <p>Les pages suivantes sont vierges.</p>`,
+    choices: [{ label: 'Poursuivre vers les niveaux inférieurs', to: 'c111' }]
+  },
+
+  c111: {
+    number: 'PAGE 112',
     title: 'L’avenue basse',
     image: 'L’avenue basse',
     text: state => `
@@ -4298,7 +4318,7 @@ const STORY = {
   },
 
   c112: {
-    number: 'PAGE 112',
+    number: 'PAGE 113',
     title: 'Le passage de service',
     image: 'Derrière le mur',
     text: state => `
@@ -4328,7 +4348,7 @@ const STORY = {
   },
 
   c113: {
-    number: 'PAGE 113',
+    number: 'PAGE 114',
     title: 'Le puits des Veilleurs',
     image: 'Le puits des Veilleurs',
     text: state => `
@@ -4383,7 +4403,7 @@ const STORY = {
   },
 
   c114: {
-    number: 'PAGE 114',
+    number: 'PAGE 115',
     title: 'Le palier inférieur',
     image: 'Le palier inférieur',
     text: state => {
@@ -4457,7 +4477,7 @@ const STORY = {
   },
 
   c115: {
-    number: 'PAGE 115',
+    number: 'PAGE 116',
     title: 'La porte sous la ville',
     image: 'La porte sous la ville',
     text: state => `
@@ -4499,7 +4519,7 @@ const STORY = {
   },
 
   c116: {
-    number: 'PAGE 116',
+    number: 'PAGE 117',
     title: 'Sous la Cité morte',
     image: 'Sous la Cité morte',
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
@@ -4655,6 +4675,7 @@ const STORY = {
     "c104": "Les défenses du sceau",
     "c109": "La grille condamnée",
     "c110": "Les tablettes confisquées",
+    "c117": "Le journal des confiscations",
     "c111": "L’avenue basse",
     "c112": "Le passage de service",
     "c113": "Le puits des Veilleurs",
