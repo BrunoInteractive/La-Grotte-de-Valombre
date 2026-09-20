@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 54,
+  "contentVersion": 55,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.9 — Embranchements distincts · Travail · 143 pages",
-  "pageMapVersion": 69
+  "buildLabel": "V68.13 — Sacoche du pont et arrivée regroupée · Travail · 143 pages",
+  "pageMapVersion": 70
 }

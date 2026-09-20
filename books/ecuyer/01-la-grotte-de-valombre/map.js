@@ -421,10 +421,14 @@
         "c63",
         "c64",
         "c65",
-        "c68",
         "c131"
       ],
-      "notes": []
+      "notes": [
+        {
+          "page": "c65",
+          "text": "Dans la sacoche d’un Veilleur mort près du pont, un nouvel ordre interdit toute entrée et toute sortie, et exige de n’épargner personne. Trois lames de jet y étaient également conservées."
+        }
+      ]
     },
     {
       "id": "cite",

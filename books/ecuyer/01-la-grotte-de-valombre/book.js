@@ -3542,25 +3542,32 @@ const STORY = {
         <p>Le nœud est intact malgré l’âge.</p>
 
         <p>Sur une petite plaque de cuivre est gravé l’œil fermé.</p>
+
+        <p>Une sacoche de cuir desséché pend encore à son côté.</p>
       `;
     },
-    choices: state => hasItem(state, 'ceinture_rouge')
-      ? [{ label: 'Continuer vers la porte', to: 'c64' }]
-      : [
-          {
-            label: 'Prendre la Ceinture de corde rouge',
-            to: 'c131',
-            effect: s => {
-              addItem(
-                s,
-                'ceinture_rouge',
-                'Ceinture de corde rouge',
-                'Une ceinture des Veilleurs. Elle accorde +1 Force lors des tests pour grimper, retenir ou se suspendre.'
-              );
-            }
-          },
-          { label: 'La laisser', to: 'c64' }
-        ]
+    choices: state => {
+      const choices = [];
+      if (!state.flags.bridgeSatchelSearched) {
+        choices.push({ label: 'Fouiller la sacoche du mort', to: 'c65' });
+      }
+      if (!hasItem(state, 'ceinture_rouge')) {
+        choices.push({
+          label: 'Prendre la Ceinture de corde rouge',
+          to: 'c131',
+          effect: s => {
+            addItem(
+              s,
+              'ceinture_rouge',
+              'Ceinture de corde rouge',
+              'Une ceinture des Veilleurs. Elle accorde +1 Force lors des tests pour grimper, retenir ou se suspendre.'
+            );
+          }
+        });
+      }
+      choices.push({ label: 'Laisser le corps et rejoindre la porte', to: 'c64' });
+      return choices;
+    }
   },
 
   c64: {
@@ -3574,30 +3581,61 @@ const STORY = {
 
       <p>Une immense ouverture dans la voûte de la caverne laisse apparaître le ciel. Sous cette lumière se dévoilent les toits de pierre, les cheminées et les fenêtres du quartier haut. Rien ne distingue ces maisons de celles d’un village ordinaire, sinon l’immense caverne qui les abrite.</p>
 
-      <p>L’escalier aboutit à une passerelle bordée d’un parapet. Elle rejoint les premières habitations.</p>
+      <p>L’escalier aboutit à une passerelle bordée d’un parapet. Tu la traverses et rejoins une rue étroite, bordée de maisons silencieuses.</p>
+
+      <p>Une porte est restée entrouverte. Des seaux abandonnés reposent près du seuil. Pas une voix, pas un bruit d’atelier.</p>
+
+      <p>Plus bas, un escalier descend vers une place baignée de soleil.</p>
     `,
-    choices: [
-      { label: 'Traverser la passerelle', to: 'c65' }
-    ]
+    choices: [{ label: 'Rejoindre la place', to: 'c69' }]
   },
 
+  // La rue haute de l'ancienne page 65 a été regroupée à la page 64.
+  // La page 65 sert désormais à la découverte facultative de la sacoche du pont.
   c65: {
     number: 'PAGE 65',
-    title: 'La rue haute',
-    image: 'La rue suspendue',
-    text: `
-      <p>La passerelle débouche sur une rue étroite du quartier haut. Un parapet la sépare du vide ; de l’autre côté, des maisons s’appuient contre la falaise.</p>
+    title: 'La sacoche du Veilleur',
+    noImage: true,
+    onEnter: s => {
+      if (!s.flags.bridgeSatchelSearched) {
+        s.flags.bridgeSatchelSearched = true;
+        s.throwingBlades = (s.throwingBlades || 0) + 3;
+        syncThrowingBlades(s);
+      }
+    },
+    text: state => `
+      <p>Tu ouvres la sacoche. À l’intérieur, trois lames de jet sont enveloppées dans un morceau de toile, à côté d’un parchemin plié.</p>
 
-      <p>À l’écart du soleil, la rue reste sombre. Des lanternes à huile éteintes pendent encore près de quelques portes.</p>
-      <p>Une porte est restée entrouverte. Tu distingues une table à l’intérieur, et deux seaux abandonnés près du seuil.</p>
-      <p>Un escalier longe les maisons et descend vers la place que tu as aperçue d’en haut. La lumière du jour gagne peu à peu les façades.</p>
+      <p>Un œil fermé est imprimé au bas du texte.</p>
 
-      <p>Tu n’entends ni conversation ni bruit d’atelier. Le village est entièrement silencieux.</p>
+      <blockquote>« Nouvel ordre reçu : garder le pont. Ne laisser entrer ni sortir personne. N’épargner personne. »</blockquote>
+
+      <p>Tu ranges les trois lames de jet dans ton équipement.</p>
+
+      <p><strong>Tu possèdes maintenant ${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet.</strong></p>
     `,
-    choices: [
-      { label: 'Descendre vers le centre', to: 'c68' }
-    ]
+    choices: state => {
+      if (hasItem(state, 'ceinture_rouge')) {
+        return [{ label: 'Rejoindre la porte', to: 'c64' }];
+      }
+      return [
+        {
+          label: 'Prendre aussi la Ceinture de corde rouge',
+          to: 'c131',
+          effect: s => {
+            addItem(
+              s,
+              'ceinture_rouge',
+              'Ceinture de corde rouge',
+              'Une ceinture des Veilleurs. Elle accorde +1 Force lors des tests pour grimper, retenir ou se suspendre.'
+            );
+          }
+        },
+        { label: 'Laisser la ceinture et rejoindre la porte', to: 'c64' }
+      ];
+    }
   },
+
 
   c66: {
     number: 'PAGE 66',
@@ -3643,24 +3681,13 @@ const STORY = {
     ]
   },
 
+  // Page retirée du parcours : une ancienne sauvegarde sur cette page reste lisible.
   c68: {
     number: 'PAGE 68',
-    title: 'La porte latérale',
-    image: 'La porte latérale',
-    text: `
-      <p>L’escalier te ramène au pied des habitations. Tu franchis une porte de pierre aménagée dans le mur qui soutient le quartier haut.</p>
-
-      <p>De l’autre côté, une rue pavée longe des façades basses. Au-dessus de toi, une passerelle relie deux maisons de part et d’autre de la pente.</p>
-
-      <p>Un banc est resté contre un mur. Plus loin, une fenêtre donne sur une pièce vide.</p>
-      <p>La ruelle s’éclaircit à mesure que tu approches de la place. Entre les façades, tu aperçois une bande de soleil sur les pavés.</p>
-      <p>Sur une dalle, tu retrouves un petit œil fermé gravé à côté d’une flèche qui indique le centre.</p>
-
-      <p>Tu la suis.</p>
-    `,
-    choices: [
-      { label: 'Atteindre le centre de la cité', to: 'c69' }
-    ]
+    title: 'Vers la place',
+    noImage: true,
+    text: `<p>Tu achèves la descente du quartier haut. La place ensoleillée est toute proche.</p>`,
+    choices: [{ label: 'Rejoindre la place', to: 'c69' }]
   },
 
   c69: {
@@ -4630,8 +4657,13 @@ const STORY = {
 
   c131: {
     number: 'PAGE 131', title: "La corde du Veilleur", noImage: true,
-    text: `<p>Tu défais la ceinture de corde rouge du corps desséché. Le tressage est intact. Tu la ranges à portée de main avant de te diriger vers la porte.</p>`,
-    choices: [{label: "Gagner la porte", to: 'c64'}]
+    text: `<p>Tu défais la ceinture de corde rouge du corps desséché. Le tressage est intact. Tu la ranges à portée de main.</p>`,
+    choices: state => state.flags.bridgeSatchelSearched
+      ? [{ label: 'Gagner la porte', to: 'c64' }]
+      : [
+          { label: 'Fouiller aussi la sacoche', to: 'c65' },
+          { label: 'Gagner la porte', to: 'c64' }
+        ]
   },
 
   c136: {
@@ -4787,10 +4819,10 @@ const STORY = {
     "c62": "Le combat au-dessus du vide",
     "c63": "L’autre extrémité du pont",
     "c64": "La porte suspendue",
-    "c65": "La rue suspendue",
+    "c65": "La sacoche du Veilleur",
     "c66": "Les quartiers noyés",
     "c67": "Les quartiers hauts",
-    "c68": "La porte latérale",
+    "c68": "Vers la place (ancien accès)",
     "c69": "La Cité morte",
     "c70": "Les bâtisseurs",
     "c71": "La porte scellée",
@@ -4923,7 +4955,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 69,
+      pageMapVersion: 70,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -5122,6 +5154,21 @@ const STORY = {
       }
     }
     state.pageMapVersion = 69;
+    return state;
+  }
+  // V68.13 : 65 est désormais la sacoche du pont ; 68 sort du parcours.
+  // Une ancienne partie sur 65 ou 68 reprend sans faux gain de lames ni indice inventé.
+  function migratePageNumbersV70(state) {
+    migratePageNumbersV69(state);
+    if (state.pageMapVersion >= 70) return state;
+    const rename = id => id === 'c65' ? 'c64' : id === 'c68' ? 'c69' : id;
+    state.node = rename(state.node);
+    if (Array.isArray(state.history)) state.history = state.history.map(rename);
+    if (state.visited && typeof state.visited === 'object') {
+      delete state.visited.c65;
+      delete state.visited.c68;
+    }
+    state.pageMapVersion = 70;
     return state;
   }
   const TEST_ITEM_CATALOG = [
@@ -5465,8 +5512,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 54,
-    pageMapVersion: 69,
+    contentVersion: 55,
+    pageMapVersion: 70,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
@@ -5486,7 +5533,7 @@ const STORY = {
     },
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
-    migrateState: migratePageNumbersV69,
+    migrateState: migratePageNumbersV70,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,
