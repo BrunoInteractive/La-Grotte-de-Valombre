@@ -237,7 +237,7 @@ const atlasPageAreas = new Map();
 for (const area of (ATLAS?.nodes || [])) for (const page of area.pages) atlasPageAreas.set(page, area.id);
 const atlasKnownEdges = new Set((ATLAS?.edges || []).map(([a,b]) => [a,b].sort().join('|')));
 function atlasEdgeKey(a,b) { return [a,b].sort().join('|'); }
-function atlasDefaultMemory() {return {version:3,pageMapVersion:69,visited:[],facts:[],edges:[],deaths:[],lastShown:''};}
+function atlasDefaultMemory() {return {version:3,pageMapVersion:71,visited:[],facts:[],edges:[],deaths:[],lastShown:''};}
 function atlasLoadMemory() {
   try {
     const saved = JSON.parse(localStorage.getItem(ATLAS_KEY));
@@ -285,7 +285,11 @@ function atlasLoadMemory() {
       initial.deaths=initial.deaths.map(page=>renumber[page]||page);
       initial.lastShown='';
     }
-    initial.pageMapVersion=ATLAS?.mode === 'work' ? 69 : 59;
+    if (ATLAS?.mode === 'work' && Number(saved.pageMapVersion || 0) < 71) {
+      initial.facts = initial.facts.filter(key => !key.startsWith('observation:') && !key.startsWith('cahiers:'));
+      initial.lastShown = '';
+    }
+    initial.pageMapVersion=ATLAS?.mode === 'work' ? 71 : 59;
     return initial;
   } catch {return atlasDefaultMemory();}
 }

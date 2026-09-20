@@ -568,21 +568,11 @@
       "label": "Quartier d’observation",
       "x": 375,
       "y": 1459,
-      "pages": [
-        "c92",
-        "c93",
-        "c94",
-        "c95"
-      ],
+      "pages": ["c92", "c93", "c94", "c95"],
       "notes": [
-        {
-          "page": "c94",
-          "text": "Le prisonnier raconte que les Veilleurs lui imposaient de consigner dans un cahier ses gestes involontaires et ses sensations."
-        },
-        {
-          "page": "c95",
-          "text": "Selon le prisonnier, la terre noire lui a permis de retenir ses gestes, puis les doses répétées ont déformé son bras."
-        }
+        {"page": "c93", "text": "Un chevalier d’un village voisin dit avoir entendu l’appel et être venu dans la cité récemment."},
+        {"page": "c94", "text": "Le chevalier a lu les carnets médicaux des Veilleurs. Il s’est injecté lui-même de la terre noire pour résister à l’appel."},
+        {"page": "c95", "text": "À force de répéter les doses, le chevalier a transformé le bas de son corps. Il a lui-même fermé sa cellule pour ne blesser personne."}
       ]
     },
     {
@@ -590,23 +580,10 @@
       "label": "La dernière cellule",
       "x": 375,
       "y": 1616,
-      "pages": [
-        "c96",
-        "c97",
-        "c98",
-        "c126",
-        "c137"
-      ],
+      "pages": ["c96", "c97", "c98", "c126", "c137", "c144", "c145", "c146", "c147"],
       "notes": [
-        {
-          "page": "c96",
-          "text": "Le prisonnier raconte que le remède blanc faisait reculer la terre noire, mais laissait revenir l’emprise. Il n’a plus de remède."
-        },
-        {
-          "page": "c97",
-          "requiresFlag": "observationBalanceAsked",
-          "text": "Selon le prisonnier, les Veilleurs cherchaient une juste dose, mais il devenait de plus en plus difficile de maintenir cet équilibre dans la durée."
-        }
+        {"page": "c96", "text": "Le chevalier supplie d’être libéré ou achevé. Il dit avoir utilisé toute sa réserve de remède blanc, qui faisait revenir l’appel."},
+        {"page": "c145", "text": "La sacoche du chevalier contient des gants des Veilleurs qui permettent de manipuler une grille couverte de terre noire sans soulever la poussière.", "requiresFlag": "knightGlovesTaken"}
       ]
     },
     {
@@ -740,6 +717,7 @@
       "y": 2027,
       "pages": [
         "c109",
+        "c148",
         "c110",
         "c111"
       ],
@@ -777,7 +755,7 @@
         "c142",
         "c143"
       ],
-      "notes": []
+      "notes": [{"page":"c115","requiresFlag":"knightWellAttackDone","text":"Le chevalier laissé enfermé a forcé la porte et a attaqué pendant la descente du puits. La corde peut arrêter la chute, sans empêcher la blessure ni la contamination."}]
     },
     {
       "id": "porte",

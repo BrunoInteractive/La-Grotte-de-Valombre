@@ -30,7 +30,7 @@ const ENEMIES = {
     dexterity: 5
   },
   observationPrisoner: {
-    name: 'PRISONNIER TRANSFORMÉ',
+    name: 'CHEVALIER TRANSFORMÉ',
     maxHp: 8,
     force: 8,
     dexterity: 9
@@ -356,7 +356,7 @@ function raiseContamination(state, amount = 1) {
 // Une seule exposition par partie, même si l’on revient lire les parchemins.
 function exposeTabletGate(state) {
   if (!state.flags || typeof state.flags !== 'object') state.flags = {};
-  if (state.flags.tabletsDustExposure) return;
+  if (state.flags.tabletsDustExposure || state.flags.tabletsGlovesUsed) return;
   state.flags.tabletsDustExposure = true;
   state.flags.tabletsExamined = true;
   raiseContamination(state, 2);
@@ -4043,119 +4043,90 @@ const STORY = {
     number: 'PAGE 93', title: 'Derrière le volet', image: 'Le dernier prisonnier',
     onEnter: s => { s.flags.observationMet = true; },
     text: `
-      <p>Un homme est assis derrière la porte, le dos courbé. Tu ne distingues pas son visage. Son bras droit repose sur la table, déformé sous la manche.</p>
-      <p>Il t’entend approcher.</p>
-      <blockquote>« Vous n’êtes pas un Veilleur ? »</blockquote>
-      <p>Tu réponds que non. Il souffle, sans paraître rassuré.</p>
-      <blockquote>« Alors… qu’est-ce que vous faites encore ici ? »</blockquote>
-      <p>Un cahier est ouvert près de lui. Il cache sa main sous la table lorsque tu regardes son bras.</p>`,
+      <p>Un homme en armure est assis derrière le volet. Son visage reste dans l’ombre. Sous la table, une masse déformée heurte lentement les dalles.</p>
+      <p>« Je suis chevalier. Je viens d’un village au-delà de la vallée. J’ai entendu l’appel… Je suis arrivé ici il y a quelques jours. »</p>
+      <p>Il se rapproche du volet, s’y agrippe.</p>
+      <blockquote>« Vous pouvez m’aider ? Je vous en prie… »</blockquote>
+      <p>Un ancien carnet médical est ouvert près de lui.</p>`,
     choices: [
-      { label: '« Pourquoi y a-t-il des cahiers dans toutes ces cellules ? »', to: 'c94' },
-      { label: '« Qu’est-il arrivé à votre bras ? »', to: 'c95' }
+      { label: '« Qu’avez-vous trouvé dans ces carnets ? »', to: 'c94' },
+      { label: '« Qu’est-il arrivé à vos jambes ? »', to: 'c95' }
     ]
   },
   c94: {
-    number: 'PAGE 94', title: 'Le cahier du prisonnier', image: 'Le cahier du prisonnier',
+    number: 'PAGE 94', title: 'Les anciens carnets', image: 'Le cahier du prisonnier',
     onEnter: s => { s.flags.observationRecordsHeard = true; s.flags.observationRead = true; },
     text: `
-      <p>L’homme pose lentement une main sur le cahier.</p>
-      <blockquote>« C’était leur règle. Écrire chaque jour. Quand mes jambes avançaient toutes seules, quand je touchais une serrure sans le vouloir… »</blockquote>
-      <p>Il cherche une page, puis abandonne.</p>
-      <blockquote>« Au début, je croyais qu’ils lisaient pour nous aider. »</blockquote>
-      <p>Il ne tourne plus les pages. Tu attends qu’il reprenne, mais il regarde simplement la porte.</p>`,
+      <p>Il pose une main tremblante sur les feuillets.</p>
+      <blockquote>« Les Veilleurs étudiaient des voyageurs qui entendaient l’appel. Ils notaient leurs gestes, leurs tentatives pour rejoindre la prison… Puis ils ont essayé la terre noire. »</blockquote>
+      <p>Il te montre une ligne soulignée : l’emprise diminuait après l’injection, puis revenait.</p>
+      <blockquote>« J’ai trouvé leurs aiguilles et leur réserve. J’ai cru pouvoir reprendre ma route. »</blockquote>`,
     choices: s => [
-      ...(!s.flags.observationBodyHeard ? [{ label: '« Et votre bras ? Que vous ont-ils donné ? »', to: 'c95' }] : []),
-      { label: '« Vous avez encore un traitement ? »', to: 'c96' }
+      ...(!s.flags.observationBodyHeard ? [{ label: '« Et vos jambes ? »', to: 'c95' }] : []),
+      { label: '« Que s’est-il passé ensuite ? »', to: 'c96' }
     ]
   },
   c95: {
-    number: 'PAGE 95', title: 'La terre sous la peau', image: 'Le bras du prisonnier',
+    number: 'PAGE 95', title: 'Sous la table', noImage: true, image: 'Les jambes du chevalier',
     onEnter: s => { s.flags.observationBodyHeard = true; s.flags.observationRead = true; },
     text: `
-      <p>Il écarte un peu sa manche. Sous la peau, des lignes noires montent jusqu’au coude.</p>
-      <blockquote>« La terre noire. Avec la première dose, j’ai pu retenir ma main. J’ai enfin cessé de marcher vers cette porte. »</blockquote>
-      <p>Il essaie de refermer les doigts. Deux d’entre eux restent immobiles.</p>
-      <blockquote>« Alors ils ont continué. »</blockquote>
-      <p>Tu observes le bras. Il le ramène contre lui avant que tu puisses poser une autre question.</p>`,
+      <p>Il soulève un pan de sa tunique. Ses jambes ont perdu leur forme humaine. Une masse sombre et noueuse les relie désormais au sol.</p>
+      <blockquote>« La première injection m’a rendu mes mouvements. Quand l’appel est revenu, j’ai recommencé. Encore et encore. C’est moi qui ai poussé le levier. »</blockquote>
+      <p>Il essaie de reculer. Ses membres inférieurs raclent la pierre sans lui obéir.</p>
+      <blockquote>« J’ai fermé cette porte avant de ne plus pouvoir bouger. Je ne voulais blesser personne. »</blockquote>`,
     choices: s => [
-      ...(!s.flags.observationRecordsHeard ? [{ label: '« Pourquoi vous faisaient-ils écrire tout cela ? »', to: 'c94' }] : []),
-      { label: '« Vous avez encore un traitement ? »', to: 'c96' }
+      ...(!s.flags.observationRecordsHeard ? [{ label: '« Pourquoi vous êtes-vous injecté cette matière ? »', to: 'c94' }] : []),
+      { label: '« Que puis-je faire pour vous ? »', to: 'c96' }
     ]
   },
   c96: {
-    number: 'PAGE 96', title: 'La dernière dose', image: 'La dernière ampoule vide',
+    number: 'PAGE 96', title: 'La supplique', image: 'La dernière ampoule vide',
     onEnter: s => { s.flags.observationRead = true; },
-    text: s => `
-      <p>À ta question, il cherche quelque chose près de sa chaise. Sa main revient avec une petite ampoule vide.</p>
-      <blockquote>« Le liquide blanc. Ça faisait reculer la terre noire… puis je sentais de nouveau mes pieds vouloir partir. »</blockquote>
-      <p>Il repose l’ampoule. Sa respiration est devenue courte.</p>
-      <blockquote>« Je n’en ai plus. »</blockquote>
-      ${s.flags.observationBalanceAsked ? `<p>Il te regarde longuement avant de répondre.</p>
-        <blockquote>« Ils parlaient d’une juste dose. Pendant quelques jours, j’ai tenu. Après, il fallait recommencer… et je n’y arrivais plus. »</blockquote>
-        <p>Il défait avec peine un bracelet métallique de son poignet.</p>
-        <blockquote>« Prenez-le. Il serrait ma main pour la retenir. Le fermoir peut encore s'accrocher à un anneau, une fois, pas davantage. »</blockquote>
-        <p>Il te tend le bracelet à travers le volet.</p>
-        <blockquote>« Maintenant, partez. Fuyez la folie des Veilleurs. »</blockquote>` : '<p>Son regard se fixe brusquement sur le bras qu’il cache sous sa manche.</p>'}`,
-    choices: s => s.flags.observationBalanceAsked ? [
-      { label: 'Prendre le bracelet d’ancrage et reculer', to: 'c137', effect: t => { addItem(t, 'bracelet_ancrage', 'Bracelet d’ancrage', 'Usage unique : son fermoir s’accroche à un anneau pour sécuriser la descente du puits.'); t.flags.observationBraceletTaken = true; } },
-      { label: 'Laisser le bracelet et reculer', to: 'c97', effect: t => { t.flags.observationBraceletDeclined = true; } }
-    ] : [
-      { label: '« Vous aviez trouvé une dose qui permettait de tenir ? »', stay: true, effect: t => { t.flags.observationBalanceAsked = true; } },
-      { label: 'Le laisser et te diriger vers la sortie', to: 'c97' }
+    text: `
+      <p>Le chevalier désigne les vieux carnets. Il a entendu l’appel depuis son village, puis découvert ici les essais des Veilleurs : la terre noire rendait les gestes aux voyageurs, avant de les déformer.</p>
+      <p>Il s’est injecté lui-même plusieurs doses. Le bas de son corps s’est transformé. Il s’est enfermé avant de perdre toute maîtrise de ses mouvements.</p>
+      <p>Près de sa chaise, une ampoule blanche vide roule entre les pierres.</p>
+      <blockquote>« J’ai essayé leur remède aussi. La matière reculait… mais l’appel revenait. Je n’ai plus rien. »</blockquote>
+      <p>Il fixe la porte. Ses jambes remuent avec un bruit sourd.</p>
+      <blockquote>« Sortez-moi d’ici. Trouvez quelqu’un qui puisse me sauver… Ou entrez et achevez-moi. Mais ne me laissez pas seul comme ça. »</blockquote>`,
+    choices: [
+      { label: 'Entrer dans la cellule pour l’achever', to: 'c97', effect: s => { s.flags.knightFate = 'fight'; s.flags.observationFight = true; } },
+      { label: 'Ouvrir la porte et le libérer', to: 'c137', effect: s => { s.flags.knightFate = 'freed'; } },
+      { label: 'Le laisser enfermé et poursuivre ton chemin', to: 'c144', effect: s => { s.flags.knightFate = 'locked'; } }
     ]
   },
   c97: {
-    number: 'PAGE 97', title: 'Le dernier réflexe', image: 'La main derrière le volet',
-    text: s => `
-      <p>Un craquement résonne dans la cellule. L’homme se plie en deux. Ses doigts heurtent la porte, puis se referment sur le bord du volet.</p>
-      <blockquote>« Fuyez… »</blockquote>
-      <p>Une main jaillit soudain vers ton visage. Tu n’as qu’un instant pour te dérober.</p>
-      ${s.flags.observationReflexRolled ? `${diceResultHtml(s)}${s.flags.observationReflexPassed
-        ? '<p>Tu recules à temps. Ses doigts se referment sur le vide.</p>'
-        : `<p>Sa main t’agrippe avant que tu puisses reculer.</p>${damageAbsorptionHtml(s.flags.observationReflexDamage)}${s.flags.observationReflexContaminated ? '<p>De la terre noire s’est glissée dans la plaie.</p>' : ''}`}
-        <p>La porte tremble sous un nouveau choc. Son verrou cède.</p>` : ''}`,
+    number: 'PAGE 97', title: 'Dans la cellule', noImage: true, image: 'Le combat dans la cellule',
+    text: s => {
+      const enemy = ENEMIES.observationPrisoner;
+      const combat = combatState(s, 'observationPrisoner', enemy);
+      const card = enemyCardHtml(s, 'observationPrisoner', enemy);
+      const result = combat.lastBlade ? throwingBladeResultHtml(s, 'observationPrisoner', enemy) : combatRoundHtml(s, 'observationPrisoner', enemy);
+      if (combat.hp <= 0) return `${card}${result}<p>Le chevalier s’effondre contre la table. Ses membres déformés cessent de remuer. Tu as tenu ta promesse.</p><p>Une sacoche est restée à côté de sa chaise.</p>`;
+      if (s.hp <= 0) return `${card}${result}<p>Pris au piège dans la cellule, tu t’écroules sous ses coups.</p>`;
+      if (!combat.last && !combat.lastBlade) return `<p>Tu soulèves le loquet et entres, l’épée prête.</p><p>« Merci… » souffle-t-il. Puis le bas de son corps se tord, s’arrache au sol et se propulse vers toi. Ses mains cherchent ton arme.</p><p>Tu dois te défendre dans la cellule étroite.</p>${card}`;
+      return `${card}${result}<p>Il se débat encore. Tu ne peux pas reculer sans lui tourner le dos.</p>`;
+    },
     choices: s => {
-      if (!s.flags.observationReflexRolled) return [{
-        label: 'Esquiver la main — épreuve de Dextérité (3D6)', to: 'c97', effect: t => {
-          if (t.flags.observationReflexRolled) return;
-          t.flags.observationReflexRolled = true;
-          t.flags.observationReflexPassed = roll3D6(t, 'Dextérité', currentDexterity(t));
-          if (!t.flags.observationReflexPassed) {
-            const damage = applyDamage(t, 1);
-            t.flags.observationReflexDamage = damage;
-            if (damage.hpLost > 0) {
-              raiseContamination(t, 1);
-              t.flags.observationReflexContaminated = true;
-              // Le réflexe et le combat appartiennent à une même rencontre.
-              combatState(t, 'observationPrisoner', ENEMIES.observationPrisoner).contaminated = true;
-            }
-          }
-        }
-      }];
+      const combat = combatState(s, 'observationPrisoner', ENEMIES.observationPrisoner);
       if (s.hp <= 0) return fatalChoices();
-      return [{ label: 'Faire face au prisonnier qui force la porte', to: 'c98', effect: t => { t.flags.observationFight = true; } }];
+      if (combat.hp <= 0) return [
+        { label: 'Fouiller la sacoche du chevalier', to: 'c145', effect: t => { t.flags.knightFate = 'dead'; } },
+        { label: 'Quitter la cellule sans rien prendre', to: 'c98', effect: t => { t.flags.knightFate = 'dead'; } }
+      ];
+      return combatActionChoices(s, 'observationPrisoner', ENEMIES.observationPrisoner, 'c97');
     }
   },
   c98: {
     number: 'PAGE 98', title: 'La sortie du quartier', image: 'La fuite du quartier d’observation',
     text: s => {
-      if (!s.flags.observationFight) return `<p>Tu gardes tes distances et franchis l’arche au bout du couloir.</p><p>Tu débouches dans une salle ronde où convergent trois chemins.</p>`;
-      const enemy = ENEMIES.observationPrisoner;
-      const combat = combatState(s, 'observationPrisoner', enemy);
-      const card = enemyCardHtml(s, 'observationPrisoner', enemy);
-      const result = combat.lastBlade ? throwingBladeResultHtml(s, 'observationPrisoner', enemy) : combatRoundHtml(s, 'observationPrisoner', enemy);
-      if (combat.hp <= 0) return `${card}${result}<p>Tu parviens à le repousser contre le chambranle. Il s’effondre, le souffle encore audible. Tu ne sais pas s’il te reconnaît.</p><p>Sans attendre qu’il se relève, tu rejoins la salle ronde par l’arche.</p>`;
-      if (s.hp <= 0) return `${card}${result}<p>Sa main t’a retenu trop longtemps. Tu t’effondres avant d’atteindre l’arche.</p>`;
-      if (!combat.last && !combat.lastBlade) return `<p>La porte se fracasse contre le mur. Le prisonnier surgit, son bras déformé tendu devant lui.</p><p>Tu ne peux plus passer : il bloque le couloir entre toi et l’arche.</p>${card}`;
-      return `${card}${result}${combat.last?.outcome === 'enemy' ? '<p>Ses ongles raclent ton bras. Il revient aussitôt vers toi.</p>' : combat.last?.outcome === 'tie' ? '<p>Tu dévies son bras, mais il te barre toujours le passage.</p>' : '<p>Il chancelle, puis revient se jeter devant l’arche.</p>'}`;
+      const fate = s.flags.knightFate;
+      if (fate === 'dead') return `<p>Tu refermes derrière toi la porte de la cellule. Le couloir est silencieux.</p><p>Au-delà de l’arche, trois chemins se rejoignent dans une salle ronde.</p>`;
+      if (fate === 'freed') return `<p>Tu t’éloignes de la cellule ouverte. Le chevalier est derrière toi ; ses remerciements se sont tus.</p><p>Tu rejoins la salle ronde par l’arche.</p>`;
+      if (fate === 'locked') return `<p>Tu laisses la porte fermée derrière toi. Les supplications du chevalier se perdent dans le couloir.</p><p>Au-delà de l’arche, trois chemins se rejoignent dans une salle ronde.</p>`;
+      return `<p>Tu évites la cellule d’où proviennent les bruits et franchis l’arche.</p><p>Tu débouches dans une salle ronde où convergent trois chemins.</p>`;
     },
-    choices: s => {
-      if (!s.flags.observationFight) return [{ label: 'Rejoindre la salle ronde', to: 'c104' }];
-      const combat = combatState(s, 'observationPrisoner', ENEMIES.observationPrisoner);
-      if (combat.hp <= 0) return [{ label: 'Quitter le quartier d’observation', to: 'c104' }];
-      if (s.hp <= 0) return fatalChoices();
-      return combatActionChoices(s, 'observationPrisoner', ENEMIES.observationPrisoner, 'c98');
-    }
+    choices: [{ label: 'Rejoindre la salle ronde', to: 'c104' }]
   },
   c99: {
     number: 'PAGE 99', title: 'Le laboratoire des Veilleurs', image: 'Le dispensaire',
@@ -4276,25 +4247,32 @@ const STORY = {
   },
   c109: {
     number: 'PAGE 109', title: 'La grille condamnée', noImage: true, image: 'La grille condamnée',
-    text: `<p>Au bas de l’escalier, une épaisse grille de fer ferme l’accès à une petite pièce. Derrière les barreaux, tu aperçois un coffre de bois.</p>
+    text: s => `<p>Au bas de l’escalier, une épaisse grille de fer ferme l’accès à une petite pièce. Derrière les barreaux, tu aperçois un coffre de bois.</p>
       <p>La grille est recouverte d’une épaisse couche de terre noire, sèche et poudreuse. Quelques grains se détachent au moindre courant d’air.</p>
-      <p>Pour atteindre le coffre, il faudrait forcer la grille. Tu risques alors de soulever cette poussière et d’en respirer.</p>
+      ${s.flags.tabletsExamined ? '<p>La grille est désormais ouverte.</p>' : `<p>Pour atteindre le coffre, il faudrait forcer la grille. Tu risques alors de soulever cette poussière et d’en respirer.</p>${hasItem(s,'gants_veilleurs') ? '<p>Les gants des Veilleurs permettraient peut-être de dégager les gonds lentement, sans disperser la poudre.</p>' : ''}`}
       <p>Une avenue descend vers les profondeurs de la cité.</p>`,
-    choices: [
-      {label:'Forcer la grille malgré la terre noire et examiner le coffre',to:'c110',effect:exposeTabletGate},
-      {label:'Ne pas prendre ce risque et poursuivre la route',to:'c112'}
-    ]
+    choices: s => s.flags.tabletsExamined
+      ? [
+        { label: 'Retourner examiner le coffre', to: 'c110' },
+        { label: 'Poursuivre par l’avenue', to: 'c112' }
+      ]
+      : [
+        ...(hasItem(s, 'gants_veilleurs') ? [{ label: 'Dégager les gonds avec les gants', to: 'c148', effect: t => { removeItem(t, 'gants_veilleurs'); t.flags.tabletsGlovesUsed = true; t.flags.tabletsExamined = true; } }] : []),
+        { label: 'Forcer la grille malgré la terre noire et examiner le coffre', to: 'c110', effect: exposeTabletGate },
+        { label: 'Ne pas prendre ce risque et poursuivre la route', to: 'c112' }
+      ]
   },
   c110: {
     number: 'PAGE 110', title: 'Les parchemins confisqués', image: 'Les parchemins confisqués',
-    // La navigation libre en Travail doit aussi appliquer l'exposition au premier accès.
-    // Une ancienne sauvegarde ayant déjà lu l'ancienne page 110 n'est pas contaminée rétroactivement.
+    // La navigation libre en Travail applique toujours la première exposition, sauf gants réellement utilisés.
     onEnter: s => { if (!s.flags.tabletsExamined) exposeTabletGate(s); },
-    text: s => `${s.flags.tabletsDustExposure
-      ? `<p>Tu tires de toutes tes forces sur la grille. Les gonds cèdent et une épaisse poussière noire se répand dans l’air.</p>
-         <p>Tu recules en toussant. La poussière pénètre dans ta bouche et ta gorge.</p>
-         <p><strong>Terre noire : +2.</strong></p>`
-      : `<p>La grille est ouverte. Tu peux atteindre le coffre.</p>`}
+    text: s => `${s.flags.tabletsGlovesUsed
+      ? `<p>Tu passes la grille sans soulever la poussière noire, grâce aux gants que tu as dû abandonner près des gonds.</p>`
+      : s.flags.tabletsDustExposure
+        ? `<p>Tu tires de toutes tes forces sur la grille. Les gonds cèdent et une épaisse poussière noire se répand dans l’air.</p>
+           <p>Tu recules en toussant. La poussière pénètre dans ta bouche et ta gorge.</p>
+           <p><strong>Terre noire : +2.</strong></p>`
+        : `<p>La grille est ouverte. Tu peux atteindre le coffre.</p>`}
       <p>Le coffre n’est pas verrouillé. À l’intérieur, des dizaines de petits parchemins sont empilés et maintenus par des ficelles.</p>
       <p>Tu en déplies un. Tous portent le même texte :</p>
       <blockquote>« L’esprit enfermé derrière cette porte n’est pas mauvais.<br><br>
@@ -4305,11 +4283,10 @@ const STORY = {
       <p>Les autres parchemins portent le même message. Ils ont été enfermés ici.</p>
       <p>À côté du coffre, un petit journal de bord repose sur un pupitre.</p>`,
     choices: [
-      {label:'Lire le journal de bord',to:'c111'},
-      {label:'Laisser le journal et poursuivre vers les niveaux inférieurs',to:'c112'}
+      { label: 'Lire le journal de bord', to: 'c111' },
+      { label: 'Laisser le journal et poursuivre vers les niveaux inférieurs', to: 'c112' }
     ]
   },
-
   c111: {
     number: 'PAGE 111',
     title: 'Le journal des confiscations',
@@ -4404,7 +4381,6 @@ const STORY = {
 
       ${hasItem(state, 'ceinture_rouge') ? '<p>La Ceinture de corde rouge peut te servir à t’assurer aux anneaux pendant la descente.</p>' : '<p>Sans corde, tu devras compter sur les prises et sur ton équilibre.</p>'}
       ${hasItem(state, 'anneau_veilleurs') ? '<p>À côté du puits, un petit logement circulaire reproduit exactement le motif de ton Anneau des Veilleurs. Il est relié à une échelle de service repliée dans la paroi.</p>' : ''}
-      ${hasItem(state, 'bracelet_ancrage') ? '<p>Le fermoir à ressort du bracelet d’ancrage peut retenir ton poignet à l’un des anneaux de fer le temps de descendre.</p>' : ''}
     `,
     choices: state => {
       const list = [];
@@ -4422,20 +4398,13 @@ const STORY = {
           effect: s => { s.flags.cityWellDescent = 'rope'; }
         });
       }
-      if (hasItem(state, 'bracelet_ancrage')) {
-        list.push({
-          label: 'Fixer le bracelet d’ancrage à un anneau (usage unique)',
-          to: 'c142',
-          effect: s => { removeItem(s, 'bracelet_ancrage'); s.flags.cityWellDescent='bracelet'; }
-        });
-      }
       list.push({
         label: 'Descendre par les prises — lancer les trois dés de Dextérité',
         to: 'c143',
         effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.cityWellDescent = ok ? 'success' : 'fail';
-          if (!ok) s.flags.cityWellDamage = applyDamage(s, 2);
+          if (!ok && s.flags.knightFate !== 'locked') s.flags.cityWellDamage = applyDamage(s, 2);
         }
       });
       return list;
@@ -4446,10 +4415,35 @@ const STORY = {
     number: 'PAGE 115',
     title: 'Le palier inférieur',
     image: 'Le palier inférieur',
+    onEnter: s => {
+      if (s.flags.knightFate !== 'locked' || s.flags.knightWellAttackDone) return;
+      s.flags.knightWellAttackDone = true;
+      // La blessure de l'agression se produit même quand la corde arrête la chute.
+      const before = s.hp;
+      s.hp = Math.max(0, s.hp - 2);
+      s.flags.knightWellLife = before - s.hp;
+      raiseContamination(s, 1);
+      // Conserver les conséquences de la tentative aux prises si les dés avaient échoué.
+      if (s.flags.cityWellDescent === 'fail') s.flags.cityWellDamage = applyDamage(s, 2);
+      s.flags.knightFate = 'fallen';
+    },
     text: state => {
       const descent = state.flags.cityWellDescent;
       let intro = '';
-      if (descent === 'ring') {
+      if (state.flags.knightWellAttackDone) {
+        intro = `${descent === 'success' || descent === 'fail' ? diceResultHtml(state) : ''}
+          ${descent === 'ring' ? '<p>Tu tournes l’Anneau des Veilleurs dans son logement. Une échelle de fer se déploie et tu t’y engages.</p>' : ''}
+          <p>Alors que tu commences à descendre, un fracas éclate derrière toi. Le chevalier a brisé la porte de sa cellule. Sa silhouette déformée bondit depuis le bord du puits et te frappe dans le dos.</p>
+          <p>Ses membres t’écrasent contre la roche. Une plaie s’ouvre sous ton armure et des grains de terre noire y pénètrent.</p>
+          ${descent === 'rope'
+            ? '<p>Tu bascules dans le vide. La corde rouge se tend et arrête ta chute, mais elle ne t’a pas protégé du coup. Tu repousses le chevalier, qui disparaît au-dessous de toi, et retrouves une prise.</p>'
+            : descent === 'ring'
+              ? '<p>Tu heurtes l’échelle déployée. Tu te retiens à un barreau tandis que le chevalier perd appui et disparaît plus bas. Tu reprends ta descente.</p>'
+              : '<p>Arraché aux prises, tu glisses le long de la paroi. Tu repousses le chevalier, qui disparaît dans le conduit, puis tu retrouves un appui et rejoins la plateforme.</p>'}
+          <p><strong>Attaque : −${state.flags.knightWellLife ?? 2} Vie. Terre noire : +1.</strong></p>
+          ${descent === 'fail' ? `<p>Ta chute heurte aussi les derniers mètres de paroi.</p>${damageAbsorptionHtml(state.flags.cityWellDamage)}` : ''}
+        `;
+      } else if (descent === 'ring') {
         intro = `
           <p>Tu glisses l’anneau dans le logement de pierre et le tournes. Un cran s’enclenche.</p>
           <p>Une échelle de fer sort lentement de la paroi et se bloque au-dessus du vide. Tu récupères ton anneau.</p>
@@ -4458,38 +4452,29 @@ const STORY = {
       } else if (descent === 'rope') {
         intro = `
           <p>Tu fixes la corde à l’un des anneaux et commences la descente.</p>
-
           <p>Deux prises cèdent brusquement sous tes bottes. Tu bascules dans le vide, mais la corde se tend et arrête ta chute.</p>
-
           <p>Suspendu au-dessus du puits, tu comprends que, sans elle, tu aurais pu tomber lourdement et perdre connaissance.</p>
-
           <p>Tu retrouves un appui et termines la descente sans blessure.</p>
         `;
-      } else if (descent === 'bracelet') {
-        intro = `<p>Tu fixes le fermoir du bracelet à un anneau de fer. Quand ton pied glisse, son ressort retient ton poignet le temps que tu retrouves une prise.</p>
-          <p>Le mécanisme cède alors. Tu termines la descente sans blessure, mais le bracelet est hors d’usage.</p>`;
       } else if (descent === 'success') {
         intro = diceResultHtml(state) + `
           <p>Tu descends en prenant le temps de tester chaque prise avant d’y mettre ton poids.</p>
-
           <p>La roche s’effrite parfois sous tes doigts, mais tu atteins la plateforme sans glisser.</p>
         `;
-      } else {
+      } else if (descent === 'fail') {
         intro = diceResultHtml(state) + `
           <p>À quelques mètres du fond, une prise se détache sous ta main.</p>
-
           <p>Tu glisses, heurtes la paroi puis tombes lourdement sur la plateforme.</p>
-
           ${damageAbsorptionHtml(state.flags.cityWellDamage)}
-
           <p>Tu restes un instant au sol avant de te relever.</p>
         `;
+      } else {
+        intro = `<p>Tu descends en te retenant aux prises, puis rejoins la plateforme.</p>`;
       }
+      if (state.hp <= 0) return intro + '<p>Tu ne parviens plus à te relever au fond du puits.</p>';
       return intro + `
         <p>La plateforme donne sur une galerie basse encombrée d’outils rongés par la rouille et de paniers de pierre effondrés.</p>
-
         <p>Les Veilleurs ont creusé ici.</p>
-
         <p>Plus loin, une flèche gravée sous un œil fermé indique une galerie descendante.</p>
       `;
     },
@@ -4497,7 +4482,6 @@ const STORY = {
       ? fatalChoices()
       : [{ label: 'Poursuivre dans la galerie', to: 'c116' }]
   },
-
   c116: {
     number: 'PAGE 116',
     title: 'La porte sous la ville',
@@ -4634,8 +4618,8 @@ const STORY = {
 
   c126: {
     number: 'PAGE 126', title: "Une lame dans le couloir", noImage: true,
-    text: `<p>Tu lances une lame vers le prisonnier transformé. Le projectile frappe son corps alors qu’il tente de bloquer l’arche.</p>`,
-    choices: [{label: "Voir le résultat du tir", to: 'c98'}]
+    text: `<p>Tu projettes une lame vers le chevalier transformé. Elle le frappe dans l’étroitesse de la cellule.</p>`,
+    choices: [{label: "Voir le résultat du tir", to: 'c97'}]
   },
 
   c127: {
@@ -4677,11 +4661,12 @@ const STORY = {
   },
 
   c137: {
-    number: 'PAGE 137', title: "Le bracelet confié", noImage: true,
-    text: `<p>Tu prends le bracelet qu’il te tend. Ses doigts tremblent et il te presse de reculer.</p><p>Son regard se fixe soudain sur son bras.</p>`,
-    choices: [{label: "Reculer devant la cellule", to: 'c97'}]
+    number: 'PAGE 137', title: 'La porte ouverte', noImage: true,
+    text: `<p>Tu soulèves le loquet. Le chevalier tire son corps vers l’ouverture et se retient au montant.</p>
+      <blockquote>« Merci… Je savais que vous ne me laisseriez pas ici. »</blockquote>
+      <p>Tu lui fais place et reprends le couloir vers l’arche.</p>`,
+    choices: [{ label: 'T’éloigner de la cellule', to: 'c147' }]
   },
-
   c138: {
     number: 'PAGE 138', title: "Le remède du laboratoire", noImage: true,
     text: `<p>Tu prends l’unique ampoule intacte et la ranges avec précaution. Les derniers registres sont ouverts sur la table voisine.</p>`,
@@ -4707,15 +4692,59 @@ const STORY = {
   },
 
   c142: {
-    number: 'PAGE 142', title: "Le bracelet dans le puits", noImage: true,
-    text: `<p>Tu bloques le fermoir du bracelet sur un anneau de fer. Son ressort peut amortir un faux mouvement, mais il ne servira qu’une fois.</p><p>Tu commences à descendre.</p>`,
-    choices: [{label: "Poursuivre la descente", to: 'c115'}]
+    number: 'PAGE 142', title: 'L’ancienne descente', noImage: true,
+    // Réservée à la reprise d'une sauvegarde antérieure : plus aucun bracelet à obtenir.
+    text: `<p>Tu reprends appui sur les anneaux et t’engages dans le conduit. Tu progresses en contrôlant chacune de tes prises.</p>`,
+    choices: [{ label: 'Terminer la descente', to: 'c115', effect: s => { s.flags.cityWellDescent = 'success'; } }]
   },
-
   c143: {
     number: 'PAGE 143', title: "La descente à mains nues", noImage: true,
     text: `<p>Tu renonces aux mécanismes et attaques les prises une à une. La paroi s’effrite déjà sous tes doigts.</p><p>Tu poursuis la descente.</p>`,
     choices: [{label: "Poursuivre la descente", to: 'c115'}]
+  },
+  c144: {
+    number: 'PAGE 144', title: 'Le laisser derrière toi', noImage: true,
+    text: `<p>« Attendez… Je vous en prie ! »</p><p>Tu t’éloignes sans toucher à la porte. Le chevalier frappe une fois contre le bois ; puis ses appels deviennent indistincts.</p><p>Tu retrouves l’arche au bout du couloir.</p>`,
+    choices: [{ label: 'Quitter le quartier d’observation', to: 'c98' }]
+  },
+  c145: {
+    number: 'PAGE 145', title: 'La sacoche du chevalier', noImage: true,
+    text: `<p>Dans la sacoche, tu trouves une paire de gants épais, enduits de cire et renforcés aux doigts. Un sceau des Veilleurs est frappé sur les manchettes.</p>
+      <p>Une note glissée entre les deux précise qu’ils permettaient de dégager sans contact les mécanismes couverts de terre noire. Après usage, la poudre incrustée dans les coutures les rend impropres à une nouvelle manipulation.</p>`,
+    choices: s => hasItem(s, 'gants_veilleurs')
+      ? [{ label: 'Quitter la cellule', to: 'c98' }]
+      : [
+        { label: 'Emporter les gants des Veilleurs', to: 'c146', effect: t => { addItem(t, 'gants_veilleurs', 'Gants des Veilleurs', 'Usage unique : dégager un mécanisme couvert de terre noire sans soulever la poussière.'); t.flags.knightGlovesTaken = true; } },
+        { label: 'Laisser les gants et partir', to: 'c98' }
+      ]
+  },
+  c146: {
+    number: 'PAGE 146', title: 'Les gants récupérés', noImage: true,
+    text: `<p>Tu ranges soigneusement les gants à l’écart du reste de ton équipement. Puis tu quittes la cellule.</p>`,
+    choices: [{ label: 'Rejoindre la salle ronde', to: 'c98' }]
+  },
+  c147: {
+    number: 'PAGE 147', title: 'L’attaque dans le dos', noImage: true,
+    onEnter: s => {
+      if (s.flags.knightFate !== 'freed' || s.flags.knightBackstabDone) return;
+      s.flags.knightBackstabDone = true;
+      const before = s.hp;
+      s.hp = Math.max(0, s.hp - 2);
+      s.flags.knightBackstabLife = before - s.hp;
+      raiseContamination(s, 2);
+      s.flags.knightFate = s.hp <= 0 ? 'freed' : 'dead';
+    },
+    text: s => `<p>Un choc te frappe entre les épaules. Le chevalier s’est jeté sur toi. Ses membres transformés se contractent autour de tes jambes ; de la terre noire pénètre dans une entaille sous ton armure.</p>
+      <p><strong>−${s.flags.knightBackstabLife ?? 2} Vie. Terre noire : +2.</strong></p>
+      ${s.hp <= 0 ? '<p>Tu t’effondres avant de pouvoir lui échapper.</p>' : '<p>Tu te dégages, tires ton épée et lui tranches la tête d’un coup. Son corps s’affaisse et ne bouge plus.</p><p>Tu te relèves et gagnes l’arche.</p>'}`,
+    choices: s => s.hp <= 0 ? fatalChoices() : [{ label: 'Quitter le quartier', to: 'c98' }]
+  },
+  c148: {
+    number: 'PAGE 148', title: 'Les gonds dégagés', noImage: true,
+    text: `<p>Tu enfiles les gants du chevalier et dégages lentement la poussière autour des gonds. La poudre reste collée au cuir ciré.</p>
+      <p>Le mécanisme cède sans secousse. Tu entrouvres la grille et retires les gants, désormais incrustés de terre noire, avant de les abandonner.</p>
+      <p>Tu peux atteindre le coffre sans avoir soulevé de nuage.</p>`,
+    choices: [{ label: 'Examiner le coffre', to: 'c110' }]
   },
   c129: {
     number: 'PAGE 129', title: 'Avancer sans bruit', noImage: true,
@@ -4852,10 +4881,10 @@ const STORY = {
     "c91": "Quitter les quartiers",
     "c92": "Le quartier d’observation",
     "c93": "Derrière le volet",
-    "c94": "Le cahier du prisonnier",
-    "c95": "La terre sous la peau",
-    "c96": "La dernière dose",
-    "c97": "Le dernier réflexe",
+    "c94": "Les anciens carnets",
+    "c95": "Sous la table",
+    "c96": "La supplique",
+    "c97": "Dans la cellule",
     "c98": "La sortie du quartier",
     "c99": "Le laboratoire des Veilleurs",
     "c100": "La machine d’injection",
@@ -4886,21 +4915,26 @@ const STORY = {
     "c130": "La lame de diversion",
     "c131": "La corde du Veilleur",
     "c136": "Les lames récupérées",
-    "c137": "Le bracelet confié",
+    "c137": "La porte ouverte",
     "c138": "Le remède du laboratoire",
     "c139": "L’ampoule du poste de secours",
     "c140": "La sacoche de terre noire",
     "c141": "La corde dans le puits",
-    "c142": "Le bracelet dans le puits",
+    "c142": "L’ancienne descente",
     "c143": "La descente à mains nues",
     "c129": "Avancer sans bruit",
     "c132": "La première sentinelle",
     "c133": "Le tir sur la première sentinelle",
     "c134": "La seconde sentinelle",
-    "c135": "Le tir sur la seconde sentinelle"
+    "c135": "Le tir sur la seconde sentinelle",
+    "c144": "Le laisser derrière toi",
+    "c145": "La sacoche du chevalier",
+    "c146": "Les gants récupérés",
+    "c147": "L’attaque dans le dos",
+    "c148": "Les gonds dégagés"
 };
 
-  const PAGE_ORDER = ['c0', ...Array.from({ length: 143 }, (_, i) => `c${i + 1}`)];
+  const PAGE_ORDER = ['c0', ...Array.from({ length: 148 }, (_, i) => `c${i + 1}`)];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -4959,7 +4993,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 70,
+      pageMapVersion: 71,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -5175,6 +5209,31 @@ const STORY = {
     state.pageMapVersion = 70;
     return state;
   }
+  // V68.15 : le dialogue 93–98 et les issues du chevalier sont réécrits.
+  // Ramener une partie interrompue dans cette scène à son entrée sans confondre
+  // l'ancien bracelet et les nouveaux gants ; ne pas attribuer une issue passée.
+  function migratePageNumbersV71(state) {
+    migratePageNumbersV70(state);
+    if (state.pageMapVersion >= 71) return state;
+    if (!state.flags || typeof state.flags !== 'object') state.flags = {};
+    const oldScene = ['c93','c94','c95','c96','c97','c98','c126','c137'];
+    if (oldScene.includes(state.node)) {
+      state.node = 'c92';
+      for (const id of oldScene) if (state.visited) delete state.visited[id];
+      if (Array.isArray(state.history)) state.history = state.history.filter(id => !oldScene.includes(id));
+      if (state.combats) delete state.combats.observationPrisoner;
+    }
+    if (state.node === 'c142') {
+      state.flags.cityWellDescent = 'success';
+    }
+    if (state.inventory && state.inventory.bracelet_ancrage) delete state.inventory.bracelet_ancrage;
+    for (const key of ['observationReflexRolled','observationReflexPassed','observationReflexDamage',
+      'observationReflexContaminated','observationBraceletTaken','observationBraceletDeclined',
+      'observationBalanceAsked','observationFight','observationRecordsHeard','observationBodyHeard',
+      'observationRead','observationMet']) delete state.flags[key];
+    state.pageMapVersion = 71;
+    return state;
+  }
   const TEST_ITEM_CATALOG = [
     {
       id: 'parchemin',
@@ -5241,9 +5300,9 @@ const STORY = {
       description: 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.'
       },
     {
-      id: 'bracelet_ancrage',
-      name: 'Bracelet d’ancrage',
-      description: 'Usage unique : accrocher le fermoir à un anneau pour descendre le puits sans blessure.'
+      id: 'gants_veilleurs',
+      name: 'Gants des Veilleurs',
+      description: 'Usage unique : dégager les gonds couverts de terre noire sans soulever la poussière.'
     }
   ];
 
@@ -5350,7 +5409,7 @@ const STORY = {
       if (id === 'sceau_silence') {
         return '<p>Ancien objet V60, usage unique : peut interrompre un instant l’appel devant la grille.</p>';
       }
-      if (id === 'bracelet_ancrage') return '<p>Usage unique : son fermoir se fixe à un anneau et sécurise la descente du puits.</p>';
+      if (id === 'gants_veilleurs') return '<p>Usage unique : dégager la grille poussiéreuse sans soulever de nuage. Les gants seront abandonnés après utilisation.</p>';
       if (PROTECTION_ITEMS[id]) {
         ensureProtectionState(state);
         const source = state.protectionItems[id] || { remaining: 0, max: PROTECTION_ITEMS[id].max };
@@ -5516,8 +5575,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 55,
-    pageMapVersion: 70,
+    contentVersion: 56,
+    pageMapVersion: 71,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
@@ -5537,7 +5596,7 @@ const STORY = {
     },
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
-    migrateState: migratePageNumbersV70,
+    migrateState: migratePageNumbersV71,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,
