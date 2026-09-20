@@ -568,7 +568,7 @@ function render() {
     });
     choices.appendChild(btn);
   });
-  if (atlasSync()) Promise.resolve().then(() => openAtlas(true));
+  atlasSync();
 }
 
 function restartGame() {

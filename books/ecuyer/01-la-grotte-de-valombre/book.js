@@ -4043,62 +4043,54 @@ const STORY = {
     number: 'PAGE 93', title: 'L’homme derrière la porte', image: 'Le dernier prisonnier',
     onEnter: s => { s.flags.observationMet = true; },
     text: `
-      <p>La porte possède une ouverture à hauteur de visage. Tu t’en approches et regardes à l’intérieur.</p>
-      <p>Un homme en armure est assis près d’une table. Son visage reste dans l’ombre. Sous la table, une masse déformée heurte lentement les dalles.</p>
+      <p>La porte possède une ouverture à hauteur de visage. À travers cette ouverture, tu regardes à l’intérieur.</p>
+      <p>Un homme en armure est assis derrière le volet. Son visage reste dans l’ombre. Sous la table, une masse déformée heurte lentement les dalles.</p>
       <blockquote>« Aidez-moi… »</blockquote>
       <blockquote>« Je suis chevalier. Je viens d’un village au-delà de la vallée. J’ai entendu l’appel… Je suis arrivé ici il y a quelques jours. »</blockquote>
-      <p>Il se rapproche de la porte et s’agrippe aux bords de l’ouverture.</p>
+      <p>Il se rapproche de la porte et s’y agrippe.</p>
       <blockquote>« Vous pouvez m’aider ? Je vous en prie… »</blockquote>
       <p>Un ancien carnet médical est ouvert près de lui.</p>`,
-    choices: [
-      { label: '« Qu’avez-vous trouvé dans ces carnets ? »', to: 'c94' },
-      { label: '« Qu’est-il arrivé à vos jambes ? »', to: 'c95' }
-    ]
+    choices: [{ label: 'Écouter son histoire', to: 'c94' }]
   },
   c94: {
-    number: 'PAGE 94', title: 'Les anciens carnets', image: 'Le cahier du prisonnier',
-    onEnter: s => { s.flags.observationRecordsHeard = true; s.flags.observationRead = true; },
+    number: 'PAGE 94', title: '', image: 'Le cahier du prisonnier',
+    onEnter: s => { s.flags.observationRecordsHeard = true; s.flags.observationBodyHeard = true; s.flags.observationRead = true; },
     text: `
       <p>Il pose une main tremblante sur les feuillets.</p>
       <blockquote>« Les Veilleurs étudiaient des voyageurs qui entendaient l’appel. Ils notaient leurs gestes, leurs tentatives pour rejoindre la prison… Puis ils ont essayé la terre noire. »</blockquote>
       <p>Il te montre une ligne soulignée : l’emprise diminuait après l’injection, puis revenait.</p>
-      <blockquote>« J’ai trouvé leurs aiguilles et leur réserve. J’ai cru pouvoir reprendre ma route. »</blockquote>`,
-    choices: s => [
-      ...(!s.flags.observationBodyHeard ? [{ label: '« Et vos jambes ? »', to: 'c95' }] : []),
-      { label: '« Que s’est-il passé ensuite ? »', to: 'c96' }
-    ]
+      <blockquote>« J’ai trouvé leurs aiguilles et leur réserve. J’ai cru pouvoir reprendre ma route. »</blockquote>
+      <p>Il soulève un pan de sa tunique. Ses jambes ont perdu leur forme humaine. Une masse sombre et noueuse les relie désormais au sol.</p>
+      <blockquote>« J’ai compris, grâce à ces carnets, que la terre noire pouvait étouffer l’appel. Je me suis injecté une première dose. J’ai repris le contrôle de mes gestes… pour un temps. Quand l’appel est revenu, j’ai recommencé. Encore et encore. »</blockquote>
+      <p>Ses membres inférieurs raclent la pierre sans lui obéir.</p>
+      <blockquote>« J’ai fermé cette porte avant de ne plus pouvoir me contrôler. Je ne veux pas finir comme eux… »</blockquote>`,
+    choices: [{ label: '« Que puis-je faire pour vous ? »', to: 'c96' }]
   },
   c95: {
-    number: 'PAGE 95', title: 'Sous la table', noImage: true, image: 'Les jambes du chevalier',
-    onEnter: s => { s.flags.observationBodyHeard = true; s.flags.observationRead = true; },
+    number: 'PAGE 95', title: '', noImage: true, image: 'Les jambes du chevalier',
+    onEnter: s => { s.flags.observationBodyHeard = true; s.flags.observationRecordsHeard = true; s.flags.observationRead = true; },
     text: `
       <p>Il soulève un pan de sa tunique. Ses jambes ont perdu leur forme humaine. Une masse sombre et noueuse les relie désormais au sol.</p>
-      <blockquote>« J’ai lu dans ces carnets que la terre noire pouvait étouffer l’appel. J’ai trouvé leurs aiguilles et je me suis injecté une première dose. J’ai repris le contrôle de mes gestes… pour un temps. Quand l’appel est revenu, j’ai recommencé. Encore et encore. »</blockquote>
-      <p>Il essaie de reculer. Ses membres inférieurs raclent la pierre sans lui obéir.</p>
+      <blockquote>« J’ai compris, grâce aux carnets des Veilleurs, que la terre noire pouvait étouffer l’appel. Je me suis injecté une première dose. J’ai repris le contrôle de mes gestes… pour un temps. Quand l’appel est revenu, j’ai recommencé. Encore et encore. »</blockquote>
       <blockquote>« J’ai fermé cette porte avant de ne plus pouvoir me contrôler. Je ne veux pas finir comme eux… »</blockquote>`,
-    choices: s => [
-      ...(!s.flags.observationRecordsHeard ? [{ label: '« Que racontent ces carnets sur les Veilleurs ? »', to: 'c94' }] : []),
-      { label: '« Que puis-je faire pour vous ? »', to: 'c96' }
-    ]
+    choices: [{ label: '« Que puis-je faire pour vous ? »', to: 'c96' }]
   },
   c96: {
-    number: 'PAGE 96', title: 'La supplique', image: 'La dernière ampoule vide',
+    number: 'PAGE 96', title: '', image: 'La dernière ampoule vide',
     onEnter: s => { s.flags.observationRead = true; },
     text: `
-      <p>Le chevalier désigne les vieux carnets. Il a entendu l’appel depuis son village, puis découvert ici les essais des Veilleurs : la terre noire rendait les gestes aux voyageurs, avant de les déformer.</p>
-      <p>Il s’est injecté lui-même plusieurs doses. Le bas de son corps s’est transformé. Il s’est enfermé avant de perdre toute maîtrise de ses mouvements.</p>
       <p>Près de sa chaise, une ampoule blanche vide roule entre les pierres.</p>
       <blockquote>« J’ai essayé leur remède aussi. La matière reculait… mais l’appel revenait. Je n’ai plus rien. »</blockquote>
       <p>Il fixe la porte. Ses jambes remuent avec un bruit sourd.</p>
-      <blockquote>« Sortez-moi d’ici. Trouvez quelqu’un qui puisse me sauver… Ou entrez et achevez-moi. Mais ne me laissez pas seul comme ça. »</blockquote>`,
+      <blockquote>« Sortez-moi d’ici. Trouvez quelqu’un qui puisse me sauver… Ou entrez et achevez-moi. Mais ne me laissez pas comme ça. »</blockquote>`,
     choices: [
-      { label: 'Entrer dans la cellule pour l’achever', to: 'c97', effect: s => { s.flags.knightFate = 'fight'; s.flags.observationFight = true; } },
+      { label: 'Entrer dans la cellule pour l’achever', to: 'c97' },
       { label: 'Ouvrir la porte et le libérer', to: 'c137', effect: s => { s.flags.knightFate = 'freed'; } },
       { label: 'Le laisser enfermé et poursuivre ton chemin', to: 'c144', effect: s => { s.flags.knightFate = 'locked'; } }
     ]
   },
   c97: {
-    number: 'PAGE 97', title: 'Dans la cellule', noImage: true, image: 'Le combat dans la cellule',
+    number: 'PAGE 97', title: '', image: 'Le combat dans la cellule',
     text: s => {
       const enemy = ENEMIES.observationPrisoner;
       const combat = combatState(s, 'observationPrisoner', enemy);
@@ -4663,10 +4655,10 @@ const STORY = {
   },
 
   c137: {
-    number: 'PAGE 137', title: 'La porte ouverte', noImage: true,
+    number: 'PAGE 137', title: '', noImage: true,
     text: `<p>Tu soulèves le loquet. Le chevalier tire son corps vers l’ouverture et se retient au montant.</p>
       <blockquote>« Merci… Je savais que vous ne me laisseriez pas ici. »</blockquote>
-      <p>Tu lui fais place et reprends le couloir vers l’arche.</p>`,
+      <p>Tu t’écartes et reprends le couloir vers l’arche.</p>`,
     choices: [{ label: 'T’éloigner de la cellule', to: 'c147' }]
   },
   c138: {
@@ -4705,7 +4697,7 @@ const STORY = {
     choices: [{label: "Poursuivre la descente", to: 'c115'}]
   },
   c144: {
-    number: 'PAGE 144', title: 'Le laisser derrière toi', noImage: true,
+    number: 'PAGE 144', title: '', noImage: true,
     text: `<p>« Attendez… Je vous en prie ! »</p><p>Tu t’éloignes sans toucher à la porte. Le chevalier frappe une fois contre le bois ; puis ses appels deviennent indistincts.</p><p>Tu retrouves l’arche au bout du couloir.</p>`,
     choices: [{ label: 'Quitter le quartier d’observation', to: 'c98' }]
   },
@@ -4726,7 +4718,7 @@ const STORY = {
     choices: [{ label: 'Rejoindre la salle ronde', to: 'c98' }]
   },
   c147: {
-    number: 'PAGE 147', title: 'L’attaque dans le dos', noImage: true,
+    number: 'PAGE 147', title: '', noImage: true,
     onEnter: s => {
       if (s.flags.knightFate !== 'freed' || s.flags.knightBackstabDone) return;
       s.flags.knightBackstabDone = true;
