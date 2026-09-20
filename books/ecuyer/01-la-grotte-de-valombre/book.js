@@ -4031,7 +4031,7 @@ const STORY = {
   c92: {
     number: 'PAGE 92', title: 'Le quartier d’observation', image: 'Le quartier d’observation',
     text: `
-      <p>Un couloir étroit dessert des cellules. À travers certains volets, tu aperçois une table, une chaise, parfois un cahier abandonné.</p>
+      <p>Un couloir étroit dessert des cellules. Certaines portes possèdent une ouverture à hauteur de visage. À travers celles-ci, tu aperçois une table, une chaise, parfois un cahier abandonné.</p>
       <p>L’une des portes est rayée de marques irrégulières. Un bruit léger vient de l’intérieur, suivi d’un raclement.</p>
       <p>Au bout du couloir, une arche permet de rejoindre la salle où convergent les trois chemins.</p>`,
     choices: [
@@ -4040,12 +4040,14 @@ const STORY = {
     ]
   },
   c93: {
-    number: 'PAGE 93', title: 'Derrière le volet', image: 'Le dernier prisonnier',
+    number: 'PAGE 93', title: 'L’homme derrière la porte', image: 'Le dernier prisonnier',
     onEnter: s => { s.flags.observationMet = true; },
     text: `
-      <p>Un homme en armure est assis derrière le volet. Son visage reste dans l’ombre. Sous la table, une masse déformée heurte lentement les dalles.</p>
-      <p>« Je suis chevalier. Je viens d’un village au-delà de la vallée. J’ai entendu l’appel… Je suis arrivé ici il y a quelques jours. »</p>
-      <p>Il se rapproche du volet, s’y agrippe.</p>
+      <p>La porte possède une ouverture à hauteur de visage. Tu t’en approches et regardes à l’intérieur.</p>
+      <p>Un homme en armure est assis près d’une table. Son visage reste dans l’ombre. Sous la table, une masse déformée heurte lentement les dalles.</p>
+      <blockquote>« Aidez-moi… »</blockquote>
+      <blockquote>« Je suis chevalier. Je viens d’un village au-delà de la vallée. J’ai entendu l’appel… Je suis arrivé ici il y a quelques jours. »</blockquote>
+      <p>Il se rapproche de la porte et s’agrippe aux bords de l’ouverture.</p>
       <blockquote>« Vous pouvez m’aider ? Je vous en prie… »</blockquote>
       <p>Un ancien carnet médical est ouvert près de lui.</p>`,
     choices: [
@@ -4071,11 +4073,11 @@ const STORY = {
     onEnter: s => { s.flags.observationBodyHeard = true; s.flags.observationRead = true; },
     text: `
       <p>Il soulève un pan de sa tunique. Ses jambes ont perdu leur forme humaine. Une masse sombre et noueuse les relie désormais au sol.</p>
-      <blockquote>« La première injection m’a rendu mes mouvements. Quand l’appel est revenu, j’ai recommencé. Encore et encore. C’est moi qui ai poussé le levier. »</blockquote>
+      <blockquote>« J’ai lu dans ces carnets que la terre noire pouvait étouffer l’appel. J’ai trouvé leurs aiguilles et je me suis injecté une première dose. J’ai repris le contrôle de mes gestes… pour un temps. Quand l’appel est revenu, j’ai recommencé. Encore et encore. »</blockquote>
       <p>Il essaie de reculer. Ses membres inférieurs raclent la pierre sans lui obéir.</p>
-      <blockquote>« J’ai fermé cette porte avant de ne plus pouvoir bouger. Je ne voulais blesser personne. »</blockquote>`,
+      <blockquote>« J’ai fermé cette porte avant de ne plus pouvoir me contrôler. Je ne veux pas finir comme eux… »</blockquote>`,
     choices: s => [
-      ...(!s.flags.observationRecordsHeard ? [{ label: '« Pourquoi vous êtes-vous injecté cette matière ? »', to: 'c94' }] : []),
+      ...(!s.flags.observationRecordsHeard ? [{ label: '« Que racontent ces carnets sur les Veilleurs ? »', to: 'c94' }] : []),
       { label: '« Que puis-je faire pour vous ? »', to: 'c96' }
     ]
   },
@@ -4880,7 +4882,7 @@ const STORY = {
     "c90": "La fuite",
     "c91": "Quitter les quartiers",
     "c92": "Le quartier d’observation",
-    "c93": "Derrière le volet",
+    "c93": "L’homme derrière la porte",
     "c94": "Les anciens carnets",
     "c95": "Sous la table",
     "c96": "La supplique",
@@ -5575,7 +5577,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 56,
+    contentVersion: 57,
     pageMapVersion: 71,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',

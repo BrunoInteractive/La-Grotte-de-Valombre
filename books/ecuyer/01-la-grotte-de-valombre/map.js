@@ -572,7 +572,7 @@
       "notes": [
         {"page": "c93", "text": "Un chevalier d’un village voisin dit avoir entendu l’appel et être venu dans la cité récemment."},
         {"page": "c94", "text": "Le chevalier a lu les carnets médicaux des Veilleurs. Il s’est injecté lui-même de la terre noire pour résister à l’appel."},
-        {"page": "c95", "text": "À force de répéter les doses, le chevalier a transformé le bas de son corps. Il a lui-même fermé sa cellule pour ne blesser personne."}
+        {"page": "c95", "text": "À force de répéter les injections de terre noire, le chevalier a transformé le bas de son corps. Il s’est enfermé avant de perdre le contrôle de lui-même."}
       ]
     },
     {
