@@ -4095,34 +4095,39 @@ const STORY = {
     choices: [{ label: 'Rejoindre la salle ronde', to: 'c104' }]
   },
   c99: {
-    number: 'PAGE 99', title: 'Le laboratoire des Veilleurs', image: 'Le dispensaire',
+    number: 'PAGE 99', title: 'La salle des registres', image: 'Le dispensaire',
     text: `
-      <p>La première salle ressemble à un poste de soins. Des lits étroits longent les murs. Entre eux, plusieurs pupitres supportent des piles de carnets et de registres.</p>
-      <blockquote>QUE NUL NE SOIT LIVRÉ À L'APPEL SANS SECOURS.</blockquote>
-      <p>Tu comprends pourquoi ces écrits sont ici : c’est dans cette pièce que les Veilleurs recevaient ceux qui entendaient l’appel. Ils les interrogeaient, les soignaient et notaient l’évolution de leurs symptômes.</p>
-      <p>Les premiers carnets ont été ouverts souvent. D’autres, plus épais, attendent plus loin sur une table.</p>`,
-    choices: [{ label: 'Consulter les carnets', to: 'c100' }]
+      <p>La salle est vaste, ordonnée, presque paisible au premier regard. Des rangées de pupitres, d’étagères et de casiers remplissent l’espace jusqu’au fond.</p>
+      <p>Partout, des carnets s’empilent par dizaines. Certains sont rangés avec soin. D’autres sont ouverts, annotés, repliés sur eux-mêmes. Leur nombre dépasse tout ce que tu imaginais.</p>
+      <p>Sur un panneau de bois est gravée une phrase simple :</p>
+      <blockquote>QUE NUL NE SOIT LIVRÉ À L’APPEL SANS SECOURS.</blockquote>
+      <p>Les premiers cahiers accessibles ressemblent à des dossiers de suivi. Chaque volume porte un nom, une date d’arrivée et plusieurs observations successives.</p>`,
+    choices: [{ label: 'Lire un des carnets', to: 'c100' }]
   },
   c100: {
-    number: 'PAGE 100', title: 'Les premiers carnets', image: 'Les carnets du dispensaire',
+    number: 'PAGE 100', title: 'Un carnet de suivi', image: 'Les carnets du dispensaire',
     text: `
-      <p>Les premières notes parlent de voyageurs agités, tirés vers les profondeurs comme par une volonté étrangère. Les Veilleurs tentent d’abord de les apaiser, de les nourrir et de les empêcher de descendre plus bas.</p>
-      <blockquote>LE SUJET ENTEND UNE VOIX QUI LE SUPPLIE D’OUVRIR LA PORTE.</blockquote>
-      <blockquote>APRÈS UNE NUIT DE REPOS, L’APPEL NE FAIBLIT PAS.</blockquote>
-      <p>Plusieurs pages décrivent les mêmes gestes : mains crispées vers la prison, regards perdus, réveils brusques au milieu de la nuit.</p>
-      <p>Au fond de la salle, une seconde table porte les registres les plus récents, reliés d’un cuir sombre.</p>`,
+      <p>Tu ouvres l’un des carnets. L’écriture est régulière, presque clinique. Tout montre que les Veilleurs recevaient ici ceux qui entendaient l’appel, les interrogeaient, les soignaient et notaient l’évolution de leurs symptômes.</p>
+      <blockquote>Jour 01 : Armand Varel est arrivé. Il entend la voix. Son corps résiste encore, son esprit aussi.</blockquote>
+      <blockquote>Jour 02 : Le sujet a disparu pendant la nuit. Nous l’avons retrouvé près à descendre sous la cité. Nous l’avons stoppé juste à temps.</blockquote>
+      <blockquote>Jour 03 : Première administration de terre noire. Il réagit plutôt bien. Il n’entend plus la voix.</blockquote>
+      <blockquote>Jour 05 : Les voix reprennent. Nouvelle dose de terre noire.</blockquote>
+      <blockquote>Jour 10 : Apparition de taches brunâtres sur tout le corps. Le médecin ne peut rien diagnostiquer pour l’instant.</blockquote>
+      <blockquote>Jour 13 : Certaines difformités apparaissent. Nous ne savons pas si cela est dû au traitement ou à l’enfermement.</blockquote>
+      <blockquote>Jour 15 : Malgré un traitement intensif, les voix finissent toujours par revenir. Il ne répond plus aux questions, semble ailleurs.</blockquote>
+      <p>D’autres carnets racontent la même lente dérive, avec d’autres noms, d’autres dates, et presque toujours la même issue.</p>`,
     choices: [{ label: 'Consulter les derniers registres', to: 'c101' }]
   },
   c101: {
     number: 'PAGE 101', title: 'Les derniers registres', image: 'Le registre des expériences',
     text: `
-      <p>Les derniers registres ne parlent plus seulement de soins. Au fil des pages, les Veilleurs cherchent désormais à briser l’emprise de l’appel.</p>
+      <p>Les derniers registres ne parlent plus vraiment de soins.</p>
       <blockquote>SUJET 17 : DÉCÈS.</blockquote>
       <blockquote>SUJET 18 : DÉCÈS.</blockquote>
       <blockquote>SUJET 19 : TRANSFORMATION. NE RÉPOND PLUS À L'APPEL.</blockquote>
       <blockquote>SUJET 20 : TRANSFORMATION. OBÉIT AUX SIGNAUX DE GARDE.</blockquote>
+      <blockquote>DÉBUT DU PROTOCOLE DE TRANSFORMATION POUR LES SUJETS 122 À 127. NOUS LES ASSIGNERONS À LA SURVEILLANCE DU PONT. À DÉFAUT DE REVENIR PARMI NOUS, AU MOINS ILS SERONT UTILES À NOTRE CAUSE.</blockquote>
       <p>Dans la marge, quelqu’un a écrit : « Ce sont encore des hommes. » Une autre main a répondu : « Plus pour longtemps. »</p>
-      <p>Les Veilleurs n’ont donc pas seulement tenté de retenir les appelés. Ils ont fini par fabriquer leurs propres gardiens.</p>
       <p>Au-delà d’une cloison, un bruit métallique résonne dans la salle suivante.</p>`,
     choices: [{ label: 'Passer dans la salle suivante', to: 'c102' }]
   },
