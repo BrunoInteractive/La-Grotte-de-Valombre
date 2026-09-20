@@ -3608,7 +3608,11 @@ const STORY = {
 
       <p>Un œil fermé est imprimé au bas du texte.</p>
 
-      <blockquote>« Nouvel ordre reçu : garder le pont. Ne laisser entrer ni sortir personne. N’épargner personne. »</blockquote>
+      <blockquote>« Nouvel ordre reçu :<br>
+      Garder le pont dans les deux sens.<br>
+      Nul ne doit désormais quitter la cité.<br>
+      Toute tentative de fuite sera punie de mort.<br>
+      Tout garde refusant d’appliquer cet ordre subira la même peine. »</blockquote>
 
       <p>Tu ranges les trois lames de jet dans ton équipement.</p>
 
