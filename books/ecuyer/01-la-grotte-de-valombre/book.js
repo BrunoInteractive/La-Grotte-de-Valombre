@@ -4147,12 +4147,12 @@ const STORY = {
     number: 'PAGE 102', title: 'L’ampoule blanche', image: 'L’ampoule blanche',
     text: `
       <p>Une seule ampoule a résisté au temps. Son liquide blanc a été mis au point pour réduire la contamination.</p>
-      <p>Une annotation décrit un traitement qui fait reculer la terre noire de quatre points, sans soigner les blessures. L’emprise de la chose enfermée peut alors reprendre de la force.</p>
+      <p>Une annotation décrit un traitement qui réduit la contamination, sans soigner les blessures. L’emprise de la chose enfermée peut alors reprendre de la force.</p>
       <p>Tu peux l'emporter ou la laisser. Des registres attendent plus loin.</p>`,
     choices: s => hasItem(s, 'ampoule_blanche')
       ? [{ label: 'Consulter les derniers registres', to: 'c103' }]
       : [
-          { label: 'Prendre l’Ampoule blanche', to: 'c103', effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Remède des Veilleurs : −4 terre noire, sans restaurer la Vie.') },
+          { label: 'Prendre l’Ampoule blanche', to: 'c103', effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.') },
           { label: 'Laisser l’ampoule et lire les registres', to: 'c103' }
         ]
   },
@@ -4186,7 +4186,7 @@ const STORY = {
   },
 
   c105: {
-    number: 'PAGE 105', title: 'Le registre du médecin', image: 'Le registre du médecin',
+    number: 'PAGE 105', title: 'Le registre du médecin', noImage: true, image: 'Le registre du médecin',
     onEnter: s => { s.flags.physicianNotesRead=true; },
     text: `<p>Dans le couloir, un registre médical repose sur un pupitre. Des observations y comparent l'emprise et les effets de la terre noire.</p>
       <blockquote>« Plus la terre noire gagne le corps, plus l'appel faiblit. Mais la transformation progresse. »</blockquote>
@@ -4194,7 +4194,7 @@ const STORY = {
       <p><strong>De 5 à 8 :</strong> il devient intermittent. Le corps semble résister à la transformation.</p>
       <p><strong>De 9 à 12 :</strong> l'appel se tait presque, mais des transformations apparaissent.</p>
       <p><strong>À 13 :</strong> aucun retour n'a été observé.</p>
-      <p>Plusieurs lignes évoquent un traitement blanc qui retire quatre points de terre noire, sans guérir les blessures.</p>`,
+      <p>Plusieurs lignes évoquent un traitement blanc qui réduit la contamination, sans guérir les blessures.</p>`,
     choices: [{label:'Quitter le registre',to:'c106'}]
   },
   c106: {
@@ -4211,9 +4211,9 @@ const STORY = {
   c107: {
     number:'PAGE 107', title:'Le poste de secours',image:'Le poste de secours',
     text:`<p>Une armoire éventrée contient une ampoule intacte, remplie d'un liquide blanc.</p>
-      <p>Une étiquette précise : « Traitement de la terre noire : moins quatre points. Ne soigne pas les blessures. »</p>`,
+      <p>Sur l’étiquette, quelques mots : « Traitement de la terre noire. »</p>`,
     choices:s => s.flags.commonAmpouleOffered ? [{label:'Revenir au carrefour',to:'c106'}] : [
-      {label:'Prendre l’Ampoule blanche',to:'c106',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Remède : −4 terre noire, sans restaurer la Vie.');t.flags.commonAmpouleOffered=true;}},
+      {label:'Prendre l’Ampoule blanche',to:'c106',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');t.flags.commonAmpouleOffered=true;}},
       {label:'Laisser l’ampoule',to:'c106',effect:t=>{t.flags.commonAmpouleOffered=true;}}
     ]
   },
@@ -4227,7 +4227,7 @@ const STORY = {
     ]
   },
   c109: {
-    number: 'PAGE 109', title: 'La grille et les tablettes', image: 'La grille des anciens registres',
+    number: 'PAGE 109', title: 'La grille et les tablettes', noImage: true, image: 'La grille des anciens registres',
     text: s => `<p>Au bas de l'escalier, une niche derrière une grille abrite plusieurs tablettes de pierre. La grille est entrouverte.</p>
       <p>Une avenue descend vers les parties profondes de la cité. Tu ressens une pression dans tes jambes, comme une envie de t'y engager. Tu peux pourtant t'arrêter devant les tablettes.</p>
       ${s.flags.silenceSealUsed ? '<p>Le Sceau de silence que tu as brisé a interrompu cette sensation quelques instants.</p>' : ''}`,
@@ -4449,7 +4449,7 @@ const STORY = {
 
         <p>Le goût terreux au fond de ta gorge finit lui aussi par s’atténuer.</p>
 
-        <p>La contamination recule de quatre points. Tu sens l’emprise retrouver de la force : le traitement a son prix.</p>
+        <p>La contamination recule. Tu sens l’emprise retrouver de la force : le traitement a son prix.</p>
       ` : ''}
 
       <p>Tu suis la galerie indiquée par les Veilleurs.</p>
@@ -4948,7 +4948,7 @@ const STORY = {
     {
       id: 'ampoule_blanche',
       name: 'Ampoule blanche',
-      description: 'Traitement des Veilleurs : retire 4 points de terre noire (minimum zéro). Ne restaure pas la Vie.'
+      description: 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.'
       },
     {
       id: 'bracelet_ancrage',
@@ -5047,10 +5047,10 @@ const STORY = {
       }
       if (id === 'potion_sombre') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-dark-potion" ${state.hp>=state.maxHp ? 'disabled' : ''}>Boire : +3 Vie, +2 terre noire${contaminationLevel(state)+2>=13 ? " — TRANSFORMATION" : ""}</button></div>`;
       if (id === 'sacoche_terre_noire') return `<div class="inventory-actions"><p>Usage unique : +3 terre noire. Après absorption : ${Math.min(13, contaminationLevel(state)+3)}/13.</p><button class="inventory-action-btn" data-action="use-black-earth">Absorber la terre noire</button></div>`;
-      if (id === 'ampoule_blanche_commune') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule-common" ${contaminationLevel(state)>0 ? '' : 'disabled'}>Utiliser : −4 terre noire</button></div>`;
+      if (id === 'ampoule_blanche_commune') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule-common" ${contaminationLevel(state)>0 ? '' : 'disabled'}>Utiliser : −4 points de contamination (Terre noire)</button></div>`;
       if (id === 'ampoule_blanche') {
         const useful = ((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state) > 0);
-        return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule" ${useful ? '' : 'disabled'}>Rincer les traces de terre noire</button></div>`;
+        return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule" ${useful ? '' : 'disabled'}>Utiliser : −4 points de contamination (Terre noire)</button></div>`;
       }
       if (id === 'collier_vitalite') {
         return state.flags.collarEquipped
@@ -5226,7 +5226,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 49,
+    contentVersion: 51,
     pageMapVersion: 68,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
@@ -5237,27 +5237,13 @@ const STORY = {
     navigationTitles: PAGE_NAV_TITLES,
     padPage,
     imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
+    // Règle V68.1 : une page n'affiche QUE le fichier portant son propre numéro.
+    // Les anciens numéros de scènes et le suffixe historique -V63 sont exclus.
     imageCandidatesForPage: n => {
-      const name = m => `La-Grotte-de-Valombre-${padPage(m)}`;
-      // N'utiliser que la scène demandée, jamais un numéro obtenu par décalage
-      // (ex. l'ancienne image 057 ne doit jamais illustrer la page 082).
-      const samePage = n <= 47
-        ? [name(n), `pages/${name(n)}`]
-        : [`pages/${name(n)}`, name(n)];
-      // Ces sept scènes ont été réécrites en V63 : ne pas reprendre
-      // leurs illustrations de la précédente galerie des voix.
-      if (n >= 92 && n <= 98) {
-        return [`pages/${name(n)}-V63`, `${name(n)}-V63`];
-      }
-      // Renumérotation V62 documentée : même scène, ancien numéro connu.
-      // Donner priorité à cette correspondance plutôt qu'à un fichier portant
-      // le numéro actuel mais illustrant potentiellement une autre scène.
-      const originalScene = {105:114,107:115,108:116,109:105,110:107,
-                             111:108,112:109,113:110,114:111,115:112,116:113};
-      if (originalScene[n]) {
-        return [`pages/${name(originalScene[n])}`, name(originalScene[n])];
-      }
-      return samePage;
+      const filename = `La-Grotte-de-Valombre-${padPage(n)}`;
+      return n <= 47
+        ? [filename, `pages/${filename}`]
+        : [`pages/${filename}`, filename];
     },
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
