@@ -176,6 +176,11 @@ function enterNode(id) {
   if (!state.visited[id]) {
     state.visited[id] = true;
     if (typeof node.onEnter === 'function') node.onEnter(state);
+  } else if (id === 'c115' && state.flags?.knightFate === 'locked' &&
+             !state.flags.knightWellAttackDone && typeof node.onEnter === 'function') {
+    // Travail uniquement : une nouvelle décision lors d'un essai relance
+    // la conséquence différée du chevalier, même si ce palier était déjà visité.
+    node.onEnter(state);
   }
   state.history.push(id);
   maybeAutoCheckpoint(id);

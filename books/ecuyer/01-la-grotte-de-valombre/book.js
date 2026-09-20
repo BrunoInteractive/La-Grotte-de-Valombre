@@ -530,16 +530,24 @@ function setHeroIdentity(state, gender) {
   state.heroName = state.heroGender === 'male' ? 'Aubin' : 'Aélis';
 }
 
-// Une visite de chaque branche suffit : une fois revenue au croisement,
-// elle ne doit plus être proposée, y compris sur une ancienne sauvegarde.
-function campGalleryAvailable(state) {
-  return !state.flags.galleryVisited && !state.flags.galleryAttempted &&
-    !state.visited.c31 && !state.visited.c32;
+// VERSION TRAVAIL : les passages restent accessibles après une visite.
+// Les objets, les protections et les récompenses conservent leurs garde-fous.
+function campGalleryAvailable(state) { return true; }
+function campTunnelAvailable(state) { return true; }
+function replayCombat(state, key) {
+  if (state.combats && state.combats[key]) delete state.combats[key];
 }
-function campTunnelAvailable(state) {
-  return !state.flags.tunnelVisited && !state.visited.c34 &&
-    !state.visited.c35 && !state.visited.c36 && !state.visited.c38;
+function replaySentinels(state) {
+  delete state.sentinelFight;
+  state.flags.sentinelResultAcknowledged = false;
 }
+function replayKnight(state, key, fate) {
+  replayCombat(state, key);
+  state.flags.knightFate = fate;
+  state.flags.knightWellAttackDone = false;
+  state.flags.knightBackstabDone = false;
+}
+
 function rememberCampJournalIfVisited(state) {
   // Laisser lire le journal si le joueur s'était d'abord dirigé vers une galerie.
   if (state.visited.c30) state.flags.campJournalRead = true;
@@ -687,23 +695,15 @@ const STORY = {
       <p>Les premières lignes ont été écrites avec une insistance presque fébrile. Les avertissements, eux, ne laissent guère de doute : Aldren voulait éviter la terre noire et le soufre.</p><p>Mais pourquoi voulait-il ouvrir cet œil fermé ?</p>
       <p>Tu replies soigneusement les notes et les ranges dans ton inventaire. Tu pourras les relire quand tu le souhaites.</p>
       ${hasItem(state,'fiole_rouge') || state.flags.fioleLaissee
-        ? '<p>Tu as déjà décidé quoi faire de la mystérieuse fiole rouge.</p>'
+        ? '<p>Tu peux revenir sur ce choix pour comparer les itinéraires, mais la fiole ne peut être récupérée qu’une fois.</p>'
         : '<p>La fiole rouge reste entre tes mains. Tu ignores encore ce qu’elle contient.</p>'}
     `,
-    choices: state => {
-      if (!hasItem(state,'fiole_rouge') && !state.flags.fioleLaissee) {
-        return [
-          { label: 'Prendre la fiole et aller au village', to: 'c118', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); } },
-          { label: 'Prendre la fiole et partir vers les grottes', to: 'c119', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); } },
-          { label: 'Laisser la fiole et aller au village', to: 'c3', effect: s => { s.flags.fioleLaissee = true; } },
-          { label: 'Laisser la fiole et partir vers les grottes', to: 'c8', effect: s => { s.flags.fioleLaissee = true; } }
-        ];
-      }
-      return [
-        { label: 'Aller au village', to: 'c3' },
-        { label: 'Partir vers les grottes', to: 'c8' }
-      ];
-    }
+    choices: state => [
+      { label: 'Prendre la fiole et aller au village', to: 'c118', effect: s => { if (!hasItem(s,'fiole_rouge') && !s.visited?.c118 && !s.visited?.c119) addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); s.flags.fioleLaissee = false; } },
+      { label: 'Prendre la fiole et partir vers les grottes', to: 'c119', effect: s => { if (!hasItem(s,'fiole_rouge') && !s.visited?.c118 && !s.visited?.c119) addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); s.flags.fioleLaissee = false; } },
+      { label: 'Laisser la fiole et aller au village', to: 'c3', effect: s => { removeItem(s,'fiole_rouge'); s.flags.fioleLaissee = true; } },
+      { label: 'Laisser la fiole et partir vers les grottes', to: 'c8', effect: s => { removeItem(s,'fiole_rouge'); s.flags.fioleLaissee = true; } }
+    ]
   },
 
   c3: {
@@ -712,15 +712,7 @@ const STORY = {
     image: 'La place de Valombre',
     text: state => {
       const details = [];
-      if (!state.flags.merchantVisited) {
-        details.push('<p>Sous son auvent, le <strong>marchand</strong> termine de ranger ses affaires.</p>');
-      }
-      if (!state.flags.blacksmithVisited) {
-        details.push('<p>Dans la forge, une lueur rouge éclaire encore les murs.</p>');
-      }
-      if (!state.flags.valombreStreetVisited) {
-        details.push('<p>Plus loin, dans l’ombre d’une ruelle, une étrange silhouette semble parler toute seule.</p>');
-      }
+      details.push('<p>Le marchand est sous son auvent ; la forge donne toujours sur la place, et une ruelle s’ouvre un peu plus loin.</p>');
       return `
         <p>La place de Valombre est presque déserte. Les volets se ferment les uns après les autres.</p>
         ${details.join('')}
@@ -729,9 +721,9 @@ const STORY = {
     },
     choices: state => {
       const list = [];
-      if (!state.flags.merchantVisited) list.push({ label: 'Voir le marchand', to: 'c4' });
-      if (!state.flags.blacksmithVisited) list.push({ label: 'Voir la forgeronne', to: 'c5' });
-      if (!state.flags.valombreStreetVisited) list.push({ label: 'Approcher la personne dans la ruelle', to: 'c6' });
+      list.push({ label: 'Voir le marchand', to: 'c4' });
+      list.push({ label: 'Voir la forgeronne', to: 'c5' });
+      list.push({ label: 'Approcher la personne dans la ruelle', to: 'c6' });
       list.push({ label: 'Partir vers la grotte', to: 'c8' });
       return list;
     }
@@ -816,11 +808,6 @@ const STORY = {
       <p><strong>Épée de la forgeronne</strong> — Puissance : <strong>2</strong> · Dextérité : <strong>12</strong>.</p>
     `,
     choices: state => {
-      if (state.weapon === 'light') {
-        return [
-          { label: 'Remercier la forgeronne et retourner sur la place', to: 'c3' }
-        ];
-      }
       return [
         {
           label: 'Accepter l’échange',
@@ -1284,19 +1271,11 @@ const STORY = {
         <p>Et plus loin, une personne se tient seule au milieu de la rue.</p>
       `;
     },
-    choices: state => {
-      const list = [];
-      if (!state.flags.eliasVisited) {
-        list.push({ label: 'Entrer dans la taverne de Gaspard', to: 'c16' });
-      }
-      if (!state.flags.strangerGone) {
-        list.push({ label: 'Parler à la personne dans la rue', to: 'c19' });
-      }
-      if (state.flags.eliasVisited || state.flags.strangerGone) {
-        list.push({ label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' });
-      }
-      return list;
-    }
+    choices: state => [
+      { label: 'Entrer dans la taverne de Gaspard', to: 'c16' },
+      { label: state.flags.strangerGone ? 'Revoir la rencontre avec la personne dans la rue' : 'Parler à la personne dans la rue', to: 'c19' },
+      { label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' }
+    ]
   },
 
   c16: {
@@ -1342,30 +1321,13 @@ const STORY = {
 
       <blockquote>« Avec lui, ça ne veut pas forcément dire grand-chose. Quand il trouve quelqu’un avec qui boire, il oublie parfois jusqu’au chemin de sa propre maison. »</blockquote>
     `,
-    choices: state => {
-      if (state.flags.gaspardDeathAnnounced) {
-        const list = [];
-        if (!state.flags.eliasBladesPurchased) {
-          list.push({ label: 'Lui demander s’il a quelque chose qui pourrait t’aider pour la montagne', to: 'c18' });
-        }
-        if (!state.flags.strangerGone) {
-          list.push({ label: 'Aller parler à la personne dans la rue', to: 'c19' });
-        }
-        list.push({ label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' });
-        return list;
-      }
-      if (state.flags.eliasBladesPurchased) {
-        return [
-          { label: 'Lui annoncer que Gaspard est mort', to: 'c17' },
-          { label: 'Ne rien ajouter et retourner dans la rue', to: 'c15' },
-          { label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' }
-        ];
-      }
-      return [
-        { label: 'Lui annoncer que Gaspard est mort', to: 'c17' },
-        { label: 'Ne rien lui dire', to: 'c18' }
-      ];
-    }
+    choices: state => [
+      { label: 'Lui annoncer que Gaspard est mort', to: 'c17', effect: s => { s.flags.gaspardDeathAnnounced = true; } },
+      { label: 'Ne rien lui dire et examiner les lames', to: 'c18', effect: s => { s.flags.gaspardDeathAnnounced = false; } },
+      { label: state.flags.strangerGone ? 'Revoir la rencontre dans la rue' : 'Aller parler à la personne dans la rue', to: 'c19' },
+      { label: 'Retourner dans la rue', to: 'c15' },
+      { label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' }
+    ]
   },
 
   c17: {
@@ -1414,9 +1376,7 @@ const STORY = {
     `,
     choices: state => {
       const list = [];
-      if (!state.flags.strangerGone) {
-        list.push({ label: 'Aller parler à la personne dans la rue', to: 'c19' });
-      }
+      list.push({ label: state.flags.strangerGone ? 'Revoir la rencontre dans la rue' : 'Aller parler à la personne dans la rue', to: 'c19' });
       list.push({ label: 'Quitter Rochebrume et repartir vers la grotte', to: 'c20' });
       return list;
     }
@@ -1574,9 +1534,7 @@ const STORY = {
     `,
     choices: state => {
       const list = [];
-      if (!state.flags.eliasVisited) {
-        list.push({ label: 'Entrer dans la taverne de Gaspard avant de repartir', to: 'c16' });
-      }
+      list.push({ label: 'Entrer dans la taverne de Gaspard avant de repartir', to: 'c16' });
       list.push({ label: 'Repartir vers la grotte', to: 'c20' });
       return list;
     }
@@ -1895,9 +1853,7 @@ const STORY = {
     `,
     choices: state => {
       const list = [];
-      if (!state.flags.campJournalRead && !state.visited.c30) {
-        list.push({ label: 'Examiner le vieux campement', to: 'c30' });
-      }
+      list.push({ label: 'Examiner le vieux campement', to: 'c30' });
       if (campGalleryAvailable(state)) {
         list.push({ label: 'Explorer la galerie condamnée', to: 'c31' });
       }
@@ -2018,9 +1974,7 @@ const STORY = {
 
       <p><strong>Ta Force : ${currentForce(state)}</strong></p>
     `,
-    choices: state => state.flags.galleryAttempted ? [
-      { label: 'Revenir au croisement des galeries', to: 'c30', effect: rememberCampJournalIfVisited }
-    ] : [
+    choices: state => [
       {
         label: 'Tenter de déplacer le bloc — lancer les trois dés',
         to: 'c32',
@@ -2793,7 +2747,7 @@ const STORY = {
     choices: state => {
       if (state.hp <= 0) return fatalChoices();
       return [
-        { label: 'Accoster le petit îlot de pierre aperçu dans la brume', to: 'c47' },
+        { label: 'Accoster le petit îlot de pierre aperçu dans la brume', to: 'c47', effect: s => { if (s.combats?.isletCrawler?.hp <= 0) replayCombat(s, 'isletCrawler'); } },
         { label: 'Ne plus t’arrêter avant l’autre rive', to: 'c48' }
       ];
     }
@@ -3362,7 +3316,7 @@ const STORY = {
             if (!ok) { s.flags.bridgeRunDamage = applyDamage(s, 1); /* Chute ordinaire : aucune contamination. */ }
           }
         },
-        { label: 'Frapper la chose à travers les planches', to: 'c61' }
+        { label: 'Frapper la chose à travers les planches', to: 'c61', effect: s => { if (s.combats?.bridgeWalker?.hp <= 0) replayCombat(s, 'bridgeWalker'); } }
       );
       return list;
     }
@@ -3413,7 +3367,7 @@ const STORY = {
       if (state.hp <= 0) return fatalChoices();
       return state.flags.bridgeRun === 'success'
         ? [{ label: 'Reprendre ton souffle', to: 'c63' }]
-        : [{ label: 'Te défendre', to: 'c61' }];
+        : [{ label: 'Te défendre', to: 'c61', effect: s => { if (s.combats?.bridgeWalker?.hp <= 0) replayCombat(s, 'bridgeWalker'); } }];
     }
   },
 
@@ -3570,15 +3524,13 @@ const STORY = {
     },
     choices: state => {
       const choices = [];
-      if (!state.flags.bridgeSatchelSearched) {
-        choices.push({ label: 'Fouiller la sacoche du mort', to: 'c65' });
-      }
-      if (!hasItem(state, 'ceinture_rouge')) {
+      choices.push({ label: state.flags.bridgeSatchelSearched ? 'Relire le parchemin dans la sacoche' : 'Fouiller la sacoche du mort', to: 'c65' });
+      {
         choices.push({
-          label: 'Prendre la Ceinture de corde rouge',
+          label: hasItem(state, 'ceinture_rouge') ? 'Réexaminer la Ceinture de corde rouge' : 'Prendre la Ceinture de corde rouge',
           to: 'c131',
           effect: s => {
-            addItem(
+            if (!s.flags.bridgeCordTaken && !s.visited?.c131 && !hasItem(s, 'ceinture_rouge')) addItem(
               s,
               'ceinture_rouge',
               'Ceinture de corde rouge',
@@ -3641,15 +3593,12 @@ const STORY = {
       <p><strong>Tu possèdes maintenant ${state.throwingBlades} lame${state.throwingBlades > 1 ? 's' : ''} de jet.</strong></p>
     `,
     choices: state => {
-      if (hasItem(state, 'ceinture_rouge')) {
-        return [{ label: 'Rejoindre la porte', to: 'c64' }];
-      }
       return [
         {
-          label: 'Prendre aussi la Ceinture de corde rouge',
+          label: hasItem(state, 'ceinture_rouge') ? 'Réexaminer la Ceinture de corde rouge' : 'Prendre aussi la Ceinture de corde rouge',
           to: 'c131',
           effect: s => {
-            addItem(
+            if (!s.flags.bridgeCordTaken && !s.visited?.c131 && !hasItem(s, 'ceinture_rouge')) addItem(
               s,
               'ceinture_rouge',
               'Ceinture de corde rouge',
@@ -3858,8 +3807,8 @@ const STORY = {
       ${state.flags.quartersGuard ? '<p>Tu as déjà consulté les premières consignes de garde.</p>' : ''}
       <p>Aldren est quelque part plus bas. Tu peux aussi ne pas t’attarder.</p>`,
     choices: s => [
-      ...(!s.flags.quartersRefectory ? [{ label: 'Explorer le réfectoire', to: 'c76' }] : []),
-      ...(!s.flags.quartersGuard ? [{ label: 'Examiner la salle de garde', to: 'c77' }] : []),
+      { label: 'Explorer le réfectoire', to: 'c76' },
+      { label: 'Examiner la salle de garde', to: 'c77' },
       { label: 'Gagner les bureaux du commandement', to: 'c82' }
     ]
   },
@@ -3898,7 +3847,7 @@ const STORY = {
       <p>Un grattement vient de la porte, derrière toi.</p>
       <p>Puis un second.</p>
       <p>La poignée s'abaisse.</p>`,
-    choices: [{ label: 'Dégainer et faire face', to: 'c79' }]
+    choices: [{ label: 'Dégainer et faire face', to: 'c79', effect: s => { if (s.sentinelFight?.hp?.every(h => h <= 0)) replaySentinels(s); } }]
   },
   c79: {
     number: 'PAGE 79', title: 'Les deux sentinelles', image: 'Les sentinelles contaminées',
@@ -3927,9 +3876,9 @@ const STORY = {
       <p>Des râteliers longent les murs. Les épées et les casques qu'ils supportent sont rongés par la rouille.</p>
       <p>Dans une boîte restée fermée, tu trouves cinq petites lames de jet encore en état de servir.</p>
       <p>Tu peux les emporter. Aucun autre équipement ne paraît sûr.</p>`,
-    choices: s => s.flags.armoryLooted ? [{ label: 'Rejoindre les bureaux', to: 'c82' }] : [
-      { label: 'Prendre les cinq lames de jet', to: 'c136', effect: s => { if (!s.flags.armoryLooted) { s.throwingBlades += 5; syncThrowingBlades(s); s.flags.armoryLooted = true; } } },
-      { label: 'Laisser les lames et rejoindre les bureaux', to: 'c82', effect: s => { s.flags.armoryLooted = true; } }
+    choices: s => [
+      { label: s.flags.armoryBladesTaken || s.visited?.c136 ? 'Revoir la collecte des lames (déjà prises)' : 'Prendre les cinq lames de jet', to: 'c136', effect: t => { if (!t.flags.armoryBladesTaken && !t.visited?.c136) { t.throwingBlades += 5; syncThrowingBlades(t); t.flags.armoryBladesTaken = true; } t.flags.armoryLooted = true; } },
+      { label: 'Laisser les lames et rejoindre les bureaux', to: 'c82', effect: t => { t.flags.armoryLooted = true; } }
     ]
   },
   c82: {
@@ -3938,9 +3887,7 @@ const STORY = {
       <p>Une porte renforcée ferme le bureau du commandement. Sa serrure ne répond plus. Au-delà, un passage permet de rejoindre les appartements sans y entrer.</p>
       <p>Des marques de coups autour du verrou montrent que quelqu'un a déjà essayé de forcer l'entrée.</p>
       <p>Tu peux tenter ta chance, ou poursuivre les recherches d'Aldren.</p>`,
-    choices: s => s.flags.officeAttempted
-      ? [{ label: 'Poursuivre vers les appartements', to: 'c84' }]
-      : [
+    choices: s => [
           { label: 'Tenter d’enfoncer la porte — épreuve de Force', to: 'c83', effect: s => { s.flags.officeAttempted = true; s.flags.officeOpened = roll3D6(s, 'Force', currentForce(s)); } },
           { label: 'Laisser la porte et gagner les appartements', to: 'c84' }
         ]
@@ -4073,8 +4020,8 @@ const STORY = {
       <blockquote>« Vous pouvez m’aider ? Je vous en prie… »</blockquote>
       <p>Un ancien carnet médical est ouvert près de lui.</p>`,
     choices: [
-      { label: 'Hésiter et lui demander de raconter son histoire', to: 'c94' },
-      { label: 'Ne pas lui faire confiance et partir', to: 'c149', effect: t => { t.flags.knightFate = 'hostile'; } }
+      { label: 'Hésiter et lui demander de raconter son histoire', to: 'c94', effect: t => { t.flags.knightFate = null; } },
+      { label: 'Ne pas lui faire confiance et partir', to: 'c149', effect: t => { replayKnight(t, 'observationPrisonerCorridor', 'hostile'); } }
     ]
   },
   c94: {
@@ -4109,9 +4056,9 @@ const STORY = {
       <p>Il fixe la porte. Ses jambes remuent avec un bruit sourd.</p>
       <blockquote>« Sortez-moi d’ici. Trouvez quelqu’un qui puisse me sauver… Ou entrez et achevez-moi. Mais ne me laissez pas comme ça. »</blockquote>`,
     choices: [
-      { label: 'Entrer dans la cellule pour l’achever', to: 'c97' },
-      { label: 'Ouvrir la porte et le libérer', to: 'c137', effect: s => { s.flags.knightFate = 'freed'; } },
-      { label: 'Le laisser enfermé et poursuivre ton chemin', to: 'c144', effect: s => { s.flags.knightFate = 'locked'; } }
+      { label: 'Entrer dans la cellule pour l’achever', to: 'c97', effect: s => { replayKnight(s, 'observationPrisoner', null); } },
+      { label: 'Ouvrir la porte et le libérer', to: 'c137', effect: s => { replayKnight(s, 'observationPrisoner', 'freed'); } },
+      { label: 'Le laisser enfermé et poursuivre ton chemin', to: 'c144', effect: s => { replayKnight(s, 'observationPrisoner', 'locked'); } }
     ]
   },
   c97: {
@@ -4150,44 +4097,49 @@ const STORY = {
   c99: {
     number: 'PAGE 99', title: 'Le laboratoire des Veilleurs', image: 'Le dispensaire',
     text: `
-      <p>Dans la pénombre, tu distingues des lits étroits et une cheminée éteinte. Des niches vides sont creusées dans les murs.</p>
+      <p>Dans la pénombre, tu distingues des lits étroits, une cheminée éteinte et des niches creusées dans les murs.</p>
       <blockquote>QUE NUL NE SOIT LIVRÉ À L'APPEL SANS SECOURS.</blockquote>
-      <p>Les premiers carnets décrivent des voyageurs accueillis pour empêcher qu’ils ne descendent vers la prison. Les Veilleurs ont tenté d’apaiser cette emprise, sans résultat durable.</p>
-      <p>Dans la salle suivante, des tables à sangles entourent une cuve de terre noire. Les conduits aboutissent à des aiguilles dirigées vers les corps.</p>
-      <p>Au fond, un dispositif d'injection possède encore un levier mobile.</p>`,
+      <p>Les premiers carnets décrivent des voyageurs accueillis ici pour être empêchés de descendre vers la prison. Les Veilleurs ont d’abord tenté de les soigner.</p>
+      <p>Dans la salle suivante, des tables à sangles entourent une cuve de terre noire. Au même instant, un bruit métallique résonne derrière une cloison.</p>
+      <p>Sur l’une des sangles, une lanière a été tranchée net. Près de la table gît un morceau de tissu sombre, moins poussiéreux que le reste, de la couleur du surcot de Sir Aldren.</p>`,
     choices: [
-      { label: 'Examiner le mécanisme d’injection', to: 'c100' },
-      { label: 'Laisser la machine et examiner les ampoules', to: 'c102' }
+      { label: 'Suivre le bruit et examiner le mécanisme', to: 'c100' },
+      { label: 'Fouiller d’abord les réserves médicales', to: 'c102' }
     ]
   },
   c100: {
     number: 'PAGE 100', title: 'La machine d’injection', image: 'Les aiguilles des Veilleurs',
     text: `
-      <p>Sur la table, des schémas représentent un crâne traversé de lignes semblables à celles de la fresque de l'appel.</p>
+      <p>Derrière la cloison, le bruit vient d’un contrepoids qui oscille encore au bout d’une chaîne. Quelqu’un a dû le déclencher avant toi.</p>
+      <p>Sur la table, des schémas représentent un crâne traversé de lignes semblables à celles de la fresque de l’appel.</p>
       <blockquote>LE SUJET PEUT À NOUVEAU RETENIR SES GESTES.</blockquote>
       <blockquote>L’EMPRISE A REPRIS AU TROISIÈME JOUR.</blockquote>
-      <p>Le réservoir de cette machine contient encore de la terre noire. Ses conduits sont faits pour l'injecter.</p>
-      <p>Tu actionnes avec prudence le levier encore mobile.</p>
-      <p>Le bras s'abaisse plus vite que prévu. L'aiguille se dirige vers ton épaule.</p>`,
-    choices: [{ label: 'Esquiver l’aiguille — épreuve de Dextérité', to: 'c101', effect: s => { s.flags.injectionDodged = roll3D6(s, 'Dextérité', currentDexterity(s)); if (!s.flags.injectionDodged) injectBlackEarth(s); } }]
+      <p>Le réservoir de cette machine contient encore de la terre noire. Ses conduits sont faits pour l’injecter.</p>
+      <p>Le lambeau de tissu coincé dans la boucle confirme qu’un homme armé est passé par là. Aldren a-t-il réussi à se dégager ?</p>
+      <p>Le levier est resté partiellement abaissé.</p>`,
+    choices: [
+      { label: 'Actionner le levier avec prudence', to: 'c101', effect: s => { s.flags.injectionDodged = roll3D6(s, 'Dextérité', currentDexterity(s)); if (!s.flags.injectionDodged) injectBlackEarth(s); } },
+      { label: 'Laisser la machine et examiner les ampoules', to: 'c102' }
+    ]
   },
   c101: {
     number: 'PAGE 101', title: 'La terre sous la peau', image: 'L’injection',
     text: s => `
       ${diceResultHtml(s)}
       ${s.flags.injectionDodged
-        ? '<p>Tu te jettes sur le côté. L’aiguille frappe la table et le mécanisme se bloque.</p><p>Tu comprends comment les Veilleurs injectaient la matière aux personnes sanglées, sans en subir les effets.</p>'
+        ? '<p>Tu te jettes sur le côté. L’aiguille frappe la table et le mécanisme se bloque.</p><p>Le contrepoids cesse enfin de heurter la cloison. Tu comprends mieux comment les Veilleurs injectaient la matière aux personnes sanglées.</p>'
         : '<p>L’aiguille s’enfonce dans ton bras. Une brûlure remonte jusqu’à l’épaule.</p><p>Tu te dégages et recules. Tes muscles se contractent : une force nouvelle les parcourt.</p><p>Pendant quelques secondes, tu ne sais plus où tu es. Tes gestes perdent en précision.</p><p><strong>+2 Force, −1 Dextérité. Terre noire : contamination accrue.</strong> Ces effets durent tant que l’injection n’a pas été traitée.</p>'}
-      <p>Une boîte d'ampoules blanches est restée sur une étagère, derrière la machine.</p>`,
+      <p>Derrière la machine, une boîte d’ampoules blanches est restée sur une étagère.</p>`,
     choices: [{ label: 'Examiner les ampoules', to: 'c102' }]
   },
   c102: {
     number: 'PAGE 102', title: 'L’ampoule blanche', image: 'L’ampoule blanche',
     text: `
+      <p>Les réserves ont été fouillées dans la hâte. Des tiroirs pendent encore de travers, et une armoire porte une marque de lame sur son loquet.</p>
       <p>Une seule ampoule a résisté au temps. Son liquide blanc a été mis au point pour réduire la contamination.</p>
       <p>Une annotation décrit un traitement qui réduit la contamination, sans soigner les blessures. L’emprise de la chose enfermée peut alors reprendre de la force.</p>
-      <p>Tu peux l'emporter ou la laisser. Des registres attendent plus loin.</p>`,
-    choices: s => hasItem(s, 'ampoule_blanche')
+      <p>Tu peux l’emporter ou la laisser. Les derniers registres attendent plus loin.</p>`,
+    choices: s => hasItem(s, 'ampoule_blanche') || s.visited?.c138
       ? [{ label: 'Consulter les derniers registres', to: 'c103' }]
       : [
           { label: 'Prendre l’Ampoule blanche', to: 'c138', effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.') },
@@ -4197,13 +4149,13 @@ const STORY = {
   c103: {
     number: 'PAGE 103', title: 'La fabrication des gardiens', image: 'Le registre des expériences',
     text: `
-      <p>Les derniers registres ne parlent plus de guérison. Ils décrivent l'exposition volontaire de personnes appelées à la terre noire.</p>
+      <p>Les derniers registres ne parlent plus de guérison. Ils décrivent l’exposition volontaire de personnes appelées à la terre noire.</p>
       <blockquote>SUJET 17 : DÉCÈS.</blockquote>
       <blockquote>SUJET 18 : DÉCÈS.</blockquote>
       <blockquote>SUJET 19 : TRANSFORMATION. NE RÉPOND PLUS À L'APPEL.</blockquote>
       <blockquote>SUJET 20 : TRANSFORMATION. OBÉIT AUX SIGNAUX DE GARDE.</blockquote>
-      <p>Dans la marge, quelqu'un a écrit : « Ce sont encore des hommes. » Une autre main a répondu : « Plus pour longtemps. »</p>
-      <p>Ont-ils empêché une catastrophe, ou en ont-ils créé une autre ? Tu ne le sais pas.</p>
+      <p>Dans la marge, quelqu’un a écrit : « Ce sont encore des hommes. » Une autre main a répondu : « Plus pour longtemps. »</p>
+      <p>Les Veilleurs n’ont pas seulement tenté de retenir les appelés. Ils ont fini par fabriquer leurs propres gardiens.</p>
       <p>Une porte donne sur une salle ronde où convergent les autres itinéraires.</p>`,
     choices: [{ label: 'Quitter le laboratoire', to: 'c104' }]
   },
@@ -4241,8 +4193,8 @@ const STORY = {
       ${s.flags.commonAmpouleOffered ? '<p>Tu as déjà examiné le poste de secours.</p>' : ''}
       ${s.flags.blackEarthBagOffered ? '<p>Tu as déjà examiné la réserve.</p>' : ''}`,
     choices: s => [
-      ...(!s.flags.commonAmpouleOffered ? [{label:'Fouiller le poste de secours',to:'c107'}] : []),
-      ...(!s.flags.blackEarthBagOffered ? [{label:'Examiner la réserve',to:'c108'}] : []),
+      {label:'Fouiller le poste de secours',to:'c107'},
+      {label:'Examiner la réserve',to:'c108'},
       {label:'Descendre sans poursuivre les recherches',to:'c109'}
     ]
   },
@@ -4250,8 +4202,8 @@ const STORY = {
     number:'PAGE 107', title:'Le poste de secours',image:'Le poste de secours',
     text:`<p>Une armoire éventrée contient une ampoule intacte, remplie d'un liquide blanc.</p>
       <p>Sur l’étiquette, quelques mots : « Traitement de la terre noire. »</p>`,
-    choices:s => s.flags.commonAmpouleOffered ? [{label:'Revenir au carrefour',to:'c106'}] : [
-      {label:'Prendre l’Ampoule blanche',to:'c139',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');t.flags.commonAmpouleOffered=true;}},
+    choices:s => (s.visited?.c139 || hasItem(s,'ampoule_blanche_commune')) ? [{label:'Revenir au carrefour',to:'c106'}] : [
+      {label:'Prendre l’Ampoule blanche',to:'c139',effect:t=>{if (!t.visited?.c139 && !hasItem(t,'ampoule_blanche_commune')) addItem(t,'ampoule_blanche_commune','Ampoule blanche','Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');t.flags.commonAmpouleOffered=true;}},
       {label:'Laisser l’ampoule',to:'c106',effect:t=>{t.flags.commonAmpouleOffered=true;}}
     ]
   },
@@ -4259,8 +4211,8 @@ const STORY = {
     number:'PAGE 108',title:'La réserve de terre noire',image:'La réserve de terre noire',
     text:`<p>Sur une étagère repose une petite sacoche fermée par une cordelette. Elle contient une poudre noire, fine et sèche.</p>
       <p>Une mention au dos d'un sachet indique : « Dose : trois points de terre noire. »</p>`,
-    choices:s=>s.flags.blackEarthBagOffered ? [{label:'Revenir au carrefour',to:'c106'}] : [
-      {label:'Prendre la sacoche sans la consommer',to:'c140',effect:t=>{addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
+    choices:s=> (s.visited?.c140 || hasItem(s,'sacoche_terre_noire')) ? [{label:'Revenir au carrefour',to:'c106'}] : [
+      {label:'Prendre la sacoche sans la consommer',to:'c140',effect:t=>{if (!t.visited?.c140 && !hasItem(t,'sacoche_terre_noire')) addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
       {label:'Laisser la sacoche',to:'c106',effect:t=>{t.flags.blackEarthBagOffered=true;}}
     ]
   },
@@ -4661,13 +4613,14 @@ const STORY = {
 
   c131: {
     number: 'PAGE 131', title: "La corde du Veilleur", noImage: true,
-    text: `<p>Tu défais la ceinture de corde rouge du corps desséché. Le tressage est intact. Tu la ranges à portée de main.</p>`,
-    choices: state => state.flags.bridgeSatchelSearched
-      ? [{ label: 'Gagner la porte', to: 'c64' }]
-      : [
-          { label: 'Fouiller aussi la sacoche', to: 'c65' },
-          { label: 'Gagner la porte', to: 'c64' }
-        ]
+    onEnter: s => { if (hasItem(s, 'ceinture_rouge')) s.flags.bridgeCordTaken = true; },
+    text: state => hasItem(state, 'ceinture_rouge')
+      ? `<p>Tu réexamines la ceinture de corde rouge déjà rangée dans ton équipement. Son tressage est intact.</p>`
+      : `<p>Tu examines la ceinture de corde rouge du Veilleur. Son tressage est encore intact. Tu peux poursuivre vers la porte ou fouiller sa sacoche.</p>`,
+    choices: state => [
+      { label: state.flags.bridgeSatchelSearched ? 'Relire le parchemin de la sacoche' : 'Fouiller aussi la sacoche', to: 'c65' },
+      { label: 'Gagner la porte', to: 'c64' }
+    ]
   },
 
   c136: {
@@ -4801,7 +4754,7 @@ const STORY = {
       : '<p>Tu avances en retenant ton souffle, mais une planche gémit sous ta botte. La chose s’immobilise sous toi, puis ses longs doigts se referment sur le bord du pont. Elle te barre la route.</p>'}`,
     choices: s => s.flags.bridgeCalmPassed
       ? [{ label: 'Achever la traversée', to: 'c63' }]
-      : [{ label: 'Faire face au marcheur', to: 'c61', effect: t => { t.flags.bridgeSolution = 'fight'; } }]
+      : [{ label: 'Faire face au marcheur', to: 'c61', effect: t => { t.flags.bridgeSolution = 'fight'; if (t.combats?.bridgeWalker?.hp <= 0) replayCombat(t, 'bridgeWalker'); } }]
   },
 
   c132: {
@@ -5651,7 +5604,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 59,
+    contentVersion: 60,
     pageMapVersion: 72,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
