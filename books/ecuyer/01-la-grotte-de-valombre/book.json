@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 58,
+  "contentVersion": 59,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.23 — Bouclier récupérable directement page 145 · Travail · 150 pages",
+  "buildLabel": "V68.24 — Correction page 098 · Travail · 150 pages",
   "pageMapVersion": 72
 }
