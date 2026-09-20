@@ -568,11 +568,10 @@
       "label": "Quartier d’observation",
       "x": 375,
       "y": 1459,
-      "pages": ["c92", "c93", "c94", "c95"],
+      "pages": ["c92", "c93", "c94"],
       "notes": [
         {"page": "c93", "text": "Un chevalier d’un village voisin dit avoir entendu l’appel et être venu dans la cité récemment."},
-        {"page": "c94", "text": "Le chevalier a lu les carnets médicaux des Veilleurs. Il s’est injecté lui-même de la terre noire pour résister à l’appel."},
-        {"page": "c95", "text": "À force de répéter les injections de terre noire, le chevalier a transformé le bas de son corps. Il s’est enfermé avant de perdre le contrôle de lui-même."}
+        {"page": "c94", "text": "Le chevalier a lu les carnets médicaux des Veilleurs. Il s’est injecté de la terre noire pour résister à l’appel, jusqu’à transformer le bas de son corps, puis s’est enfermé pour éviter de perdre le contrôle."}
       ]
     },
     {
@@ -580,10 +579,10 @@
       "label": "La dernière cellule",
       "x": 375,
       "y": 1616,
-      "pages": ["c96", "c97", "c98", "c126", "c137", "c144", "c145", "c146", "c147"],
+      "pages": ["c96", "c97", "c98", "c126", "c137", "c144", "c145", "c146", "c147", "c149", "c150"],
       "notes": [
         {"page": "c96", "text": "Le chevalier supplie d’être libéré ou achevé. Il dit avoir utilisé toute sa réserve de remède blanc, qui faisait revenir l’appel."},
-        {"page": "c145", "text": "La sacoche du chevalier contient des gants des Veilleurs qui permettent de manipuler une grille couverte de terre noire sans soulever la poussière.", "requiresFlag": "knightGlovesTaken"}
+        {"page": "c145", "text": "Un petit bouclier récupéré après le combat absorbe jusqu’à six dégâts, au prix d’un point de Dextérité tant qu’il protège.", "requiresFlag": "knightShieldTaken"}
       ]
     },
     {
