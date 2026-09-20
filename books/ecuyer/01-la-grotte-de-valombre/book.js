@@ -3317,7 +3317,7 @@ const STORY = {
     `,
     choices: state => {
       const list = [
-        { label: 'Garder ton calme et continuer lentement — épreuve de Dextérité', to: 'c129', effect: s => { s.flags.bridgeSolution = 'calm'; s.flags.bridgeCalmPassed = roll3D6(s, 'Dextérité', currentDexterity(s)); } }
+        { label: 'Garder ton calme et continuer lentement', to: 'c129', effect: s => { s.flags.bridgeSolution = 'calm'; s.flags.bridgeCalmPassed = roll3D6(s, 'Dextérité', currentDexterity(s)); } }
       ];
       if (state.throwingBlades > 0) {
         list.push({
@@ -3332,7 +3332,7 @@ const STORY = {
       }
       list.push(
         {
-          label: 'Courir jusqu’à l’autre côté — tester ta Dextérité',
+          label: 'Courir jusqu’à l’autre côté',
           to: 'c60',
           effect: s => {
             const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
@@ -3521,19 +3521,21 @@ const STORY = {
     title: 'L’autre extrémité du pont',
     image: 'L’autre extrémité du pont',
     text: state => {
-      const intro = state.flags.bridgeSolution === 'blade'
-        ? `<p>La lame de jet tinte contre une pierre très loin sous le pont.</p><p>La chose lâche aussitôt la face inférieure du pont et disparaît dans la brume à sa poursuite.</p>`
-        : state.flags.bridgeSolution === 'calm'
-          ? `<p>Tu continues à avancer sans accélérer.</p><p>La chose reste sous toi jusqu’aux dernières planches, puis s’arrête exactement à la limite de la roche.</p><p>Elle ne franchit pas le bord.</p>`
-          : '';
+      const intro = state.flags.bridgeSolution === 'calm'
+        ? `<p>Tu continues à avancer sans accélérer.</p><p>La chose reste sous toi jusqu’aux dernières planches, puis s’arrête exactement à la limite de la roche.</p><p>Elle ne franchit pas le bord.</p>`
+        : '';
       return `
         ${intro}
 
         <p>Tu atteins enfin l’autre extrémité du pont.</p>
 
-        <p>Près d’un ancien point d’ancrage, un squelette est assis contre la pierre.</p>
+        <p>Près d’un ancien point d’ancrage, un corps desséché repose contre la pierre.</p>
 
-        <p>Il porte encore autour de la taille une étrange ceinture faite de corde rouge tressée.</p>
+        <p>Des lambeaux de chair noire maintiennent encore une partie des os entre eux.</p>
+
+        <p>Le crâne, lui, a roulé un peu plus loin, entre deux pierres.</p>
+
+        <p>Autour de la taille, le mort porte encore une étrange ceinture faite de corde rouge tressée.</p>
 
         <p>Elle ressemble aux fragments aperçus sur les pitons de la corniche.</p>
 
@@ -3568,11 +3570,11 @@ const STORY = {
     text: `
       <p>Une porte de bois renforcé ferme le passage creusé dans la falaise. Sa hauteur suffit à peine à laisser passer un homme en armure.</p>
 
-      <p>Derrière elle, un escalier descend en suivant la roche. La lumière du jour s’y fait de plus en plus rare.</p>
+      <p>Derrière elle, un escalier descend en suivant la roche. À mesure que tu avances, la lumière du jour se fait de plus en plus présente.</p>
 
-      <p>Tu aperçois maintenant les toits de pierre, des cheminées et les fenêtres du quartier haut. Rien ne distingue ces maisons de celles d’un village ordinaire, sinon l’immense caverne qui les abrite.</p>
+      <p>Une immense ouverture dans la voûte de la caverne laisse apparaître le ciel. Sous cette lumière se dévoilent les toits de pierre, les cheminées et les fenêtres du quartier haut. Rien ne distingue ces maisons de celles d’un village ordinaire, sinon l’immense caverne qui les abrite.</p>
 
-      <p>Le passage aboutit à une passerelle bordée d’un parapet. Elle rejoint les premières habitations.</p>
+      <p>L’escalier aboutit à une passerelle bordée d’un parapet. Elle rejoint les premières habitations.</p>
     `,
     choices: [
       { label: 'Traverser la passerelle', to: 'c65' }
@@ -4619,13 +4621,16 @@ const STORY = {
 
   c130: {
     number: 'PAGE 130', title: "La lame de diversion", noImage: true,
-    text: `<p>Tu projettes une lame au-delà du pont. Elle fend la brume et disparaît sous les planches.</p><p>La créature desserre ses prises et se détourne dans la direction du projectile. Tu peux poursuivre ta traversée sans l’affronter.</p>`,
+    text: `<p>Tu projettes une lame au-delà du pont. Elle fend la brume et disparaît sous les planches.</p>
+      <p>La lame de jet tinte contre une pierre très loin sous le pont.</p>
+      <p>La chose lâche aussitôt la face inférieure du pont et disparaît dans la brume à sa poursuite.</p>
+      <p>Tu peux poursuivre ta traversée sans l’affronter.</p>`,
     choices: [{label: "Achever la traversée", to: 'c63'}]
   },
 
   c131: {
     number: 'PAGE 131', title: "La corde du Veilleur", noImage: true,
-    text: `<p>Tu défais la ceinture de corde rouge du squelette. Le tressage est intact. Tu la ranges à portée de main avant de te diriger vers la porte.</p>`,
+    text: `<p>Tu défais la ceinture de corde rouge du corps desséché. Le tressage est intact. Tu la ranges à portée de main avant de te diriger vers la porte.</p>`,
     choices: [{label: "Gagner la porte", to: 'c64'}]
   },
 
