@@ -100,7 +100,7 @@ function loadState() {
     const previous = JSON.parse(saved);
     if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== (BOOK.pageMapVersion || 58)) {
       try {
-        if (!localStorage.getItem(`${STORAGE_KEY}.backup-v63`)) localStorage.setItem(`${STORAGE_KEY}.backup-v63`, saved);
+        if (!localStorage.getItem(`${STORAGE_KEY}.backup-v68`)) localStorage.setItem(`${STORAGE_KEY}.backup-v68`, saved);
       } catch (e) {}
       BOOK.migrateState(previous);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(previous));
@@ -149,7 +149,7 @@ function restartFromCheckpoint() {
     const previous = JSON.parse(saved);
     if (typeof BOOK.migrateState === 'function' && previous.pageMapVersion !== (BOOK.pageMapVersion || 58)) {
       try {
-        if (!localStorage.getItem(`${CHECKPOINT_KEY}.backup-v63`)) localStorage.setItem(`${CHECKPOINT_KEY}.backup-v63`, saved);
+        if (!localStorage.getItem(`${CHECKPOINT_KEY}.backup-v68`)) localStorage.setItem(`${CHECKPOINT_KEY}.backup-v68`, saved);
       } catch (e) {}
       BOOK.migrateState(previous);
       localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(previous));
@@ -237,7 +237,7 @@ const atlasPageAreas = new Map();
 for (const area of (ATLAS?.nodes || [])) for (const page of area.pages) atlasPageAreas.set(page, area.id);
 const atlasKnownEdges = new Set((ATLAS?.edges || []).map(([a,b]) => [a,b].sort().join('|')));
 function atlasEdgeKey(a,b) { return [a,b].sort().join('|'); }
-function atlasDefaultMemory() {return {version:2,pageMapVersion:63,visited:[],facts:[],edges:[],deaths:[],lastShown:''};}
+function atlasDefaultMemory() {return {version:3,pageMapVersion:68,visited:[],facts:[],edges:[],deaths:[],lastShown:''};}
 function atlasLoadMemory() {
   try {
     const saved = JSON.parse(localStorage.getItem(ATLAS_KEY));
@@ -263,7 +263,18 @@ function atlasLoadMemory() {
       initial.facts=initial.facts.filter(key => !key.startsWith('observation:') && !key.startsWith('cahiers:'));
       initial.lastShown='';
     }
-    initial.pageMapVersion=ATLAS?.mode === 'work' ? 63 : 59;
+    if (ATLAS?.mode === 'work' && Number(saved.pageMapVersion || 0) < 68) {
+      const renumber={c106:'c107',c107:'c108',c108:'c109'};
+      initial.facts=initial.facts.map(key=>{
+        const at=key.lastIndexOf(':');
+        if (at<0) return key;
+        const page=key.slice(at+1);
+        return key.slice(0,at+1)+(renumber[page]||page);
+      });
+      initial.deaths=initial.deaths.map(page=>renumber[page]||page);
+      initial.lastShown='';
+    }
+    initial.pageMapVersion=ATLAS?.mode === 'work' ? 68 : 59;
     return initial;
   } catch {return atlasDefaultMemory();}
 }

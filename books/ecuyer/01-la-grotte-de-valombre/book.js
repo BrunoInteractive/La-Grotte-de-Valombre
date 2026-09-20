@@ -366,17 +366,27 @@ function injectBlackEarth(state) {
   state.flags.labInjected = true;
   raiseContamination(state, 2);
 }
-// Jet inverse des caractéristiques habituelles : il faut atteindre le seuil.
-// Plus la terre noire progresse, plus l'injonction du Dormeur est faible.
-function rollWillAgainstCall(state) {
-  const dice = [cryptoDie6(), cryptoDie6(), cryptoDie6()];
-  state.rollCount = (state.rollCount || 0) + 1;
-  state.lastDice = dice;
-  state.lastTotal = dice.reduce((a, b) => a + b, 0);
-  const threshold = Math.max(6, 16 - contaminationLevel(state));
-  state.lastStat = threshold;
-  state.lastStatName = 'Résistance à l’emprise : atteindre au moins';
-  return state.lastTotal >= threshold;
+// V68 : la contamination module ce qui est entendu, jamais un jet de résistance.
+// Une décision du joueur n'est pas forcée par ce niveau.
+function dormantPerception(state, location) {
+  const earth = contaminationLevel(state);
+  if (location === 'avenue') {
+    if (earth <= 4) return `<p>Un murmure te parvient de nouveau, distinct malgré l'obscurité.</p>
+      <blockquote>« On m'a enfermé ici. Ouvre ma prison et je pourrai apaiser les esprits qui errent dans la vallée. Je peux te conduire jusqu'à celui que tu cherches. »</blockquote>
+      <p>L'appel semble venir du fond de l'avenue.</p>`;
+    if (earth <= 8) return `<p>Quelques mots troublent le silence, puis s'éloignent.</p>
+      <blockquote>« Ouvre… Je peux les apaiser… »</blockquote>
+      <p>Sur une borne, l'œil fermé est accompagné d'une mise en garde : « NE PAS OUVRIR LA PRISON. » La voix s'interrompt.</p>`;
+    return `<p>Aucune voix ne t'accompagne. Sur les bornes de pierre, les Veilleurs ont gravé l'œil fermé et cette mise en garde : « NE PAS OUVRIR LA PRISON. »</p>`;
+  }
+  if (location === 'service') {
+    if (earth <= 4) return `<p>La présence revient tandis que tu progresses sous les étais.</p>
+      <blockquote>« Ils avaient peur de moi. Ils m'ont laissé seul ici. Laisse-moi sortir. »</blockquote>
+      <p>Une flèche gravée par les Veilleurs indique pourtant une autre direction : le passage de service.</p>`;
+    if (earth <= 8) return `<p>Tu perçois une phrase incomplète : « Ils m'ont laissé… » Puis le silence revient. Sur la paroi, une inscription des Veilleurs avertit : « SA PAROLE N'EST PAS UN ORDRE. »</p>`;
+    return `<p>Sur la paroi, une inscription des Veilleurs avertit : « SA PAROLE N'EST PAS UN ORDRE. » Le couloir demeure silencieux.</p>`;
+  }
+  return '';
 }
 function equipVeilleurCollar(state) {
   if (state.flags.collarEquipped || state.flags.collarTorn) return;
@@ -4035,11 +4045,11 @@ const STORY = {
       ${s.flags.observationBalanceAsked ? `<p>Il te regarde longuement avant de répondre.</p>
         <blockquote>« Ils parlaient d’une juste dose. Pendant quelques jours, j’ai tenu. Après, il fallait recommencer… et je n’y arrivais plus. »</blockquote>
         <p>Il défait avec peine un bracelet métallique de son poignet.</p>
-        <blockquote>« Prenez-le. Je le serrais quand mes mains ne m’obéissaient plus. Le ressort est presque mort, mais il peut encore servir une fois. »</blockquote>
+        <blockquote>« Prenez-le. Il serrait ma main pour la retenir. Le fermoir peut encore s'accrocher à un anneau, une fois, pas davantage. »</blockquote>
         <p>Il te tend le bracelet à travers le volet.</p>
         <blockquote>« Maintenant, partez. Fuyez la folie des Veilleurs. »</blockquote>` : '<p>Son regard se fixe brusquement sur le bras qu’il cache sous sa manche.</p>'}`,
     choices: s => s.flags.observationBalanceAsked ? [
-      { label: 'Prendre le bracelet d’ancrage et reculer', to: 'c97', effect: t => { addItem(t, 'bracelet_ancrage', 'Bracelet d’ancrage', 'Usage unique : permet de retenter un test de résistance raté contre l’emprise du Dormeur.'); t.flags.observationBraceletTaken = true; } },
+      { label: 'Prendre le bracelet d’ancrage et reculer', to: 'c97', effect: t => { addItem(t, 'bracelet_ancrage', 'Bracelet d’ancrage', 'Usage unique : son fermoir s’accroche à un anneau pour sécuriser la descente du puits.'); t.flags.observationBraceletTaken = true; } },
       { label: 'Laisser le bracelet et reculer', to: 'c97', effect: t => { t.flags.observationBraceletDeclined = true; } }
     ] : [
       { label: '« Vous aviez trouvé une dose qui permettait de tenir ? »', stay: true, effect: t => { t.flags.observationBalanceAsked = true; } },
@@ -4178,88 +4188,69 @@ const STORY = {
   c105: {
     number: 'PAGE 105', title: 'Le registre du médecin', image: 'Le registre du médecin',
     onEnter: s => { s.flags.physicianNotesRead=true; },
-    text: `<p>Dans le couloir commun, un registre repose sur le pupitre d’un médecin des Veilleurs. Ses pages détaillent les effets de la terre noire sur ceux qui entendent l’appel.</p>
-      <blockquote>« La terre noire affaiblit l’emprise du prisonnier. Plus elle gagne le corps, moins il peut commander les gestes du sujet. Mais elle finit par le transformer. »</blockquote>
-      <p><strong>De 0 à 4 :</strong> le corps reste relativement préservé, mais l’emprise du Dormeur est puissante.</p>
-      <p><strong>De 5 à 8 :</strong> l’emprise diminue et le malade garde davantage le contrôle de ses gestes. Le risque n’est pas nul.</p>
-      <p><strong>De 9 à 12 :</strong> le Dormeur peine à contrôler le malade, mais le corps commence à se transformer.</p>
-      <p><strong>À 13 :</strong> aucun retour n’a été observé. Le sujet devient un gardien.</p>
-      <blockquote>« Sans la terre noire, ils lui appartiennent. Avec elle, ils finissent par nous échapper également. »</blockquote>
-      <p>Tu comprends le piège : une dose intermédiaire peut t’aider à résister, mais la terre noire n’est jamais sans danger. Plus tu en portes, plus un test de résistance à l’emprise devient facile ; à treize points, tu te transformes.</p>`,
-    choices: [{label:'Continuer vers l’ancien poste de secours',to:'c106'}]
+    text: `<p>Dans le couloir, un registre médical repose sur un pupitre. Des observations y comparent l'emprise et les effets de la terre noire.</p>
+      <blockquote>« Plus la terre noire gagne le corps, plus l'appel faiblit. Mais la transformation progresse. »</blockquote>
+      <p><strong>De 0 à 4 :</strong> l'appel demeure très présent.</p>
+      <p><strong>De 5 à 8 :</strong> il devient intermittent. Le corps semble résister à la transformation.</p>
+      <p><strong>De 9 à 12 :</strong> l'appel se tait presque, mais des transformations apparaissent.</p>
+      <p><strong>À 13 :</strong> aucun retour n'a été observé.</p>
+      <p>Plusieurs lignes évoquent un traitement blanc qui retire quatre points de terre noire, sans guérir les blessures.</p>`,
+    choices: [{label:'Quitter le registre',to:'c106'}]
   },
   c106: {
-    number:'PAGE 106', title:'Le poste de secours', image:'Le poste de secours',
-    text:`<p>Tu traverses un ancien poste de secours des Veilleurs. Une armoire éventrée contient une dernière ampoule intacte, remplie d’un liquide blanc.</p><p>Les notes du médecin précisent qu’elle retire quatre points de terre noire sans guérir les blessures. Tu peux la garder pour plus tard, ou la laisser.</p>`,
-    choices:s => s.flags.commonAmpouleOffered ? [{label:'Poursuivre',to:'c107'}] : [
-      {label:'Prendre l’Ampoule blanche',to:'c107',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Remède : −4 terre noire, sans restaurer la Vie.');t.flags.commonAmpouleOffered=true;}},
-      {label:'Laisser l’ampoule',to:'c107',effect:t=>{t.flags.commonAmpouleOffered=true;}}
+    number:'PAGE 106', title:'Le carrefour des soins', image:'Le carrefour des soins', noImage:true,
+    text: s => `<p>Le couloir se sépare devant un escalier descendant. Une porte donne sur un poste de secours, l'autre sur une petite réserve.</p>
+      ${s.flags.commonAmpouleOffered ? '<p>Tu as déjà examiné le poste de secours.</p>' : ''}
+      ${s.flags.blackEarthBagOffered ? '<p>Tu as déjà examiné la réserve.</p>' : ''}`,
+    choices: s => [
+      ...(!s.flags.commonAmpouleOffered ? [{label:'Fouiller le poste de secours',to:'c107'}] : []),
+      ...(!s.flags.blackEarthBagOffered ? [{label:'Examiner la réserve',to:'c108'}] : []),
+      {label:'Descendre sans poursuivre les recherches',to:'c109'}
     ]
   },
   c107: {
-    number:'PAGE 107',title:'La réserve de terre noire',image:'La réserve de terre noire',
-    text:`<p>Dans la pièce suivante, une petite sacoche fermée par une cordelette repose sur une étagère. Elle contient une poudre noire, fine et sèche.</p><p>Tu repenses au registre : l’absorber pourrait affaiblir l’emprise du Dormeur, mais accélérerait ta transformation. Cette dose ajouterait trois points de terre noire.</p>`,
-    choices:s=>s.flags.blackEarthBagOffered ? [{label:'Rejoindre le couloir de la grille',to:'c108'}] : [
-      {label:'Prendre la sacoche sans la consommer',to:'c108',effect:t=>{addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
-      {label:'Laisser la sacoche',to:'c108',effect:t=>{t.flags.blackEarthBagOffered=true;}}
+    number:'PAGE 107', title:'Le poste de secours',image:'Le poste de secours',
+    text:`<p>Une armoire éventrée contient une ampoule intacte, remplie d'un liquide blanc.</p>
+      <p>Une étiquette précise : « Traitement de la terre noire : moins quatre points. Ne soigne pas les blessures. »</p>`,
+    choices:s => s.flags.commonAmpouleOffered ? [{label:'Revenir au carrefour',to:'c106'}] : [
+      {label:'Prendre l’Ampoule blanche',to:'c106',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Remède : −4 terre noire, sans restaurer la Vie.');t.flags.commonAmpouleOffered=true;}},
+      {label:'Laisser l’ampoule',to:'c106',effect:t=>{t.flags.commonAmpouleOffered=true;}}
     ]
   },
   c108: {
-    number: 'PAGE 108', title: 'L’emprise et la grille', image: 'La grille des anciens registres',
-    text: state => `
-      <p>Tu quittes la salle commune. Dans le couloir suivant, une niche fermée par une grille contient des tablettes de pierre.</p>
-      <p>Tu t’approches pour les examiner. Avant d’atteindre la grille, tes jambes se tournent d’elles-mêmes vers l’avenue qui descend à la prison.</p>
-      <p>Tu t’arrêtes, mais ton bras se tend dans la direction de l’avenue. Tu sens qu’une force cherche à décider de tes mouvements.</p>
-      <p>Les tablettes sont encore à portée de main. L’emprise voudrait te les faire abandonner.</p>
-      ${state.flags.physicianNotesRead ? `<p><strong>Terre noire : ${contaminationLevel(state)}/13.</strong> Tu sais qu’une contamination modérée affaiblit l’emprise. Une dose excessive peut cependant te transformer.</p>` : `<p>${contaminationLevel(state)>0 ? `<strong>Terre noire : ${contaminationLevel(state)}/13.</strong> ` : ''}Tu ignores encore pourquoi cette force te pousse à descendre.</p>`}`,
-    choices: s => [
-      { label: 'Céder à l’emprise et descendre vers la prison', to: 'c111', effect: t => { t.flags.commonVoiceChoice = 'obeyed'; } },
-      { label: `Lutter pour contrôler ton corps — test de résistance (3D6 ≥ ${Math.max(6, 16-contaminationLevel(s))})`, to: 'c109', effect: t => { t.flags.commonVoiceChoice = rollWillAgainstCall(t) ? 'resisted' : 'forced'; } },
-      // An earned seal from a V60 save is honored, but it can no longer be found in this route.
-      ...(hasItem(s, 'sceau_silence') ? [{ label: 'Briser l’ancien Sceau de silence pour reprendre le contrôle (usage unique)', to: 'c109', effect: t => { removeItem(t, 'sceau_silence'); t.flags.silenceSealUsed = true; t.flags.commonVoiceChoice = 'seal'; } }] : [])
+    number:'PAGE 108',title:'La réserve de terre noire',image:'La réserve de terre noire',
+    text:`<p>Sur une étagère repose une petite sacoche fermée par une cordelette. Elle contient une poudre noire, fine et sèche.</p>
+      <p>Une mention au dos d'un sachet indique : « Dose : trois points de terre noire. »</p>`,
+    choices:s=>s.flags.blackEarthBagOffered ? [{label:'Revenir au carrefour',to:'c106'}] : [
+      {label:'Prendre la sacoche sans la consommer',to:'c106',effect:t=>{addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
+      {label:'Laisser la sacoche',to:'c106',effect:t=>{t.flags.blackEarthBagOffered=true;}}
     ]
   },
   c109: {
-    number: 'PAGE 109', title: 'Reprendre le contrôle', image: 'Le silence dans le couloir',
-    text: s => `
-      ${s.flags.commonVoiceChoice === 'seal'
-        ? '<p>Tu brises le vieux disque dans ta main. La pression qui guidait tes membres se relâche d’un coup. Tu peux de nouveau décider où aller.</p>'
-        : `${diceResultHtml(s)}${s.flags.commonVoiceChoice === 'resisted'
-          ? '<p>Tu plantes les pieds dans le sol et retiens ton bras. Peu à peu, la pression cède. Tu es libre de choisir.</p>'
-          : s.flags.commonVoiceChoice === 'bracelet'
-            ? '<p>Le bracelet se resserre sur ton poignet. La douleur aiguë te rend le contrôle de ta main ; son ressort se brise aussitôt.</p>'
-            : s.flags.observationBraceletUsed
-              ? '<p>Le bracelet se referme sur ton poignet, mais l’emprise ne cède pas. Le mécanisme se brise. Tes pas te ramènent vers l’avenue.</p>'
-              : '<p>Malgré tes efforts, tes jambes repartent vers l’avenue. Tu ne parviens pas à te retourner vers la grille.</p>'}`}`,
-    choices: s => (s.flags.commonVoiceChoice === 'resisted' || s.flags.commonVoiceChoice === 'seal' || s.flags.commonVoiceChoice === 'bracelet')
-      ? [ { label: 'Examiner les tablettes derrière la grille', to: 'c110' }, { label: 'Ne pas insister et gagner l’avenue', to: 'c111' } ]
-      : [
-          ...(s.flags.commonVoiceChoice === 'forced' && hasItem(s, 'bracelet_ancrage')
-            ? [{ label: 'Activer le bracelet d’ancrage et retenter une seule fois le test de résistance', to: 'c109', effect: t => {
-                removeItem(t, 'bracelet_ancrage');
-                t.flags.observationBraceletUsed = true;
-                t.flags.commonVoiceChoice = rollWillAgainstCall(t) ? 'bracelet' : 'forced';
-              } }]
-            : []),
-          { label: 'Poursuivre dans l’avenue', to: 'c111' }
-        ]
+    number: 'PAGE 109', title: 'La grille et les tablettes', image: 'La grille des anciens registres',
+    text: s => `<p>Au bas de l'escalier, une niche derrière une grille abrite plusieurs tablettes de pierre. La grille est entrouverte.</p>
+      <p>Une avenue descend vers les parties profondes de la cité. Tu ressens une pression dans tes jambes, comme une envie de t'y engager. Tu peux pourtant t'arrêter devant les tablettes.</p>
+      ${s.flags.silenceSealUsed ? '<p>Le Sceau de silence que tu as brisé a interrompu cette sensation quelques instants.</p>' : ''}`,
+    choices: s => [
+      {label:'Fouiller les tablettes',to:'c110',effect:t=>{t.flags.tabletsExamined=true;}},
+      {label:'Poursuivre vers la prison',to:'c111'},
+      ...(hasItem(s,'sceau_silence') ? [{label:'Briser le vieux Sceau de silence et examiner les tablettes',to:'c110',effect:t=>{removeItem(t,'sceau_silence');t.flags.silenceSealUsed=true;t.flags.tabletsExamined=true;}}] : [])
+    ]
   },
   c110: {
-    number: 'PAGE 110', title: 'Ce que l’on voulait taire', image: 'Les tablettes des Veilleurs',
-    text: `
-      <p>La grille cède sous ta main. Derrière elle, plusieurs tablettes portent la même écriture.</p>
+    number: 'PAGE 110', title: 'Les tablettes des Veilleurs', image: 'Les tablettes des Veilleurs',
+    text: `<p>Plusieurs tablettes portent la même écriture.</p>
       <blockquote>LA FORCE NOUS A RETIRÉS DE LA VASQUE. TROIS GARDES ONT ÉTÉ ÉPARGNÉS.</blockquote>
       <p>Sur une autre tablette :</p>
       <blockquote>ELLE GUIDAIT ENSUITE NOS MAINS ET NOS PAS VERS LA PORTE. SON AIDE NE SIGNIFIE PAS QUE NOUS DEVONS LUI OBÉIR.</blockquote>
-      <p>Tu repenses à la vasque : cette force t’a peut-être protégé de la terre noire. Mais elle veut aussi utiliser ton corps pour atteindre sa prison.</p>
-      <p>Au bout du passage, l’avenue s’enfonce sous la cité.</p>`,
-    choices: [{ label: 'Poursuivre vers les niveaux inférieurs', to: 'c111' }]
+      <p>Au bout du passage, l'avenue s'enfonce sous la cité.</p>`,
+    choices: [{label:'Poursuivre vers les niveaux inférieurs',to:'c111'}]
   },
   c111: {
     number: 'PAGE 111',
     title: 'L’avenue basse',
     image: 'L’avenue basse',
-    text: `
+    text: state => `
       <p>Tu quittes le carrefour par une avenue qui descend lentement.</p>
 
       <p>Ici, la cité paraît moins intacte.</p>
@@ -4274,6 +4265,8 @@ const STORY = {
 
       <p>Quelqu’un s’en servait pour se repérer.</p>
 
+      ${dormantPerception(state, 'avenue')}
+
       <p>Plus bas, une partie entière de la rue s’est effondrée.</p>
 
       <p>Derrière les pierres brisées, tu distingues un mur de soutènement appuyé contre la roche.</p>
@@ -4287,7 +4280,7 @@ const STORY = {
     number: 'PAGE 112',
     title: 'Le passage de service',
     image: 'Derrière le mur',
-    text: `
+    text: state => `
       <p>Tu longes l’éboulement jusqu’à trouver une ouverture entre deux blocs.</p>
 
       <p>Elle est étroite, mais quelqu’un a déjà déplacé plusieurs pierres pour l’agrandir.</p>
@@ -4299,6 +4292,8 @@ const STORY = {
       <p>Le plafond est bas. Les parois portent encore les traces régulières d’outils.</p>
 
       <p>À plusieurs endroits, des étais de bois se sont effondrés depuis longtemps. Tu dois escalader leurs restes, ramper sous une poutre puis te hisser sur une corniche étroite.</p>
+
+      ${dormantPerception(state, 'service')}
 
       <p>Le passage se termine au bord d’un conduit vertical.</p>
 
@@ -4328,6 +4323,7 @@ const STORY = {
 
       ${hasItem(state, 'ceinture_rouge') ? '<p>La Ceinture de corde rouge peut te servir à t’assurer aux anneaux pendant la descente.</p>' : '<p>Sans corde, tu devras compter sur les prises et sur ton équilibre.</p>'}
       ${hasItem(state, 'anneau_veilleurs') ? '<p>À côté du puits, un petit logement circulaire reproduit exactement le motif de ton Anneau des Veilleurs. Il est relié à une échelle de service repliée dans la paroi.</p>' : ''}
+      ${hasItem(state, 'bracelet_ancrage') ? '<p>Le fermoir à ressort du bracelet d’ancrage peut retenir ton poignet à l’un des anneaux de fer le temps de descendre.</p>' : ''}
     `,
     choices: state => {
       const list = [];
@@ -4343,6 +4339,13 @@ const STORY = {
           label: 'T’assurer avec la Ceinture de corde rouge',
           to: 'c114',
           effect: s => { s.flags.cityWellDescent = 'rope'; }
+        });
+      }
+      if (hasItem(state, 'bracelet_ancrage')) {
+        list.push({
+          label: 'Fixer le bracelet d’ancrage à un anneau (usage unique)',
+          to: 'c114',
+          effect: s => { removeItem(s, 'bracelet_ancrage'); s.flags.cityWellDescent='bracelet'; }
         });
       }
       list.push({
@@ -4380,6 +4383,9 @@ const STORY = {
 
           <p>Tu atteins la plateforme sans blessure.</p>
         `;
+      } else if (descent === 'bracelet') {
+        intro = `<p>Tu fixes le fermoir du bracelet à un anneau de fer. Quand ton pied glisse, son ressort retient ton poignet le temps que tu retrouves une prise.</p>
+          <p>Le mécanisme cède alors. Tu termines la descente sans blessure, mais le bracelet est hors d’usage.</p>`;
       } else if (descent === 'success') {
         intro = diceResultHtml(state) + `
           <p>Tu descends en prenant le temps de tester chaque prise avant d’y mettre ton poids.</p>
@@ -4520,7 +4526,7 @@ const STORY = {
   // Libellés complets de l’outil de navigation TEST.
   // Les titres narratifs de STORY restent volontairement masqués sur certaines pages.
   const PAGE_NAV_TITLES = {
-    'c105': 'Le registre du médecin', 'c106': 'Le poste de secours', 'c107': 'La réserve de terre noire',
+    'c105': 'Le registre du médecin', 'c106': 'Le carrefour des soins', 'c107': 'Le poste de secours', 'c108': 'La réserve de terre noire',
     "c0": "Prologue — Valombre",
     "c1": "Les écuries de Valombre",
     "c2": "La sacoche de Sir Aldren",
@@ -4626,9 +4632,8 @@ const STORY = {
     "c102": "L’ampoule blanche",
     "c103": "La fabrication des gardiens",
     "c104": "Les défenses du sceau",
-    "c108": "L’emprise et la grille",
-    "c109": "Reprendre le contrôle",
-    "c110": "Ce que l’on voulait taire",
+    "c109": "La grille et les tablettes",
+    "c110": "Les tablettes des Veilleurs",
     "c111": "L’avenue basse",
     "c112": "Le passage de service",
     "c113": "Le puits des Veilleurs",
@@ -4696,7 +4701,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 63,
+      pageMapVersion: 68,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -4859,6 +4864,27 @@ const STORY = {
     state.pageMapVersion = 63;
     return state;
   }
+  // V68 : le passage 106 devient un carrefour facultatif. Le poste, la réserve
+  // et la grille changent d'adresse ; une ancienne sauvegarde reste utilisable.
+  function migratePageNumbersV68(state) {
+    migratePageNumbersV63(state);
+    if (state.pageMapVersion >= 68) return state;
+    const map = {c106:'c107',c107:'c108',c108:'c109',c109:'c109'};
+    const rename = id => typeof id === 'string' ? (map[id] || id) : id;
+    state.node=rename(state.node);
+    if (Array.isArray(state.history)) state.history=state.history.map(rename);
+    for (const field of ['visited','damageRolls','damageRollResults']) {
+      if (state[field] && typeof state[field] === 'object' && !Array.isArray(state[field])) {
+        state[field]=Object.fromEntries(Object.entries(state[field]).map(([id,value])=>[rename(id),value]));
+      }
+    }
+    if (!state.flags || typeof state.flags !== 'object') state.flags={};
+    delete state.flags.commonVoiceChoice;
+    delete state.flags.observationBraceletUsed;
+    // Les objets et doses déjà obtenus ne sont jamais accordés une seconde fois.
+    state.pageMapVersion=68;
+    return state;
+  }
   const TEST_ITEM_CATALOG = [
     {
       id: 'parchemin',
@@ -4927,7 +4953,7 @@ const STORY = {
     {
       id: 'bracelet_ancrage',
       name: 'Bracelet d’ancrage',
-      description: 'Usage unique : permet de retenter un test de résistance raté contre l’emprise.'
+      description: 'Usage unique : accrocher le fermoir à un anneau pour descendre le puits sans blessure.'
     }
   ];
 
@@ -5032,9 +5058,9 @@ const STORY = {
           : '<div class="inventory-protection-state">Arraché — inutilisable.</div>';
       }
       if (id === 'sceau_silence') {
-        return '<p>Ancien objet V60 : usage unique. Lorsqu’une force tente de contrôler ton corps, un choix dédié te permet de briser ce sceau.</p>';
+        return '<p>Ancien objet V60, usage unique : peut interrompre un instant l’appel devant la grille.</p>';
       }
-      if (id === 'bracelet_ancrage') return '<p>Usage unique : si ton test de résistance à l’emprise échoue, tu pourras le relancer une fois au moment de la confrontation.</p>';
+      if (id === 'bracelet_ancrage') return '<p>Usage unique : son fermoir se fixe à un anneau et sécurise la descente du puits.</p>';
       if (PROTECTION_ITEMS[id]) {
         ensureProtectionState(state);
         const source = state.protectionItems[id] || { remaining: 0, max: PROTECTION_ITEMS[id].max };
@@ -5200,8 +5226,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 48,
-    pageMapVersion: 63,
+    contentVersion: 49,
+    pageMapVersion: 68,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
@@ -5226,7 +5252,7 @@ const STORY = {
       // Renumérotation V62 documentée : même scène, ancien numéro connu.
       // Donner priorité à cette correspondance plutôt qu'à un fichier portant
       // le numéro actuel mais illustrant potentiellement une autre scène.
-      const originalScene = {105:114,106:115,107:116,108:105,109:106,110:107,
+      const originalScene = {105:114,107:115,108:116,109:105,110:107,
                              111:108,112:109,113:110,114:111,115:112,116:113};
       if (originalScene[n]) {
         return [`pages/${name(originalScene[n])}`, name(originalScene[n])];
@@ -5235,7 +5261,7 @@ const STORY = {
     },
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
-    migrateState: migratePageNumbersV63,
+    migrateState: migratePageNumbersV68,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,

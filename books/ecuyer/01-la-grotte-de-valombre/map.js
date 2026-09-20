@@ -3,7 +3,7 @@
   const book = BookRegistry.get("ecuyer-01");
   if (book) book.adventureMap = {
   "mode": "work",
-  "version": 2,
+  "version": 3,
   "width": 680,
   "height": 2434,
   "nodes": [
@@ -655,28 +655,38 @@
       "id": "medecin",
       "label": "Registre du médecin",
       "x": 372,
-      "y": 1806,
+      "y": 1801,
       "pages": [
         "c105"
       ],
       "notes": [
         {
           "page": "c105",
-          "text": "La terre noire affaiblit l’appel, mais transforme les corps : 0–4, appel puissant ; 5–8, emprise réduite ; 9–12, transformation menaçante ; à 13, le sujet devient gardien."
+          "text": "Le médecin note trois niveaux d’exposition : 0–4, appel puissant ; 5–8, appel intermittent ; 9–12, presque silencieux mais transformation menaçante. À 13, aucun retour observé."
         }
       ]
     },
     {
-      "id": "secours",
-      "label": "Poste de secours",
+      "id": "carrefour_soins",
+      "label": "Carrefour des soins",
       "x": 372,
-      "y": 1884,
+      "y": 1860,
       "pages": [
         "c106"
       ],
+      "notes": []
+    },
+    {
+      "id": "secours",
+      "label": "Poste de secours",
+      "x": 260,
+      "y": 1935,
+      "pages": [
+        "c107"
+      ],
       "notes": [
         {
-          "page": "c106",
+          "page": "c107",
           "text": "Une ampoule blanche intacte permet de réduire la contamination de quatre points, sans soigner les blessures."
         }
       ]
@@ -684,32 +694,31 @@
     {
       "id": "reserve",
       "label": "Réserve de terre noire",
-      "x": 372,
-      "y": 1957,
+      "x": 484,
+      "y": 1935,
       "pages": [
-        "c107"
+        "c108"
       ],
       "notes": [
         {
-          "page": "c107",
+          "page": "c108",
           "text": "Une petite sacoche contient une dose de terre noire. L’absorber augmenterait la contamination de trois points."
         }
       ]
     },
     {
       "id": "grille",
-      "label": "L’emprise et la grille",
+      "label": "Grille et tablettes",
       "x": 372,
-      "y": 2036,
+      "y": 2027,
       "pages": [
-        "c108",
         "c109",
         "c110"
       ],
       "notes": [
         {
           "page": "c110",
-          "text": "Des tablettes indiquent que une force a parfois écarté les Veilleurs de la terre noire, mais qu’elle cherchait aussi à guider leurs gestes jusqu’à la porte."
+          "text": "Les tablettes affirment que la force a épargné des gardes, puis guidé leurs gestes vers la prison. Les Veilleurs avertissent que son aide ne commande pas l’obéissance."
         }
       ]
     },
@@ -1016,18 +1025,6 @@
       "sceau_salle"
     ],
     [
-      "medecin",
-      "secours"
-    ],
-    [
-      "reserve",
-      "secours"
-    ],
-    [
-      "grille",
-      "reserve"
-    ],
-    [
       "avenue",
       "grille"
     ],
@@ -1042,6 +1039,22 @@
     [
       "porte",
       "profondeurs"
+    ],
+    [
+      "medecin",
+      "carrefour_soins"
+    ],
+    [
+      "carrefour_soins",
+      "secours"
+    ],
+    [
+      "carrefour_soins",
+      "reserve"
+    ],
+    [
+      "carrefour_soins",
+      "grille"
     ]
   ],
   "deathPages": [
