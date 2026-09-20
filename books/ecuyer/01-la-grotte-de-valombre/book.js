@@ -352,7 +352,7 @@ function raiseContamination(state, amount = 1) {
   state.flags.blackEarthContamination = state.contamination > 0;
 }
 // Le coffre derrière la grille est une prise de risque volontaire.
-// Une seule exposition par partie, même si l'on revient lire les tablettes.
+// Une seule exposition par partie, même si l’on revient lire les parchemins.
 function exposeTabletGate(state) {
   if (!state.flags || typeof state.flags !== 'object') state.flags = {};
   if (state.flags.tabletsDustExposure) return;
@@ -4243,11 +4243,11 @@ const STORY = {
       <p>Une avenue descend vers les profondeurs de la cité.</p>`,
     choices: [
       {label:'Forcer la grille malgré la terre noire et examiner le coffre',to:'c110',effect:exposeTabletGate},
-      {label:'Ne pas prendre ce risque et poursuivre la route',to:'c111'}
+      {label:'Ne pas prendre ce risque et poursuivre la route',to:'c112'}
     ]
   },
   c110: {
-    number: 'PAGE 110', title: 'Les tablettes confisquées', image: 'Les tablettes confisquées',
+    number: 'PAGE 110', title: 'Les parchemins confisqués', image: 'Les parchemins confisqués',
     // La navigation libre en Travail doit aussi appliquer l'exposition au premier accès.
     // Une ancienne sauvegarde ayant déjà lu l'ancienne page 110 n'est pas contaminée rétroactivement.
     onEnter: s => { if (!s.flags.tabletsExamined) exposeTabletGate(s); },
@@ -4256,22 +4256,22 @@ const STORY = {
          <p>Tu recules en toussant. La poussière pénètre dans ta bouche et ta gorge.</p>
          <p><strong>Terre noire : +2.</strong></p>`
       : `<p>La grille est ouverte. Tu peux atteindre le coffre.</p>`}
-      <p>Le coffre n’est pas verrouillé. À l’intérieur, des dizaines de petites tablettes de pierre, de même taille, sont soigneusement empilées. Chacune porte le même message.</p>
-      <p>Tu en prends une et lis :</p>
+      <p>Le coffre n’est pas verrouillé. À l’intérieur, des dizaines de petits parchemins sont empilés et maintenus par des ficelles.</p>
+      <p>Tu en déplies un. Tous portent le même texte :</p>
       <blockquote>« L’esprit enfermé derrière cette porte n’est pas mauvais.<br><br>
       On nous ordonne de garder cette prison sans poser de questions. Nous obéissons parce que nos pères ont obéi avant nous. Nous voulons des preuves.<br><br>
       Cessez de croire aveuglément ce qu’on vous enseigne.<br><br>
       Ouvrez les yeux. Ouvrez la porte. Libérez l’esprit.<br><br>
       Nous voulons vivre libres. »</blockquote>
-      <p>Les autres tablettes portent exactement ces mêmes mots. Pourtant, elles ont toutes été enfermées ici.</p>
+      <p>Les autres parchemins portent le même message. Ils ont été enfermés ici.</p>
       <p>À côté du coffre, un petit journal de bord repose sur un pupitre.</p>`,
     choices: [
-      {label:'Lire le journal de bord',to:'c117'},
-      {label:'Laisser le journal et poursuivre vers les niveaux inférieurs',to:'c111'}
+      {label:'Lire le journal de bord',to:'c111'},
+      {label:'Laisser le journal et poursuivre vers les niveaux inférieurs',to:'c112'}
     ]
   },
 
-  c117: {
+  c111: {
     number: 'PAGE 111',
     title: 'Le journal des confiscations',
     noImage: true,
@@ -4279,15 +4279,15 @@ const STORY = {
     text: `<p>À côté du coffre, un petit journal de bord repose sur un pupitre.</p>
       <p>Les premières lignes ne sont que des listes de saisies, de fouilles et d’interrogatoires.</p>
       <p>Puis le ton change.</p>
-      <p><em>« De nouvelles tablettes ont été découvertes sur la place. J’ai fait confisquer l’ensemble et arrêter les responsables. »</em></p>
+      <p><em>« De nouveaux parchemins ont été découverts sur la place. J’ai fait confisquer l’ensemble et arrêter les responsables. »</em></p>
       <p><em>« Les appels à ouvrir la prison se multiplient. Plusieurs gardes refusent désormais d’obéir. Nous ne parvenons plus à contenir les troubles. »</em></p>
       <p><em>« J’ai interrogé l’un des prisonniers. Il m’a demandé si j’avais moi-même vu ce que nous gardons derrière cette porte. Je n’ai pas su lui répondre. »</em></p>
       <p><em>« J’ai passé ma vie à confisquer ces écrits. Aujourd’hui, je commence à douter… Et s’ils avaient raison ? »</em></p>
       <p>Les pages suivantes sont vierges.</p>`,
-    choices: [{ label: 'Poursuivre vers les niveaux inférieurs', to: 'c111' }]
+    choices: [{ label: 'Poursuivre vers les niveaux inférieurs', to: 'c112' }]
   },
 
-  c111: {
+  c112: {
     number: 'PAGE 112',
     title: 'L’avenue basse',
     image: 'L’avenue basse',
@@ -4314,10 +4314,10 @@ const STORY = {
 
       <p>Une ouverture de service se dessine sous les débris. Quelqu’un a déjà tenté d’en dégager l’accès.</p>
     `,
-    choices: [{ label: 'Examiner l’éboulement', to: 'c112' }]
+    choices: [{ label: 'Examiner l’éboulement', to: 'c113' }]
   },
 
-  c112: {
+  c113: {
     number: 'PAGE 113',
     title: 'Le passage de service',
     image: 'Derrière le mur',
@@ -4344,10 +4344,10 @@ const STORY = {
 
       <p>Sur son bord, tu distingues encore le symbole de l’œil fermé.</p>
     `,
-    choices: [{ label: 'Préparer la descente', to: 'c113' }]
+    choices: [{ label: 'Préparer la descente', to: 'c114' }]
   },
 
-  c113: {
+  c114: {
     number: 'PAGE 114',
     title: 'Le puits des Veilleurs',
     image: 'Le puits des Veilleurs',
@@ -4371,27 +4371,27 @@ const STORY = {
       if (hasItem(state, 'anneau_veilleurs')) {
         list.push({
           label: 'Actionner le mécanisme avec l’Anneau des Veilleurs',
-          to: 'c114',
+          to: 'c115',
           effect: s => { s.flags.cityWellDescent = 'ring'; }
         });
       }
       if (hasItem(state, 'ceinture_rouge')) {
         list.push({
           label: 'T’assurer avec la Ceinture de corde rouge',
-          to: 'c114',
+          to: 'c115',
           effect: s => { s.flags.cityWellDescent = 'rope'; }
         });
       }
       if (hasItem(state, 'bracelet_ancrage')) {
         list.push({
           label: 'Fixer le bracelet d’ancrage à un anneau (usage unique)',
-          to: 'c114',
+          to: 'c115',
           effect: s => { removeItem(s, 'bracelet_ancrage'); s.flags.cityWellDescent='bracelet'; }
         });
       }
       list.push({
         label: 'Descendre par les prises — lancer les trois dés de Dextérité',
-        to: 'c114',
+        to: 'c115',
         effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.cityWellDescent = ok ? 'success' : 'fail';
@@ -4402,7 +4402,7 @@ const STORY = {
     }
   },
 
-  c114: {
+  c115: {
     number: 'PAGE 115',
     title: 'Le palier inférieur',
     image: 'Le palier inférieur',
@@ -4464,19 +4464,19 @@ const STORY = {
       if (hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state)>0)) {
         list.push({
           label: 'Utiliser l’Ampoule blanche',
-          to: 'c115',
+          to: 'c116',
           effect: s => {
             blackEarthTreatment(s);
             s.flags.usedWhiteAmpouleAtWell = true;
           }
         });
       }
-      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c115' });
+      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c116' });
       return list;
     }
   },
 
-  c115: {
+  c116: {
     number: 'PAGE 116',
     title: 'La porte sous la ville',
     image: 'La porte sous la ville',
@@ -4515,10 +4515,10 @@ const STORY = {
 
       <p>La porte résiste d’abord, puis cède sous ton épaule dans un grondement sourd.</p>
     `,
-    choices: [{ label: 'Passer sous la cité', to: 'c116' }]
+    choices: [{ label: 'Passer sous la cité', to: 'c117' }]
   },
 
-  c116: {
+  c117: {
     number: 'PAGE 117',
     title: 'Sous la Cité morte',
     image: 'Sous la Cité morte',
@@ -4674,17 +4674,17 @@ const STORY = {
     "c103": "La fabrication des gardiens",
     "c104": "Les défenses du sceau",
     "c109": "La grille condamnée",
-    "c110": "Les tablettes confisquées",
-    "c117": "Le journal des confiscations",
-    "c111": "L’avenue basse",
-    "c112": "Le passage de service",
-    "c113": "Le puits des Veilleurs",
-    "c114": "Le palier inférieur",
-    "c115": "La porte sous la ville",
-    "c116": "Sous la Cité morte"
+    "c110": "Les parchemins confisqués",
+    "c111": "Le journal des confiscations",
+    "c112": "L’avenue basse",
+    "c113": "Le passage de service",
+    "c114": "Le puits des Veilleurs",
+    "c115": "Le palier inférieur",
+    "c116": "La porte sous la ville",
+    "c117": "Sous la Cité morte"
 };
 
-  const PAGE_ORDER = ['c0', ...Array.from({ length: 116 }, (_, i) => `c${i + 1}`)];
+  const PAGE_ORDER = ['c0', ...Array.from({ length: 117 }, (_, i) => `c${i + 1}`)];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -4743,7 +4743,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 68,
+      pageMapVersion: 69,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -4925,6 +4925,23 @@ const STORY = {
     delete state.flags.observationBraceletUsed;
     // Les objets et doses déjà obtenus ne sont jamais accordés une seconde fois.
     state.pageMapVersion=68;
+    return state;
+  }
+  // V68.5 : le journal a sa propre page 111. Les anciennes pages 111–116
+  // passent à 112–117, y compris les historiques et résultats de dés.
+  function migratePageNumbersV69(state) {
+    migratePageNumbersV68(state);
+    if (state.pageMapVersion >= 69) return state;
+    const oldToNew = {c117:'c111',c111:'c112',c112:'c113',c113:'c114',c114:'c115',c115:'c116',c116:'c117'};
+    const rename = id => typeof id === 'string' ? (oldToNew[id] || id) : id;
+    state.node = rename(state.node);
+    if (Array.isArray(state.history)) state.history = state.history.map(rename);
+    for (const field of ['visited','damageRolls','damageRollResults']) {
+      if (state[field] && typeof state[field] === 'object' && !Array.isArray(state[field])) {
+        state[field] = Object.fromEntries(Object.entries(state[field]).map(([key,val])=>[rename(key),val]));
+      }
+    }
+    state.pageMapVersion = 69;
     return state;
   }
   const TEST_ITEM_CATALOG = [
@@ -5269,7 +5286,7 @@ const STORY = {
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
     contentVersion: 52,
-    pageMapVersion: 68,
+    pageMapVersion: 69,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
@@ -5289,7 +5306,7 @@ const STORY = {
     },
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
-    migrateState: migratePageNumbersV68,
+    migrateState: migratePageNumbersV69,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,

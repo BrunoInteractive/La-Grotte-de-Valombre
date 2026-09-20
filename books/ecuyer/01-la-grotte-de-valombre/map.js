@@ -713,12 +713,17 @@
       "y": 2027,
       "pages": [
         "c109",
-        "c110"
+        "c110",
+        "c111"
       ],
       "notes": [
         {
           "page": "c110",
-          "text": "Un coffre contient des dizaines de tablettes identiques appelant à libérer l’esprit. Leur auteur conteste les enseignements des Veilleurs et réclame des preuves."
+          "text": "Un coffre renferme des dizaines de parchemins identiques appelant à libérer l’esprit et demandant des preuves de sa prétendue malveillance."
+        },
+        {
+          "page": "c111",
+          "text": "Le journal des confiscations évoque des arrestations, une révolte grandissante et des gardes refusant d’obéir. Son rédacteur finit par douter de la version officielle."
         }
       ]
     },
@@ -728,8 +733,8 @@
       "x": 372,
       "y": 2114,
       "pages": [
-        "c111",
-        "c112"
+        "c112",
+        "c113"
       ],
       "notes": []
     },
@@ -739,8 +744,8 @@
       "x": 372,
       "y": 2187,
       "pages": [
-        "c113",
-        "c114"
+        "c114",
+        "c115"
       ],
       "notes": []
     },
@@ -750,11 +755,11 @@
       "x": 372,
       "y": 2260,
       "pages": [
-        "c115"
+        "c116"
       ],
       "notes": [
         {
-          "page": "c115",
+          "page": "c116",
           "text": "La porte porte l’œil fermé et une petite lame noire, gravée plus récemment. Une empreinte de botte mène vers l’intérieur."
         }
       ]
@@ -765,11 +770,11 @@
       "x": 372,
       "y": 2327,
       "pages": [
-        "c116"
+        "c117"
       ],
       "notes": [
         {
-          "page": "c116",
+          "page": "c117",
           "text": "Des marques de l’œil fermé et de la petite lame noire orientent la descente vers des niveaux anciens. Une autre empreinte suggère un passage récent."
         }
       ]
@@ -1062,7 +1067,7 @@
     "c23"
   ],
   "endingPages": [
-    "c116"
+    "c117"
   ]
 };
 })();
