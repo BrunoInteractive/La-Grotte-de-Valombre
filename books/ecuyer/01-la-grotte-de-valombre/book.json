@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 52,
+  "contentVersion": 54,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.5 — Parchemins confisqués, journal séparé, numérotation 111–117 corrigée · Travail · 117 pages",
+  "buildLabel": "V68.9 — Embranchements distincts · Travail · 143 pages",
   "pageMapVersion": 69
 }

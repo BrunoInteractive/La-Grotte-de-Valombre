@@ -260,6 +260,7 @@ function throwingBladeResultHtml(state, key, enemy) {
     </div>`;
 }
 
+const BLADE_RESULT_PAGES = { shadowMass:'c122', rochebrumeMissing:'c123', isletCrawler:'c124', bridgeWalker:'c125', observationPrisoner:'c126' };
 function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
   const combat = combatState(state, key, enemy);
   if (combat.hp <= 0 || state.hp <= 0) return [];
@@ -272,7 +273,7 @@ function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
     const qty = state.throwingBlades || 0;
     list.push({
       label: `Lancer une lame de jet — ${qty} restante${qty > 1 ? 's' : ''} (2 dégâts)`,
-      to: pageId,
+      to: BLADE_RESULT_PAGES[key],
       effect: s => throwBladeAtEnemy(s, key, enemy)
     });
   }
@@ -380,12 +381,12 @@ function injectBlackEarth(state) {
 function dormantPerception(state, location) {
   const earth = contaminationLevel(state);
   if (location === 'avenue') {
-    if (earth <= 4) return `<p>Un murmure te parvient de nouveau, distinct malgré l'obscurité.</p>
-      <blockquote>« On m'a enfermé ici. Ouvre ma prison et je pourrai apaiser les esprits qui errent dans la vallée. Je peux te conduire jusqu'à celui que tu cherches. »</blockquote>
-      <p>L'appel semble venir du fond de l'avenue.</p>`;
-    if (earth <= 8) return `<p>Quelques mots troublent le silence, puis s'éloignent.</p>
-      <blockquote>« Ouvre… Je peux les apaiser… »</blockquote>
-      <p>Sur une borne, l'œil fermé est accompagné d'une mise en garde : « NE PAS OUVRIR LA PRISON. » La voix s'interrompt.</p>`;
+    if (earth <= 4) return `<p>Brutalement, un murmure te parvient. Tu ne sais pas s’il vient du fond de l’avenue ou s’il résonne directement dans ta tête.</p>
+      <blockquote>« Libère-moi…<br>Les esprits… ceux qui errent dans la vallée… je pourrai les apaiser…<br>Celui que tu cherches… je peux te conduire… jusqu’à lui… »</blockquote>
+      <p>Le murmure s’éteint.</p>`;
+    if (earth <= 8) return `<p>Un murmure surgit sans que tu puisses en situer l’origine.</p>
+      <blockquote>« Libère… les esprits… apaiser… celui que tu cherches… »</blockquote>
+      <p>Sur une borne, l’œil fermé est accompagné d’une mise en garde : « NE PAS OUVRIR LA PRISON. » Le murmure s’interrompt.</p>`;
     return `<p>Aucune voix ne t'accompagne. Sur les bornes de pierre, les Veilleurs ont gravé l'œil fermé et cette mise en garde : « NE PAS OUVRIR LA PRISON. »</p>`;
   }
   if (location === 'service') {
@@ -416,6 +417,7 @@ function sentinelCardsHtml(state) {
   return `<div class="enemy-card"><div class="enemy-card-title">DEUX SENTINELLES NOIRES</div><div class="enemy-card-stats"><div><span>Sentinelle 1</span><strong>${f.hp[0]}/4 Vie</strong></div><div><span>Sentinelle 2</span><strong>${f.hp[1]}/4 Vie</strong></div><div><span>Dextérité</span><strong>8 chacune</strong></div><div><span>Dégâts</span><strong>1 chacune</strong></div></div></div>`;
 }
 function sentinelRound(state, target, blade) {
+  state.flags.sentinelResultAcknowledged = false;
   const f = ensureSentinels(state);
   if (state.hp <= 0 || f.hp.every(h => h <= 0) || f.hp[target] <= 0) return;
   if (blade && (state.throwingBlades || 0) <= 0) return;
@@ -464,10 +466,16 @@ function sentinelChoices(state) {
   const choices = [];
   f.hp.forEach((hp, i) => {
     if (hp <= 0) return;
-    choices.push({ label: `Attaquer la sentinelle ${i+1} à l’épée (${hp} Vie)`, to: 'c80', effect: s => sentinelRound(s, i, false) });
-    if ((state.throwingBlades || 0) > 0) choices.push({ label: `Lancer une lame sur la sentinelle ${i+1} (${state.throwingBlades} restantes)`, to: 'c80', effect: s => sentinelRound(s, i, true) });
+    choices.push({ label: `Attaquer la sentinelle ${i+1} à l’épée (${hp} Vie)`, to: i === 0 ? 'c132' : 'c134', effect: s => sentinelRound(s, i, false) });
+    if ((state.throwingBlades || 0) > 0) choices.push({ label: `Lancer une lame sur la sentinelle ${i+1} (${state.throwingBlades} restantes)`, to: i === 0 ? 'c133' : 'c135', effect: s => sentinelRound(s, i, true) });
   });
   return choices;
+}
+function sentinelResultChoices(state) {
+  const fight = ensureSentinels(state);
+  if (state.hp <= 0) return fatalChoices();
+  if (fight.hp.every(h => h <= 0)) return [{label:'Rejoindre l’armurerie',to:'c81'}];
+  return [{label:'Poursuivre le combat',to:'c80'}];
 }
 function sentinelResultHtml(state) {
   const f = ensureSentinels(state);
@@ -663,8 +671,8 @@ const STORY = {
     choices: state => {
       if (!hasItem(state,'fiole_rouge') && !state.flags.fioleLaissee) {
         return [
-          { label: 'Prendre la fiole et aller au village', to: 'c3', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); } },
-          { label: 'Prendre la fiole et partir vers les grottes', to: 'c8', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); } },
+          { label: 'Prendre la fiole et aller au village', to: 'c118', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); } },
+          { label: 'Prendre la fiole et partir vers les grottes', to: 'c119', effect: s => { addItem(s,'fiole_rouge','Fiole rouge','Une petite fiole au liquide rouge sombre. Son utilité est encore inconnue.'); } },
           { label: 'Laisser la fiole et aller au village', to: 'c3', effect: s => { s.flags.fioleLaissee = true; } },
           { label: 'Laisser la fiole et partir vers les grottes', to: 'c8', effect: s => { s.flags.fioleLaissee = true; } }
         ];
@@ -737,7 +745,7 @@ const STORY = {
         return [
           {
             label: 'Acheter la potion de guérison',
-            to: 'c3',
+            to: 'c120',
             effect: s => {
               s.silver -= 3;
               addItem(
@@ -794,7 +802,7 @@ const STORY = {
       return [
         {
           label: 'Accepter l’échange',
-          to: 'c3',
+          to: 'c121',
           effect: s => { s.weapon = 'light'; }
         },
         {
@@ -2892,7 +2900,7 @@ const STORY = {
         return [
           {
             label: 'Prendre l’Anneau des Veilleurs (+1 Dextérité)',
-            to: 'c48',
+            to: 'c127',
             effect: s => addItem(s, 'anneau_veilleurs', 'Anneau des Veilleurs', 'Un anneau ancien et très léger. +1 Dextérité. Son motif peut actionner certains mécanismes des Veilleurs.')
           },
           { label: 'Laisser l’anneau et reprendre la barque', to: 'c48' }
@@ -2998,7 +3006,6 @@ const STORY = {
   c51: {
     number: 'PAGE 51',
     title: '',
-    noImage: true,
     image: 'La lame gravée',
     text: `
       <p>Un petit panneau a été gravé à part, près du bord de la terrasse.</p>
@@ -3067,7 +3074,6 @@ const STORY = {
   c54: {
     number: 'PAGE 54',
     title: '',
-    noImage: true,
     image: 'La silhouette inhumaine',
     text: `
       <p>Tu avances lentement, en prenant soin de ne pas faire rouler les pierres sous tes pas.</p>
@@ -3230,7 +3236,7 @@ const STORY = {
       : [
           {
             label: 'Prendre le Gantelet de Veilleur (+1 Protection)',
-            to: 'c67',
+            to: 'c128',
             effect: s => addProtectiveItem(s, 'gantelet_veilleur', 'Gantelet de Veilleur', 'Un gant d’armure articulé trouvé au-dessus de la Cité morte. Il peut absorber 1 point de dégâts avant ta Vie.', 1)
           },
           { label: 'Le laisser et franchir la porte', to: 'c67' }
@@ -3257,7 +3263,7 @@ const STORY = {
 
       <p>La corniche contourne un éperon.</p>
 
-      <p>Le pont apparaît.</p>
+      <p>Le pont est désormais devant toi.</p>
 
       <p>Long. Étroit. Suspendu entre deux masses de pierre.</p>
 
@@ -3311,12 +3317,12 @@ const STORY = {
     `,
     choices: state => {
       const list = [
-        { label: 'Garder ton calme et continuer lentement', to: 'c63', effect: s => { s.flags.bridgeSolution = 'calm'; } }
+        { label: 'Garder ton calme et continuer lentement — épreuve de Dextérité', to: 'c129', effect: s => { s.flags.bridgeSolution = 'calm'; s.flags.bridgeCalmPassed = roll3D6(s, 'Dextérité', currentDexterity(s)); } }
       ];
       if (state.throwingBlades > 0) {
         list.push({
           label: 'Lancer une lame dans le vide pour l’attirer ailleurs',
-          to: 'c63',
+          to: 'c130',
           effect: s => {
             s.throwingBlades -= 1;
             syncThrowingBlades(s);
@@ -3541,7 +3547,7 @@ const STORY = {
       : [
           {
             label: 'Prendre la Ceinture de corde rouge',
-            to: 'c64',
+            to: 'c131',
             effect: s => {
               addItem(
                 s,
@@ -3854,7 +3860,7 @@ const STORY = {
     text: s => `
       <p>Les deux sentinelles te pressent dans l'espace étroit du poste de garde.</p>
       ${sentinelCardsHtml(s)}
-      ${sentinelResultHtml(s)}
+      ${s.flags.sentinelResultAcknowledged ? "" : sentinelResultHtml(s)}
       ${(s.sentinelFight && s.sentinelFight.hp.every(h => h <= 0)) ? '<p>Les deux gardiens sont tombés. Le silence revient. Une porte ouverte au fond du poste conduit à l’ancienne armurerie.</p>' : ''}`,
     choices: s => s.hp <= 0 ? fatalChoices() : (s.sentinelFight && s.sentinelFight.hp.every(h => h <= 0))
       ? [{ label: 'Fouiller l’armurerie', to: 'c81' }]
@@ -3867,7 +3873,7 @@ const STORY = {
       <p>Dans une boîte restée fermée, tu trouves cinq petites lames de jet encore en état de servir.</p>
       <p>Tu peux les emporter. Aucun autre équipement ne paraît sûr.</p>`,
     choices: s => s.flags.armoryLooted ? [{ label: 'Rejoindre les bureaux', to: 'c82' }] : [
-      { label: 'Prendre les cinq lames de jet', to: 'c82', effect: s => { if (!s.flags.armoryLooted) { s.throwingBlades += 5; syncThrowingBlades(s); s.flags.armoryLooted = true; } } },
+      { label: 'Prendre les cinq lames de jet', to: 'c136', effect: s => { if (!s.flags.armoryLooted) { s.throwingBlades += 5; syncThrowingBlades(s); s.flags.armoryLooted = true; } } },
       { label: 'Laisser les lames et rejoindre les bureaux', to: 'c82', effect: s => { s.flags.armoryLooted = true; } }
     ]
   },
@@ -4058,7 +4064,7 @@ const STORY = {
         <p>Il te tend le bracelet à travers le volet.</p>
         <blockquote>« Maintenant, partez. Fuyez la folie des Veilleurs. »</blockquote>` : '<p>Son regard se fixe brusquement sur le bras qu’il cache sous sa manche.</p>'}`,
     choices: s => s.flags.observationBalanceAsked ? [
-      { label: 'Prendre le bracelet d’ancrage et reculer', to: 'c97', effect: t => { addItem(t, 'bracelet_ancrage', 'Bracelet d’ancrage', 'Usage unique : son fermoir s’accroche à un anneau pour sécuriser la descente du puits.'); t.flags.observationBraceletTaken = true; } },
+      { label: 'Prendre le bracelet d’ancrage et reculer', to: 'c137', effect: t => { addItem(t, 'bracelet_ancrage', 'Bracelet d’ancrage', 'Usage unique : son fermoir s’accroche à un anneau pour sécuriser la descente du puits.'); t.flags.observationBraceletTaken = true; } },
       { label: 'Laisser le bracelet et reculer', to: 'c97', effect: t => { t.flags.observationBraceletDeclined = true; } }
     ] : [
       { label: '« Vous aviez trouvé une dose qui permettait de tenir ? »', stay: true, effect: t => { t.flags.observationBalanceAsked = true; } },
@@ -4161,7 +4167,7 @@ const STORY = {
     choices: s => hasItem(s, 'ampoule_blanche')
       ? [{ label: 'Consulter les derniers registres', to: 'c103' }]
       : [
-          { label: 'Prendre l’Ampoule blanche', to: 'c103', effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.') },
+          { label: 'Prendre l’Ampoule blanche', to: 'c138', effect: s => addItem(s, 'ampoule_blanche', 'Ampoule blanche', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.') },
           { label: 'Laisser l’ampoule et lire les registres', to: 'c103' }
         ]
   },
@@ -4222,7 +4228,7 @@ const STORY = {
     text:`<p>Une armoire éventrée contient une ampoule intacte, remplie d'un liquide blanc.</p>
       <p>Sur l’étiquette, quelques mots : « Traitement de la terre noire. »</p>`,
     choices:s => s.flags.commonAmpouleOffered ? [{label:'Revenir au carrefour',to:'c106'}] : [
-      {label:'Prendre l’Ampoule blanche',to:'c106',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');t.flags.commonAmpouleOffered=true;}},
+      {label:'Prendre l’Ampoule blanche',to:'c139',effect:t=>{addItem(t,'ampoule_blanche_commune','Ampoule blanche','Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');t.flags.commonAmpouleOffered=true;}},
       {label:'Laisser l’ampoule',to:'c106',effect:t=>{t.flags.commonAmpouleOffered=true;}}
     ]
   },
@@ -4231,7 +4237,7 @@ const STORY = {
     text:`<p>Sur une étagère repose une petite sacoche fermée par une cordelette. Elle contient une poudre noire, fine et sèche.</p>
       <p>Une mention au dos d'un sachet indique : « Dose : trois points de terre noire. »</p>`,
     choices:s=>s.flags.blackEarthBagOffered ? [{label:'Revenir au carrefour',to:'c106'}] : [
-      {label:'Prendre la sacoche sans la consommer',to:'c106',effect:t=>{addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
+      {label:'Prendre la sacoche sans la consommer',to:'c140',effect:t=>{addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
       {label:'Laisser la sacoche',to:'c106',effect:t=>{t.flags.blackEarthBagOffered=true;}}
     ]
   },
@@ -4297,6 +4303,7 @@ const STORY = {
       <p>Ici, la cité paraît moins intacte.</p>
 
       <p>Des pierres se sont détachées des façades. Les dalles sont fendues ; l’eau a creusé les joints entre les pavés.</p>
+      <p>Une porte pend sur un seul gond. Une hampe brisée et un bouclier fendu gisent près d’une charrette renversée. Des entailles marquent les murs à hauteur d’homme.</p>
       <p>La lumière du jour n’atteint plus ce quartier. Les passages entre les maisons restent plongés dans l’ombre.</p>
       <p>Tu avances entre les débris.</p>
 
@@ -4378,20 +4385,20 @@ const STORY = {
       if (hasItem(state, 'ceinture_rouge')) {
         list.push({
           label: 'T’assurer avec la Ceinture de corde rouge',
-          to: 'c115',
+          to: 'c141',
           effect: s => { s.flags.cityWellDescent = 'rope'; }
         });
       }
       if (hasItem(state, 'bracelet_ancrage')) {
         list.push({
           label: 'Fixer le bracelet d’ancrage à un anneau (usage unique)',
-          to: 'c115',
+          to: 'c142',
           effect: s => { removeItem(s, 'bracelet_ancrage'); s.flags.cityWellDescent='bracelet'; }
         });
       }
       list.push({
         label: 'Descendre par les prises — lancer les trois dés de Dextérité',
-        to: 'c115',
+        to: 'c143',
         effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.cityWellDescent = ok ? 'success' : 'fail';
@@ -4408,7 +4415,6 @@ const STORY = {
     image: 'Le palier inférieur',
     text: state => {
       const descent = state.flags.cityWellDescent;
-      const canCleanse = hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state)>0);
       let intro = '';
       if (descent === 'ring') {
         intro = `
@@ -4418,11 +4424,13 @@ const STORY = {
         `;
       } else if (descent === 'rope') {
         intro = `
-          <p>Tu fixes la corde à l’un des anneaux et descends lentement.</p>
+          <p>Tu fixes la corde à l’un des anneaux et commences la descente.</p>
 
-          <p>Deux prises cèdent sous tes bottes, mais la corde retient ton poids.</p>
+          <p>Deux prises cèdent brusquement sous tes bottes. Tu bascules dans le vide, mais la corde se tend et arrête ta chute.</p>
 
-          <p>Tu atteins la plateforme sans blessure.</p>
+          <p>Suspendu au-dessus du puits, tu comprends que, sans elle, tu aurais pu tomber lourdement et perdre connaissance.</p>
+
+          <p>Tu retrouves un appui et termines la descente sans blessure.</p>
         `;
       } else if (descent === 'bracelet') {
         intro = `<p>Tu fixes le fermoir du bracelet à un anneau de fer. Quand ton pied glisse, son ressort retient ton poignet le temps que tu retrouves une prise.</p>
@@ -4449,31 +4457,12 @@ const STORY = {
 
         <p>Les Veilleurs ont creusé ici.</p>
 
-        <p>Dans un renfoncement, une petite dalle porte plusieurs cavités de la taille des ampoules du laboratoire.</p>
-
-        <p>Le bord de certaines est taché de noir.</p>
-
-        ${canCleanse ? '<p>L’Ampoule blanche que tu transportes s’adapte exactement à l’une de ces cavités.</p><p>Tu repenses à la terre restée sous tes ongles et au goût qui revient parfois au fond de ta gorge.</p>' : ''}
-
         <p>Plus loin, une flèche gravée sous un œil fermé indique une galerie descendante.</p>
       `;
     },
-    choices: state => {
-      if (state.hp <= 0) return fatalChoices();
-      const list = [];
-      if (hasItem(state, 'ampoule_blanche') && ((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state)>0)) {
-        list.push({
-          label: 'Utiliser l’Ampoule blanche',
-          to: 'c116',
-          effect: s => {
-            blackEarthTreatment(s);
-            s.flags.usedWhiteAmpouleAtWell = true;
-          }
-        });
-      }
-      list.push({ label: 'Conserver ce que tu possèdes et suivre la galerie', to: 'c116' });
-      return list;
-    }
+    choices: state => state.hp <= 0
+      ? fatalChoices()
+      : [{ label: 'Poursuivre dans la galerie', to: 'c116' }]
   },
 
   c116: {
@@ -4560,7 +4549,167 @@ const STORY = {
       { label: 'Reprendre au dernier point de sauvegarde', action: 'checkpoint' },
       { label: 'Recommencer depuis le début', action: 'restart' }
     ]
-  }
+  },
+
+  c118: {
+    number: 'PAGE 118', title: "La fiole emportée", noImage: true,
+    text: `<p>Tu glisses la fiole rouge dans ta sacoche. Tu ignores encore ce qu’elle contient.</p><p>Tu rejoins la place du village.</p>`,
+    choices: [{label: "Rejoindre la place", to: 'c3'}]
+  },
+
+  c119: {
+    number: 'PAGE 119', title: "La fiole emportée", noImage: true,
+    text: `<p>Tu protèges la fiole au fond de ta sacoche et quittes Valombre sans attendre.</p><p>Le sentier de la montagne t’attend.</p>`,
+    choices: [{label: "Prendre le sentier de la grotte", to: 'c8'}]
+  },
+
+  c120: {
+    number: 'PAGE 120', title: "La potion du marchand", noImage: true,
+    text: `<p>Tu poses les trois pièces sur l’étal. Le marchand te remet la potion, que tu ranges soigneusement pour la suite du voyage.</p>`,
+    choices: [{label: "Retourner sur la place", to: 'c3'}]
+  },
+
+  c121: {
+    number: 'PAGE 121', title: "L’épée de la forgeronne", noImage: true,
+    text: `<p>Tu rends l’épée lourde à la forgeronne et essaies quelques mouvements avec la lame plus courte. Ton bras retrouve de la liberté, même si l’arme frappera moins fort.</p><p>Tu la remercies et ressors sur la place.</p>`,
+    choices: [{label: "Retourner sur la place", to: 'c3'}]
+  },
+
+  c122: {
+    number: 'PAGE 122', title: "Une lame contre la masse", noImage: true,
+    text: `<p>Tu lances une lame vers la masse. La pointe disparaît dans les plis de sa forme sombre.</p><p>Tu observes si ton tir l’a arrêtée.</p>`,
+    choices: [{label: "Voir le résultat du tir", to: 'c27'}]
+  },
+
+  c123: {
+    number: 'PAGE 123', title: "Une lame contre le disparu", noImage: true,
+    text: `<p>Ta lame file vers le disparu de Rochebrume. Tu guettes l’effet du projectile.</p>`,
+    choices: [{label: "Voir le résultat du tir", to: 'c38'}]
+  },
+
+  c124: {
+    number: 'PAGE 124', title: "Une lame sur l’îlot", noImage: true,
+    text: `<p>Tu lances une lame vers la créature de l’îlot. Elle heurte son corps déformé. Tu attends de voir si elle poursuivra sa marche.</p>`,
+    choices: [{label: "Voir le résultat du tir", to: 'c47'}]
+  },
+
+  c125: {
+    number: 'PAGE 125', title: "Une lame au-dessus du vide", noImage: true,
+    text: `<p>Tu projettes une lame contre le marcheur qui grimpe sous le pont. La créature se replie autour d’une corde. Tu dois voir si elle tient encore.</p>`,
+    choices: [{label: "Voir le résultat du tir", to: 'c62'}]
+  },
+
+  c126: {
+    number: 'PAGE 126', title: "Une lame dans le couloir", noImage: true,
+    text: `<p>Tu lances une lame vers le prisonnier transformé. Le projectile frappe son corps alors qu’il tente de bloquer l’arche.</p>`,
+    choices: [{label: "Voir le résultat du tir", to: 'c98'}]
+  },
+
+  c127: {
+    number: 'PAGE 127', title: "L’anneau récupéré", noImage: true,
+    text: `<p>Tu soulèves l’anneau de la dalle. Il semble presque ne rien peser. Le symbole de l’œil fermé apparaît sur sa tranche.</p><p>Tu regagnes la barque.</p>`,
+    choices: [{label: "Reprendre la barque", to: 'c48'}]
+  },
+
+  c128: {
+    number: 'PAGE 128', title: "Le gantelet du Veilleur", noImage: true,
+    text: `<p>Tu détaches doucement le gantelet de la main du squelette. Les plaques sont encore solides ; tu l’ajustes à ton bras avant de franchir la porte du quartier haut.</p>`,
+    choices: [{label: "Franchir la porte", to: 'c67'}]
+  },
+
+  c130: {
+    number: 'PAGE 130', title: "La lame de diversion", noImage: true,
+    text: `<p>Tu projettes une lame au-delà du pont. Elle fend la brume et disparaît sous les planches.</p><p>La créature desserre ses prises et se détourne dans la direction du projectile. Tu peux poursuivre ta traversée sans l’affronter.</p>`,
+    choices: [{label: "Achever la traversée", to: 'c63'}]
+  },
+
+  c131: {
+    number: 'PAGE 131', title: "La corde du Veilleur", noImage: true,
+    text: `<p>Tu défais la ceinture de corde rouge du squelette. Le tressage est intact. Tu la ranges à portée de main avant de te diriger vers la porte.</p>`,
+    choices: [{label: "Gagner la porte", to: 'c64'}]
+  },
+
+  c136: {
+    number: 'PAGE 136', title: "Les lames récupérées", noImage: true,
+    text: `<p>Tu enveloppes les cinq lames dans un morceau de tissu et les glisses dans ton équipement. Tu repars vers les bureaux.</p>`,
+    choices: [{label: "Rejoindre les bureaux", to: 'c82'}]
+  },
+
+  c137: {
+    number: 'PAGE 137', title: "Le bracelet confié", noImage: true,
+    text: `<p>Tu prends le bracelet qu’il te tend. Ses doigts tremblent et il te presse de reculer.</p><p>Son regard se fixe soudain sur son bras.</p>`,
+    choices: [{label: "Reculer devant la cellule", to: 'c97'}]
+  },
+
+  c138: {
+    number: 'PAGE 138', title: "Le remède du laboratoire", noImage: true,
+    text: `<p>Tu prends l’unique ampoule intacte et la ranges avec précaution. Les derniers registres sont ouverts sur la table voisine.</p>`,
+    choices: [{label: "Lire les derniers registres", to: 'c103'}]
+  },
+
+  c139: {
+    number: 'PAGE 139', title: "L’ampoule du poste de secours", noImage: true,
+    text: `<p>Tu récupères l’ampoule blanche dans l’armoire et la protèges dans ton sac. Tu repars vers le carrefour.</p>`,
+    choices: [{label: "Revenir au carrefour", to: 'c106'}]
+  },
+
+  c140: {
+    number: 'PAGE 140', title: "La sacoche de terre noire", noImage: true,
+    text: `<p>Tu refermes soigneusement la sacoche, sans toucher à la poudre, puis la ranges dans ton sac.</p><p>Tu retournes vers le carrefour.</p>`,
+    choices: [{label: "Revenir au carrefour", to: 'c106'}]
+  },
+
+  c141: {
+    number: 'PAGE 141', title: "La corde dans le puits", noImage: true,
+    text: `<p>Tu noues la corde rouge à l’un des anneaux de fer, vérifies le nœud et t’engages dans le conduit.</p><p>Tu poses les bottes sur les premières prises.</p>`,
+    choices: [{label: "Poursuivre la descente", to: 'c115'}]
+  },
+
+  c142: {
+    number: 'PAGE 142', title: "Le bracelet dans le puits", noImage: true,
+    text: `<p>Tu bloques le fermoir du bracelet sur un anneau de fer. Son ressort peut amortir un faux mouvement, mais il ne servira qu’une fois.</p><p>Tu commences à descendre.</p>`,
+    choices: [{label: "Poursuivre la descente", to: 'c115'}]
+  },
+
+  c143: {
+    number: 'PAGE 143', title: "La descente à mains nues", noImage: true,
+    text: `<p>Tu renonces aux mécanismes et attaques les prises une à une. La paroi s’effrite déjà sous tes doigts.</p><p>Tu poursuis la descente.</p>`,
+    choices: [{label: "Poursuivre la descente", to: 'c115'}]
+  },
+  c129: {
+    number: 'PAGE 129', title: 'Avancer sans bruit', noImage: true,
+    text: s => `${diceResultHtml(s)}${s.flags.bridgeCalmPassed
+      ? '<p>Tu te forces à avancer sans accélérer. La chose accompagne tes pas sous les planches, puis finit par s’immobiliser. Tu atteins les dernières planches avant qu’elle ne remonte.</p>'
+      : '<p>Tu avances en retenant ton souffle, mais une planche gémit sous ta botte. La chose s’immobilise sous toi, puis ses longs doigts se referment sur le bord du pont. Elle te barre la route.</p>'}`,
+    choices: s => s.flags.bridgeCalmPassed
+      ? [{ label: 'Achever la traversée', to: 'c63' }]
+      : [{ label: 'Faire face au marcheur', to: 'c61', effect: t => { t.flags.bridgeSolution = 'fight'; } }]
+  },
+
+  c132: {
+    number: 'PAGE 132', title: 'La première sentinelle', noImage: true,
+    onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
+    text: s => `<p>Tu affrontes la première sentinelle, l’épée levée.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
+    choices: s => sentinelResultChoices(s)
+  },
+  c133: {
+    number: 'PAGE 133', title: 'Le tir sur la première sentinelle', noImage: true,
+    onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
+    text: s => `<p>Tu vises la première sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
+    choices: s => sentinelResultChoices(s)
+  },
+  c134: {
+    number: 'PAGE 134', title: 'La seconde sentinelle', noImage: true,
+    onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
+    text: s => `<p>Tu te tournes vers la seconde sentinelle et frappes.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
+    choices: s => sentinelResultChoices(s)
+  },
+  c135: {
+    number: 'PAGE 135', title: 'Le tir sur la seconde sentinelle', noImage: true,
+    onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
+    text: s => `<p>Tu vises la seconde sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
+    choices: s => sentinelResultChoices(s)
+  },
 
 };
 
@@ -4681,10 +4830,36 @@ const STORY = {
     "c114": "Le puits des Veilleurs",
     "c115": "Le palier inférieur",
     "c116": "La porte sous la ville",
-    "c117": "Sous la Cité morte"
+    "c117": "Sous la Cité morte",
+    "c118": "La fiole emportée",
+    "c119": "La fiole emportée",
+    "c120": "La potion du marchand",
+    "c121": "L’épée de la forgeronne",
+    "c122": "Une lame contre la masse",
+    "c123": "Une lame contre le disparu",
+    "c124": "Une lame sur l’îlot",
+    "c125": "Une lame au-dessus du vide",
+    "c126": "Une lame dans le couloir",
+    "c127": "L’anneau récupéré",
+    "c128": "Le gantelet du Veilleur",
+    "c130": "La lame de diversion",
+    "c131": "La corde du Veilleur",
+    "c136": "Les lames récupérées",
+    "c137": "Le bracelet confié",
+    "c138": "Le remède du laboratoire",
+    "c139": "L’ampoule du poste de secours",
+    "c140": "La sacoche de terre noire",
+    "c141": "La corde dans le puits",
+    "c142": "Le bracelet dans le puits",
+    "c143": "La descente à mains nues",
+    "c129": "Avancer sans bruit",
+    "c132": "La première sentinelle",
+    "c133": "Le tir sur la première sentinelle",
+    "c134": "La seconde sentinelle",
+    "c135": "Le tir sur la seconde sentinelle"
 };
 
-  const PAGE_ORDER = ['c0', ...Array.from({ length: 117 }, (_, i) => `c${i + 1}`)];
+  const PAGE_ORDER = ['c0', ...Array.from({ length: 143 }, (_, i) => `c${i + 1}`)];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -5285,7 +5460,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 52,
+    contentVersion: 54,
     pageMapVersion: 69,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
