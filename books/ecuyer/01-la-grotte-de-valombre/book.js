@@ -770,6 +770,8 @@ const STORY = {
         <div class="hero-characteristics" role="note">
           <div class="hero-info-title">Avant de commencer</div>
           <p>En bas de l’écran, tu peux consulter à tout moment ta fiche perso et ton inventaire. Tu y retrouveras tes caractéristiques, ton équipement et les objets découverts pendant l’aventure.</p>
+          <p>Chaque chemin révèle une partie du mystère.</p>
+          <p>Pour en percer tous les secrets, il te faudra peut-être vivre l’aventure plusieurs fois…</p>
         </div>
       </div>
     `,
@@ -4017,7 +4019,7 @@ const STORY = {
       <p>Deux silhouettes entrent dans le poste de garde. Elles portent les restes d'un uniforme.</p>
       <p>Leurs traits demeurent presque humains. Une terre noire et épaisse coule de leurs bouches.</p>
       <p>L'une avance devant toi. L'autre contourne le pupitre.</p>
-      <p>Tu dois affronter les deux. Au corps à corps, chacune peut te frapper tant qu'elle tient debout. Une lame de jet offre un tir sans riposte immédiate.</p>
+      <p>Au corps à corps, tu choisis une seule sentinelle à attaquer. Tant que l’autre est debout, elle t’attaque aussi pendant cet échange, sans que tu puisses riposter contre elle. Une lame de jet ne déclenche aucune riposte immédiate.</p>
       ${sentinelCardsHtml(s)}`,
     choices: s => sentinelChoices(s)
   },
