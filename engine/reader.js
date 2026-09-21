@@ -171,6 +171,8 @@ function maybeAutoCheckpoint(id) {
 function enterNode(id) {
   const node = STORY[id];
   if (!node) return;
+  // An unfinished dice challenge is valid only on its destination page.
+  if (state.pendingDice && state.pendingDice.destination !== id) state.pendingDice = null;
   state.node = id;
   if (!state.visited[id]) {
     state.visited[id] = true;
@@ -285,8 +287,29 @@ function closeJournal() {
   journalPanel.setAttribute('aria-hidden', 'true');
 }
 
+function resolvePendingDice() {
+  const pending = state.pendingDice;
+  if (!pending || pending.destination !== state.node) return;
+  const origin = STORY[pending.source];
+  const sourceChoices = origin ? (typeof origin.choices === 'function' ? origin.choices(state) : origin.choices || []) : [];
+  const original = sourceChoices[pending.index];
+  // Rebuild the callback after a reload; never roll twice, even after multiple taps.
+  if (!original || original.to !== pending.destination || original.label !== pending.label || typeof original.effect !== 'function') {
+    state.pendingDice = null;
+    saveState(); render();
+    return;
+  }
+  state.pendingDice = null;
+  original.effect(state);
+  state.lastDicePage = state.node;
+  saveState(); render();
+  const dicePanel = storyText.querySelector('.dice-result');
+  if (dicePanel && typeof dicePanel.scrollIntoView === 'function') dicePanel.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
 function render() {
   const node = STORY[state.node] || STORY.start;
+  const pendingDice = state.pendingDice?.destination === state.node ? state.pendingDice : null;
   if (node.sheet) {
     ++pageImageLoadToken; // annule une éventuelle image de la page précédente
     chapterNumber.textContent = 'FICHE DU HÉROS';
@@ -296,7 +319,7 @@ function render() {
     const declaredPage = node.number ? parseInt(String(node.number).replace(/\D/g, ''), 10) : NaN;
     const pageNumber = Number.isInteger(mappedPage) ? mappedPage : (Number.isFinite(declaredPage) ? declaredPage : 1);
     chapterNumber.textContent = pageNumber === 0 ? 'PROLOGUE · 000' : `PAGE ${padPage(pageNumber)}`;
-    if (node.noImage) {
+    if (node.noImage || pendingDice || state.lastDicePage === state.node) {
       ++pageImageLoadToken;
       imageFrame.classList.add('hidden');
       storyImage.removeAttribute('src');
@@ -308,7 +331,27 @@ function render() {
   }
   chapterTitle.textContent = node.title || '';
   chapterTitle.classList.toggle('hidden', !node.title);
-  storyText.innerHTML = typeof node.text === 'function' ? node.text(state) : node.text;
+  storyText.innerHTML = pendingDice
+    ? `<div class="dice-result dice-test-waiting"><p class="roll-number">Épreuve de Dextérité</p><div class="dice-faces"><span class="die-visual combat-die-pending">?</span><span class="die-visual combat-die-pending">?</span><span class="die-visual combat-die-pending">?</span></div></div>`
+    : (typeof node.text === 'function' ? node.text(state) : node.text);
+  // On a solved dice page, show the actual three dice first, then the narrative resolution below.
+  if (!pendingDice && state.lastDicePage === state.node && Array.isArray(state.lastDice)) {
+    let panel = storyText.querySelector('.dice-result');
+    if (!panel) {
+      const holder = document.createElement('div');
+      holder.innerHTML = diceResultHtml(state);
+      panel = holder.firstElementChild;
+      if (panel) storyText.prepend(panel);
+    } else if (panel !== storyText.firstElementChild) {
+      storyText.prepend(panel);
+    }
+    if (panel && Number.isFinite(state.lastTotal) && Number.isFinite(state.lastStat)
+        && !/Réussite|Échec/.test(panel.textContent)) {
+      const verdict = document.createElement('p');
+      verdict.innerHTML = `<strong>${state.lastTotal <= state.lastStat ? 'Réussite' : 'Échec'}</strong>`;
+      panel.append(verdict);
+    }
+  }
 
   document.querySelectorAll('.hero-gender-input').forEach(input => {
     input.addEventListener('change', event => {
@@ -330,7 +373,7 @@ function render() {
     labels.forEach(label => { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = label; statusTags.appendChild(tag); });
   }
 
-  const availableChoices = state.flags?.blackEarthTransformed && !node.sheet ? [{label:"Reprendre au dernier point de sauvegarde",action:"checkpoint"},{label:"Recommencer depuis le début",action:"restart"}] : state.hp <= 0 && !node.sheet ? fatalChoices() : typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
+  const availableChoices = pendingDice ? [{label:'Jeter les dés', action:'resolveDice'}] : state.flags?.blackEarthTransformed && !node.sheet ? [{label:"Reprendre au dernier point de sauvegarde",action:"checkpoint"},{label:"Recommencer depuis le début",action:"restart"}] : state.hp <= 0 && !node.sheet ? fatalChoices() : typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
   if (state.flags?.blackEarthTransformed && !node.sheet) {
     storyText.innerHTML = '<p>La terre noire gagne ton corps. Tes membres se déforment, et la voix du Dormeur s’éteint pour toujours. Tu es devenu l’un des gardiens de la prison.</p><p><strong>Fin de l’aventure : transformation à 13 points.</strong></p>';
   }
@@ -343,6 +386,7 @@ function render() {
     const destination = destinationPage === 0 ? '<span class="choice-dest">Lire le prologue</span>' : destinationPage ? `<span class="choice-dest">Rendez-vous à la page ${padPage(destinationPage)}</span>` : '';
     btn.innerHTML = `<span class="choice-index">${i + 1}</span><span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
     btn.addEventListener('click', () => {
+      if (choice.action === 'resolveDice') { btn.disabled = true; return resolvePendingDice(); }
       if (choice.action === 'checkpoint') return restartFromCheckpoint();
       if (choice.action === 'restart') return restartGame();
       if (choice.action === 'damage') {
@@ -353,6 +397,15 @@ function render() {
           if (typeof BOOK.rules.raiseContamination === 'function') BOOK.rules.raiseContamination(state, 1);
         }
         saveState(); render(); return;
+      }
+      // A Dextérité roll happens on the destination dice page, not when choosing a route.
+      const deferredDex = typeof choice.diceTest === 'function' ? choice.diceTest(state) : Boolean(choice.diceTest);
+      if (deferredDex && choice.to && !choice.stay) {
+        btn.disabled = true;
+        state.pendingDice = {source: state.node, destination: choice.to, index: i, label: choice.label};
+        state.lastDicePage = null;
+        enterNode(choice.to);
+        return;
       }
       // Disable the previous action immediately; repeated taps cannot produce two rolls.
       if (choice.inlineCombat) btn.disabled = true;
@@ -446,6 +499,7 @@ function jumpToPageForTest(nodeId) {
   if (!STORY[nodeId] || !Number.isInteger(PAGE_BY_NODE[nodeId])) return;
   // Outil de test : on change uniquement la page courante.
   // Aucun effet de choix/onEnter/checkpoint antérieur n'est déclenché automatiquement.
+  state.pendingDice = null;
   state.node = nodeId;
   state.history.push(nodeId);
   saveState();

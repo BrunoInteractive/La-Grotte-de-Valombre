@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 76,
+  "contentVersion": 77,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.59 — Travail : combat sur la même page, jets et résultats intégrés",
+  "buildLabel": "V68.61 — Travail : épreuves de Dextérité en deux temps, dés puis résolution sur la même page",
   "pageMapVersion": 77
 }

@@ -287,7 +287,7 @@ function throwingBladeResultHtml(state, key, enemy) {
       <div class="combat-dice">${combat.lastBlade.dice.map(renderDie).join('')}</div>
       <p>Dextérité : ${combat.lastBlade.dexterity} · Dés : ${combat.lastBlade.total} (réussite si total ≤ Dextérité).</p>
       <div class="combat-outcome">${combat.lastBlade.success
-        ? `<strong>La lame atteint sa cible.</strong> Tu infliges <strong>${combat.lastBlade.damage}</strong> point${combat.lastBlade.damage > 1 ? 's' : ''} de dégâts.`
+        ? `<strong>La lame atteint sa cible.</strong> Tu infliges <strong>${combat.lastBlade.damage}</strong> point${combat.lastBlade.damage > 1 ? 's' : ''} de dégâts.${combat.hp <= 0 && combat.lastBlade.damage > 0 ? '<br><strong>La créature s’effondre. Elle est morte.</strong>' : ''}`
         : '<strong>La lame manque sa cible.</strong> Aucun dégât.'}
         <br><strong>Tu restes hors de portée : aucune riposte sur ce lancer.</strong></div>
       <div class="combat-life-line">Lames restantes : <strong>${state.throwingBlades || 0}</strong> · Vie adverse : <strong>${combat.hp} / ${enemy.maxHp}</strong></div>
@@ -344,7 +344,7 @@ function combatRoundHtml(state, key, enemy) {
     : `Bonus de Force ${r.enemyForceBonus}`;
 
   const outcomeText = r.outcome === 'hero'
-    ? `<strong>Tu remportes l’échange.</strong><br>Tu infliges <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de dégâts <span class="combat-detail">(${heroDamageDetail})</span>.`
+    ? `<strong>Tu remportes l’échange.</strong><br>Tu infliges <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de dégâts <span class="combat-detail">(${heroDamageDetail})</span>.${combat.hp <= 0 && r.damage > 0 ? '<br><strong>La créature s’effondre. Elle est morte.</strong>' : ''}`
     : r.outcome === 'enemy'
       ? (() => {
           const protectionLine = r.protectionAbsorbed > 0
@@ -592,6 +592,7 @@ function sentinelRound(state, target, blade) {
     report.push(success
       ? `Ta lame touche la sentinelle ${target + 1} : ${damage} dégâts.`
       : `Ta lame manque la sentinelle ${target + 1} : aucun dégât.`);
+    if (f.hp[target] <= 0 && damage > 0) report.push(`La sentinelle ${target + 1} s’effondre. Elle est morte.`);
     report.push('Tu restes hors de portée. Aucune des sentinelles ne riposte pendant ce lancer.');
   } else {
     heroDice = roll2D6();
@@ -602,6 +603,7 @@ function sentinelRound(state, target, blade) {
       const damage = Math.min(f.hp[target], forceDamageBonus(currentForce(state)) + (state.weapon === 'none' ? 0 : combatPower(state)));
       f.hp[target] -= damage;
       report.push(`Tu touches la sentinelle ${target + 1} : ${damage} dégâts.`);
+      if (f.hp[target] <= 0 && damage > 0) report.push(`La sentinelle ${target + 1} s’effondre. Elle est morte.`);
     } else if (heroScore < targetScore) {
       const result = applyDamage(state, 1);
       if (result.hpLost > 0 && !f.contaminated) { raiseContamination(state, 1); f.contaminated = true; }
@@ -2051,7 +2053,7 @@ const STORY = {
     `,
     choices: [{
       label: 'Lancer les trois dés',
-      to: 'c33',
+      to: 'c33', diceTest: true,
       effect: s => {
         if (roll3D6(s, 'Dextérité', currentDexterity(s))) {
           s.lastCombatOutcome = 'second_round_win';
@@ -2448,7 +2450,7 @@ const STORY = {
     `,
     choices: [{
       label: 'Te glisser entre les fissures — lancer les trois dés de Dextérité',
-      to: 'c39',
+      to: 'c39', diceTest: true,
       effect: s => {
         const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.fissurePass = ok ? 'success' : 'fail';
@@ -2755,7 +2757,7 @@ const STORY = {
       label: state.weapon === 'none'
         ? 'Esquiver le tentacule — tester ta Dextérité'
         : 'Dégainer et frapper le tentacule — tester ta Dextérité',
-      to: 'c46',
+      to: 'c46', diceTest: true,
       effect: s => {
         const success = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.lakeTentacleOutcome = success ? 'counter' : 'lookHit';
@@ -2820,7 +2822,7 @@ const STORY = {
     `,
     choices: [{
       label: 'Traverser la portion glissante — tester ta Dextérité',
-      to: 'c49',
+      to: 'c49', diceTest: true,
       effect: s => {
         const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
         s.flags.stairsCross = ok ? 'success' : 'fail';
@@ -3461,7 +3463,7 @@ const STORY = {
     `,
     choices: state => {
       const list = [
-        { label: 'Garder ton calme et continuer lentement', to: 'c129', effect: s => { s.flags.bridgeSolution = 'calm'; s.flags.bridgeCalmPassed = roll3D6(s, 'Dextérité', currentDexterity(s)); } }
+        { label: 'Garder ton calme et continuer lentement', to: 'c129', diceTest: true, effect: s => { s.flags.bridgeSolution = 'calm'; s.flags.bridgeCalmPassed = roll3D6(s, 'Dextérité', currentDexterity(s)); } }
       ];
       if (state.throwingBlades > 0) {
         list.push({
@@ -3477,7 +3479,7 @@ const STORY = {
       list.push(
         {
           label: 'Courir jusqu’à l’autre côté',
-          to: 'c60',
+          to: 'c60', diceTest: true,
           effect: s => {
             const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
             s.flags.bridgeRun = ok ? 'success' : 'fail';
@@ -4327,7 +4329,7 @@ const STORY = {
         ? '<p>Le bras gît au sol, brisé. Tu ne pourras plus actionner cette machine.</p>'
         : '<p>Tu pourrais encore tenter d’actionner le levier.</p>'}`,
     choices: s => [
-      ...(!s.flags.labLeverBroken ? [{label:'Tenter d’actionner le levier',to:'c151',effect:triggerInjectionMechanism}] : []),
+      ...(!s.flags.labLeverBroken ? [{label:'Tenter d’actionner le levier',to:'c151', diceTest: true,effect:triggerInjectionMechanism}] : []),
       ...(s.flags.labLeverBroken ? [{label:'Examiner le bras brisé et sa lueur',to:'c196'}] : []),
       ...(!s.visited?.c138?[{label:'Examiner l’armoire éventrée',to:'c138'}]:[]),
       {label:'Poursuivre dans le couloir',to:'c197'}
@@ -4566,7 +4568,7 @@ const STORY = {
       }
       list.push({
         label: 'Descendre par les prises — lancer les trois dés de Dextérité',
-        to: 'c143',
+        to: 'c143', diceTest: true,
         effect: s => {
           const ok = roll3D6(s, 'Dextérité', currentDexterity(s));
           s.flags.cityWellDescent = ok ? 'success' : 'fail';
@@ -4839,7 +4841,7 @@ const STORY = {
   },
   c143: {
     number: 'PAGE 161', title: "La descente à mains nues", noImage: true,
-    text: `<p>Tu renonces aux mécanismes et attaques les prises une à une. La paroi s’effrite déjà sous tes doigts.</p><p>Tu poursuis la descente.</p>`,
+    text: s => `${diceResultHtml(s)}<p>Tu renonces aux mécanismes et attaques les prises une à une. La paroi s’effrite déjà sous tes doigts.</p>${s.flags.cityWellDescent === 'success' ? '<p>Tu maîtrises ta descente et retrouves un appui solide.</p>' : s.flags.cityWellDescent === 'fail' ? '<p>Une prise cède et tu glisses sur la roche avant de retrouver un appui.</p>' : '<p>Tu te prépares à poursuivre.</p>'}`,
     choices: [{label: "Poursuivre la descente", to: 'c115'}]
   },
   c144: {
@@ -5012,7 +5014,7 @@ const STORY = {
     text:s=>`<p>La traversée commence. Un faux pas suffirait à te précipiter plus bas.</p>
       ${labyrinthVoiceTier(s)==='clear'?'<p>Une voix souffle tout près : « La dalle claire… évite-la. » Une partie du passage se détache sous tes yeux.</p>':labyrinthVoiceTier(s)==='faint'?'<p>Un murmure traverse ta tête : « Pas… là… » Tu hésites devant les pierres humides.</p>':'<p>Aucun murmure. Seulement l’eau qui goutte dans le vide.</p>'}
       <p>Le chemin se rétrécit encore.</p>`,
-    choices:[{label:'Franchir le passage glissant',to:'c159',effect:s=>labyrinthTrap(s,'labyrinthLedge')}]
+    choices:[{label:'Franchir le passage glissant',to:'c159', diceTest: s => labyrinthVoiceTier(s) !== 'clear',effect:s=>labyrinthTrap(s,'labyrinthLedge')}]
   },
   c159: {
     number: 'PAGE 176', title: '', noImage: true,
@@ -5078,7 +5080,7 @@ const STORY = {
       <p>Le plafond commence à s’écrouler.</p>`,
     choices:[
       {label:'Glisser sous l’arche effondrée',to:'c169'},
-      {label:'Bondir par-dessus les dalles brisées',to:'c170',effect:s=>labyrinthTrap(s,'labyrinthArch')}
+      {label:'Bondir par-dessus les dalles brisées',to:'c170', diceTest: s => labyrinthVoiceTier(s) !== 'clear',effect:s=>labyrinthTrap(s,'labyrinthArch')}
     ]
   },
   c169: {
@@ -5386,7 +5388,7 @@ const STORY = {
       <blockquote>« Aidez-moi. Je vous en prie. »</blockquote>`,
     choices:s=>s.flags.youngKnightOutcome
       ? [{label:'Quitter le couloir',to:'c104'}]
-      : [{label:'L’aider à se relever (test de Dextérité)',to:'c199',effect:reachForYoungKnight},
+      : [{label:'L’aider à se relever (test de Dextérité)',to:'c199', diceTest: true,effect:reachForYoungKnight},
          {label:'Lui dire que tu préfères continuer seul',to:'c200',effect:t=>{t.flags.youngKnightOutcome='left';}}]
   },
   c199: {
@@ -5420,7 +5422,7 @@ const STORY = {
         <div class="combat-side"><strong>TOI</strong><div class="combat-dice">${pair}</div></div>
         <div class="combat-versus">VS</div>
         <div class="combat-side"><strong>${opponentName}</strong><div class="combat-dice">${pair}</div></div>
-      </div><p>Appuie sur « Jeter les dés » pour résoudre l'échange.</p></div>`;
+      </div></div>`;
   }
 
   // Quatre combats avaient une page de départ et une page de résultat distinctes.
