@@ -191,6 +191,7 @@ function damageAbsorptionHtml(result) {
 
 function fightRound(state, key, enemy) {
   const combat = combatState(state, key, enemy);
+  if (state.hp <= 0 || combat.hp <= 0) return combat.last;
   const heroDice = roll2D6();
   const enemyDice = roll2D6();
   const heroDexterity = currentDexterity(state);
@@ -298,15 +299,17 @@ function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
   const combat = combatState(state, key, enemy);
   if (combat.hp <= 0 || state.hp <= 0) return [];
   const list = [{
-    label: rollLabel || (combat.round === 0 ? 'Lancer les dés de combat' : 'Continuer le combat'),
-    to: pageId,
+    label: combat.round === 0 && !combat.lastBlade ? 'Jeter les dés' : 'Jeter les dés — tour suivant',
+    stay: true,
+    inlineCombat: true,
     effect: s => fightRound(s, key, enemy)
   }];
   if ((state.throwingBlades || 0) > 0) {
     const qty = state.throwingBlades || 0;
     list.push({
       label: `Lancer une lame de jet — ${qty} restante${qty > 1 ? 's' : ''} (jet de Dextérité, 2 dégâts si réussi, sans riposte)`,
-      to: BLADE_RESULT_PAGES[key],
+      stay: true,
+      inlineCombat: true,
       effect: s => throwBladeAtEnemy(s, key, enemy)
     });
   }
@@ -628,8 +631,8 @@ function sentinelChoices(state) {
   const choices = [];
   f.hp.forEach((hp, i) => {
     if (hp <= 0) return;
-    choices.push({ label: `Attaquer la sentinelle ${i+1} à l’épée (${hp} Vie)`, to: i === 0 ? 'c132' : 'c134', effect: s => sentinelRound(s, i, false) });
-    if ((state.throwingBlades || 0) > 0) choices.push({ label: `Lancer une lame sur la sentinelle ${i+1} (${state.throwingBlades} restantes)`, to: i === 0 ? 'c133' : 'c135', effect: s => sentinelRound(s, i, true) });
+    choices.push({ label: `Jeter les dés contre la sentinelle ${i+1} (${hp} Vie)`, stay: true, inlineCombat: true, effect: s => sentinelRound(s, i, false) });
+    if ((state.throwingBlades || 0) > 0) choices.push({ label: `Lancer une lame sur la sentinelle ${i+1} (${state.throwingBlades} restantes)`, stay: true, inlineCombat: true, effect: s => sentinelRound(s, i, true) });
   });
   return choices;
 }
@@ -1791,8 +1794,6 @@ const STORY = {
     title: 'La salle aux ombres mouvantes',
     image: 'La salle aux ombres mouvantes',
     text: `
-      <p>Tu choisis l’autre passage.</p>
-
       <p>Tu avances dans un couloir de plus en plus étroit, au point que la roche semble vouloir se refermer sur toi.</p>
 
       <p>Puis, soudain, l’espace s’ouvre.</p>
@@ -4023,7 +4024,7 @@ const STORY = {
     text: s => `
       <p>Les deux sentinelles te pressent dans l'espace étroit du poste de garde.</p>
       ${sentinelCardsHtml(s)}
-      ${s.flags.sentinelResultAcknowledged ? "" : sentinelResultHtml(s)}
+      ${sentinelResultHtml(s)}
       ${(s.sentinelFight && s.sentinelFight.hp.every(h => h <= 0)) ? '<p>Les deux gardiens sont tombés. Le silence revient. Une porte ouverte au fond du poste conduit à l’ancienne armurerie.</p>' : ''}`,
     choices: s => s.hp <= 0 ? fatalChoices() : (s.sentinelFight && s.sentinelFight.hp.every(h => h <= 0))
       ? [{ label: 'Fouiller l’armurerie', to: 'c81' }]
@@ -5407,6 +5408,76 @@ const STORY = {
   },
 
 };
+
+
+  // V68.59 — combat sur une seule page : mêmes jets, mêmes conséquences, nouveau rendu.
+  // Les pages de résultats historiques restent disponibles pour les sauvegardes et l'index TEST.
+  function waitingCombatDiceHtml(opponentName) {
+    const pair = '<span class="die-visual combat-die-pending" aria-label="Dé non lancé">?</span>'.repeat(2);
+    return `<div class="combat-roll-result combat-roll-waiting" aria-label="Dés prêts à être lancés">
+      <div class="combat-roll-title">Prêt à combattre</div>
+      <div class="combat-roll-grid">
+        <div class="combat-side"><strong>TOI</strong><div class="combat-dice">${pair}</div></div>
+        <div class="combat-versus">VS</div>
+        <div class="combat-side"><strong>${opponentName}</strong><div class="combat-dice">${pair}</div></div>
+      </div><p>Appuie sur « Jeter les dés » pour résoudre l'échange.</p></div>`;
+  }
+
+  // Quatre combats avaient une page de départ et une page de résultat distinctes.
+  // Après le premier jet, afficher le résultat narratif de l'ancienne page sans changer de numéro.
+  for (const [entryId, resultId, key] of [
+    ['c26','c27','shadowMass'],
+    ['c36','c38','rochebrumeMissing'],
+    ['c61','c62','bridgeWalker'],
+    ['c191','c192','reserveRat']
+  ]) {
+    const entry = STORY[entryId];
+    const result = STORY[resultId];
+    const originalText = entry.text;
+    const originalChoices = entry.choices;
+    entry.text = s => {
+      const combat = combatState(s, key, ENEMIES[key]);
+      if (combat.last || combat.lastBlade) return typeof result.text === 'function' ? result.text(s) : result.text;
+      const intro = typeof originalText === 'function' ? originalText(s) : originalText;
+      return intro + waitingCombatDiceHtml(ENEMIES[key].name);
+    };
+    entry.choices = s => {
+      const combat = combatState(s, key, ENEMIES[key]);
+      if (s.hp <= 0) return fatalChoices();
+      if (combat.hp <= 0) return typeof result.choices === 'function' ? result.choices(s) : result.choices;
+      return typeof originalChoices === 'function' ? originalChoices(s) : originalChoices;
+    };
+  }
+
+  // Les autres combats utilisent déjà une seule scène pour démarrer et conclure.
+  for (const [sceneId, key] of [
+    ['c47','isletCrawler'], ['c97','observationPrisoner'],
+    ['c149','observationPrisonerCorridor'], ['c153','labyrinthWanderer'],
+    ['c161','labyrinthCaiman'], ['c192','reserveRat']
+  ]) {
+    const scene = STORY[sceneId];
+    const originalText = scene.text;
+    scene.text = s => {
+      const combat = combatState(s, key, ENEMIES[key]);
+      const narrative = typeof originalText === 'function' ? originalText(s) : originalText;
+      return !combat.last && !combat.lastBlade && combat.hp > 0 && s.hp > 0
+        ? narrative + waitingCombatDiceHtml(ENEMIES[key].name) : narrative;
+    };
+  }
+  // La première sentinelle attaquée ne doit plus nous emmener sur les pages 153–156.
+  const firstSentinelsText = STORY.c79.text;
+  STORY.c79.text = s => {
+    const combat = ensureSentinels(s);
+    if (combat.last) return STORY.c80.text(s);
+    return firstSentinelsText(s) + waitingCombatDiceHtml('SENTINELLES NOIRES');
+  };
+  const sentinelCombatText = STORY.c80.text;
+  STORY.c80.text = s => {
+    const combat = ensureSentinels(s);
+    const narrative = sentinelCombatText(s);
+    return !combat.last && s.hp > 0 && combat.hp.some(h => h > 0)
+      ? narrative + waitingCombatDiceHtml('SENTINELLES NOIRES') : narrative;
+  };
 
   // Libellés complets de l’outil de navigation TEST.
   // Les titres narratifs de STORY restent volontairement masqués sur certaines pages.

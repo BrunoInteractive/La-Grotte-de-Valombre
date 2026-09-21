@@ -338,6 +338,7 @@ function render() {
   availableChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
+    if (choice.inlineCombat) btn.classList.add('combat-roll-btn');
     const destinationPage = choice.stay ? null : PAGE_BY_NODE[choice.to];
     const destination = destinationPage === 0 ? '<span class="choice-dest">Lire le prologue</span>' : destinationPage ? `<span class="choice-dest">Rendez-vous à la page ${padPage(destinationPage)}</span>` : '';
     btn.innerHTML = `<span class="choice-index">${i + 1}</span><span class="choice-copy"><span>${choice.label}</span>${destination}</span>`;
@@ -353,8 +354,18 @@ function render() {
         }
         saveState(); render(); return;
       }
+      // Disable the previous action immediately; repeated taps cannot produce two rolls.
+      if (choice.inlineCombat) btn.disabled = true;
       if (typeof choice.effect === 'function') choice.effect(state);
-      if (choice.stay) { saveState(); render(); return; }
+      if (choice.stay) {
+        saveState(); render();
+        if (choice.inlineCombat) {
+          const dicePanel = storyText.querySelector('.combat-roll-result');
+          if (dicePanel && typeof dicePanel.scrollIntoView === 'function')
+            dicePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
       enterNode(choice.to);
     });
     choices.appendChild(btn);
