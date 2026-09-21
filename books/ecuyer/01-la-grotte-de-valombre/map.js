@@ -445,7 +445,7 @@
       "notes": [
         {
           "page": "c70",
-          "text": "Une fresque montre des hommes et des femmes construisant les maisons et les rues de la cité. D’anciennes routes la relient à la surface ; les bâtisseurs se rassemblent ensuite autour d’une ouverture sous la ville."
+          "text": "Une fresque montre des hommes et des femmes construisant les maisons et les rues de la cité. D’anciennes routes la relient à la surface, les bâtisseurs se rassemblent ensuite autour d’une ouverture sous la ville."
         },
         {
           "page": "c71",
@@ -512,11 +512,11 @@
       "notes": [
         {
           "page": "c77",
-          "text": "Une consigne demande d’éviter la terre noire et de conduire les personnes contaminées aux salles de soins ; une autre ordonne d’isoler les personnes attirées vers la prison."
+          "text": "Une consigne demande d’éviter la terre noire et de conduire les personnes contaminées aux salles de soins, une autre ordonne d’isoler les personnes attirées vers la prison."
         },
         {
           "page": "c78",
-          "text": "Un registre décrit deux gardes volontairement contaminés. Ils ne répondent plus à l’appel ; leurs corps se sont déformés et ils ont été enfermés près du poste."
+          "text": "Un registre décrit deux gardes volontairement contaminés. Ils ne répondent plus à l’appel, leurs corps se sont déformés et ils ont été enfermés près du poste."
         }
       ]
     },
@@ -681,7 +681,7 @@
         },
         {
           "page": "c199",
-          "text": "Lui tendre la main exige un test de Dextérité : réussite, il s’effondre ; échec, le tentacule écrase le poignet et fait perdre un point de Dextérité."
+          "text": "Lui tendre la main exige un test de Dextérité : réussite, il s’effondre, échec, le tentacule écrase le poignet et fait perdre un point de Dextérité."
         }
       ]
     },
@@ -711,7 +711,7 @@
       "notes": [
         {
           "page": "c105",
-          "text": "Le médecin note trois niveaux d’exposition : 0–3, appel puissant ; 5–8, appel intermittent ; 9–12, presque silencieux mais transformation menaçante. À 13, aucun retour observé."
+          "text": "Le médecin note trois niveaux d’exposition : 0–3, appel puissant, 5–8, appel intermittent, 9–12, presque silencieux mais transformation menaçante. À 13, aucun retour observé."
         }
       ]
     },

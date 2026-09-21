@@ -345,7 +345,7 @@ function combatRoundHtml(state, key, enemy) {
     : r.outcome === 'enemy'
       ? (() => {
           const protectionLine = r.protectionAbsorbed > 0
-            ? ` Ta protection a absorbé <strong>${r.protectionAbsorbed}</strong>${r.hpLost > 0 ? ` ; tu as perdu <strong>${r.hpLost}</strong> point${r.hpLost > 1 ? 's' : ''} de Vie.` : ' ; tu n’as perdu aucun point de Vie.'}`
+            ? ` Ta protection a absorbé <strong>${r.protectionAbsorbed}</strong>${r.hpLost > 0 ? `, tu as perdu <strong>${r.hpLost}</strong> point${r.hpLost > 1 ? 's' : ''} de Vie.` : ', tu n’as perdu aucun point de Vie.'}`
             : ` Tu as perdu <strong>${r.hpLost}</strong> point${r.hpLost > 1 ? 's' : ''} de Vie.`;
           return `<strong>${enemy.name} remporte l’échange.</strong><br>Il inflige <strong>${r.damage}</strong> point${r.damage > 1 ? 's' : ''} de dégâts <span class="combat-detail">(${enemyDamageDetail})</span>.${protectionLine}`;
         })()
@@ -500,7 +500,7 @@ function labyrinthWomanGift(s) {
   addItem(s, 'ampoule_femme', 'Ampoule blanche — dédale', 'Usage unique : retire 4 points de terre noire, sans soigner les blessures.');
   addItem(s, 'terre_femme', 'Terre noire — dédale', 'Usage unique : ajoute 3 points de contamination. Risque de transformation à 13.');
   addItem(s, 'potion_femme', 'Potion de guérison — dédale', 'Restaure 1 dé de Vie.');
-  addItem(s, 'epee_sorciere', 'Épée rouge du forgeron-sorcier', 'Puissance 8 ; Dextérité −1. Légère et très bien équilibrée.');
+  addItem(s, 'epee_sorciere', 'Épée rouge du forgeron-sorcier', 'Puissance 8, Dextérité −1. Légère et très bien équilibrée.');
   s.weapon = 'sorcerer_sword';
 }
 function labyrinthUseWhite(s) {
@@ -734,7 +734,7 @@ const STORY = {
           <p><strong>Vie :</strong> indique la santé du personnage. Lorsqu’elle atteint zéro, c’est la fin de votre aventure.</p>
           <p><strong>Protection :</strong> provient de certaines pièces d’équipement. Elle absorbe les dégâts avant la Vie et diminue lorsqu’elle encaisse un choc.</p>
           <p><strong>Force :</strong> représente sa puissance physique. Elle contribue aux dégâts infligés et permet de forcer, retenir ou briser ce qui barre la route.</p>
-          ${state.flags.physicianNotesRead ? "<p><strong>Terre noire :</strong> 0–3 : appel puissant ; 4–8 : équilibre précaire ; 9–12 : transformation imminente ; 13 : transformation définitive.</p>" : ""}
+          ${state.flags.physicianNotesRead ? "<p><strong>Terre noire :</strong> 0–3 : appel puissant, 4–8 : équilibre précaire, 9–12 : transformation imminente, 13 : transformation définitive.</p>" : ""}
           <p><strong>Dextérité :</strong> représente son aisance et ses réflexes. Elle permet de prendre l’avantage au combat, mais aussi d’éviter pièges, chutes et autres dangers. Elle peut être affectée par ce qui est porté, par exemple une arme lourde.</p>
           <p><strong>Puissance de l’arme :</strong> valeur propre à l’arme équipée. Elle s’ajoute au bonus de Force lorsque le personnage remporte un échange.</p>
         </div>
@@ -817,7 +817,7 @@ const STORY = {
     },
     text: state => `
       ${state.history?.filter(id => id === 'c2').length > 1
-        ? '<p>Tu rouvres la sacoche d’Aldren. Les trois pièces et les notes ont déjà été récupérées ; tu peux néanmoins relire le parchemin et revoir tes choix.</p>'
+        ? '<p>Tu rouvres la sacoche d’Aldren. Les trois pièces et les notes ont déjà été récupérées, tu peux néanmoins relire le parchemin et revoir tes choix.</p>'
         : '<p>Tu ouvres la sacoche. À l’intérieur, tu trouves <strong>trois pièces d’argent</strong>, une petite <strong>fiole rouge sombre</strong> et un morceau de parchemin plié plusieurs fois.</p>'}
       <p>Le papier est froissé, taché, presque déchiré par endroits. Certaines lignes ont été griffonnées si fort que la plume a failli percer la feuille.</p>
       <p>Tu le déplies. Ce n’est pas vraiment un message. Plutôt des notes jetées à la hâte, comme pour fixer des idées avant de les oublier.</p>
@@ -853,7 +853,7 @@ const STORY = {
     image: 'La place de Valombre',
     text: state => {
       const details = [];
-      details.push('<p>Le marchand est sous son auvent ; la forge donne toujours sur la place, et une ruelle s’ouvre un peu plus loin.</p>');
+      details.push('<p>Le marchand est sous son auvent, la forge donne toujours sur la place, et une ruelle s’ouvre un peu plus loin.</p>');
       return `
         <p>La place de Valombre est presque déserte. Les volets se ferment les uns après les autres.</p>
         ${details.join('')}
@@ -3713,7 +3713,7 @@ const STORY = {
     },
     text: state => `
       ${state.history?.filter(id => id === 'c65').length > 1
-        ? '<p>Tu rouvres la sacoche. L’emplacement des trois lames est vide ; le parchemin est toujours là.</p>'
+        ? '<p>Tu rouvres la sacoche. L’emplacement des trois lames est vide, le parchemin est toujours là.</p>'
         : '<p>Tu ouvres la sacoche. À l’intérieur, trois lames de jet sont enveloppées dans un morceau de toile, à côté d’un parchemin plié.</p>'}
 
       <p>Un œil fermé est imprimé au bas du texte.</p>
@@ -3760,7 +3760,7 @@ const STORY = {
 
       <p>Des marches descendent vers des portes dont le bas a disparu sous l’eau. Derrière une fenêtre, tu distingues encore le dossier d’une chaise.</p>
 
-      <p>Tu avances sur les portions sèches de la rue. De petites enseignes de bois pourrissent au-dessus d’anciens ateliers ; les seuils sont usés par des années de passage.</p>
+      <p>Tu avances sur les portions sèches de la rue. De petites enseignes de bois pourrissent au-dessus d’anciens ateliers, les seuils sont usés par des années de passage.</p>
 
       <p>L’eau sombre se confond presque avec les pierres. Le clapotis de tes bottes est le seul bruit dans ce quartier désert.</p>
       <p>Une rampe de pierre finit par remonter vers une rue plus élevée. Un peu de lumière chaude apparaît à son sommet.</p>
@@ -3779,7 +3779,7 @@ const STORY = {
     text: `
       <p>Tu entres dans la cité par le haut.</p>
 
-      <p>Les maisons sont bâties en terrasses le long de la pente. Un petit escalier mène d’une rue à l’autre ; des murets retiennent les jardins aujourd’hui desséchés.</p>
+      <p>Les maisons sont bâties en terrasses le long de la pente. Un petit escalier mène d’une rue à l’autre, des murets retiennent les jardins aujourd’hui desséchés.</p>
       <p>Les passages couverts restent dans l’ombre. Plus bas, le soleil éclaire la place et les toits des maisons qui l’entourent.</p>
       <p>Tu passes devant un atelier. Des outils sont encore posés sur l’établi, près d’une porte fermée.</p>
 
@@ -3812,7 +3812,7 @@ const STORY = {
       if (state.flags.worldRoute !== 'stairs') otherWays.push('un escalier descend entre les maisons des quartiers hauts');
       if (state.flags.worldRoute !== 'bridge') otherWays.push('une ruelle rejoint la passerelle d’accès au pont');
       const routesLine = otherWays.length
-        ? `<p>Un peu plus loin, d’autres ouvertures rejoignent l’avenue. ${otherWays.join(' ; ')}.</p><p>Au sol, d’anciennes traces de passage convergent depuis chacune d’elles vers la place.</p>`
+        ? `<p>Un peu plus loin, d’autres ouvertures rejoignent l’avenue. ${otherWays.join(', ')}.</p><p>Au sol, d’anciennes traces de passage convergent depuis chacune d’elles vers la place.</p>`
         : '';
       const contamination = state.flags.blackEarthContamination
         ? '<p>Le goût de terre resté au fond de ta gorge revient tandis que tu fixes la vasque.</p>'
@@ -3936,9 +3936,9 @@ const STORY = {
   c75: {
     number: 'PAGE 75', title: 'Les quartiers des Veilleurs', noImage: true, image: 'Le carrefour des quartiers',
     text: `
-      <p>Les anciennes salles d'habitation se déploient autour d'un petit vestibule. Une odeur de cendre froide flotte encore dans l'air. Des lampes à huile éteintes sont accrochées aux murs ; les passages restent dans la pénombre.</p>
+      <p>Les anciennes salles d'habitation se déploient autour d'un petit vestibule. Une odeur de cendre froide flotte encore dans l'air. Des lampes à huile éteintes sont accrochées aux murs, les passages restent dans la pénombre.</p>
       <p>Une arche ouvre sur le réfectoire. Plus loin, le couloir dessert un poste de garde, puis les bureaux du commandement.</p>
-      <p>Aldren est quelque part plus bas. Tu entres dans le réfectoire.</p>`,
+      <p>Tu entres dans le réfectoire.</p>`,
     choices: [{ label: 'Entrer dans le réfectoire', to: 'c76' }]
   },
   c76: {
@@ -3957,9 +3957,9 @@ const STORY = {
     text: `
       <p>Un plan des galeries couvre le mur du poste. Sur un pupitre, les premiers registres parlent de rondes, de réserves et de surveillance des accès.</p>
       <p>Puis viennent des consignes concernant ceux qui entendent l'appel :</p>
-      <blockquote>ÉVITER LA TERRE NOIRE. CONDUIRE LES PERSONNES ATTEINTES AUX SALLES DE SOINS.</blockquote>
+      <blockquote>TOUTE PERSONNE ENTENDANT L’APPEL DOIT ÊTRE CONDUITE AUX SALLES DE SOINS.</blockquote>
       <p>Plus loin, une autre main ordonne d'isoler toute personne attirée vers la prison.</p>
-      <p>D'autres manuscrits remplissent une étagère. Les lire te prendrait du temps. Aldren est encore introuvable.</p>`,
+      <p>D’autres manuscrits remplissent une étagère. Au vu de leur nombre, les examiner tous te prendrait beaucoup de temps. Tu ne sais toujours pas si Aldren est en vie.</p>`,
     choices: [
       { label: 'Rester et examiner les autres manuscrits', to: 'c78', effect: s => { s.flags.quartersGuard = true; s.flags.guardStayed = true; } },
       { label: 'Rejoindre les bureaux du commandement', to: 'c82', effect: s => { s.flags.quartersGuard = true; } }
@@ -4108,7 +4108,7 @@ const STORY = {
     onEnter: s => equipVeilleurCollar(s),
     text: s => `
       ${s.flags.collarTorn
-        ? '<p>Tu reviens sur les lieux. Le collier a déjà été arraché et ne peut plus être porté ; tu n’obtiens aucun nouveau bonus.</p>'
+        ? '<p>Tu reviens sur les lieux. Le collier a déjà été arraché et ne peut plus être porté, tu n’obtiens aucun nouveau bonus.</p>'
         : s.history?.filter(id => id === 'c89').length > 1
           ? '<p>Le collier est déjà incrusté autour de ton cou. Ses effets sont toujours ceux de la première fois : +3 Vie maximale, −1 Dextérité et +1 contamination à la pose. Aucun effet supplémentaire n’est appliqué.</p>'
           : `<p>Tu passes le collier autour de ton cou.</p>
@@ -4230,7 +4230,7 @@ const STORY = {
     text: s => {
       const fate = s.flags.knightFate;
       if (fate === 'dead') return `<p>Tu t’éloignes de la cellule. Le couloir est désormais silencieux.</p><p>Au-delà de l’arche, trois chemins se rejoignent dans une salle ronde.</p>`;
-      if (fate === 'freed') return `<p>Tu t’éloignes de la cellule ouverte. Le chevalier est derrière toi ; ses remerciements se sont tus.</p><p>Tu rejoins la salle ronde par l’arche.</p>`;
+      if (fate === 'freed') return `<p>Tu t’éloignes de la cellule ouverte. Le chevalier est derrière toi, ses remerciements se sont tus.</p><p>Tu rejoins la salle ronde par l’arche.</p>`;
       if (fate === 'locked') return `<p>Tu laisses la porte fermée derrière toi. Les supplications du chevalier se perdent dans le couloir.</p><p>Au-delà de l’arche, trois chemins se rejoignent dans une salle ronde.</p>`;
       return `<p>Tu évites la cellule d’où proviennent les bruits et franchis l’arche.</p><p>Tu débouches dans une salle ronde où convergent trois chemins.</p>`;
     },
@@ -4440,7 +4440,7 @@ const STORY = {
 
       <p>Ici, la cité paraît moins intacte.</p>
 
-      <p>Des pierres se sont détachées des façades. Les dalles sont fendues ; l’eau a creusé les joints entre les pavés.</p>
+      <p>Des pierres se sont détachées des façades. Les dalles sont fendues, l’eau a creusé les joints entre les pavés.</p>
       <p>Une porte pend sur un seul gond. Une hampe brisée et un bouclier fendu gisent près d’une charrette renversée. Des entailles marquent les murs à hauteur d’homme.</p>
       <p>La lumière du jour n’atteint plus ce quartier. Les passages entre les maisons restent plongés dans l’ombre.</p>
       <p>Tu avances entre les débris.</p>
@@ -4723,7 +4723,7 @@ const STORY = {
 
   c128: {
     number: 'PAGE 149', title: "Le gantelet du Veilleur", noImage: true,
-    text: `<p>Tu détaches doucement le gantelet de la main du squelette. Les plaques sont encore solides ; tu l’ajustes à ton bras avant de franchir la porte du quartier haut.</p>`,
+    text: `<p>Tu détaches doucement le gantelet de la main du squelette. Les plaques sont encore solides, tu l’ajustes à ton bras avant de franchir la porte du quartier haut.</p>`,
     choices: [{label: "Franchir la porte", to: 'c67'}]
   },
 
@@ -4805,7 +4805,7 @@ const STORY = {
   },
   c144: {
     number: 'PAGE 162', title: '', noImage: true,
-    text: `<p>« Attendez… Je vous en prie ! »</p><p>Tu t’éloignes sans toucher à la porte. Le chevalier frappe une fois contre le bois ; puis ses appels deviennent indistincts.</p><p>Tu retrouves l’arche au bout du couloir.</p>`,
+    text: `<p>« Attendez… Je vous en prie ! »</p><p>Tu t’éloignes sans toucher à la porte. Le chevalier frappe une fois contre le bois, puis ses appels deviennent indistincts.</p><p>Tu retrouves l’arche au bout du couloir.</p>`,
     choices: [{ label: 'Quitter le quartier d’observation', to: 'c98' }]
   },
   c145: {
@@ -4841,7 +4841,7 @@ const STORY = {
       raiseContamination(s, 2);
       s.flags.knightFate = s.hp <= 0 ? 'freed' : 'dead';
     },
-    text: s => `<p>Un choc te frappe entre les épaules. Le chevalier s’est jeté sur toi. Ses membres transformés se contractent autour de tes jambes ; de la terre noire pénètre dans une entaille sous ton armure.</p>
+    text: s => `<p>Un choc te frappe entre les épaules. Le chevalier s’est jeté sur toi. Ses membres transformés se contractent autour de tes jambes, de la terre noire pénètre dans une entaille sous ton armure.</p>
       <p><strong>−${s.flags.knightBackstabLife ?? 2} Vie. Terre noire : +2.</strong></p>
       ${s.hp <= 0 ? '<p>Tu t’effondres avant de pouvoir lui échapper.</p>' : '<p>Tu te dégages, tires ton épée et lui tranches la tête d’un coup. Son corps s’affaisse et ne bouge plus.</p><p>Tu te relèves et gagnes l’arche.</p>'}`,
     choices: s => s.hp <= 0 ? fatalChoices() : [{ label: 'Quitter le quartier', to: 'c98' }]
@@ -4863,7 +4863,7 @@ const STORY = {
       const result = combat.lastBlade ? throwingBladeResultHtml(s, 'observationPrisonerCorridor', enemy) : combatRoundHtml(s, 'observationPrisonerCorridor', enemy);
       if (combat.hp <= 0) return `${card}${result}<p>Le chevalier s’écroule au milieu du couloir. Derrière lui, la porte de sa cellule est éventrée. Un petit bouclier est resté près de la table.</p>`;
       if (s.hp <= 0) return `${card}${result}<p>Le chevalier t’abat dans le couloir avant que tu puisses rejoindre l’arche.</p>`;
-      if (!combat.last && !combat.lastBlade) return `<p>Tu recules sans répondre et te détournes de la cellule.</p><blockquote>« Non ! Revenez ! »</blockquote><p>Un cri se change en rugissement. Derrière la porte, des os craquent. La masse qui lui tient lieu de jambes se gonfle et heurte le bois. Les gonds cèdent ; la porte s’abat dans le couloir.</p><p>Le chevalier se propulse vers toi. Tu dégaines juste à temps.</p>${card}`;
+      if (!combat.last && !combat.lastBlade) return `<p>Tu recules sans répondre et te détournes de la cellule.</p><blockquote>« Non ! Revenez ! »</blockquote><p>Un cri se change en rugissement. Derrière la porte, des os craquent. La masse qui lui tient lieu de jambes se gonfle et heurte le bois. Les gonds cèdent, la porte s’abat dans le couloir.</p><p>Le chevalier se propulse vers toi. Tu dégaines juste à temps.</p>${card}`;
       return `${card}${result}<p>Il rampe vers toi avec une force terrible. Le passage est trop étroit pour le contourner.</p>`;
     },
     choices: s => {
@@ -5936,7 +5936,7 @@ const STORY = {
     {
       id: 'potion_sombre',
       name: 'Fiole rouge sombre',
-      description: 'Restaure 3 Vie, sans dépasser le maximum ; augmente la terre noire de 2.'
+      description: 'Restaure 3 Vie, sans dépasser le maximum, augmente la terre noire de 2.'
     },
     {
       id: 'brassard_veilleurs',
@@ -5985,12 +5985,12 @@ const STORY = {
     {
       id: 'ampoule_blanche_test',
       name: 'Ampoule blanche — test',
-      description: 'Ampoule fictive, indépendante des trois lieux du récit. Terre noire : −4 points ; ne soigne pas les blessures.'
+      description: 'Ampoule fictive, indépendante des trois lieux du récit. Terre noire : −4 points, ne soigne pas les blessures.'
       },
     {
       id: 'bouclier_chevalier',
       name: 'Bouclier du chevalier',
-      description: 'Protection : 6 points. Dextérité : −1 tant que le bouclier protège ; le malus disparaît quand il est brisé.',
+      description: 'Protection : 6 points. Dextérité : −1 tant que le bouclier protège, le malus disparaît quand il est brisé.',
       protection: 6
     }
   ];
@@ -6303,7 +6303,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 68,
+    contentVersion: 69,
     pageMapVersion: 76,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',

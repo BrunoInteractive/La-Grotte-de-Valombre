@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 68,
+  "contentVersion": 69,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.41 — Travail : parcours séquentiel des quartiers des Veilleurs",
+  "buildLabel": "V68.43 — Travail : ajustements des pages 75 et 77",
   "pageMapVersion": 76
 }
