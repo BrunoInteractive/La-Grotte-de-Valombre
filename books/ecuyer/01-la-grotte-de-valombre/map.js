@@ -1,9 +1,9 @@
-/* Carte narrative V68.35 — monde du dédale intégré en version Travail. */
+/* Carte narrative V68.39 — salle des injections et jeune chevalier, identifiants conservés. */
 (function(){
   const book = BookRegistry.get("ecuyer-01");
   if (book) book.adventureMap = {
   "mode": "work",
-  "version": 6,
+  "version": 7,
   "width": 680,
   "height": 3070,
   "nodes": [
@@ -627,42 +627,61 @@
       "notes": [
         {
           "page": "c99",
-          "text": "Les Veilleurs ont d’abord essayé d’aider les voyageurs attirés par l’emprise. Ils ont ensuite expérimenté sur des corps avec de la terre noire."
+          "text": "Les dossiers révèlent des soins d’abord destinés aux victimes de l’appel, puis des expériences de transformation."
         },
         {
-          "page": "c100",
-          "text": "La machine du laboratoire est conçue pour injecter de la terre noire directement dans le corps."
+          "page": "c101",
+          "text": "Les derniers registres évoquent la fabrication de gardiens par les Veilleurs."
         }
       ]
     },
     {
       "id": "ampoule",
-      "label": "Ampoule blanche",
+      "label": "Salle des injections",
       "x": 550,
       "y": 1515,
       "pages": [
         "c102",
-        "c138"
+        "c103",
+        "c138",
+        "c151",
+        "c196"
       ],
       "notes": [
         {
           "page": "c102",
-          "text": "Une ampoule blanche réduit de quatre points la contamination, sans guérir les blessures. L’emprise du Dormeur peut alors reprendre de la force."
+          "text": "Des machines injectent la terre noire. Les installations ressemblent davantage à une salle de torture qu’à un lieu de soin."
+        },
+        {
+          "page": "c151",
+          "text": "L’ancien bras d’injection se brise après activation : un échec coûte une Vie et deux points de terre noire."
+        },
+        {
+          "page": "c196",
+          "text": "Une bague lumineuse peut être récupérée une seule fois sous le mécanisme brisé : +2 Dextérité.",
+          "requiresFlag": "labRingTaken"
         }
       ]
     },
     {
       "id": "registres",
-      "label": "Registres des gardiens",
+      "label": "Le jeune chevalier",
       "x": 550,
       "y": 1610,
       "pages": [
-        "c103"
+        "c197",
+        "c198",
+        "c199",
+        "c200"
       ],
       "notes": [
         {
-          "page": "c103",
-          "text": "Les registres indiquent que les Veilleurs ont délibérément transformé des êtres vivants en gardiens. Plusieurs sujets sont morts ; d’autres ne répondent plus à l’appel."
+          "page": "c198",
+          "text": "Un très jeune chevalier en larmes affirme avoir voulu défier la malédiction. Il ne sait plus depuis combien de temps il est enfermé."
+        },
+        {
+          "page": "c199",
+          "text": "Lui tendre la main exige un test de Dextérité : réussite, il s’effondre ; échec, le tentacule écrase le poignet et fait perdre un point de Dextérité."
         }
       ]
     },
@@ -1199,10 +1218,6 @@
     [
       "registres",
       "sceau_salle"
-    ],
-    [
-      "laboratoire",
-      "registres"
     ],
     [
       "medecin",
