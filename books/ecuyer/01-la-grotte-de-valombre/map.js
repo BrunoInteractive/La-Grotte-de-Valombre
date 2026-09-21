@@ -1,11 +1,11 @@
-/* Carte narrative V62 : compacte ; embranchements et découvertes conservés. */
+/* Carte narrative V68.32 — monde du dédale intégré en version Travail. */
 (function(){
   const book = BookRegistry.get("ecuyer-01");
   if (book) book.adventureMap = {
   "mode": "work",
-  "version": 3,
+  "version": 4,
   "width": 680,
-  "height": 2434,
+  "height": 3070,
   "nodes": [
     {
       "id": "ecuries",
@@ -568,10 +568,20 @@
       "label": "Quartier d’observation",
       "x": 375,
       "y": 1459,
-      "pages": ["c92", "c93", "c94"],
+      "pages": [
+        "c92",
+        "c93",
+        "c94"
+      ],
       "notes": [
-        {"page": "c93", "text": "Un chevalier d’un village voisin dit avoir entendu l’appel et être venu dans la cité récemment."},
-        {"page": "c94", "text": "Le chevalier a lu les carnets médicaux des Veilleurs. Il s’est injecté de la terre noire pour résister à l’appel, jusqu’à transformer le bas de son corps, puis s’est enfermé pour éviter de perdre le contrôle."}
+        {
+          "page": "c93",
+          "text": "Un chevalier d’un village voisin dit avoir entendu l’appel et être venu dans la cité récemment."
+        },
+        {
+          "page": "c94",
+          "text": "Le chevalier a lu les carnets médicaux des Veilleurs. Il s’est injecté de la terre noire pour résister à l’appel, jusqu’à transformer le bas de son corps, puis s’est enfermé pour éviter de perdre le contrôle."
+        }
       ]
     },
     {
@@ -579,10 +589,29 @@
       "label": "La dernière cellule",
       "x": 375,
       "y": 1616,
-      "pages": ["c96", "c97", "c98", "c126", "c137", "c144", "c145", "c146", "c147", "c149", "c150"],
+      "pages": [
+        "c96",
+        "c97",
+        "c98",
+        "c126",
+        "c137",
+        "c144",
+        "c145",
+        "c146",
+        "c147",
+        "c149",
+        "c150"
+      ],
       "notes": [
-        {"page": "c96", "text": "Le chevalier supplie d’être libéré ou achevé. Il dit avoir utilisé toute sa réserve de remède blanc, qui faisait revenir l’appel."},
-        {"page": "c145", "text": "Un petit bouclier récupéré après le combat absorbe jusqu’à six dégâts, au prix d’un point de Dextérité tant qu’il protège.", "requiresFlag": "knightShieldTaken"}
+        {
+          "page": "c96",
+          "text": "Le chevalier supplie d’être libéré ou achevé. Il dit avoir utilisé toute sa réserve de remède blanc, qui faisait revenir l’appel."
+        },
+        {
+          "page": "c145",
+          "text": "Un petit bouclier récupéré après le combat absorbe jusqu’à six dégâts, au prix d’un point de Dextérité tant qu’il protège.",
+          "requiresFlag": "knightShieldTaken"
+        }
       ]
     },
     {
@@ -754,7 +783,13 @@
         "c142",
         "c143"
       ],
-      "notes": [{"page":"c115","requiresFlag":"knightWellAttackDone","text":"Le chevalier laissé enfermé a forcé la porte et a attaqué pendant la descente du puits. La corde peut arrêter la chute, sans empêcher la blessure ni la contamination."}]
+      "notes": [
+        {
+          "page": "c115",
+          "requiresFlag": "knightWellAttackDone",
+          "text": "Le chevalier laissé enfermé a forcé la porte et a attaqué pendant la descente du puits. La corde peut arrêter la chute, sans empêcher la blessure ni la contamination."
+        }
+      ]
     },
     {
       "id": "porte",
@@ -785,6 +820,131 @@
           "text": "Des marques de l’œil fermé et de la petite lame noire orientent la descente vers des niveaux anciens. Une autre empreinte suggère un passage récent."
         }
       ]
+    },
+    {
+      "id": "dedale",
+      "label": "Dédale brûlant",
+      "x": 372,
+      "y": 2390,
+      "pages": [
+        "c152",
+        "c153",
+        "c154",
+        "c155",
+        "c156"
+      ],
+      "notes": []
+    },
+    {
+      "id": "passerelle",
+      "label": "Passage étroit",
+      "x": 130,
+      "y": 2450,
+      "pages": [
+        "c157",
+        "c158",
+        "c159",
+        "c166",
+        "c167"
+      ],
+      "notes": []
+    },
+    {
+      "id": "corniche",
+      "label": "Corniche inférieure",
+      "x": 95,
+      "y": 2520,
+      "pages": [
+        "c160",
+        "c161",
+        "c162",
+        "c163",
+        "c164",
+        "c165"
+      ],
+      "notes": [
+        {
+          "page": "c164",
+          "requiresFlag": "labyrinthCorpseLooted",
+          "text": "Trois lames de jet et une potion trouvées sur la corniche."
+        }
+      ]
+    },
+    {
+      "id": "eboulement",
+      "label": "Galerie effondrée",
+      "x": 345,
+      "y": 2570,
+      "pages": [
+        "c168",
+        "c169",
+        "c170",
+        "c171"
+      ],
+      "notes": []
+    },
+    {
+      "id": "femme",
+      "label": "La femme du dédale",
+      "x": 345,
+      "y": 2640,
+      "pages": [
+        "c172",
+        "c173",
+        "c174"
+      ],
+      "notes": []
+    },
+    {
+      "id": "don",
+      "label": "Épée du forgeron-sorcier",
+      "x": 345,
+      "y": 2710,
+      "pages": [
+        "c175",
+        "c176"
+      ],
+      "notes": [
+        {
+          "page": "c175",
+          "requiresFlag": "labyrinthWomanGiftTaken",
+          "text": "Une femme blessée transmet une épée rouge équilibrée, une ampoule blanche, de la terre noire et une potion."
+        }
+      ]
+    },
+    {
+      "id": "destin",
+      "label": "Son dernier souhait",
+      "x": 345,
+      "y": 2770,
+      "pages": [
+        "c177",
+        "c178"
+      ],
+      "notes": []
+    },
+    {
+      "id": "choix_voix",
+      "label": "Le choix de la voix",
+      "x": 345,
+      "y": 2840,
+      "pages": [
+        "c179",
+        "c180",
+        "c181",
+        "c182"
+      ],
+      "notes": []
+    },
+    {
+      "id": "calme",
+      "label": "Le silence",
+      "x": 345,
+      "y": 2930,
+      "pages": [
+        "c183"
+      ],
+      "notes": []
     }
   ],
   "edges": [
@@ -1067,6 +1227,50 @@
     [
       "carrefour_soins",
       "grille"
+    ],
+    [
+      "profondeurs",
+      "dedale"
+    ],
+    [
+      "dedale",
+      "passerelle"
+    ],
+    [
+      "passerelle",
+      "corniche"
+    ],
+    [
+      "dedale",
+      "eboulement"
+    ],
+    [
+      "corniche",
+      "eboulement"
+    ],
+    [
+      "passerelle",
+      "eboulement"
+    ],
+    [
+      "eboulement",
+      "femme"
+    ],
+    [
+      "femme",
+      "don"
+    ],
+    [
+      "don",
+      "destin"
+    ],
+    [
+      "destin",
+      "choix_voix"
+    ],
+    [
+      "choix_voix",
+      "calme"
     ]
   ],
   "deathPages": [
@@ -1074,7 +1278,7 @@
     "c23"
   ],
   "endingPages": [
-    "c117"
+    "c183"
   ]
 };
 })();
