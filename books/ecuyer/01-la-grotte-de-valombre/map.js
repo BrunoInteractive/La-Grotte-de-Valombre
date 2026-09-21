@@ -1,4 +1,4 @@
-/* Carte narrative V68.39 — salle des injections et jeune chevalier, identifiants conservés. */
+/* Carte narrative V68.41 — parcours des quartiers linéaire, choix de manuscrits conservé. */
 (function(){
   const book = BookRegistry.get("ecuyer-01");
   if (book) book.adventureMap = {
@@ -1172,12 +1172,8 @@
       "refectoire"
     ],
     [
-      "garde",
-      "quartiers"
-    ],
-    [
-      "bureau",
-      "quartiers"
+      "refectoire",
+      "garde"
     ],
     [
       "bureau",

@@ -3935,18 +3935,11 @@ const STORY = {
 
   c75: {
     number: 'PAGE 75', title: 'Les quartiers des Veilleurs', noImage: true, image: 'Le carrefour des quartiers',
-    text: state => `
+    text: `
       <p>Les anciennes salles d'habitation se déploient autour d'un petit vestibule. Une odeur de cendre froide flotte encore dans l'air. Des lampes à huile éteintes sont accrochées aux murs ; les passages restent dans la pénombre.</p>
-      <p>À gauche, des tables sont visibles derrière une arche. À droite, une porte mène à un poste de garde encombré de registres.</p>
-      <p>Au fond, un passage rejoint les pièces du commandement.</p>
-      ${state.flags.quartersRefectory ? '<p>Tu as déjà parcouru le réfectoire.</p>' : ''}
-      ${state.flags.quartersGuard ? '<p>Tu as déjà consulté les premières consignes de garde.</p>' : ''}
-      <p>Aldren est quelque part plus bas. Tu peux aussi ne pas t’attarder.</p>`,
-    choices: s => [
-      { label: 'Explorer le réfectoire', to: 'c76' },
-      { label: 'Examiner la salle de garde', to: 'c77' },
-      { label: 'Gagner les bureaux du commandement', to: 'c82' }
-    ]
+      <p>Une arche ouvre sur le réfectoire. Plus loin, le couloir dessert un poste de garde, puis les bureaux du commandement.</p>
+      <p>Aldren est quelque part plus bas. Tu entres dans le réfectoire.</p>`,
+    choices: [{ label: 'Entrer dans le réfectoire', to: 'c76' }]
   },
   c76: {
     number: 'PAGE 76', title: 'Le réfectoire', image: 'Le réfectoire des Veilleurs',
@@ -3956,8 +3949,8 @@ const STORY = {
       <p>Sous le dessin, une devise est gravée :</p>
       <blockquote>QUE NOTRE VEILLE PRÉSERVE CEUX QUI VIVENT AU-DESSUS.</blockquote>
       <p>Les Veilleurs mangeaient et dormaient ici. Ils avaient des proches à la surface, tout comme toi.</p>
-      <p>Tu retournes vers les autres salles.</p>`,
-    choices: [{ label: 'Revenir au vestibule', to: 'c75', effect: s => { s.flags.quartersRefectory = true; } }]
+      <p>Au fond du réfectoire, un passage conduit au poste de garde.</p>`,
+    choices: [{ label: 'Poursuivre vers la salle de garde', to: 'c77', effect: s => { s.flags.quartersRefectory = true; } }]
   },
   c77: {
     number: 'PAGE 77', title: 'Les consignes de garde', noImage: true, image: 'Le poste de garde',
@@ -3969,8 +3962,7 @@ const STORY = {
       <p>D'autres manuscrits remplissent une étagère. Les lire te prendrait du temps. Aldren est encore introuvable.</p>`,
     choices: [
       { label: 'Rester et examiner les autres manuscrits', to: 'c78', effect: s => { s.flags.quartersGuard = true; s.flags.guardStayed = true; } },
-      { label: 'Ne pas perdre de temps et rejoindre les bureaux', to: 'c82', effect: s => { s.flags.quartersGuard = true; } },
-      { label: 'Revenir explorer les autres salles', to: 'c75', effect: s => { s.flags.quartersGuard = true; } }
+      { label: 'Rejoindre les bureaux du commandement', to: 'c82', effect: s => { s.flags.quartersGuard = true; } }
     ]
   },
   c78: {
@@ -4257,7 +4249,7 @@ const STORY = {
   c100: {
     number: 'PAGE 100', title: 'Un carnet de suivi', noImage: true, image: 'Les carnets du dispensaire',
     text: `
-      <p>Tu ouvres l’un des carnets. Sous le nom d’un homme venu chercher secours, une écriture régulière énumère les observations du médecin :</p>
+      <p>Tu ouvres l’un des carnets. Une écriture régulière énumère les observations du médecin :</p>
       <blockquote>Jour 01 : Armand Varel est arrivé. Il entend la voix. Son corps résiste encore, son esprit aussi.</blockquote>
       <blockquote>Jour 02 : Le sujet a disparu pendant la nuit. Nous l’avons retrouvé prêt à descendre sous la cité. Nous l’avons stoppé juste à temps.</blockquote>
       <blockquote>Jour 03 : Première administration de terre noire. Il réagit plutôt bien. Il n’entend plus la voix.</blockquote>
@@ -4301,9 +4293,9 @@ const STORY = {
       <p>Le levier est coincé à mi-course. La rouille ronge l’articulation et le métal tremble à chaque grincement.</p>
       ${s.flags.labLeverBroken
         ? '<p>Le bras gît au sol, brisé. Tu ne pourras plus actionner cette machine.</p>'
-        : '<p>Tu pourrais actionner le levier, mais le bras risque de se rabattre sur toi.</p>'}`,
+        : '<p>Tu pourrais encore tenter d’actionner le levier.</p>'}`,
     choices: s => [
-      ...(!s.flags.labLeverBroken ? [{label:'Actionner le levier malgré le risque (test de Dextérité)',to:'c151',effect:triggerInjectionMechanism}] : []),
+      ...(!s.flags.labLeverBroken ? [{label:'Tenter d’actionner le levier',to:'c151',effect:triggerInjectionMechanism}] : []),
       ...(s.flags.labLeverBroken ? [{label:'Examiner le bras brisé et sa lueur',to:'c196'}] : []),
       {label:'Examiner l’armoire éventrée',to:'c138'},
       {label:'Poursuivre dans le couloir',to:'c197'}
@@ -5308,7 +5300,7 @@ const STORY = {
   },
 
   c196: {
-    number:'PAGE 106',title:'La bague de lumière',noImage:true,
+    number:'PAGE 106',title:'La bague de lumière',image:'La bague de lumière',
     text:s=>s.flags.labLeverBroken
       ? `<p>Entre deux plaques rouillées repose une bague. Une lueur douce émane du métal et éclaire légèrement tout ce qui s’en approche.</p>
          ${s.flags.labRingTaken
@@ -5323,11 +5315,11 @@ const STORY = {
         }
       }}] : []),
       {label:'Poursuivre dans le couloir',to:'c197'},
-      {label:'Retourner à la machine',to:'c103'}
+      {label:'Examiner l’armoire éventrée',to:'c138'}
     ]
   },
   c197: {
-    number:'PAGE 107',title:'Une silhouette dans le couloir',noImage:true,
+    number:'PAGE 107',title:'Une silhouette dans le couloir',image:'Une silhouette dans le couloir',
     text:s=>`<p>Un peu plus loin, un corps est accroupi dans l’angle d’un mur. Tu entends des sanglots.</p>
       ${s.flags.youngKnightOutcome==='defeated'
         ? '<p>Le jeune chevalier ne bouge plus. Tu détournes les yeux.</p>'
@@ -5337,7 +5329,7 @@ const STORY = {
     choices:s=>s.flags.youngKnightOutcome
       ? [{label:'Poursuivre vers la salle ronde',to:'c104'}]
       : [{label:'T’approcher du jeune chevalier',to:'c198'},
-         {label:'Ne pas t’arrêter et continuer seul',to:'c200',effect:t=>{t.flags.youngKnightOutcome='left';}}]
+         {label:'Ne pas prendre le risque et continuer d’avancer',to:'c200',effect:t=>{t.flags.youngKnightOutcome='left';}}]
   },
   c198: {
     number:'PAGE 108',title:'Le jeune chevalier',noImage:true,
@@ -6311,7 +6303,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 67,
+    contentVersion: 68,
     pageMapVersion: 76,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
