@@ -621,7 +621,12 @@ function pageNavigationEntries() {
     .map(([nodeId, pageNumber]) => ({
       nodeId,
       pageNumber,
-      title: BOOK.navigationTitles?.[nodeId] || STORY[nodeId]?.title || `Page ${padPage(pageNumber)}`
+      // Le titre visible du récit est la source de vérité. Le libellé TEST
+      // sert uniquement de description quand la page n'a pas de titre.
+      // Le prologue conserve son libellé explicite dans la navigation.
+      title: (pageNumber === 0 ? BOOK.navigationTitles?.[nodeId] : STORY[nodeId]?.title?.trim())
+        || BOOK.navigationTitles?.[nodeId]
+        || `Page ${padPage(pageNumber)}`
     }))
     .sort((a, b) => a.pageNumber - b.pageNumber);
 }

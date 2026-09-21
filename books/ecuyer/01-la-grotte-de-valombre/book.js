@@ -4218,7 +4218,7 @@ const STORY = {
     choices: [{ label: 'Lire un des carnets', to: 'c100' }]
   },
   c100: {
-    number: 'PAGE 100', title: 'Un carnet de suivi', image: 'Les carnets du dispensaire',
+    number: 'PAGE 100', title: 'Un carnet de suivi', noImage: true, image: 'Les carnets du dispensaire',
     text: `
       <p>Tu ouvres l’un des carnets. Sous le nom d’un homme venu chercher secours, une écriture régulière énumère les observations du médecin :</p>
       <blockquote>Jour 01 : Armand Varel est arrivé. Il entend la voix. Son corps résiste encore, son esprit aussi.</blockquote>
@@ -4232,7 +4232,7 @@ const STORY = {
     choices: [{ label: 'Consulter les derniers registres', to: 'c101' }]
   },
   c101: {
-    number: 'PAGE 101', title: 'Les derniers registres', image: 'Le registre des expériences',
+    number: 'PAGE 101', title: 'Les derniers registres', noImage: true, image: 'Le registre des expériences',
     text: `
       <p>Les derniers registres ne parlent plus vraiment de soins.</p>
       <blockquote>Sujet 17 : décès.</blockquote>
@@ -4259,7 +4259,7 @@ const STORY = {
     ]
   },
   c103: {
-    number: 'PAGE 103', title: 'La terre sous la peau', image: 'L’injection',
+    number: 'PAGE 103', title: 'La terre sous la peau', noImage: true, image: 'L’injection',
     text: s => `
       <p>Le bruit vient d’un contrepoids suspendu à une chaîne. Le levier est resté à demi abaissé.</p>
       <p>Des schémas représentent un crâne traversé de lignes semblables à celles de la fresque de l’appel.</p>
@@ -5173,20 +5173,24 @@ const STORY = {
     choices:[{label:'Se glisser par la trappe',to:'c186'},{label:'Rester dans le poste de secours',to:'c107'}]
   },
   c186: {
-    number:'PAGE 111',title:'La cache du soignant',noImage:true,
+    number:'PAGE 111',title:'La cache du soignant',
     text:`<p>Tu te glisses dans l’ouverture. La pièce est petite, presque entièrement plongée dans le noir. L’air y est sec et immobile.</p>
       <p>Un grand coffre est ouvert contre le mur. Sur une tablette, un cahier couvert d’une écriture serrée attend près d’une chandelle consumée.</p>`,
     choices:[{label:'Lire le cahier',to:'c187'},{label:'Examiner le coffre ouvert',to:'c188'},{label:'Ressortir par la trappe',to:'c107'}]
   },
   c187: {
     number:'PAGE 112',title:'Le cahier du soignant',noImage:true,
-    text:`<p>Tu ouvres le cahier. Une main tremblante a rempli les pages de lignes serrées.</p>
-      <blockquote>« J’ai décidé de raconter cette histoire ici, même si personne ne doit jamais la lire. J’ai besoin de déposer ce poids quelque part.</blockquote>
-      <blockquote>Je ne crois plus aux Veilleurs. Combattre le mal par le mal ne peut être une solution. Et qu’est-ce qui nous prouve que nous combattons réellement le mal ?</blockquote>
-      <blockquote>Une révolte se prépare. Je sais que je n’y survivrai probablement pas. Si je trouve le courage de distribuer ces flacons aux prisonniers, peut-être pourront-ils enfin s’échapper.</blockquote>
-      <blockquote>Si l’un de vous lit ces lignes, pardonnez-nous ce que nous vous avons fait subir.</blockquote>
-      <blockquote>Les Veilleurs cherchent maintenant à détruire toutes les potions capables de soigner la terre noire. J’ai réussi à en cacher une ici. Ce n’est presque rien. J’espère qu’elle vous sauvera. »</blockquote>
-      <p>Les dernières lignes s’interrompent au milieu d’une phrase. Tu tournes la tête vers le coffre ouvert.</p>`,
+    text:`<p>Tu ouvres le cahier. Une main tremblante a rempli les pages d’une écriture serrée.</p>
+      <blockquote>« J’ai décidé de raconter cette histoire, même si personne ne doit jamais la lire. J’ai besoin de déposer ce poids quelque part.</blockquote>
+      <blockquote>Je ne crois plus aux Veilleurs. Ils sont devenus pires que ce qu’ils prétendent combattre. D’ailleurs, nous ne savons même pas ce que nous combattons.</blockquote>
+      <blockquote>J’ai vu tant d’hommes arriver ici en quête de secours. Nous leur avons promis de les sauver. Regardez ce que nous avons fait d’eux.</blockquote>
+      <blockquote>Une révolte se prépare. Je sais que je n’y survivrai probablement pas. Mais si je trouve le courage de distribuer ces flacons aux prisonniers, peut-être auront-ils une chance de s’échapper.</blockquote>
+      <blockquote>Si l’un d’entre vous lit ces lignes, pardonnez-nous. Pardonnez-moi.</blockquote>
+      <blockquote>Les Veilleurs ont ordonné la destruction de toutes les potions capables de guérir la terre noire. J’ai réussi à en cacher une ici.</blockquote>
+      <blockquote>Ce n’est presque rien.</blockquote>
+      <blockquote>J’espère qu’elle vous sauvera. »</blockquote>
+      <p>Les dernières lignes s’interrompent brusquement.</p>
+      <p>Tu refermes le cahier et tournes les yeux vers le coffre ouvert.</p>`,
     choices:[{label:'Fouiller le coffre',to:'c188'},{label:'Revenir dans la cache',to:'c186'}]
   },
   c188: {
@@ -5440,7 +5444,7 @@ const STORY = {
     "c147": "L’attaque dans le dos",
     "c148": "La grille ouverte",
     "c149": "La porte cède",
-    "c150": "Une lame dans le couloir",
+    "c150": "Une lame dans le couloir", "c151": "Le résultat du levier",
     "c152": "L’entrée du dédale", "c153": "Le combat contre l’errant", "c154": "Lame contre l’errant",
     "c155": "L’embuscade", "c156": "Le coup décisif", "c157": "La fente de gauche",
     "c158": "La traversée du vide", "c159": "Le résultat de la traversée", "c160": "La corniche inférieure",
