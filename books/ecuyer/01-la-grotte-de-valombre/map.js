@@ -1,9 +1,9 @@
-/* Carte narrative V68.32 — monde du dédale intégré en version Travail. */
+/* Carte narrative V68.35 — monde du dédale intégré en version Travail. */
 (function(){
   const book = BookRegistry.get("ecuyer-01");
   if (book) book.adventureMap = {
   "mode": "work",
-  "version": 4,
+  "version": 6,
   "width": 680,
   "height": 3070,
   "nodes": [
@@ -692,7 +692,7 @@
       "notes": [
         {
           "page": "c105",
-          "text": "Le médecin note trois niveaux d’exposition : 0–4, appel puissant ; 5–8, appel intermittent ; 9–12, presque silencieux mais transformation menaçante. À 13, aucun retour observé."
+          "text": "Le médecin note trois niveaux d’exposition : 0–3, appel puissant ; 5–8, appel intermittent ; 9–12, presque silencieux mais transformation menaçante. À 13, aucun retour observé."
         }
       ]
     },
@@ -713,7 +713,13 @@
       "y": 1935,
       "pages": [
         "c107",
-        "c139"
+        "c139",
+        "c184",
+        "c185",
+        "c186",
+        "c187",
+        "c188",
+        "c189"
       ],
       "notes": [
         {
@@ -729,7 +735,13 @@
       "y": 1935,
       "pages": [
         "c108",
-        "c140"
+        "c190",
+        "c140",
+        "c191",
+        "c192",
+        "c193",
+        "c194",
+        "c195"
       ],
       "notes": [
         {

@@ -379,7 +379,7 @@ function atlasShowDetails(area) {
     const item=document.createElement('div');item.className='atlas-fact';
     const text=document.createElement('p');text.textContent=note.text;item.appendChild(text);
     if (ATLAS.mode === 'work') {
-      const page=document.createElement('small');page.textContent=`Page ${note.page.slice(1).padStart(3,'0')}`;item.appendChild(page);
+      const page=document.createElement('small');page.textContent=`Page ${padPage(PAGE_BY_NODE[note.page] ?? Number(note.page.slice(1)))}`;item.appendChild(page);
     }
     atlasDetails.appendChild(item);
   });

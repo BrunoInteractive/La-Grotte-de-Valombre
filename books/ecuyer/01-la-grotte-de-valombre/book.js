@@ -42,7 +42,8 @@ const ENEMIES = {
     dexterity: 9
   },
   labyrinthWanderer: { name: 'ERRANT DU DÉDALE', maxHp: 8, force: 9, dexterity: 7 },
-  labyrinthCaiman: { name: 'RAMPANT DE LA CORNICHE', maxHp: 7, force: 9, dexterity: 8 }
+  labyrinthCaiman: { name: 'RAMPANT DE LA CORNICHE', maxHp: 7, force: 9, dexterity: 8 },
+  reserveRat: { name: 'RAT DÉFORMÉ', maxHp: 6, force: 6, dexterity: 8, noContamination: true }
 };
 
 function roll2D6() {
@@ -218,7 +219,7 @@ function fightRound(state, key, enemy) {
     outcome = 'enemy';
     damage = enemyDamage;
     const resolution = applyDamage(state, damage);
-    if (resolution.hpLost > 0 && !combat.contaminated) { raiseContamination(state, 1); combat.contaminated = true; }
+    if (resolution.hpLost > 0 && !combat.contaminated && !enemy.noContamination) { raiseContamination(state, 1); combat.contaminated = true; }
     protectionAbsorbed = resolution.absorbed;
     hpLost = resolution.hpLost;
     protectionBefore = resolution.protectionBefore;
@@ -263,10 +264,14 @@ function throwBladeAtEnemy(state, key, enemy) {
   if (combat.hp <= 0) return null;
   state.throwingBlades -= 1;
   syncThrowingBlades(state);
+  const success = roll3D6(state, 'Dextérité — lame de jet', currentDexterity(state));
   const before = combat.hp;
-  combat.hp = Math.max(0, combat.hp - 2);
+  combat.hp = Math.max(0, combat.hp - (success ? 2 : 0));
   combat.last = null;
-  combat.lastBlade = { damage: Math.min(2, before), enemyHp: combat.hp };
+  combat.lastBlade = {
+    success, dice: [...state.lastDice], total: state.lastTotal, dexterity: state.lastStat,
+    damage: before - combat.hp, enemyHp: combat.hp
+  };
   state.lastCombatKey = key;
   state.lastCombatOutcome = 'throwing_blade';
   return combat.lastBlade;
@@ -278,12 +283,17 @@ function throwingBladeResultHtml(state, key, enemy) {
   return `
     <div class="combat-roll-result">
       <div class="combat-roll-title">Lame de jet</div>
-      <div class="combat-outcome"><strong>La lame atteint sa cible.</strong><br>Tu infliges directement <strong>${combat.lastBlade.damage}</strong> point${combat.lastBlade.damage > 1 ? 's' : ''} de dégâts.</div>
+      <div class="combat-dice">${combat.lastBlade.dice.map(renderDie).join('')}</div>
+      <p>Dextérité : ${combat.lastBlade.dexterity} · Dés : ${combat.lastBlade.total} (réussite si total ≤ Dextérité).</p>
+      <div class="combat-outcome">${combat.lastBlade.success
+        ? `<strong>La lame atteint sa cible.</strong> Tu infliges <strong>${combat.lastBlade.damage}</strong> point${combat.lastBlade.damage > 1 ? 's' : ''} de dégâts.`
+        : '<strong>La lame manque sa cible.</strong> Aucun dégât.'}
+        <br><strong>Tu restes hors de portée : aucune riposte sur ce lancer.</strong></div>
       <div class="combat-life-line">Lames restantes : <strong>${state.throwingBlades || 0}</strong> · Vie adverse : <strong>${combat.hp} / ${enemy.maxHp}</strong></div>
     </div>`;
 }
 
-const BLADE_RESULT_PAGES = { observationPrisonerCorridor:'c150', shadowMass:'c122', rochebrumeMissing:'c123', isletCrawler:'c124', bridgeWalker:'c125', observationPrisoner:'c126', labyrinthWanderer:'c154', labyrinthCaiman:'c162' };
+const BLADE_RESULT_PAGES = { observationPrisonerCorridor:'c150', shadowMass:'c122', rochebrumeMissing:'c123', isletCrawler:'c124', bridgeWalker:'c125', observationPrisoner:'c126', labyrinthWanderer:'c154', labyrinthCaiman:'c162', reserveRat:'c193' };
 function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
   const combat = combatState(state, key, enemy);
   if (combat.hp <= 0 || state.hp <= 0) return [];
@@ -295,7 +305,7 @@ function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
   if ((state.throwingBlades || 0) > 0) {
     const qty = state.throwingBlades || 0;
     list.push({
-      label: `Lancer une lame de jet — ${qty} restante${qty > 1 ? 's' : ''} (2 dégâts)`,
+      label: `Lancer une lame de jet — ${qty} restante${qty > 1 ? 's' : ''} (jet de Dextérité, 2 dégâts si réussi, sans riposte)`,
       to: BLADE_RESULT_PAGES[key],
       effect: s => throwBladeAtEnemy(s, key, enemy)
     });
@@ -395,6 +405,15 @@ function blackEarthTreatment(state) {
   state.flags.blackEarthContamination = state.contamination > 0;
   state.flags.usedWhiteAmpoule = true;
 }
+// Les ampoules sont des objets distincts : seule celle utilisée disparaît.
+// L'ampoule du laboratoire conserve son traitement particulier ci-dessus.
+function useWhiteAmpouleForContamination(state, id) {
+  if (!hasItem(state, id) || contaminationLevel(state) <= 0) return false;
+  removeItem(state, id);
+  state.contamination = Math.max(0, contaminationLevel(state) - 4);
+  state.flags.blackEarthContamination = state.contamination > 0;
+  return true;
+}
 function injectBlackEarth(state) {
   if (state.flags.labInjected) return;
   state.flags.labInjected = true;
@@ -448,11 +467,7 @@ function labyrinthWomanGift(s) {
   s.weapon = 'sorcerer_sword';
 }
 function labyrinthUseWhite(s) {
-  if (!hasItem(s, 'ampoule_femme') || contaminationLevel(s) <= 0) return false;
-  removeItem(s, 'ampoule_femme');
-  s.contamination = Math.max(0, contaminationLevel(s) - 4);
-  s.flags.blackEarthContamination = s.contamination > 0;
-  return true;
+  return useWhiteAmpouleForContamination(s, 'ampoule_femme');
 }
 function labyrinthUseEarth(s) {
   if (!hasItem(s, 'terre_femme')) return false;
@@ -522,44 +537,50 @@ function sentinelRound(state, target, blade) {
   const f = ensureSentinels(state);
   if (state.hp <= 0 || f.hp.every(h => h <= 0) || f.hp[target] <= 0) return;
   if (blade && (state.throwingBlades || 0) <= 0) return;
-  const heroDice = roll2D6();
-  const heroScore = currentDexterity(state) + heroDice[0] + heroDice[1];
   const report = [];
-  let originalTargetDamage = 0;
+  let heroDice, heroScore, success = false;
   if (blade) {
     state.throwingBlades -= 1;
     syncThrowingBlades(state);
-    originalTargetDamage = Math.min(2, f.hp[target]);
-    f.hp[target] -= originalTargetDamage;
-    report.push(`Ta lame touche la sentinelle ${target+1} : ${originalTargetDamage} dégâts.`);
+    success = roll3D6(state, 'Dextérité — lame de jet', currentDexterity(state));
+    heroDice = [...state.lastDice];
+    heroScore = state.lastTotal;
+    const damage = success ? Math.min(2, f.hp[target]) : 0;
+    f.hp[target] -= damage;
+    report.push(success
+      ? `Ta lame touche la sentinelle ${target + 1} : ${damage} dégâts.`
+      : `Ta lame manque la sentinelle ${target + 1} : aucun dégât.`);
+    report.push('Tu restes hors de portée. Aucune des sentinelles ne riposte pendant ce lancer.');
   } else {
+    heroDice = roll2D6();
+    heroScore = currentDexterity(state) + heroDice[0] + heroDice[1];
     const enemyDice = roll2D6();
     const enemyScore = SENTINELS.dexterity + enemyDice[0] + enemyDice[1];
     if (heroScore > enemyScore) {
-      originalTargetDamage = Math.min(f.hp[target], forceDamageBonus(currentForce(state)) + (state.weapon === 'none' ? 0 : combatPower(state)));
-      f.hp[target] -= originalTargetDamage;
-      report.push(`Tu touches la sentinelle ${target+1} : ${originalTargetDamage} dégâts.`);
+      const damage = Math.min(f.hp[target], forceDamageBonus(currentForce(state)) + (state.weapon === 'none' ? 0 : combatPower(state)));
+      f.hp[target] -= damage;
+      report.push(`Tu touches la sentinelle ${target + 1} : ${damage} dégâts.`);
     } else if (heroScore < enemyScore) {
       const result = applyDamage(state, 1);
       if (result.hpLost > 0 && !f.contaminated) { raiseContamination(state, 1); f.contaminated = true; }
-      report.push(`La sentinelle ${target+1} te touche : ${result.absorbed} absorbé, ${result.hpLost} Vie perdue.`);
-    } else report.push(`Tu pares la sentinelle ${target+1} : égalité, aucun dégât.`);
-  }
-  // Chaque autre sentinelle encore vivante attaque indépendamment. Une lame
-  // lancée laisse aussi la sentinelle visée attaquer si elle a survécu.
-  for (let i = 0; i < 2; i++) {
-    if (f.hp[i] <= 0 || (!blade && i === target) || state.hp <= 0) continue;
-    const enemyDice = roll2D6();
-    const enemyScore = SENTINELS.dexterity + enemyDice[0] + enemyDice[1];
-    if (enemyScore > heroScore) {
-      const result = applyDamage(state, 1);
-      if (result.hpLost > 0 && !f.contaminated) { raiseContamination(state, 1); f.contaminated = true; }
-      report.push(`La sentinelle ${i+1} t'attaque : ${result.absorbed} absorbé, ${result.hpLost} Vie perdue.`);
-    } else report.push(`Tu évites l'attaque de la sentinelle ${i+1}.`);
+      report.push(`La sentinelle ${target + 1} te touche : ${result.absorbed} absorbé, ${result.hpLost} Vie perdue.`);
+    } else report.push(`Tu pares la sentinelle ${target + 1} : égalité, aucun dégât.`);
+    // Normal melee: the second sentinel gets an independent attack.
+    for (let i = 0; i < 2; i++) {
+      if (f.hp[i] <= 0 || i === target || state.hp <= 0) continue;
+      const enemyDice = roll2D6();
+      const enemyScore = SENTINELS.dexterity + enemyDice[0] + enemyDice[1];
+      if (enemyScore > heroScore) {
+        const result = applyDamage(state, 1);
+        if (result.hpLost > 0 && !f.contaminated) { raiseContamination(state, 1); f.contaminated = true; }
+        report.push(`La sentinelle ${i + 1} t'attaque : ${result.absorbed} absorbé, ${result.hpLost} Vie perdue.`);
+      } else report.push(`Tu évites l'attaque de la sentinelle ${i + 1}.`);
+    }
   }
   f.round++;
-  f.last = { heroDice, heroScore, report, target, blade, hp: [...f.hp], heroHp: state.hp };
+  f.last = { heroDice, heroScore, report, target, blade, success, bladeDexterity: blade ? state.lastStat : null, hp: [...f.hp], heroHp: state.hp };
 }
+
 function sentinelChoices(state) {
   const f = ensureSentinels(state);
   if (state.hp <= 0) return fatalChoices();
@@ -581,7 +602,7 @@ function sentinelResultChoices(state) {
 function sentinelResultHtml(state) {
   const f = ensureSentinels(state);
   if (!f.last) return '';
-  return `<div class="combat-roll-result"><div class="combat-roll-title">Échange n° ${f.round}</div><p>Ton jet : ${f.last.heroDice.join(' + ')} · Attaque : ${f.last.heroScore}</p>${f.last.report.map(r=>`<p>${r}</p>`).join('')}<p><strong>Ta Vie : ${state.hp}/${state.maxHp}. Terre noire : ${contaminationLevel(state)}/13.</strong></p></div>`;
+  return `<div class="combat-roll-result"><div class="combat-roll-title">${f.last.blade ? 'Lame de jet' : `Échange n° ${f.round}`}</div><p>${f.last.blade ? `Jet de Dextérité : ${f.last.heroDice.join(' + ')} = ${f.last.heroScore} · Seuil : ${f.last.bladeDexterity}` : `Ton jet : ${f.last.heroDice.join(' + ')} · Attaque : ${f.last.heroScore}`}</p>${f.last.report.map(r=>`<p>${r}</p>`).join('')}<p><strong>Ta Vie : ${state.hp}/${state.maxHp}. Terre noire : ${contaminationLevel(state)}/13.</strong></p></div>`;
 }
 
 function heroGender(state) {
@@ -696,7 +717,7 @@ const STORY = {
     choices: [{ label: 'Commencer l’aventure', to: 'c0', effect: s => setHeroIdentity(s, heroGender(s)) }]
   },
   c0: {
-    number: 'PAGE 000',
+    number: 'PAGE 0',
     title: 'Valombre',
     image: 'Le village oublié',
     text: state => `
@@ -1768,7 +1789,7 @@ const STORY = {
       const list = [];
       if (state.throwingBlades > 0) {
         list.push({
-          label: `Lancer une lame dans l’ombre — ${state.throwingBlades} restante${state.throwingBlades > 1 ? 's' : ''} (2 dégâts)`,
+          label: `Lancer une lame dans l’ombre — ${state.throwingBlades} restante${state.throwingBlades > 1 ? 's' : ''} (jet de Dextérité, sans riposte)`,
           to: 'c25',
           effect: s => throwBladeAtEnemy(s, 'shadowMass', ENEMIES.shadowMass)
         });
@@ -1787,10 +1808,10 @@ const STORY = {
       return `
         ${enemyCardHtml(state, 'shadowMass', ENEMIES.shadowMass)}
         ${throwingBladeResultHtml(state, 'shadowMass', ENEMIES.shadowMass)}
-        <p>La petite lame disparaît dans l’ombre et frappe quelque chose avec un bruit mat.</p>
-        <p>Le grondement ne cesse pas.</p>
-        <p>La forme continue de venir vers toi.</p>
-        <p>Tu sais seulement qu’elle est blessée.</p>
+        ${combat.lastBlade?.success
+          ? '<p>La petite lame disparaît dans l’ombre et frappe quelque chose avec un bruit mat. La forme chancelle mais continue d’avancer.</p>'
+          : '<p>La lame siffle dans le noir et heurte la pierre. La forme continue d’avancer.</p>'}
+        <p>Tu lèves ton épée. Le combat va commencer.</p>
       `;
     },
     choices: [{ label: 'Lever ton épée et combattre', to: 'c26' }]
@@ -1819,7 +1840,7 @@ const STORY = {
 
       if (combat.hp <= 0) {
         const finish = combat.lastBlade
-          ? '<p>La dernière lame disparaît dans la masse. Cette fois, son mouvement s’interrompt.</p>'
+          ? '<p>La dernière lame touche la masse. Cette fois, son mouvement s’interrompt.</p>'
           : '<p>Ton coup porte avec assez de force pour mettre fin au combat.</p>';
         return card + result + `
           ${finish}
@@ -1840,8 +1861,7 @@ const STORY = {
 
       if (combat.lastBlade) {
         return card + result + `
-          <p>La petite lame disparaît presque entièrement dans la masse sombre.</p>
-          <p>La chose ne cherche pas à l’arracher. Elle poursuit son mouvement vers toi comme si ce qui vient de la traverser ne méritait aucune réponse.</p>
+          ${combat.lastBlade.success?'<p>La petite lame disparaît presque entièrement dans la masse sombre. La chose continue d’avancer.</p>':'<p>La lame frappe une pierre. La masse avance toujours.</p>'}
         `;
       }
 
@@ -2401,8 +2421,7 @@ const STORY = {
 
       if (combat.lastBlade) {
         return card + result + `
-          <p>La lame frappe la silhouette et reste un instant prise dans ce qui devrait être une épaule.</p>
-          <p>Elle ne cherche pas à la retirer. Son mouvement vers toi reprend aussitôt.</p>
+          ${combat.lastBlade.success?'<p>La lame se fiche dans ce qui devrait être une épaule. La silhouette reprend sa marche.</p>':'<p>La lame passe à côté de la silhouette et se perd dans l’obscurité. Son mouvement vers toi continue.</p>'}
         `;
       }
 
@@ -2921,8 +2940,7 @@ const STORY = {
 
       if (combat.lastBlade) {
         return card + result + `
-          <p>La lame se plante dans une partie de sa forme que tu aurais été incapable de nommer.</p>
-          <p>La chose se déforme autour de l’impact, puis reprend sa progression, sans fuite ni hésitation.</p>
+          ${combat.lastBlade.success?'<p>La lame se plante dans sa forme indistincte. La chose se déforme autour de l’impact puis reprend sa progression.</p>':'<p>La lame manque cette forme impossible à viser. La chose reprend sa progression, sans hésitation.</p>'}
         `;
       }
 
@@ -3526,9 +3544,8 @@ const STORY = {
 
       if (combat.lastBlade) {
         return card + result + `
-          <p>La lame frappe ce que ton regard avait pris pour le haut de son corps.</p>
-          <p>Un membre lâche une corde, puis en retrouve une autre sans que le mouvement général s’interrompe.</p>
-          <p>Elle revient déjà vers toi.</p>
+          ${combat.lastBlade.success?'<p>La lame frappe le haut de son corps. Un membre lâche une corde puis en retrouve une autre.</p>':'<p>La lame siffle dans le vide et disparaît dans la brume.</p>'}
+          <p>La créature revient déjà vers toi.</p>
         `;
       }
 
@@ -3937,7 +3954,7 @@ const STORY = {
       <p>Deux silhouettes entrent dans le poste de garde. Elles portent les restes d'un uniforme.</p>
       <p>Leurs traits demeurent presque humains. Une terre noire et épaisse coule de leurs bouches.</p>
       <p>L'une avance devant toi. L'autre contourne le pupitre.</p>
-      <p>Tu dois affronter les deux. Tu ne peux en attaquer qu'une à la fois ; chacune peut te frapper tant qu'elle tient debout.</p>
+      <p>Tu dois affronter les deux. Au corps à corps, chacune peut te frapper tant qu'elle tient debout. Une lame de jet offre un tir sans riposte immédiate.</p>
       ${sentinelCardsHtml(s)}`,
     choices: s => sentinelChoices(s)
   },
@@ -4298,10 +4315,10 @@ const STORY = {
   },
   c106: {
     number:'PAGE 106', title:'Le carrefour des soins', image:'Le carrefour des soins', noImage:true,
-    text: s => `<p>Le couloir se sépare devant un escalier descendant. Une porte donne sur un poste de secours, l'autre sur une petite réserve.</p>
-      ${s.flags.commonAmpouleOffered ? '<p>Tu as déjà examiné le poste de secours.</p>' : ''}
-      ${s.flags.blackEarthBagOffered ? '<p>Tu as déjà examiné la réserve.</p>' : ''}`,
-    choices: s => [
+    text: s => `<p>Le couloir se sépare devant un escalier descendant. Une porte donne sur un poste de secours, l’autre sur une petite réserve.</p>
+      ${s.flags.commonAmpouleOffered || s.flags.secretPassageOpened ? '<p>Tu reconnais la porte du poste de secours.</p>' : ''}
+      ${s.flags.blackEarthBagOffered || s.flags.reserveRatAwakened ? '<p>La réserve sent encore le bois humide et la poussière.</p>' : ''}`,
+    choices: [
       {label:'Fouiller le poste de secours',to:'c107'},
       {label:'Examiner la réserve',to:'c108'},
       {label:'Descendre sans poursuivre les recherches',to:'c109'}
@@ -4309,24 +4326,42 @@ const STORY = {
   },
   c107: {
     number:'PAGE 107', title:'Le poste de secours',image:'Le poste de secours',
-    text:`<p>Une armoire éventrée contient une ampoule intacte, remplie d'un liquide blanc.</p>
-      <p>Sur l’étiquette, quelques mots : « Traitement de la terre noire. »</p>`,
-    choices:s => (s.visited?.c139 || hasItem(s,'ampoule_blanche_commune')) ? [{label:'Revenir au carrefour',to:'c106'}] : [
-      {label:'Prendre l’Ampoule blanche',to:'c139',effect:t=>{if (!t.visited?.c139 && !hasItem(t,'ampoule_blanche_commune')) addItem(t,'ampoule_blanche_commune','Ampoule blanche','Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');t.flags.commonAmpouleOffered=true;}},
-      {label:'Laisser l’ampoule',to:'c106',effect:t=>{t.flags.commonAmpouleOffered=true;}}
+    text:s=>`<p>Une grande salle aux murs écaillés. Deux lits de soins sont repoussés contre la pierre. Des bandes de tissu séchées pendent au-dessus d’une table.</p>
+      <p>Une haute armoire médicale est adossée au mur. Plus loin, une étagère porte quelques livres oubliés.</p>
+      ${s.flags.commonAmpouleTaken || s.visited?.c139
+        ? '<p>Dans l’armoire, l’emplacement de l’ampoule déjà prise est vide.</p>'
+        : '<p>La porte de l’armoire est entrouverte. Tu distingues des flacons à l’intérieur.</p>'}
+      ${s.flags.secretPassageOpened ? '<p>Entre deux étagères, la trappe secrète est désormais ouverte.</p>' : ''}`,
+    choices:s=>[
+      ...(!(s.flags.commonAmpouleTaken || s.visited?.c139)
+        ? [{label:'Fouiller la grande armoire',to:'c139',effect:t=>{
+          if (!t.flags.commonAmpouleTaken && !t.visited?.c139) {
+            addItem(t,'ampoule_blanche_commune','Ampoule blanche — poste de secours','Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');
+            t.flags.commonAmpouleTaken=true;
+          }
+          t.flags.commonAmpouleOffered=true;
+        }}]
+        : []),
+      {label:s.flags.secretPassageOpened?'Examiner le faux livre et son mécanisme':'Examiner les livres de l’étagère',to:'c184'},
+      ...(s.flags.secretPassageOpened?[{label:'Se glisser dans la trappe secrète',to:'c186'}]:[]),
+      {label:'Revenir au carrefour',to:'c106'}
     ]
   },
   c108: {
-    number:'PAGE 108',title:'La réserve de terre noire',image:'La réserve de terre noire',
-    text:`<p>Sur une étagère repose une petite sacoche fermée par une cordelette. Elle contient une poudre noire, fine et sèche.</p>
-      <p>Une mention au dos d'un sachet indique : « Dose : trois points de terre noire. »</p>`,
-    choices:s=> (s.visited?.c140 || hasItem(s,'sacoche_terre_noire')) ? [{label:'Revenir au carrefour',to:'c106'}] : [
-      {label:'Prendre la sacoche sans la consommer',to:'c140',effect:t=>{if (!t.visited?.c140 && !hasItem(t,'sacoche_terre_noire')) addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');t.flags.blackEarthBagOffered=true;}},
-      {label:'Laisser la sacoche',to:'c106',effect:t=>{t.flags.blackEarthBagOffered=true;}}
+    number:'PAGE 115',title:'La réserve de terre noire',image:'La réserve de terre noire',
+    text:s=>`<p>La porte s’ouvre sur une pièce poussiéreuse. Le bois des étagères est abîmé par le temps. Des sacs s’entassent dans un coin.</p>
+      <p>Sur une planche, un sachet noir est resté à l’écart. Plusieurs sacs plus volumineux semblent avoir été déplacés récemment.</p>
+      ${s.flags.reserveRatAwakened
+        ? (s.flags.reserveRatDead ? '<p>Le rat difforme gît entre les sacs déchirés. Il ne bougera plus.</p>' : '<p>Les sacs éventrés rappellent l’attaque du rat. Il est encore là.</p>')
+        : '<p>Un faible couinement s’élève derrière les sacs. Quelque chose remue dans la poussière épaisse. L’endroit ne paraît pas sûr.</p>'}`,
+    choices:s=>[
+      {label:'Fouiller l’étagère avec précaution',to:'c190'},
+      {label:s.flags.reserveRatDead?'Examiner les sacs éventrés':s.flags.reserveRatAwakened?'Faire face au rat':'Ouvrir les sacs malgré le couinement',to:s.flags.reserveRatDead?'c194':s.flags.reserveRatAwakened?'c192':'c191',effect:t=>{if (!t.flags.reserveRatDead) t.flags.reserveRatAwakened=true;}},
+      {label:'Quitter la réserve',to:'c106'}
     ]
   },
   c109: {
-    number: 'PAGE 109', title: 'La grille condamnée', noImage: true, image: 'La grille condamnée',
+    number: 'PAGE 123', title: 'La grille condamnée', noImage: true, image: 'La grille condamnée',
     text: s => `<p>Au bas de l’escalier, une épaisse grille de fer ferme l’accès à une petite pièce. Derrière les barreaux, tu aperçois un coffre de bois.</p>
       <p>La grille est recouverte d’une épaisse couche de terre noire, sèche et poudreuse. Quelques grains se détachent au moindre courant d’air.</p>
       ${s.flags.tabletsExamined ? '<p>La grille est désormais ouverte.</p>' : '<p>Pour atteindre le coffre, il faudrait forcer la grille. Tu risques alors de soulever cette poussière et d’en respirer.</p>'}
@@ -4342,7 +4377,7 @@ const STORY = {
       ]
   },
   c110: {
-    number: 'PAGE 110', title: 'Les parchemins confisqués', image: 'Les parchemins confisqués',
+    number: 'PAGE 124', title: 'Les parchemins confisqués', image: 'Les parchemins confisqués',
     // La navigation libre en Travail applique la première exposition, sauf si la grille a déjà été ouverte.
     onEnter: s => { if (!s.flags.tabletsExamined) exposeTabletGate(s); },
     text: s => `${s.flags.tabletsDustExposure
@@ -4365,7 +4400,7 @@ const STORY = {
     ]
   },
   c111: {
-    number: 'PAGE 111',
+    number: 'PAGE 125',
     title: 'Le journal des confiscations',
     noImage: true,
     image: 'Le journal des confiscations',
@@ -4381,7 +4416,7 @@ const STORY = {
   },
 
   c112: {
-    number: 'PAGE 112',
+    number: 'PAGE 126',
     title: 'L’avenue basse',
     image: 'L’avenue basse',
     text: state => `
@@ -4412,7 +4447,7 @@ const STORY = {
   },
 
   c113: {
-    number: 'PAGE 113',
+    number: 'PAGE 127',
     title: 'Le passage de service',
     image: 'Derrière le mur',
     text: state => `
@@ -4442,7 +4477,7 @@ const STORY = {
   },
 
   c114: {
-    number: 'PAGE 114',
+    number: 'PAGE 128',
     title: 'Le puits des Veilleurs',
     image: 'Le puits des Veilleurs',
     text: state => `
@@ -4489,7 +4524,7 @@ const STORY = {
   },
 
   c115: {
-    number: 'PAGE 115',
+    number: 'PAGE 129',
     title: 'Le palier inférieur',
     image: 'Le palier inférieur',
     onEnter: s => {
@@ -4560,7 +4595,7 @@ const STORY = {
       : [{ label: 'Poursuivre dans la galerie', to: 'c116' }]
   },
   c116: {
-    number: 'PAGE 116',
+    number: 'PAGE 130',
     title: 'La porte sous la ville',
     image: 'La porte sous la ville',
     text: state => `
@@ -4602,7 +4637,7 @@ const STORY = {
   },
 
   c117: {
-    number: 'PAGE 117', title: 'Sous la Cité morte', image: 'Sous la Cité morte',
+    number: 'PAGE 131', title: 'Sous la Cité morte', image: 'Sous la Cité morte',
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
     text: `<p>Tu pousses la porte noire. L’escalier s’enfonce sous la cité, entre des blocs fendillés.</p>
       <p>Les marques des Veilleurs se multiplient : l’œil fermé, puis la petite lame noire. Une empreinte récente descend vers les profondeurs.</p>
@@ -4611,73 +4646,73 @@ const STORY = {
   },
 
   c118: {
-    number: 'PAGE 118', title: "La fiole emportée", noImage: true,
+    number: 'PAGE 132', title: "La fiole emportée", noImage: true,
     text: `<p>Tu glisses la fiole rouge dans ta sacoche. Tu ignores encore ce qu’elle contient.</p><p>Tu rejoins la place du village.</p>`,
     choices: [{label: "Rejoindre la place", to: 'c3'}]
   },
 
   c119: {
-    number: 'PAGE 119', title: "La fiole emportée", noImage: true,
+    number: 'PAGE 133', title: "La fiole emportée", noImage: true,
     text: `<p>Tu protèges la fiole au fond de ta sacoche et quittes Valombre sans attendre.</p><p>Le sentier de la montagne t’attend.</p>`,
     choices: [{label: "Prendre le sentier de la grotte", to: 'c8'}]
   },
 
   c120: {
-    number: 'PAGE 120', title: "La potion du marchand", noImage: true,
+    number: 'PAGE 134', title: "La potion du marchand", noImage: true,
     text: `<p>Tu poses les trois pièces sur l’étal. Le marchand te remet la potion, que tu ranges soigneusement pour la suite du voyage.</p>`,
     choices: [{label: "Retourner sur la place", to: 'c3'}]
   },
 
   c121: {
-    number: 'PAGE 121', title: "L’épée de la forgeronne", noImage: true,
+    number: 'PAGE 135', title: "L’épée de la forgeronne", noImage: true,
     text: `<p>Tu rends l’épée lourde à la forgeronne et essaies quelques mouvements avec la lame plus courte. Ton bras retrouve de la liberté, même si l’arme frappera moins fort.</p><p>Tu la remercies et ressors sur la place.</p>`,
     choices: [{label: "Retourner sur la place", to: 'c3'}]
   },
 
   c122: {
-    number: 'PAGE 122', title: "Une lame contre la masse", noImage: true,
-    text: `<p>Tu lances une lame vers la masse. La pointe disparaît dans les plis de sa forme sombre.</p><p>Tu observes si ton tir l’a arrêtée.</p>`,
+    number: 'PAGE 136', title: "Une lame contre la masse", noImage: true,
+    text: `<p>Tu lances une lame vers la masse sombre. Tu guettes l’effet de ton tir.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c27'}]
   },
 
   c123: {
-    number: 'PAGE 123', title: "Une lame contre le disparu", noImage: true,
+    number: 'PAGE 137', title: "Une lame contre le disparu", noImage: true,
     text: `<p>Ta lame file vers le disparu de Rochebrume. Tu guettes l’effet du projectile.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c38'}]
   },
 
   c124: {
-    number: 'PAGE 124', title: "Une lame sur l’îlot", noImage: true,
-    text: `<p>Tu lances une lame vers la créature de l’îlot. Elle heurte son corps déformé. Tu attends de voir si elle poursuivra sa marche.</p>`,
+    number: 'PAGE 138', title: "Une lame sur l’îlot", noImage: true,
+    text: `<p>Tu lances une lame vers la créature de l’îlot. Tu attends de voir si elle poursuivra sa marche.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c47'}]
   },
 
   c125: {
-    number: 'PAGE 125', title: "Une lame au-dessus du vide", noImage: true,
+    number: 'PAGE 139', title: "Une lame au-dessus du vide", noImage: true,
     text: `<p>Tu projettes une lame contre le marcheur qui grimpe sous le pont. La créature se replie autour d’une corde. Tu dois voir si elle tient encore.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c62'}]
   },
 
   c126: {
-    number: 'PAGE 126', title: "Une lame dans le couloir", noImage: true,
-    text: `<p>Tu projettes une lame vers le chevalier transformé. Elle le frappe dans l’étroitesse de la cellule.</p>`,
+    number: 'PAGE 140', title: "Une lame dans le couloir", noImage: true,
+    text: `<p>Tu projettes une lame vers le chevalier transformé. Tu guettes sa réaction dans l’étroitesse de la cellule.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c97'}]
   },
 
   c127: {
-    number: 'PAGE 127', title: "L’anneau récupéré", noImage: true,
+    number: 'PAGE 141', title: "L’anneau récupéré", noImage: true,
     text: `<p>Tu soulèves l’anneau de la dalle. Il semble presque ne rien peser. Le symbole de l’œil fermé apparaît sur sa tranche.</p><p>Tu regagnes la barque.</p>`,
     choices: [{label: "Reprendre la barque", to: 'c48'}]
   },
 
   c128: {
-    number: 'PAGE 128', title: "Le gantelet du Veilleur", noImage: true,
+    number: 'PAGE 142', title: "Le gantelet du Veilleur", noImage: true,
     text: `<p>Tu détaches doucement le gantelet de la main du squelette. Les plaques sont encore solides ; tu l’ajustes à ton bras avant de franchir la porte du quartier haut.</p>`,
     choices: [{label: "Franchir la porte", to: 'c67'}]
   },
 
   c130: {
-    number: 'PAGE 130', title: "La lame de diversion", noImage: true,
+    number: 'PAGE 144', title: "La lame de diversion", noImage: true,
     text: `<p>Tu projettes une lame au-delà du pont. Elle fend la brume et disparaît sous les planches.</p>
       <p>La lame de jet tinte contre une pierre très loin sous le pont.</p>
       <p>La chose lâche aussitôt la face inférieure du pont et disparaît dans la brume à sa poursuite.</p>
@@ -4686,7 +4721,7 @@ const STORY = {
   },
 
   c131: {
-    number: 'PAGE 131', title: "La corde du Veilleur", noImage: true,
+    number: 'PAGE 145', title: "La corde du Veilleur", noImage: true,
     onEnter: s => { if (hasItem(s, 'ceinture_rouge')) s.flags.bridgeCordTaken = true; },
     text: state => hasItem(state, 'ceinture_rouge')
       ? `<p>Tu réexamines la ceinture de corde rouge déjà rangée dans ton équipement. Son tressage est intact.</p>`
@@ -4698,7 +4733,7 @@ const STORY = {
   },
 
   c136: {
-    number: 'PAGE 136', title: "Les lames récupérées", noImage: true,
+    number: 'PAGE 150', title: "Les lames récupérées", noImage: true,
     text: s => s.history?.filter(id => id === 'c136').length > 1
       ? `<p>La boîte de l’armurerie est vide. Les cinq lames ont déjà été récupérées.</p>`
       : `<p>Tu enveloppes les cinq lames dans un morceau de tissu et les glisses dans ton équipement. Tu repars vers les bureaux.</p>`,
@@ -4706,14 +4741,14 @@ const STORY = {
   },
 
   c137: {
-    number: 'PAGE 137', title: '', noImage: true,
+    number: 'PAGE 151', title: '', noImage: true,
     text: `<p>Tu soulèves le loquet. Le chevalier tire son corps vers l’ouverture et se retient au montant.</p>
       <blockquote>« Merci… Je savais que vous ne me laisseriez pas ici. »</blockquote>
       <p>Tu t’écartes et reprends le couloir vers l’arche.</p>`,
     choices: [{ label: 'T’éloigner de la cellule', to: 'c147' }]
   },
   c138: {
-    number: 'PAGE 138', title: 'Le remède du laboratoire', noImage: true,
+    number: 'PAGE 152', title: 'Le remède du laboratoire', noImage: true,
     text: s => `<p>L’armoire a été fouillée dans la hâte. Des tiroirs pendent de travers, et le loquet porte une marque de lame.</p>
       ${hasItem(s, 'ampoule_blanche') || s.flags.labAmpouleTaken
         ? '<p>L’emplacement de l’unique ampoule intacte est vide : tu l’as déjà emportée.</p>'
@@ -4721,7 +4756,7 @@ const STORY = {
     choices: s => [
       ...(!hasItem(s, 'ampoule_blanche') && !s.flags.labAmpouleTaken && !s.visited?.c138Taken
         ? [{ label: 'Prendre l’Ampoule blanche', stay: true, effect: t => {
-            addItem(t, 'ampoule_blanche', 'Ampoule blanche', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');
+            addItem(t, 'ampoule_blanche', 'Ampoule blanche — laboratoire', 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.');
             t.flags.labAmpouleTaken = true;
           } }]
         : []),
@@ -4731,41 +4766,41 @@ const STORY = {
   },
 
   c139: {
-    number: 'PAGE 139', title: "L’ampoule du poste de secours", noImage: true,
-    text: `<p>Tu récupères l’ampoule blanche dans l’armoire et la protèges dans ton sac. Tu repars vers le carrefour.</p>`,
-    choices: [{label: "Revenir au carrefour", to: 'c106'}]
+    number: 'PAGE 108', title: "L’ampoule du poste de secours", noImage: true,
+    text: `<p>Au milieu des flacons brisés, tu découvres une ampoule intacte. Sur l’étiquette : « Traitement de la terre noire ».</p><p>Tu la protèges dans ton sac. Les autres flacons sont vides ou inutilisables.</p>`,
+    choices: [{label: "Poursuivre la fouille du poste", to: 'c107'}, {label:'Revenir au carrefour',to:'c106'}]
   },
 
   c140: {
-    number: 'PAGE 140', title: "La sacoche de terre noire", noImage: true,
-    text: `<p>Tu refermes soigneusement la sacoche, sans toucher à la poudre, puis la ranges dans ton sac.</p><p>Tu retournes vers le carrefour.</p>`,
-    choices: [{label: "Revenir au carrefour", to: 'c106'}]
+    number: 'PAGE 117', title: "La sacoche de terre noire", noImage: true,
+    text: `<p>Tu refermes soigneusement la sacoche, sans toucher à la poudre, puis la ranges dans ton sac.</p><p>Tu peux encore inspecter les autres recoins de la réserve, si tu oses.</p>`,
+    choices: [{label:'Poursuivre la fouille de la réserve',to:'c108'}, {label: "Revenir au carrefour", to: 'c106'}]
   },
 
   c141: {
-    number: 'PAGE 141', title: "La corde dans le puits", noImage: true,
+    number: 'PAGE 153', title: "La corde dans le puits", noImage: true,
     text: `<p>Tu noues la corde rouge à l’un des anneaux de fer, vérifies le nœud et t’engages dans le conduit.</p><p>Tu poses les bottes sur les premières prises.</p>`,
     choices: [{label: "Poursuivre la descente", to: 'c115'}]
   },
 
   c142: {
-    number: 'PAGE 142', title: 'L’ancienne descente', noImage: true,
+    number: 'PAGE 154', title: 'L’ancienne descente', noImage: true,
     // Réservée à la reprise d'une sauvegarde antérieure : plus aucun bracelet à obtenir.
     text: `<p>Tu reprends appui sur les anneaux et t’engages dans le conduit. Tu progresses en contrôlant chacune de tes prises.</p>`,
     choices: [{ label: 'Terminer la descente', to: 'c115', effect: s => { s.flags.cityWellDescent = 'success'; } }]
   },
   c143: {
-    number: 'PAGE 143', title: "La descente à mains nues", noImage: true,
+    number: 'PAGE 155', title: "La descente à mains nues", noImage: true,
     text: `<p>Tu renonces aux mécanismes et attaques les prises une à une. La paroi s’effrite déjà sous tes doigts.</p><p>Tu poursuis la descente.</p>`,
     choices: [{label: "Poursuivre la descente", to: 'c115'}]
   },
   c144: {
-    number: 'PAGE 144', title: '', noImage: true,
+    number: 'PAGE 156', title: '', noImage: true,
     text: `<p>« Attendez… Je vous en prie ! »</p><p>Tu t’éloignes sans toucher à la porte. Le chevalier frappe une fois contre le bois ; puis ses appels deviennent indistincts.</p><p>Tu retrouves l’arche au bout du couloir.</p>`,
     choices: [{ label: 'Quitter le quartier d’observation', to: 'c98' }]
   },
   c145: {
-    number: 'PAGE 145', title: '', image: 'Le bouclier du chevalier',
+    number: 'PAGE 157', title: '', image: 'Le bouclier du chevalier',
     text: s => s.flags.knightShieldTaken || hasItem(s, 'bouclier_chevalier')
       ? (shieldIsActive(s)
         ? `<p>Le petit bouclier est déjà dans ton équipement. Il lui reste ${s.protectionItems.bouclier_chevalier.remaining} point${s.protectionItems.bouclier_chevalier.remaining > 1 ? 's' : ''} de protection.</p>`
@@ -4782,12 +4817,12 @@ const STORY = {
   // Conservée uniquement pour reprendre les anciennes sauvegardes déjà situées page 146.
   // Aucun choix de la nouvelle version ne conduit ici.
   c146: {
-    number: 'PAGE 146', title: '', noImage: true,
+    number: 'PAGE 158', title: '', noImage: true,
     text: `<p>Tu passes l’avant-bras dans les sangles du bouclier et regagnes le couloir. Son poids ralentit légèrement tes gestes, mais il pourra te protéger des prochains coups.</p>`,
     choices: [{ label: 'Rejoindre la salle ronde', to: 'c98' }]
   },
   c147: {
-    number: 'PAGE 147', title: '', noImage: true,
+    number: 'PAGE 159', title: '', noImage: true,
     onEnter: s => {
       if (s.flags.knightFate !== 'freed' || s.flags.knightBackstabDone) return;
       s.flags.knightBackstabDone = true;
@@ -4803,14 +4838,14 @@ const STORY = {
     choices: s => s.hp <= 0 ? fatalChoices() : [{ label: 'Quitter le quartier', to: 'c98' }]
   },
   c148: {
-    number: 'PAGE 148', title: '', noImage: true,
+    number: 'PAGE 160', title: '', noImage: true,
     // Ancien point d'arrivée conservé pour les liens de travail, plus aucune branche ne mène ici.
     onEnter: s => { if (!s.flags.tabletsExamined) exposeTabletGate(s); },
     text: `<p>La grille a été ouverte. Tu peux maintenant atteindre le coffre.</p>`,
     choices: [{ label: 'Examiner le coffre', to: 'c110' }]
   },
   c149: {
-    number: 'PAGE 149', title: '', image: 'Le chevalier enragé',
+    number: 'PAGE 161', title: '', image: 'Le chevalier enragé',
     onEnter: s => { if (!s.flags.knightFate) s.flags.knightFate = 'hostile'; },
     text: s => {
       const enemy = ENEMIES.observationPrisonerCorridor;
@@ -4833,12 +4868,12 @@ const STORY = {
     }
   },
   c150: {
-    number: 'PAGE 150', title: '', noImage: true,
+    number: 'PAGE 162', title: '', noImage: true,
     text: `<p>Tu projettes une lame vers le chevalier transformé. La lame le frappe dans le couloir, au milieu des débris de la porte.</p>`,
     choices: [{ label: 'Voir le résultat du tir', to: 'c149' }]
   },
   c151: {
-    number: 'PAGE 151', title: '', noImage: true,
+    number: 'PAGE 163', title: '', noImage: true,
     text: s => !s.flags.labLeverResultReady || !Number.isInteger(s.flags.labLeverRollCount) ||
       s.flags.labLeverRollCount !== s.rollCount
       ? '<p>Aucun résultat du levier n’est disponible ici. Le mécanisme se trouve dans la salle voisine.</p>'
@@ -4854,7 +4889,7 @@ const STORY = {
     ]
   },
   c129: {
-    number: 'PAGE 129', title: 'Avancer sans bruit', noImage: true,
+    number: 'PAGE 143', title: 'Avancer sans bruit', noImage: true,
     text: s => `${diceResultHtml(s)}${s.flags.bridgeCalmPassed
       ? '<p>Tu te forces à avancer sans accélérer. La chose accompagne tes pas sous les planches, puis finit par s’immobiliser. Tu atteins les dernières planches avant qu’elle ne remonte.</p>'
       : '<p>Tu avances en retenant ton souffle, mais une planche gémit sous ta botte. La chose s’immobilise sous toi, puis ses longs doigts se referment sur le bord du pont. Elle te barre la route.</p>'}`,
@@ -4864,26 +4899,26 @@ const STORY = {
   },
 
   c132: {
-    number: 'PAGE 132', title: 'La première sentinelle', noImage: true,
+    number: 'PAGE 146', title: 'La première sentinelle', noImage: true,
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu affrontes la première sentinelle, l’épée levée.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
   },
   c133: {
-    number: 'PAGE 133', title: 'Le tir sur la première sentinelle', noImage: true,
+    number: 'PAGE 147', title: 'Le tir sur la première sentinelle', noImage: true,
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu vises la première sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
   },
   c134: {
-    number: 'PAGE 134', title: 'La seconde sentinelle', noImage: true,
+    number: 'PAGE 148', title: 'La seconde sentinelle', noImage: true,
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu te tournes vers la seconde sentinelle et frappes.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
   },
   // V68.32 : monde sous la cité, dédale défensif. Illustrations explicitement désactivées en attente de création WebP.
   c152: {
-    number: 'PAGE 152', title: 'Le dédale des défenses', noImage: true,
+    number: 'PAGE 164', title: 'Le dédale des défenses', noImage: true,
     text: `<p>La galerie est brûlante. La poussière flotte entre les pierres sales. Dans des supports de fer, de petites flammes immobiles diffusent une lumière bleu pâle et or. Elles ne semblent rien consumer.</p>
       <p>Un pas traînant secoue le sol. Au coude suivant, une masse presque humaine avance vers toi. Un bras racle la paroi. Sa tête penche sans trouver ton regard.</p>
       <p>À gauche, une fente étroite s’ouvre dans la roche. À droite, un renfoncement peut te dissimuler. La chose approche.</p>`,
@@ -4894,7 +4929,7 @@ const STORY = {
     ]
   },
   c153: {
-    number: 'PAGE 153', title: '', noImage: true,
+    number: 'PAGE 165', title: '', noImage: true,
     text: s => { const e=ENEMIES.labyrinthWanderer, c=combatState(s,'labyrinthWanderer',e);
       if(c.hp<=0) return `${enemyCardHtml(s,'labyrinthWanderer',e)}${combatRoundHtml(s,'labyrinthWanderer',e)}${throwingBladeResultHtml(s,'labyrinthWanderer',e)}<p>Ton dernier coup abat la chose. Ses pas cessent de faire vibrer la galerie. Un grondement répond au loin.</p>`;
       if(s.hp<=0) return `${combatRoundHtml(s,'labyrinthWanderer',e)}<p>Tu t’effondres contre la paroi.</p>`;
@@ -4903,51 +4938,51 @@ const STORY = {
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Courir vers les galeries suivantes',to:'c168'}]:combatActionChoices(s,'labyrinthWanderer',e,'c153');}
   },
   c154: {
-    number: 'PAGE 154', title: '', noImage: true,
+    number: 'PAGE 166', title: '', noImage: true,
     text: s => `<p>Ta lame file vers la créature.</p>${enemyCardHtml(s,'labyrinthWanderer',ENEMIES.labyrinthWanderer)}${throwingBladeResultHtml(s,'labyrinthWanderer',ENEMIES.labyrinthWanderer)}`,
     choices: s => {const e=ENEMIES.labyrinthWanderer,c=combatState(s,'labyrinthWanderer',e);
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Poursuivre dans la galerie',to:'c168'}]:combatActionChoices(s,'labyrinthWanderer',e,'c153');}
   },
   c155: {
-    number: 'PAGE 155', title: '', noImage: true,
+    number: 'PAGE 167', title: '', noImage: true,
     text: `<p>Tu t’aplatis dans la faille. Un pas. Puis un autre. Chaque choc fait tomber une pincée de poussière sur ton épaule.</p>
       <p>Ta paume glisse sur la poignée. Tu la resserres. Le souffle de la chose passe tout près. Son flanc découvre une ouverture.</p>`,
     choices:[{label:'Surgir et frapper',to:'c156'}]
   },
   c156: {
-    number: 'PAGE 156', title: '', noImage: true,
+    number: 'PAGE 168', title: '', noImage: true,
     text:`<p>Tu jaillis du recoin. Ton coup atteint la créature avant qu’elle puisse se retourner. Elle heurte la paroi et s’affaisse.</p>
       <p>Plus loin, une pierre tombe. Quelque chose d’autre a entendu.</p>`,
     choices:[{label:'Continuer sans attendre',to:'c168'}]
   },
   c157: {
-    number: 'PAGE 157', title: '', noImage: true,
+    number: 'PAGE 169', title: '', noImage: true,
     text:`<p>Tu te glisses de profil dans la fente. Derrière toi, le lourd pas s’arrête : la créature ne peut pas passer.</p>
       <p>Le tunnel s’ouvre soudain sur une salle immense. Une arête rocheuse traverse le vide. Sa surface luit d’humidité.</p>`,
     choices:[{label:'T’engager sur l’arête',to:'c158'}]
   },
   c158: {
-    number: 'PAGE 158', title: '', noImage: true,
+    number: 'PAGE 170', title: '', noImage: true,
     text:s=>`<p>La traversée commence. Un faux pas suffirait à te précipiter plus bas.</p>
       ${labyrinthVoiceTier(s)==='clear'?'<p>Une voix souffle tout près : « La dalle claire… évite-la. » Une partie du passage se détache sous tes yeux.</p>':labyrinthVoiceTier(s)==='faint'?'<p>Un murmure traverse ta tête : « Pas… là… » Tu hésites devant les pierres humides.</p>':'<p>Aucun murmure. Seulement l’eau qui goutte dans le vide.</p>'}
       <p>Le chemin se rétrécit encore.</p>`,
     choices:[{label:'Franchir le passage glissant',to:'c159',effect:s=>labyrinthTrap(s,'labyrinthLedge')}]
   },
   c159: {
-    number: 'PAGE 159', title: '', noImage: true,
+    number: 'PAGE 171', title: '', noImage: true,
     text:s=>{const r=s.flags.labyrinthLedge;
       if(!r)return '<p>Le passage vacille. Tu n’as pas encore franchi la dalle glissante.</p>';
       return `${labyrinthTrapResult(s,'labyrinthLedge')}${r.success?(r.tier==='clear'?'<p>La voix te fait déplacer ton pied juste à temps. La dalle s’effondre derrière toi. Tu atteins l’autre rive sans glisser.</p>':'<p>Tu prends appui sur une saillie sèche et franchis le vide. Tu tiens debout.</p>'):'<p>Ton pied dérape. Tu bascules, heurtes la paroi et te rattrapes de justesse à une corniche inférieure.</p>'}`;},
     choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthLedge?[{label:'Revenir au passage',to:'c158'}]:s.flags.labyrinthLedge.success?[{label:'Gagner la sortie de la salle',to:'c167'}]:[{label:'Te hisser sur la corniche inférieure',to:'c160'}]
   },
   c160: {
-    number: 'PAGE 160', title: '', noImage: true,
+    number: 'PAGE 172', title: '', noImage: true,
     text:s=>`<p>Tu retombes sur la corniche. ${s.flags.labyrinthLedge?.damaged?'La chute t’a coûté un point de Vie.':'Tu retrouves un appui.'}</p>
       <p>À peine redressé, tu entends des griffes sur la pierre. Un rampant au museau allongé se hisse hors de l’obscurité. Ses mâchoires claquent à la hauteur de tes jambes.</p>`,
     choices:s=>s.hp<=0?fatalChoices():[{label:'L’affronter avant qu’il ne bondisse',to:'c161',effect:s=>{if(s.combats?.labyrinthCaiman?.hp<=0)replayCombat(s,'labyrinthCaiman');}}]
   },
   c161: {
-    number: 'PAGE 161', title: '', noImage: true,
+    number: 'PAGE 173', title: '', noImage: true,
     text:s=>{const e=ENEMIES.labyrinthCaiman,c=combatState(s,'labyrinthCaiman',e);
       if(c.hp<=0)return `${enemyCardHtml(s,'labyrinthCaiman',e)}${combatRoundHtml(s,'labyrinthCaiman',e)}${throwingBladeResultHtml(s,'labyrinthCaiman',e)}<p>Le rampant s’immobilise. Plusieurs corps sont étendus plus loin sur la corniche.</p>`;
       return `<p>La bête fond sur toi. Sa gueule frappe au ras du sol, près du vide.</p>${enemyCardHtml(s,'labyrinthCaiman',e)}${combatRoundHtml(s,'labyrinthCaiman',e)}${throwingBladeResultHtml(s,'labyrinthCaiman',e)}`;},
@@ -4955,13 +4990,13 @@ const STORY = {
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Examiner la corniche',to:'c163'}]:combatActionChoices(s,'labyrinthCaiman',e,'c161');}
   },
   c162: {
-    number: 'PAGE 162', title: '', noImage: true,
-    text:s=>`<p>La lame frappe le rampant.</p>${enemyCardHtml(s,'labyrinthCaiman',ENEMIES.labyrinthCaiman)}${throwingBladeResultHtml(s,'labyrinthCaiman',ENEMIES.labyrinthCaiman)}`,
+    number: 'PAGE 174', title: '', noImage: true,
+    text:s=>`<p>Tu lances une lame vers le rampant.</p>${enemyCardHtml(s,'labyrinthCaiman',ENEMIES.labyrinthCaiman)}${throwingBladeResultHtml(s,'labyrinthCaiman',ENEMIES.labyrinthCaiman)}`,
     choices:s=>{const e=ENEMIES.labyrinthCaiman,c=combatState(s,'labyrinthCaiman',e);
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Examiner la corniche',to:'c163'}]:combatActionChoices(s,'labyrinthCaiman',e,'c161');}
   },
   c163: {
-    number: 'PAGE 163', title: '', noImage: true,
+    number: 'PAGE 175', title: '', noImage: true,
     text:s=>`<p>Des corps gisent contre la roche. Plusieurs ont les bottes tournées vers le vide.</p>
       ${s.flags.labyrinthCorpseLooted?'<p>La sacoche ouverte est vide.</p>':'<p>Une sacoche reste prise sous la sangle d’un manteau. Son fermoir tient encore.</p>'}
       <p>Un grondement roule dans le plafond. Tu dois repartir.</p>`,
@@ -4970,28 +5005,28 @@ const STORY = {
       {label:'Laisser les corps et remonter',to:'c165'}]
   },
   c164: {
-    number: 'PAGE 164', title: '', noImage: true,
+    number: 'PAGE 176', title: '', noImage: true,
     text:s=>`<p>Tu arraches la sacoche à la sangle et l’ouvres : une potion de guérison et trois petites lames de jet.</p>
       <p>Une fissure s’étend juste au-dessus de toi.</p>`,
     choices:[{label:'Remonter avant l’effondrement',to:'c165'}]
   },
   c165: {
-    number: 'PAGE 165', title: '', noImage: true,
+    number: 'PAGE 177', title: '', noImage: true,
     text:`<p>Tu plantes tes doigts dans les joints de la paroi et te hisses hors de la corniche. Un bloc se détache à l’endroit où tu te trouvais.</p>`,
     choices:[{label:'Rejoindre la passerelle supérieure',to:'c166'}]
   },
   c166: {
-    number: 'PAGE 166', title: '', noImage: true,
+    number: 'PAGE 178', title: '', noImage: true,
     text:`<p>Tu agrippes le rebord, roules sur la pierre humide et retrouves le chemin étroit. Derrière toi, la corniche disparaît dans la poussière.</p>`,
     choices:[{label:'Atteindre l’autre bout de la salle',to:'c167'}]
   },
   c167: {
-    number: 'PAGE 167', title: '', noImage: true,
+    number: 'PAGE 179', title: '', noImage: true,
     text:`<p>La fente s’élargit. Une dernière pierre cède derrière toi. Tu débouches sur la galerie principale, plus loin que la créature aux pas lourds.</p>`,
     choices:[{label:'Poursuivre dans les galeries',to:'c168'}]
   },
   c168: {
-    number: 'PAGE 168', title: '', noImage: true,
+    number: 'PAGE 180', title: '', noImage: true,
     text:`<p>Deux virages. Une flamme surnaturelle tremble enfin dans son support.</p>
       <p>Un coup profond secoue la montagne. La galerie se fend devant toi : sous une arche tombée, un espace demeure. À côté, des dalles disjointes forment un passage plus direct au-dessus d’un gouffre.</p>
       <p>Le plafond commence à s’écrouler.</p>`,
@@ -5001,33 +5036,33 @@ const STORY = {
     ]
   },
   c169: {
-    number: 'PAGE 169', title: '', noImage: true,
+    number: 'PAGE 181', title: '', noImage: true,
     text:`<p>Tu te jettes sous l’arche. Une pluie de gravats s’écrase là où tu te trouvais. Tu rampes, déchires ta manche contre la roche et ressors de l’autre côté.</p>
       <p>Quelqu’un tousse au bout de la galerie.</p>`,
     choices:[{label:'Suivre la toux',to:'c172'}]
   },
   c170: {
-    number: 'PAGE 170', title: '', noImage: true,
+    number: 'PAGE 182', title: '', noImage: true,
     text:s=>{const r=s.flags.labyrinthArch;
       if(!r)return '<p>Les dalles tremblent devant le vide.</p>';
       return `${labyrinthTrapResult(s,'labyrinthArch')}${r.success?(r.tier==='clear'?'<p>La voix t’indique une dalle solide. Tu bondis dessus, puis de l’autre côté, juste avant l’effondrement.</p>':'<p>Tu bonds. La dernière dalle tombe sous ton talon, mais tu atteins la rive opposée.</p>'):'<p>Une dalle s’abaisse sous ton pied. Tu glisses dans l’ouverture et heurtes une marche plus basse.</p>'}`;},
     choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthArch?[{label:'Revenir à l’arche',to:'c168'}]:s.flags.labyrinthArch.success?[{label:'Suivre la toux dans le couloir',to:'c172'}]:[{label:'Te relever sans attendre',to:'c171'}]
   },
   c171: {
-    number: 'PAGE 171', title: '', noImage: true,
+    number: 'PAGE 183', title: '', noImage: true,
     text:s=>`<p>Tu te hisses sur la marche. ${s.flags.labyrinthArch?.damaged?'La chute t’a coûté un point de Vie.':'Tu retrouves ton équilibre.'}</p>
       <p>Au-dessus de toi, la dernière dalle s’écrase et ferme le passage. Une toux retentit au bout du couloir.</p>`,
     choices:s=>s.hp<=0?fatalChoices():[{label:'Suivre la toux',to:'c172'}]
   },
   c172: {
-    number: 'PAGE 172', title: 'La femme du dédale', noImage: true,
+    number: 'PAGE 184', title: 'La femme du dédale', noImage: true,
     text:`<p>Au troisième virage, une femme est accroupie sous une flamme immobile. Son visage reste dans l’ombre. Elle semble humaine.</p>
       <p>Un piège claque derrière toi. Elle lève les yeux.</p>
       <blockquote>« Vous aussi, vous cherchez quelqu’un ? Approchez. Je n’ai plus la force de courir. »</blockquote>`,
     choices:[{label:'Lui demander ce qui lui est arrivé',to:'c173'}]
   },
   c173: {
-    number: 'PAGE 173', title: '', noImage: true,
+    number: 'PAGE 185', title: '', noImage: true,
     text:`<p>« J’ai perdu quelqu’un là-dessous. Je suis venue le chercher. »</p>
       <p>Elle désigne les galeries.</p>
       <blockquote>« Les pièges sont partout. Au début, la voix me prévenait : la pierre qui tombe, le sol qui cède… Mais elle me suivait partout. J’ai cru qu’elle voulait m’avaler. »</blockquote>
@@ -5035,7 +5070,7 @@ const STORY = {
     choices:[{label:'Lui demander pourquoi la voix s’est tue',to:'c174'}]
   },
   c174: {
-    number: 'PAGE 174', title: '', noImage: true,
+    number: 'PAGE 186', title: '', noImage: true,
     text:`<p>« J’ai avalé de la terre noire. Beaucoup. La voix a disparu. J’étais enfin seule dans ma tête. »</p>
       <p>Elle montre ses jambes blessées et rit sans joie.</p>
       <blockquote>« Libre, oui. Mais aveugle aux pièges. Sans ses avertissements, je suis tombée encore et encore. Maintenant je ne peux plus marcher. »</blockquote>
@@ -5044,7 +5079,7 @@ const STORY = {
     choices:[{label:'Prendre le sac qu’elle te tend',to:'c175',effect:labyrinthWomanGift}]
   },
   c175: {
-    number: 'PAGE 175', title: '', noImage: true,
+    number: 'PAGE 187', title: '', noImage: true,
     text:s=>`<p>Son sac contient une ampoule de liquide blanc, un sachet de terre noire et une potion de guérison.</p>
       <p>Elle observe ton arme. « Vous comptiez vraiment descendre avec ça ? »</p>
       <p>Elle tire de son fourreau une épée à la lame rouge sombre, fine et solide.</p>
@@ -5054,7 +5089,7 @@ const STORY = {
     choices:[{label:'Écouter sa dernière demande',to:'c176'}]
   },
   c176: {
-    number: 'PAGE 176', title: '', noImage: true,
+    number: 'PAGE 188', title: '', noImage: true,
     text:`<p>Un grondement lui fait fermer les yeux.</p>
       <blockquote>« Je ne veux pas devenir l’une de ces choses. Je sens que ça approche… Achevez-moi. S’il vous plaît. »</blockquote>
       <p>Elle lâche ton bras. Au loin, les pas lourds reprennent.</p>`,
@@ -5064,23 +5099,23 @@ const STORY = {
     ]
   },
   c177: {
-    number: 'PAGE 177', title: '', noImage: true,
+    number: 'PAGE 189', title: '', noImage: true,
     text:`<p>Tu lui promets de tenter de libérer ceux qui sont enfermés plus bas.</p>
       <p>Un coup bref. Son corps cesse de trembler. Une larme reste au bord de sa joue.</p>
       <p>Tu reprends la galerie. Derrière toi, la flamme ne vacille pas.</p>`,
     choices:[{label:'Poursuivre vers la prison',to:'c179'}]
   },
   c178: {
-    number: 'PAGE 178', title: '', noImage: true,
+    number: 'PAGE 190', title: '', noImage: true,
     text:`<p>Tu ranges ton arme. Elle détourne la tête.</p>
       <blockquote>« Alors partez. Avant que je ne me relève autrement. »</blockquote>
       <p>Tu la laisses sous la flamme. Un cri étouffé te poursuit jusqu’au tournant.</p>`,
     choices:[{label:'Poursuivre vers la prison',to:'c179'}]
   },
   c179: {
-    number: 'PAGE 179', title: '', noImage: true,
+    number: 'PAGE 191', title: '', noImage: true,
     text:s=>`<p>La dernière galerie s’incline vers une porte entrouverte. Au-delà, aucun bruit.</p>
-      <p>Dans ton sac, le liquide blanc et la terre noire pèsent presque le même poids. L’un affaiblit l’emprise, l’autre étouffe la voix mais rapproche de la transformation.</p>
+      ${hasItem(s,'ampoule_femme')&&hasItem(s,'terre_femme')?'<p>Dans ton sac, le liquide blanc et la terre noire pèsent presque le même poids. L’un affaiblit l’emprise, l’autre étouffe la voix mais rapproche de la transformation.</p>':'<p>Tu fais l’inventaire de tes dernières ressources avant la porte.</p>'}
       ${labyrinthVoiceTier(s)==='clear'?'<p>La voix murmure encore : « Par ici… »</p>':labyrinthVoiceTier(s)==='faint'?'<p>Quelques syllabes se mêlent au bruit de ton souffle.</p>':'<p>Tu n’entends plus aucune voix.</p>'}
       <p>Il reste un instant avant de franchir la porte.</p>`,
     choices:s=>[
@@ -5090,26 +5125,26 @@ const STORY = {
     ]
   },
   c180: {
-    number: 'PAGE 180', title: '', noImage: true,
+    number: 'PAGE 192', title: '', noImage: true,
     text:s=>`<p>Le liquide blanc coule sur ta langue. Son goût amer fait reculer la terre noire.</p>
       <p>La voix revient par bribes, ou devient plus distincte. Tu presses le pas vers la porte.</p><p><strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>`,
     choices:[{label:'Franchir la porte',to:'c183'}]
   },
   c181: {
-    number: 'PAGE 181', title: '', noImage: true,
+    number: 'PAGE 193', title: '', noImage: true,
     text:s=>`<p>La poudre sèche colle à ta gorge. La voix s’éloigne, mais une douleur sourde s’installe sous ta peau.</p>
       <p><strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>
       ${s.flags.blackEarthTransformed?'<p>Tes doigts se crispent. La transformation commence avant que tu puisses avancer.</p>':'<p>Tu atteins la porte en serrant les dents.</p>'}`,
     choices:s=>s.flags.blackEarthTransformed?fatalChoices():[{label:'Franchir la porte',to:'c183'}]
   },
   c182: {
-    number: 'PAGE 182', title: '', noImage: true,
+    number: 'PAGE 194', title: '', noImage: true,
     text:`<p>Tu repousses les deux substances au fond du sac. Ni l’une ni l’autre ne décidera pour toi, pas maintenant.</p>
       <p>La porte est juste devant.</p>`,
     choices:[{label:'Franchir la porte',to:'c183'}]
   },
   c183: {
-    number: 'PAGE 183', title: 'Le silence après le dédale', noImage: true,
+    number: 'PAGE 195', title: 'Le silence après le dédale', noImage: true,
     text:`<p>Tu franchis le seuil. L’air devient frais. Les pas, les chutes et les grondements cessent enfin.</p>
       <p>Une immense cavité s’ouvre devant toi. Des constructions anciennes émergent d’une brume légère. Pour la première fois depuis la cité, tu peux t’arrêter et regarder.</p>
       <p>Ta respiration est courte. Tes mains tremblent encore sur l’épée rouge. Quelque part, plus loin, se trouve la prison.</p>
@@ -5120,8 +5155,134 @@ const STORY = {
     ]
   },
 
+
+  c184: {
+    number:'PAGE 109',title:'Le livre de bois',noImage:true,
+    text:s=>`<p>Tu effleures les reliures couvertes de poussière. L’une d’elles ne s’ouvre pas.</p>
+      <p>Ce n’est pas un livre : couverture et pages ont été taillées dans un même bloc de bois. Tu tires légèrement dessus. Une résistance vient de derrière l’étagère, comme si l’objet était relié à quelque chose.</p>
+      ${s.flags.secretPassageOpened?'<p>Le mécanisme est déjà libéré. La trappe demeure ouverte entre les étagères.</p>':'<p>Il suffirait de tirer plus fort.</p>'}`,
+    choices:s=>s.flags.secretPassageOpened
+      ? [{label:'Se glisser dans la trappe',to:'c186'},{label:'Revenir dans la salle',to:'c107'}]
+      : [{label:'Tirer doucement le faux livre',to:'c185',effect:t=>{t.flags.secretPassageOpened=true;}},
+         {label:'Le laisser en place',to:'c107'}]
+  },
+  c185: {
+    number:'PAGE 110',title:'Le verrou',noImage:true,
+    text:`<p>Tu tires le livre vers toi. Un bruit sourd résonne derrière le mur : un verrou vient de se libérer.</p>
+      <p>Entre deux étagères, une étroite trappe pivote lentement. L’ouverture laisse passer une seule personne. Aucun bruit ne vient de l’autre côté.</p>`,
+    choices:[{label:'Se glisser par la trappe',to:'c186'},{label:'Rester dans le poste de secours',to:'c107'}]
+  },
+  c186: {
+    number:'PAGE 111',title:'La cache du soignant',noImage:true,
+    text:`<p>Tu te glisses dans l’ouverture. La pièce est petite, presque entièrement plongée dans le noir. L’air y est sec et immobile.</p>
+      <p>Un grand coffre est ouvert contre le mur. Sur une tablette, un cahier couvert d’une écriture serrée attend près d’une chandelle consumée.</p>`,
+    choices:[{label:'Lire le cahier',to:'c187'},{label:'Examiner le coffre ouvert',to:'c188'},{label:'Ressortir par la trappe',to:'c107'}]
+  },
+  c187: {
+    number:'PAGE 112',title:'Le cahier du soignant',noImage:true,
+    text:`<p>Tu ouvres le cahier. Une main tremblante a rempli les pages de lignes serrées.</p>
+      <blockquote>« J’ai décidé de raconter cette histoire ici, même si personne ne doit jamais la lire. J’ai besoin de déposer ce poids quelque part.</blockquote>
+      <blockquote>Je ne crois plus aux Veilleurs. Combattre le mal par le mal ne peut être une solution. Et qu’est-ce qui nous prouve que nous combattons réellement le mal ?</blockquote>
+      <blockquote>Une révolte se prépare. Je sais que je n’y survivrai probablement pas. Si je trouve le courage de distribuer ces flacons aux prisonniers, peut-être pourront-ils enfin s’échapper.</blockquote>
+      <blockquote>Si l’un de vous lit ces lignes, pardonnez-nous ce que nous vous avons fait subir.</blockquote>
+      <blockquote>Les Veilleurs cherchent maintenant à détruire toutes les potions capables de soigner la terre noire. J’ai réussi à en cacher une ici. Ce n’est presque rien. J’espère qu’elle vous sauvera. »</blockquote>
+      <p>Les dernières lignes s’interrompent au milieu d’une phrase. Tu tournes la tête vers le coffre ouvert.</p>`,
+    choices:[{label:'Fouiller le coffre',to:'c188'},{label:'Revenir dans la cache',to:'c186'}]
+  },
+  c188: {
+    number:'PAGE 113',title:'Le dernier remède',noImage:true,
+    text:s=>`<p>Le coffre contient des étoffes moisies et des flacons brisés. Sous un morceau de toile, un emplacement a été ménagé dans le bois.</p>
+      ${s.flags.secretAmpouleTaken
+        ? '<p>L’emplacement de l’ampoule blanche est vide. Tu as déjà pris le dernier remède du soignant.</p>'
+        : '<p>Une petite ampoule de liquide blanc repose dans la cavité, parfaitement intacte.</p><p>À côté, une étiquette : « Contamination par la terre noire. Une dose. »</p>'}`,
+    choices:s=>[
+      ...(!s.flags.secretAmpouleTaken?[{label:'Prendre l’ampoule blanche cachée',to:'c189',effect:t=>{
+        if (!t.flags.secretAmpouleTaken) {
+          addItem(t,'ampoule_blanche_cache','Ampoule blanche — cache du soignant','Usage unique : réduit la terre noire de 4 points, sans soigner les blessures.');
+          t.flags.secretAmpouleTaken=true;
+        }
+      }}]:[]),
+      {label:'Revenir dans la cache',to:'c186'},
+      {label:'Quitter la cache',to:'c107'}
+    ]
+  },
+  c189: {
+    number:'PAGE 114',title:'L’ampoule du soignant',noImage:true,
+    text:`<p>Tu enveloppes la petite ampoule dans un coin de ton vêtement et la ranges avec précaution. Le liquide blanc frémit derrière le verre.</p><p>Le soignant a peut-être perdu la vie pour préserver cette seule dose.</p>`,
+    choices:[{label:'Revenir dans la cache',to:'c186'},{label:'Quitter la cache',to:'c107'}]
+  },
+  c190: {
+    number:'PAGE 116',title:'Le sachet de terre noire',noImage:true,
+    text:s=>`<p>Tu avances la main vers l’étagère en évitant les poussières épaisses qui couvrent le bois.</p>
+      ${s.visited?.c140 || hasItem(s,'sacoche_terre_noire')
+        ? '<p>La place du petit sachet est vide : tu as déjà emporté cette dose de terre noire.</p>'
+        : '<p>Un petit sachet contient de la terre noire sèche. Une mention au dos indique : « Dose : trois points. » Tu pourrais le conserver sans le consommer.</p>'}
+      <p>Un nouveau couinement monte derrière les sacs empilés.</p>`,
+    choices:s=>[
+      ...(!(s.visited?.c140 || hasItem(s,'sacoche_terre_noire'))?[{label:'Prendre le sachet sans consommer la poudre',to:'c140',effect:t=>{
+        if (!t.visited?.c140 && !hasItem(t,'sacoche_terre_noire')) addItem(t,'sacoche_terre_noire','Sacoche de terre noire','Usage unique : +3 terre noire.');
+        t.flags.blackEarthBagOffered=true;
+      }}]:[]),
+      {label:'Revenir dans la réserve',to:'c108'},
+      {label:'Fouiller aussi les sacs',to:s.flags.reserveRatDead?'c194':s.flags.reserveRatAwakened?'c192':'c191',effect:t=>{if(!t.flags.reserveRatDead)t.flags.reserveRatAwakened=true;}}
+    ]
+  },
+  c191: {
+    number:'PAGE 118',title:'Quelque chose dans les sacs',noImage:true,
+    text:s=>`<p>Tu ouvres un premier sac. Une poussière épaisse se soulève. Le couinement cesse.</p>
+      <p>Tu tires sur la cordelette du suivant. Un rat difforme, beaucoup trop gros pour l’espace qu’il occupe, jaillit entre les plis. Il se jette sur toi, les pattes tendues.</p>
+      <p>Tu recules juste assez pour dégainer. Il bondit à nouveau.</p>
+      ${enemyCardHtml(s,'reserveRat',ENEMIES.reserveRat)}`,
+    choices:s=>combatActionChoices(s,'reserveRat',ENEMIES.reserveRat,'c192')
+  },
+  c192: {
+    number:'PAGE 119',title:'Le combat de la réserve',noImage:true,
+    text:s=>`<p>Les sacs se déchirent autour de vous. Le rat attaque dans un froissement de toile et de bois.</p>
+      ${enemyCardHtml(s,'reserveRat',ENEMIES.reserveRat)}
+      ${s.combats?.reserveRat?.lastBlade?throwingBladeResultHtml(s,'reserveRat',ENEMIES.reserveRat):combatRoundHtml(s,'reserveRat',ENEMIES.reserveRat)}
+      ${s.combats?.reserveRat?.hp<=0?'<p>La créature s’affaisse sur le sol. Le silence revient. Quelque chose brille dans le petit sac où elle se cachait.</p>':''}`,
+    choices:s=>s.hp<=0?fatalChoices():s.combats?.reserveRat?.hp<=0
+      ? [{label:'Examiner le sac du rat',to:'c194',effect:t=>{t.flags.reserveRatDead=true;}}]
+      :combatActionChoices(s,'reserveRat',ENEMIES.reserveRat,'c192')
+  },
+  c193: {
+    number:'PAGE 120',title:'La lame contre le rat',noImage:true,
+    text:s=>`<p>Tu lances une lame avant que le rat puisse te rejoindre.</p>
+      ${enemyCardHtml(s,'reserveRat',ENEMIES.reserveRat)}
+      ${throwingBladeResultHtml(s,'reserveRat',ENEMIES.reserveRat)}
+      ${s.combats?.reserveRat?.hp<=0?'<p>Le rat s’immobilise au milieu des sacs éventrés.</p>':'<p>Le rat cherche de nouveau à bondir.</p>'}`,
+    choices:s=>s.hp<=0?fatalChoices():s.combats?.reserveRat?.hp<=0
+      ? [{label:'Examiner le sac du rat',to:'c194',effect:t=>{t.flags.reserveRatDead=true;}}]
+      :[{label:'Poursuivre le combat',to:'c192'}]
+  },
+  c194: {
+    number:'PAGE 121',title:'Le sac du rat',noImage:true,
+    onEnter:s=>{if(s.combats?.reserveRat?.hp<=0)s.flags.reserveRatDead=true;},
+    text:s=>`${!s.combats?.reserveRat || s.combats.reserveRat.hp>0
+        ? '<p>Le rat garde toujours son sac au milieu des débris. Impossible de l’atteindre tant qu’il est vivant.</p>'
+        : '<p>Le rat ne bouge plus. Tu dégages le petit sac de toile au milieu des débris. Les coutures sont déchirées et l’intérieur porte des traces de griffes.</p>'}
+      ${s.combats?.reserveRat?.hp>0 || !s.combats?.reserveRat?'<p>Il faudra vaincre le rat pour atteindre son sac.</p>':s.flags.reserveRatBladesTaken
+        ? '<p>Le sac est vide. Tu as déjà emporté les lames.</p>'
+        : '<p>Trois lames de jet reposent au fond, enveloppées dans un chiffon sale.</p>'}`,
+    choices:s=>[
+      ...(s.combats?.reserveRat?.hp===0 && !s.flags.reserveRatBladesTaken?[{label:'Prendre les trois lames de jet',to:'c195',effect:t=>{
+        if (!t.flags.reserveRatBladesTaken) {
+          t.throwingBlades=(t.throwingBlades||0)+3;
+          syncThrowingBlades(t);
+          t.flags.reserveRatBladesTaken=true;
+        }
+      }}]:[]),
+      {label:'Retourner dans la réserve',to:'c108'},
+      {label:'Quitter la réserve',to:'c106'}
+    ]
+  },
+  c195: {
+    number:'PAGE 122',title:'Les trois lames récupérées',noImage:true,
+    text:s=>`<p>Tu essuies les trois lames et les ranges dans ton équipement.</p><p><strong>Tu possèdes maintenant ${s.throwingBlades} lame${s.throwingBlades>1?'s':''} de jet.</strong></p>`,
+    choices:[{label:'Revenir dans la réserve',to:'c108'},{label:'Revenir au carrefour',to:'c106'}]
+  },
   c135: {
-    number: 'PAGE 135', title: 'Le tir sur la seconde sentinelle', noImage: true,
+    number: 'PAGE 149', title: 'Le tir sur la seconde sentinelle', noImage: true,
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu vises la seconde sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
@@ -5290,10 +5451,15 @@ const STORY = {
     "c173": "Son histoire", "c174": "Le prix du silence", "c175": "L’épée rouge",
     "c176": "La dernière demande", "c177": "L’achever", "c178": "La laisser",
     "c179": "Le choix de la terre noire", "c180": "Le liquide blanc", "c181": "La dose noire",
-    "c182": "Refuser les deux", "c183": "Le calme retrouvé"
+    "c182": "Refuser les deux", "c183": "Le calme retrouvé",
+    "c184": "Le livre de bois", "c185": "Le verrou secret", "c186": "La cache du soignant",
+    "c187": "Le cahier du soignant", "c188": "Le dernier remède", "c189": "L’ampoule cachée",
+    "c190": "Le sachet noir", "c191": "Le rat difforme", "c192": "Combat contre le rat",
+    "c193": "Lame contre le rat", "c194": "Le sac du rat", "c195": "Les lames récupérées"
 };
 
-  const PAGE_ORDER = ['c0', ...Array.from({ length: 183 }, (_, i) => `c${i + 1}`)];
+  // L'ordre d'affichage peut changer ; les identifiants cN restent stables pour les liens et les sauvegardes.
+  const PAGE_ORDER = ['c0', ...['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c138', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c151', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183']];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -5356,7 +5522,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 72,
+      pageMapVersion: 75,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -5616,6 +5782,47 @@ const STORY = {
     state.pageMapVersion = 72;
     return state;
   }
+  // V68.33 : migration d'inventaire uniquement, sans modifier les numéros de pages.
+  // En V68.32, cocher l'ampoule de TEST créait par erreur celle du laboratoire.
+  function migrateInventoryV73(state) {
+    const oldVersion = Number(state.pageMapVersion || 0);
+    migratePageNumbersV72(state);
+    if (state.pageMapVersion >= 73) return state;
+    if (!state.inventory || typeof state.inventory !== 'object') state.inventory = {};
+    if (!state.flags || typeof state.flags !== 'object') state.flags = {};
+
+    // La vraie prise au laboratoire posait systématiquement labAmpouleTaken.
+    // Ne convertir que les sauvegardes V68.32, pour ne pas deviner sur les plus anciennes.
+    if (oldVersion === 72 && hasItem(state, 'ampoule_blanche') && !state.flags.labAmpouleTaken) {
+      addItem(state, 'ampoule_blanche_test', 'Ampoule blanche — test',
+        'Simulation : retire 4 points de terre noire. Ne provient d’aucun lieu du récit.');
+      removeItem(state, 'ampoule_blanche');
+    }
+    // Anciennes sauvegardes : le passage effectif page 139 et le drapeau d'offre
+    // permettent de reconnaître la prise, sans confondre un simple saut de TEST.
+    if (state.visited?.c139 && state.flags.commonAmpouleOffered) state.flags.commonAmpouleTaken = true;
+
+    if (hasItem(state, 'ampoule_blanche')) state.inventory.ampoule_blanche.name = 'Ampoule blanche — laboratoire';
+    if (hasItem(state, 'ampoule_blanche_commune')) state.inventory.ampoule_blanche_commune.name = 'Ampoule blanche — poste de secours';
+    if (hasItem(state, 'ampoule_femme')) state.inventory.ampoule_femme.name = 'Ampoule blanche — dédale';
+    state.pageMapVersion = 73;
+    return state;
+  }
+  function migratePageNumbersV74(state) {
+    migrateInventoryV73(state);
+    if (state.pageMapVersion >= 74) return state;
+    // No renumbering: new optional scenes are appended after page 183.
+    state.pageMapVersion = 74;
+    return state;
+  }
+  // V68.35 : changement de numérotation affichée uniquement.
+  // Les clés cN restent identiques dans node, history, visited, checkpoints et carte.
+  function migratePageNumbersV75(state) {
+    migratePageNumbersV74(state);
+    if (state.pageMapVersion >= 75) return state;
+    state.pageMapVersion = 75;
+    return state;
+  }
   const TEST_ITEM_CATALOG = [
     {
       id: 'parchemin',
@@ -5677,9 +5884,9 @@ const STORY = {
       special: 'collar'
     },
     {
-      id: 'ampoule_blanche',
-      name: 'Ampoule blanche',
-      description: 'Terre noire : −4 points de contamination (minimum 0). Ne soigne pas les blessures.'
+      id: 'ampoule_blanche_test',
+      name: 'Ampoule blanche — test',
+      description: 'Ampoule fictive, indépendante des quatre lieux du récit. Terre noire : −4 points ; ne soigne pas les blessures.'
       },
     {
       id: 'bouclier_chevalier',
@@ -5737,7 +5944,7 @@ const STORY = {
     return `
       <div class="test-inventory-panel">
         <div class="test-inventory-title">Mode test · objets disponibles</div>
-        <p class="test-inventory-note">Tous les objets déjà introduits dans cette version sont visibles ici. Coche ou décoche un objet pour simuler immédiatement sa présence dans ton inventaire.</p>
+        <p class="test-inventory-note">Coche ou décoche un objet pour simuler sa présence. L’ampoule de test ne bloque aucune des quatre ampoules à récupérer dans le récit.</p>
         <div class="test-item-list">${itemRows}</div>
         <div class="test-weapon-panel">
           <strong>Arme équipée</strong>
@@ -5779,12 +5986,14 @@ const STORY = {
       if (['potion_corniche','potion_femme'].includes(id)) return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-labyrinth-heal:${id}" ${state.hp>=state.maxHp?'disabled':''}>Boire la potion (1 dé de Vie)</button></div>`;
       if (id === 'epee_sorciere') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="equip-sorcerer-sword">Équiper : puissance 8 · DEX −1</button></div>`;
       if (id === 'ampoule_femme') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-labyrinth-white" ${contaminationLevel(state)>0?'':'disabled'}>Utiliser : −4 terre noire</button></div>`;
+      if (id === 'ampoule_blanche_test') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule-test" ${contaminationLevel(state)>0?'':'disabled'}>Utiliser : −4 points de contamination (test)</button></div>`;
       if (id === 'terre_femme') return `<div class="inventory-actions"><p>Après absorption : ${Math.min(13,contaminationLevel(state)+3)}/13.</p><button class="inventory-action-btn" data-action="use-labyrinth-earth">Absorber la dose</button></div>`;
       if (id === 'lame_noire') {
         return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="equip-black-blade">Équiper la lame noire</button></div>`;
       }
       if (id === 'potion_sombre') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-dark-potion" ${state.hp>=state.maxHp ? 'disabled' : ''}>Boire : +3 Vie, +2 terre noire${contaminationLevel(state)+2>=13 ? " — TRANSFORMATION" : ""}</button></div>`;
       if (id === 'sacoche_terre_noire') return `<div class="inventory-actions"><p>Usage unique : +3 terre noire. Après absorption : ${Math.min(13, contaminationLevel(state)+3)}/13.</p><button class="inventory-action-btn" data-action="use-black-earth">Absorber la terre noire</button></div>`;
+      if (id === 'ampoule_blanche_cache') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule-cache" ${contaminationLevel(state)>0?'':'disabled'}>Utiliser : −4 points de contamination (Terre noire)</button></div>`;
       if (id === 'ampoule_blanche_commune') return `<div class="inventory-actions"><button class="inventory-action-btn" data-action="use-white-ampoule-common" ${contaminationLevel(state)>0 ? '' : 'disabled'}>Utiliser : −4 points de contamination (Terre noire)</button></div>`;
       if (id === 'ampoule_blanche') {
         const useful = ((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state) > 0);
@@ -5918,8 +6127,14 @@ const STORY = {
       if (action === 'confirm-black-earth') {
         if (hasItem(state,'sacoche_terre_noire') && state.flags.blackEarthUseConfirmed) { removeItem(state,'sacoche_terre_noire'); raiseContamination(state,3); state.flags.blackEarthUseConfirmed=false; api.saveState(); api.render(); } return true;
       }
+      if (action === 'use-white-ampoule-cache') {
+        if (useWhiteAmpouleForContamination(state,'ampoule_blanche_cache')) {api.saveState();api.render();} api.openInventory();return true;
+      }
       if (action === 'use-white-ampoule-common') {
-        if (hasItem(state,'ampoule_blanche_commune') && contaminationLevel(state)>0) {removeItem(state,'ampoule_blanche_commune');state.contamination=Math.max(0,contaminationLevel(state)-4);state.flags.blackEarthContamination=state.contamination>0;api.saveState();api.render();} api.openInventory();return true;
+        if (useWhiteAmpouleForContamination(state,'ampoule_blanche_commune')) {api.saveState();api.render();} api.openInventory();return true;
+      }
+      if (action === 'use-white-ampoule-test') {
+        if (useWhiteAmpouleForContamination(state,'ampoule_blanche_test')) {api.saveState();api.render();} api.openInventory();return true;
       }
       if (action === 'use-white-ampoule') {
         if (!hasItem(state, 'ampoule_blanche') || !((state.dexPenalty || 0) > 0 || state.flags.labInjected || contaminationLevel(state) > 0)) {
@@ -5989,8 +6204,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 64,
-    pageMapVersion: 72,
+    contentVersion: 66,
+    pageMapVersion: 75,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
@@ -6010,7 +6225,7 @@ const STORY = {
     },
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
-    migrateState: migratePageNumbersV72,
+    migrateState: migratePageNumbersV75,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,

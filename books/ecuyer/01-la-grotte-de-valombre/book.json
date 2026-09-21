@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 64,
+  "contentVersion": 66,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.32 — Travail : prototype du dédale sous la cité",
-  "pageMapVersion": 72
+  "buildLabel": "V68.35 — Travail : séquences du carrefour regroupées, identifiants conservés",
+  "pageMapVersion": 75
 }
