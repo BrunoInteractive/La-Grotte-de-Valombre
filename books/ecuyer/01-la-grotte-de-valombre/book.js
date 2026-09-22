@@ -4675,7 +4675,7 @@ const STORY = {
 
       <p>Elle descend entre des murs renforcés de blocs bruts. Des niches contiennent encore des coins de métal, des masses et des fragments de corde pétrifiée par l’âge.</p>
 
-      <p>À intervalles réguliers, des sortes de lanternes-flambeaux sont fixées au mur. Leur lumière jaune intense ne faiblit pas, comme si elles brûlaient sans fin. En leur centre tremble pourtant une clarté bleutée.</p>
+      <p>À intervalles réguliers, d’étranges lanternes-flambeaux sont fixées au mur. Leurs flammes forment de petites boules de feu suspendues au-dessus des supports. Elles répandent une lumière jaune intense qui ne faiblit jamais. En leur centre tremble une clarté bleutée qui ne semble pas venir de ce monde.</p>
 
       <p>Au bout se trouve une porte de pierre noire, à peine plus haute que toi.</p>
 
@@ -4701,8 +4701,8 @@ const STORY = {
   c117: {
     number: 'PAGE 138', title: 'Sous la Cité morte', image: 'Sous la Cité morte',
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
-    text: `<p>Tu pousses la porte noire. L’escalier s’enfonce sous la cité, entre des blocs fendillés.</p>
-      <p>Les marques des Veilleurs se multiplient : l’œil fermé, puis la petite lame noire. Une empreinte récente descend vers les profondeurs.</p>
+    text: `<p>De l’autre côté de la porte noire, l’escalier s’enfonce sous la cité, entre des blocs fendillés.</p>
+      <p>Dans la poussière des marches, les traces de bottes se poursuivent vers les profondeurs.</p>
       <p>L’air se réchauffe. Un coup sourd résonne plus bas. Tu resserres ta prise sur ton arme.</p>`,
     choices: [{ label: 'Descendre dans le dédale', to: 'c152' }]
   },
