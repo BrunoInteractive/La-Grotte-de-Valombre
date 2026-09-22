@@ -558,14 +558,16 @@ function finalMazeRoll(s, direction) {
   const total = dice.reduce((a,b)=>a+b, 0);
   const threshold = Math.max(1, currentDexterity(s) - contaminationLevel(s));
   const success = total <= threshold;
+  const hpLoss = attempt % 3 === 0 ? 1 : 0;
+  if (hpLoss) s.hp = Math.max(0, s.hp - hpLoss);
   s.flags.finalMazeTurns = attempt;
   s.flags.finalMazeFound = success;
-  s.flags.finalMazeLast = {attempt, direction, dice, total, threshold, success};
+  s.flags.finalMazeLast = {attempt, direction, dice, total, threshold, success, hpLoss};
 }
 function finalMazeRollHtml(s) {
   const r = s.flags.finalMazeLast;
   if (!r) return '';
-  return `<div class="dice-result"><p class="roll-number">Passage ${r.attempt} · ${r.dice.length} dé${r.dice.length > 1 ? 's' : ''}</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.threshold}</strong></p><p><strong>${r.success ? 'Tu découvres la sortie.' : 'Le chemin se replie sur lui-même.'}</strong></p></div>`;
+  return `<div class="dice-result"><p class="roll-number">Passage ${r.attempt} · ${r.dice.length} dé${r.dice.length > 1 ? 's' : ''}</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.threshold}</strong></p><p><strong>${r.success ? 'Tu découvres la sortie.' : 'Le chemin se replie sur lui-même.'}</strong></p>${r.hpLoss ? '<p>La marche forcée rouvre tes blessures. <strong>−1 Vie.</strong></p>' : ''}</div>`;
 }
 function terminalChoices() { return fatalChoices(); }
 
@@ -5481,10 +5483,11 @@ const STORY = {
 
   // V68.70 : dernier acte, pages 201–218. Garder les scènes brèves et les choix réels.
   c201: {
-    number:'PAGE 201',title:'La caverne des condamnés',noImage:true,
+    number:'PAGE 201',title:'La caverne des condamnés',
     text:`<p>Tu débouches dans une caverne gigantesque. Une brume bleutée efface les distances. Tu n’en distingues ni les murs ni le plafond.</p>
-      <p>Des corps sont éparpillés partout. Tu avances entre eux. Sous ta botte, un os ancien craque.</p>
-      <p>À gauche, une silhouette se redresse. À droite, d’autres formes se lèvent ou rampent vers toi. Elles sont des dizaines.</p>
+      <p>Des cadavres sont éparpillés dans toute la salle. Tu avances doucement entre eux.</p>
+      <p>Un os ancien craque sous ton pied. Le bruit se réverbère dans toute la caverne, puis un silence total tombe sur la pierre.</p>
+      <p>Un autre craquement répond au loin, puis un autre encore. À gauche, une silhouette se redresse. À droite, d’autres formes se lèvent ou rampent vers toi. Elles sont des dizaines. Impossible de toutes les compter. Les murs eux-mêmes semblent bouger. Toute la grotte se réveille dans un cauchemar de craquements d’os.</p>
       <p>Tu dégaines ton arme. Impossible de leur échapper.</p>`,
     choices:[{label:'Affronter la horde — test de Dextérité',to:'c202',diceTest:true,effect:cavernCombat}]
   },
@@ -5498,8 +5501,9 @@ const STORY = {
            <p>Tu te bats pendant ce qui te semble être des heures. Enfin, un dernier être rampe vers toi, les jambes en sang.</p>
            <blockquote>« Mets fin à tout ça… Par pitié. »</blockquote>
            <p>Tu lui assènes un coup d’épée. Le silence retombe. Tes bras tremblent.</p>`
-        : `<p>Tu abats les premières silhouettes, puis elles te submergent. Des mains agrippent tes jambes tandis que tu repousses un autre assaillant. Ta peau se lacère. Les plaintes se mêlent aux coups. Tu te bats jusqu’à l’épuisement.</p>
-           <p>Les derniers corps s’effondrent. Tu es encore debout, mais ta respiration déchire ta poitrine. Tes blessures laissent entrer la terre noire. <strong>−6 Vie · +4 Terre noire.</strong></p>`}
+        : `<p>Tu abats les premières silhouettes, puis elles te submergent. Des mains agrippent tes jambes tandis que tu repousses un autre assaillant. Ta peau se lacère sous des coups que tu ne peux pas tous esquiver. Les plaintes se mêlent aux chocs.</p>
+           <p>Les corps tombent un à un, le carnage est total. Rien n’est tout à fait humain, rien n’est tout à fait monstrueux. Certains gémissent, d’autres pleurent. D’autres encore avancent sans sembler ressentir la moindre douleur.</p>
+           <p>Tu te bats pendant ce qui te semble être des heures entières… mais ils sont trop nombreux. Pendant que tu te débats avec l’un, un autre se jette sur toi. Tes jambes deviennent lourdes. Tu finis pourtant par l’emporter, au prix de blessures profondes. <strong>−6 Vie · +4 Terre noire.</strong></p>`}
         <p>Au fond de la caverne, une porte gigantesque est sculptée à même la roche.</p>`;
     },
     choices:s=>!s.flags.cavernCombat?[{label:'Revenir au combat',to:'c201'}]:s.hp<=0 || s.flags.blackEarthTransformed?terminalChoices():[{label:'Approcher de la porte gigantesque',to:'c203'}]
@@ -5508,8 +5512,9 @@ const STORY = {
     number:'PAGE 203',title:'Sir Aldren',noImage:true,
     text:s=>`<p>À chaque pas vers la porte, une vibration étrange semble traverser la pierre.</p>
       <blockquote>« ${heroName(s)}… »</blockquote>
-      <p>Dans un recoin, un homme est adossé à la paroi. Son visage est creusé, ses lèvres desséchées. Tu reconnais Sir Aldren.</p>
-      <p>Il est blessé, affamé, mais vivant. Le bas de son corps disparaît dans l’obscurité.</p>`,
+      <p>Dans un recoin, un homme est adossé à la paroi. Tu reconnais Sir Aldren.</p>
+      <p>Il est vivant. Tu le savais. Une joie brutale te traverse et tu peines à la contenir. Mais, à mesure que tu t’approches, elle se brise. Toute la souffrance se lit sur son visage : ses lèvres sont gercées, son teint est livide, ses joues sont creusées. Il n’est plus que l’ombre de ce qu’il était.</p>
+      <p>Le bas de son corps disparaît dans l’obscurité.</p>`,
     choices:[
       {label:'Te jeter sur lui pour l’aider',to:'c204',effect:s=>{if(s.flags.aldrenOutcome)return;s.flags.aldrenOutcome='rushed';s.hp=Math.max(0,s.hp-3);raiseContamination(s,2);}},
       {label:'Lui parler en gardant tes distances',to:'c205'},
@@ -5518,9 +5523,10 @@ const STORY = {
   },
   c204: {
     number:'PAGE 204',title:'Le piège d’Aldren',noImage:true,
-    text:`<p>Tu tends la main vers lui. Trop tard, tu distingues la masse qui a remplacé ses jambes. Un tentacule réagit à ton approche et te lacère le visage.</p>
+    text:`<p>Tu te précipites vers lui. Trop tard, tu distingues la masse infâme qui a remplacé ses jambes. Un tentacule bondit et te lacère le visage.</p>
       <p><strong>−3 Vie · +2 Terre noire.</strong></p>
-      <p>Tu recules et, d’un grand coup d’épée, tu abats la créature qui porte encore le visage d’Aldren. Son corps s’immobilise. Dans ses affaires, un éclat noir apparaît entre les tentacules.</p>`,
+      <p>Tu recules en suffoquant. Aldren te regarde encore, perdu entre douleur et honte. Alors tu lèves ton arme. Le coup part presque tout seul. Le corps qui porte encore le visage du chevalier s’effondre enfin.</p>
+      <p>Dans ses affaires, un éclat noir apparaît entre les tentacules immobiles.</p>`,
     choices:s=>s.hp<=0||s.flags.blackEarthTransformed?terminalChoices():[{label:'Récupérer la lame noire dans ses affaires',to:'c206',effect:takeBlackBlade}]
   },
   c205: {
@@ -5528,7 +5534,7 @@ const STORY = {
     text:`<p>« Je ne sais plus quoi faire. Écouter la voix… ou tuer ce qui nous appelle ? Je ne distingue plus mes propres pensées. »</p>
       <p>Aldren montre du regard le bas de son corps. Sous son manteau, des tentacules enserrent sa sacoche.</p>
       <blockquote>« J’ai trouvé la lame noire. Elle est là. Mais mon corps ne m’obéit plus. Je ne peux même pas te la donner. »</blockquote>
-      <p>Ses traits se crispent. Quelque chose remue sous le tissu.</p>`,
+      <p>Ses traits se crispent. Quelque chose remue sous le tissu. Tu reconnais encore sa voix, mais son corps lui échappe déjà.</p>`,
     choices:[
       {label:'Achever Aldren et prendre la lame',to:'c206',effect:s=>{s.flags.aldrenOutcome='killed_after_talk';takeBlackBlade(s);}},
       {label:'Couper les tentacules pour dégager la sacoche',to:'c207',effect:s=>{if(s.flags.aldrenOutcome)return;s.flags.aldrenOutcome='severed';s.hp=Math.max(0,s.hp-1);takeBlackBlade(s);}},
@@ -5538,10 +5544,12 @@ const STORY = {
   c206: {
     number:'PAGE 206',title:'La lame noire',noImage:true,
     text:s=>`<p>${s.flags.aldrenOutcome==='killed_after_talk'
-      ? 'Un coup suffit. La tête d’Aldren roule dans l’obscurité. Les tentacules se détendent dans un dernier sursaut.'
+      ? 'Le silence retombe. Tu hésites un instant avant de t’agenouiller près de lui. Une larme glisse sur ta joue. Tuer ton héros était le prix à payer pour poursuivre la mission.'
       :s.flags.aldrenOutcome==='killed_immediately'
-        ? 'Tu frappes sans attendre. Le visage d’Aldren disparaît dans l’ombre. Une masse de tentacules se détend sous son manteau.'
-        :'Les tentacules s’immobilisent autour de la sacoche. Tu la dégages avec précaution.'}</p>
+        ? 'Le silence retombe brutalement après ton geste. Quand tu t’agenouilles près de lui, la certitude te frappe de plein fouet : c’était bien Sir Aldren. Une larme te brûle les yeux tandis que tu reprends ton souffle.'
+        :s.flags.aldrenOutcome==='rushed'
+          ? 'Tu restes un instant immobile devant le corps d’Aldren. La violence du combat t’a arraché toute joie trop vite. Une larme coule sur ta joue avant même que tu t’en rendes compte.'
+          :'Les tentacules s’immobilisent autour de la sacoche. Tu la dégages avec précaution, le cœur serré en regardant le chevalier inanimé.'}</p>
       <p>À l’intérieur repose une petite lame noire, froide et étonnamment lourde. Ainsi Aldren l’avait trouvée… Pourquoi ne s’en est-il pas servi contre l’esprit ?</p>
       <p><strong>Lame noire récupérée.</strong></p>`,
     choices:[{label:'Poursuivre vers les galeries derrière la porte',to:'c209'}]
@@ -5549,7 +5557,7 @@ const STORY = {
   c207: {
     number:'PAGE 207',title:'Le prix du sauvetage',noImage:true,
     text:`<p>Tu frappes les tentacules. Ils se défendent. Chaque coup arrache un cri au chevalier. Tu continues jusqu’à ce que la chair qui fut ses jambes cesse de bouger.</p>
-      <p>Aldren s’évanouit de douleur. Il respire encore. La sacoche est enfin libre, et tu en extrais la lame noire.</p>
+      <p>Aldren s’évanouit de douleur. Il respire encore. Tu dégages enfin la sacoche et en extrais la lame noire, avec la sensation amère de l’avoir arrachée au prix de sa chair.</p>
       <p><strong>−1 Vie. Lame noire récupérée.</strong></p>`,
     choices:s=>s.hp<=0?terminalChoices():[{label:'Le laisser respirer et poursuivre',to:'c209'}]
   },
@@ -5565,21 +5573,25 @@ const STORY = {
     text:s=>{
       const turns=s.flags.finalMazeTurns||0;
       const scenes=[
-        'Un passage descend puis remonte sans raison. Deux ouvertures identiques s’offrent à toi.',
-        'Tu retrouves une pierre fendue que tu jurerais avoir dépassée. Le couloir bifurque encore.',
-        'La roche se resserre. La gauche semble conduire vers un mur, la droite vers des marches noyées de brume.',
-        'Une pente douce devient un escalier brutal. Deux galeries s’écartent à nouveau.',
-        'Un courant d’air arrive de deux côtés opposés. Impossible d’en reconnaître l’origine.',
-        'Tu passes sous une arche irrégulière. Au-delà, deux couloirs se contredisent.'
+        'Le chemin se rétrécit puis s’agrandit de nouveau, jusqu’à ressembler exactement à celui que tu viens de quitter.',
+        'Le passage tourne à droite, puis à gauche, puis de nouveau à droite. Tu as la sensation de tourner en rond.',
+        'Le chemin monte légèrement avant de redescendre aussitôt. Toutes les pierres semblent identiques.',
+        'Deux galeries se croisent dans un angle impossible. Tu jurerais qu’aucune d’elles n’existait il y a un instant.',
+        'Une fissure laisse passer un souffle d’air, mais il s’éteint presque aussitôt. Les deux directions paraissent aussi fausses l’une que l’autre.',
+        'Le plafond s’abaisse brusquement puis la galerie s’ouvre à nouveau. Rien ne permet de savoir si tu avances vraiment.',
+        'Tu franchis un coude serré et retrouves presque le même couloir, comme si la roche copiait ce que tu venais de voir.',
+        'Le sol penche vers la gauche tandis que la paroi semble t’attirer vers la droite. Le dédale joue avec tes repères.',
+        'Une série de marches taillées grossièrement monte puis s’interrompt devant deux issues semblables.',
+        'La brume s’épaissit entre les pierres. Chaque détour semble effacer le précédent avant même que tu aies pu le mémoriser.'
       ];
       const r=s.flags.finalMazeLast;
       return `<p>${scenes[turns%scenes.length]}</p>
         <p>Les directions ne semblent obéir à aucune logique. À chaque intersection, tu risques de tourner en rond.</p>
         ${r?finalMazeRollHtml(s):''}
-        ${r&&!r.success?'<p>La galerie te ramène vers un autre embranchement. Tu dois choisir sans t’arrêter.</p>':''}
+        ${r&&!r.success?'<p>Tu reprends ta marche. Le labyrinthe semble se refermer derrière toi, sans jamais t’offrir le moindre repère fiable.</p>':''}
         ${s.flags.finalMazeFound?'<p>Un souffle d’air frais te parvient. Devant toi, une ouverture mène enfin hors du dédale.</p>':''}`;
     },
-    choices:s=>s.flags.finalMazeFound
+    choices:s=>s.hp<=0?terminalChoices():s.flags.finalMazeFound
       ?[{label:'Suivre l’air frais',to:'c210'}]
       :[{label:'Prendre le passage de gauche',stay:true,effect:t=>finalMazeRoll(t,'gauche')},
         {label:'Prendre le passage de droite',stay:true,effect:t=>finalMazeRoll(t,'droite')}]
@@ -5614,12 +5626,11 @@ const STORY = {
            <p>Le récit est clair. La chaleur de la lumière t’invite à t’approcher.</p>`
         :contaminationLevel(s)<=8
           ? `<blockquote>« Cette vallée prospérait… Un sorcier a voulu la ruiner. Il a fait croire aux habitants que j’étais un démon. Il leur a fait bâtir ma prison… »</blockquote>
-             <p>Tu demandes d’où vient cet esprit et pourquoi personne ne l’a défendu. La sphère frémit.</p>
-             <blockquote>« Je… J’ai toujours été ici. Ils… Ils ne savaient pas… »</blockquote>
-             <p>Les réponses ne s’accordent plus. La voix reprend son récit sans répondre à tes questions.</p>`
+             <p>Tu demandes d’où il vient et pourquoi personne ne l’a défendu. La sphère frémit.</p>
+             <p>S’ensuit un silence total. Tu as beau reposer la question, aucune réponse ne vient.</p>`
           : `<p>La terre noire brouille chaque parole. Des images de moissons, de chaînes et de flammes se mêlent à des mots sans suite.</p>
              <blockquote>« La vallée… le sorcier… ouv… défend… »</blockquote>
-             <p>Tu n’arrives plus à reconstituer ce qu’elle raconte. Ton propre souffle couvre sa voix.</p>`}
+             <p>Tu n’arrives plus à reconstituer ce qu’elle raconte. C’est certainement ton niveau de terre noire qui empêche son discours d’arriver jusqu’à toi.</p>`}
       <p>Devant toi, des liens de lumière maintiennent la sphère à la pierre. Tu distingues aussi son cœur, au milieu de l’éclat vert.</p>
       ${hasItem(s,'lame_noire')?'<p>La lame noire semble pouvoir atteindre aussi bien les liens que le cœur de la sphère.</p>':''}
       ${hasItem(s,'poudre_effondrement')?'<p>Le sac de poudre pourrait faire céder la voûte au-dessus de la prison.</p>':''}
@@ -5640,35 +5651,62 @@ const STORY = {
   },
   c213: {
     number:'PAGE 213',title:'L’esprit libéré',noImage:true,
-    text:`<p>La lame noire tranche un lien de lumière. Tous les autres se rompent à sa suite. Une vague verte traverse la caverne et t’enveloppe.</p>
-      <p>Une chaleur immense efface tes blessures, ta faim, ta fatigue. Tu cours vers la surface sans sentir le poids de ton corps.</p>
-      <p>Valombre t’accueille. Les semaines passent. Les commerces fleurissent, les routes s’ouvrent et les familles reviennent. On t’admire partout. Même des inconnus te fixent avec une ferveur troublante.</p>
-      <p>Les habitants t’obéissent avant que tu aies fini de parler. Tu voudrais t’en inquiéter, mais ce pouvoir n’est pas désagréable. Les mois passent. Plus personne n’ose te contredire.</p>`,
+    text:`<p>La lame noire tranche un lien de lumière. Tous les autres se rompent à sa suite. Une vague verte traverse la caverne et t’enveloppe. La chaleur pénètre jusque dans tes os. La douleur, la faim et l’épuisement disparaissent. Tu te redresses avec une force que tu ne te connaissais pas.</p>
+      <p>Tu reprends le chemin de la surface. Les passages qui t’avaient semblé interminables se franchissent presque sans effort. Là où tu devais ramper, escalader et reprendre ton souffle, tu avances maintenant d’un pas assuré. Aucun monstre ne t’attaque. Tu en aperçois même deux qui reculent dans l’obscurité, puis s’enfuient à ta vue.</p>
+      <p>Lorsque tu retrouves enfin la lumière du jour, tu te sens léger, puissant, presque indestructible.</p>
+      <p>Tu retournes à Valombre. Les habitants se montrent étrangement chaleureux, bien plus que de coutume. Ils t’accueillent avec des sourires, t’offrent à boire, insistent pour porter tes affaires. Tu n’as pourtant raconté à personne ce qui s’est passé dans la grotte.</p>
+      <p>Les semaines passent. Les commerces fleurissent, les routes s’ouvrent et les familles reviennent. On t’admire partout. Même des inconnus te fixent avec une ferveur troublante. Tu as parfois l’impression que certains ont parcouru des lieues simplement pour t’apercevoir.</p>
+      <p>Tu as pourtant tout fait pour que ton rôle dans la grotte reste inconnu. Comment peuvent-ils savoir ? Tu te demandes si les gens ont deviné la vérité… ou si quelque chose d’autre les guide jusqu’à toi.</p>
+      <p>Tout le monde veut t’aider. On devance le moindre de tes besoins. Parfois, les habitants t’obéissent avant même que tu aies fini de parler. Tu voudrais t’en inquiéter, mais ce pouvoir n’est finalement pas si désagréable. Après tout, te dis-tu, cela ne fait de mal à personne.</p>
+      <p>Les mois passent. Plus personne n’ose te contredire.</p>`,
     choices:[{label:'Voir ce que devient Valombre',to:'c217'}]
   },
   c214: {
     number:'PAGE 214',title:'La fin de l’esprit',noImage:true,
-    text:`<p>Tu enfonces la lame noire dans le cœur de la lumière. La sphère se déchire dans un souffle vert. Puis viennent le noir et un silence absolu.</p>
-      <p>Tu retrouves ton chemin jusqu’à la surface. Les semaines et les mois passent. Valombre reprend lentement vie. Tu participes au retour du commerce avec les régions voisines, mais tu rêves encore de repartir.</p>
-      <p>Un jour, un marchand apporte sur la place une plaque ancienne marquée de l’œil fermé. Tu la reconnais immédiatement.</p>
-      <blockquote>« D’où vient-elle ? »</blockquote>
-      <blockquote>« D’une région lointaine. Il y en avait plusieurs sur un marché. Personne ne sait les dater. »</blockquote>
-      <p>Un autre œil fermé. Une autre prison, peut-être.</p>
-      <p>Le lendemain, tu prends ton sac, selles ton cheval et pars vers cette région inconnue.</p>
+    text:s=>`<p>Tu enfonces la lame noire dans le cœur de la lumière. La sphère se déchire dans un souffle vert. Une onde terrifiante t’arrache presque l’arme des mains et te projette en arrière.</p>
+      <p>Puis le souffle faiblit aussi vite qu’il était apparu. La lumière verte se retire et tout redevient noir. Un noir calme, presque apaisant. Un silence absolu.</p>
+      <p>Tu restes longtemps immobile. Après les combats, les pièges et les voix qui t’ont poursuivi jusque dans les profondeurs, tu peux enfin entendre ta propre respiration. Tu voudrais crier victoire, mais l’émotion t’étrangle.</p>
+      ${s.flags.aldrenOutcome==='severed'
+        ? '<p>Tu repenses à Aldren, laissé inconscient derrière toi. Tu ignores s’il survivra à ses blessures. Il t’a pourtant permis d’aller jusqu’au bout.</p>'
+        :s.flags.aldrenOutcome==='spared'
+          ? '<p>Tu repenses à Aldren, toujours prisonnier de son corps dans la caverne. Tu l’as laissé vivant. Tu ignores ce qu’il adviendra de lui.</p>'
+          : '<p>Le visage d’Aldren revient devant tes yeux. Tu l’as enfin retrouvé, pour le perdre presque aussitôt. Son enseignement t’a conduit jusqu’ici, et tu aurais voulu qu’il puisse voir ce moment.</p>'}
+      <p>Tu te remets en marche. Le retour est difficile : la roche te semble étrangère, des couloirs se confondent et tu dois éviter de justesse plusieurs créatures qui errent encore dans les ténèbres. Tes jambes tremblent. Tu avances malgré tout, jusqu’à sentir sur ton visage un souffle d’air frais.</p>
+      <p>Enfin, tu atteins la surface. Le jour t’éblouit. Tu restes un instant à regarder le ciel, sans trouver les mots.</p>`,
+    choices:[{label:'Rejoindre Valombre',to:'c218'}]
+  },
+  c218: {
+    number:'PAGE 215',title:'Le retour à Valombre',noImage:true,
+    text:s=>`<p>De retour au village, tout te paraît calme. Le bruit d’une porte qu’on ouvre, une conversation sur la place, l’odeur du pain : ces choses ordinaires te bouleversent après ce que tu viens de traverser.</p>
+      <p>Les semaines passent, puis les mois. Valombre reprend lentement vie. Les étals se remplissent, les familles reviennent et tu aides les habitants à renouer le commerce avec les régions voisines. Rien ne change d’un coup, mais chaque petite victoire compte.</p>
+      ${s.flags.aldrenOutcome==='severed'
+        ? '<p>Tu repenses souvent à Aldren. Tu l’as laissé vivant, mais dans un état terrible, et tu ignores s’il a pu survivre. Ses leçons t’accompagnent à chacun de tes choix.</p>'
+        :s.flags.aldrenOutcome==='spared'
+          ? '<p>Tu n’oublies pas Aldren, que tu as dû laisser dans les profondeurs. Tu voudrais savoir ce qu’il est devenu. Son courage et ses enseignements restent présents dans ta mémoire.</p>'
+          : '<p>Sir Aldren reste dans ta mémoire. Son absence te serre encore le cœur, mais tu veux honorer ce qu’il t’a appris. Chaque fois que tu aides quelqu’un, tu te surprends à penser à lui.</p>'}
+      <p>La vie reprend, douce et familière. Pourtant, une part de toi rêve toujours de repartir. Tu as connu la peur, le doute et l’émerveillement. Tu sais maintenant qu’au-delà des collines, d’autres histoires attendent peut-être d’être découvertes.</p>
+      <p>Un jour, un marchand arrive sur la place avec une ancienne plaque de pierre. Un œil fermé y est gravé.</p>
+      <p>Tu te figes. Tu reconnaîtrais ce symbole entre mille. Tu traverses la place pour lui demander d’où il vient.</p>
+      <blockquote>« D’une région lointaine. Il y en avait plusieurs sur un marché étrange. J’en ai acheté une, mais personne ne sait la dater ni l’estimer. »</blockquote>
+      <p>Tu passes les doigts sur la gravure. Tout est identique. Un autre œil fermé… Une autre prison, peut-être. Et quelque part, des gens qui auraient besoin d’aide.</p>
+      <p>Tu sens revenir l’élan qui t’avait poussé, un jour, à partir à la recherche d’Aldren.</p>
+      <p>Le lendemain, tu prends ton sac, selles ton cheval et quittes Valombre en direction de cette région inconnue. Une nouvelle aventure commence.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
   },
   c215: {
-    number:'PAGE 215',title:'L’effondrement',noImage:true,
-    text:`<p>Tu déroules la mèche et l’allumes. Une lumière brève court jusqu’au sac de poudre.</p>
-      <p>L’explosion déchire la caverne. La voûte se fissure et d’énormes blocs tombent sur la prison. Le vacarme te rend sourd. La première pierre te frappe avec une violence fulgurante.</p>
-      <p>Tu t’effondres au milieu de la poussière. Tu ne sauras jamais si l’esprit est détruit, enseveli ou simplement enfermé plus profondément. Tu espères avoir fait le bon choix.</p>
+    number:'PAGE 216',title:'L’effondrement',noImage:true,
+    text:`<p>Tu places la poudre aux quatre coins de la pièce, puis tu déroules les mèches jusqu’au centre.</p>
+      <p>Tu repenses à tout le chemin parcouru. Une dernière pensée pour Sir Aldren. Une dernière pensée aussi pour cette vie d’aventure que tu ne vivras pas.</p>
+      <p>Tu allumes les mèches. Les flammes brillent doucement et avancent sans trembler le long de la pierre.</p>
+      <p>L’explosion déchire la caverne. Le souffle est si puissant qu’il te fait trébucher. La voûte se fissure et d’énormes blocs tombent sur la prison. Le vacarme te rend sourd. La première pierre te frappe avec une violence fulgurante.</p>
+      <p>Tu t’effondres au milieu de la poussière. Les pierres continuent de tomber, parfois loin de toi, parfois sur ton corps meurtri. Tu ne sauras jamais si l’esprit est détruit, enseveli ou simplement enfermé plus profondément. Tu espères avoir fait le bon choix.</p>
       <p>La lumière disparaît sous les décombres.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
   },
   c216: {
-    number:'PAGE 216',title:'Une arme ordinaire',noImage:true,
+    number:'PAGE 217',title:'Une arme ordinaire',noImage:true,
     text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
       <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
       <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
@@ -5677,8 +5715,8 @@ const STORY = {
     choices:terminalChoices()
   },
   c217: {
-    number:'PAGE 217',title:'La fin d’un règne',noImage:true,
-    text:`<p>Sur la place de Valombre, un marchand inconnu s’approche de toi. Il te parle d’une voix douce. Tu te penches pour l’entendre.</p>
+    number:'PAGE 218',title:'La fin d’un règne',noImage:true,
+    text:`<p>Un beau jour, sur la place de Valombre, un marchand inconnu s’approche de toi. Il te parle d’une voix douce. Tu te penches pour l’entendre.</p>
       <p>D’un mouvement brutal, il tire une lame noire de sous son manteau et te l’enfonce profondément dans la poitrine.</p>
       <p>Une douleur fulgurante te traverse. La force qui t’habitait depuis la grotte disparaît d’un seul coup. Tu tombes à genoux.</p>
       <blockquote>« La malédiction doit prendre fin. »</blockquote>
@@ -5776,6 +5814,7 @@ const STORY = {
     'c212': 'La vérité du prisonnier',
     'c213': 'L’esprit libéré',
     'c214': 'La fin de l’esprit',
+    'c218': 'Le retour à Valombre',
     'c215': 'L’effondrement',
     'c216': 'Une arme ordinaire',
     'c217': 'La fin d’un règne',
@@ -5947,7 +5986,7 @@ const STORY = {
 };
 
   // L'ordre d'affichage peut changer ; les identifiants cN restent stables pour les liens et les sauvegardes.
-  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c214', 'c215', 'c216', 'c217'];
+  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c214', 'c218', 'c215', 'c216', 'c217'];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -6009,7 +6048,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 77,
+      pageMapVersion: 78,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -6357,6 +6396,15 @@ const STORY = {
     if (state.visited?.c105) state.flags.physicianNotesRead = true;
     updateVialKnowledge(state);
     state.pageMapVersion = 77;
+    return state;
+  }
+
+  // V68.72 : insertion d'un épilogue après la destruction de l'esprit.
+  // Identifiants techniques conservés : les sauvegardes sur les anciennes fins restent valides.
+  function migratePageNumbersV78(state) {
+    migrateVialKnowledgeV77(state);
+    if (state.pageMapVersion >= 78) return state;
+    state.pageMapVersion = 78;
     return state;
   }
 
@@ -6809,8 +6857,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 80,
-    pageMapVersion: 77,
+    contentVersion: 81,
+    pageMapVersion: 78,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
@@ -6830,7 +6878,7 @@ const STORY = {
     },
     imageExtensions: ['webp', 'png', 'jpg', 'jpeg'],
     createInitialState,
-    migrateState: migrateVialKnowledgeV77,
+    migrateState: migratePageNumbersV78,
     rules: { currentForce, currentDexterity, combatPower, weaponLabel, currentProtection, maxProtection, applyDamage, raiseContamination },
     characterSheetHtml,
     inventory,
