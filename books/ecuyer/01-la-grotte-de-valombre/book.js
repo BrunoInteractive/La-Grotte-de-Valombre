@@ -5731,7 +5731,8 @@ const STORY = {
   },
   c219: {
     number:'PAGE 219',title:'La transformation',
-    text:`<p>Tu sens d’abord une brûlure, profonde, impossible à localiser.</p>
+    text:`<p><strong>Ton taux de terre noire vient de dépasser le niveau critique.</strong></p>
+      <p>Tu sens d’abord une brûlure, profonde, impossible à localiser.</p>
       <p>Une douleur insoutenable traverse ton corps, comme si quelque chose cherchait à naître sous ta peau.</p>
       <p>Tes membres se raidissent. Ta respiration se brise.</p>
       <p>Tu tombes à genoux.</p>
