@@ -5664,8 +5664,8 @@ const STORY = {
   c214: {
     number:'PAGE 214',title:'La fin de l’esprit',noImage:true,
     text:s=>`<p>Tu enfonces la lame noire dans le cœur de la lumière. La sphère se déchire dans un souffle vert. Une onde terrifiante t’arrache presque l’arme des mains et te projette en arrière.</p>
-      <p>Puis le souffle faiblit aussi vite qu’il était apparu. La lumière verte se retire et tout redevient noir. Un noir calme, presque apaisant. Un silence absolu.</p>
-      <p>Tu restes longtemps immobile. Après les combats, les pièges et les voix qui t’ont poursuivi jusque dans les profondeurs, tu peux enfin entendre ta propre respiration. Tu voudrais crier victoire, mais l’émotion t’étrangle.</p>
+      <p>Puis le souffle faiblit et tout redevient noir. Un noir calme, presque apaisant. Un silence absolu.</p>
+      <p>Tu restes longtemps immobile. Après les combats, les pièges et les voix qui t’ont poursuivi jusque dans les profondeurs, tu peux enfin reprendre ta respiration.</p>
       ${s.flags.aldrenOutcome==='severed'
         ? '<p>Tu repenses à Aldren, laissé inconscient derrière toi. Tu ignores s’il survivra à ses blessures. Il t’a pourtant permis d’aller jusqu’au bout.</p>'
         :s.flags.aldrenOutcome==='spared'
@@ -5684,11 +5684,11 @@ const STORY = {
         :s.flags.aldrenOutcome==='spared'
           ? '<p>Tu n’oublies pas Aldren, que tu as dû laisser dans les profondeurs. Tu voudrais savoir ce qu’il est devenu. Son courage et ses enseignements restent présents dans ta mémoire.</p>'
           : '<p>Sir Aldren reste dans ta mémoire. Son absence te serre encore le cœur, mais tu veux honorer ce qu’il t’a appris. Chaque fois que tu aides quelqu’un, tu te surprends à penser à lui.</p>'}
-      <p>La vie reprend, douce et familière. Pourtant, une part de toi rêve toujours de repartir. Tu as connu la peur, le doute et l’émerveillement. Tu sais maintenant qu’au-delà des collines, d’autres histoires attendent peut-être d’être découvertes.</p>
+      <p>La vie reprend, douce et familière. Pourtant, une part de toi rêve toujours de repartir. Tu sais maintenant qu’au-delà des collines, d’autres histoires attendent peut-être d’être découvertes.</p>
       <p>Un jour, un marchand arrive sur la place avec une ancienne plaque de pierre. Un œil fermé y est gravé.</p>
       <p>Tu te figes. Tu reconnaîtrais ce symbole entre mille. Tu traverses la place pour lui demander d’où il vient.</p>
       <blockquote>« D’une région lointaine. Il y en avait plusieurs sur un marché étrange. J’en ai acheté une, mais personne ne sait la dater ni l’estimer. »</blockquote>
-      <p>Tu passes les doigts sur la gravure. Tout est identique. Un autre œil fermé… Une autre prison, peut-être. Et quelque part, des gens qui auraient besoin d’aide.</p>
+      <p>Tu passes les doigts sur la gravure. Tout est identique. Un autre œil fermé… Une autre prison, peut-être. Et quelque part, un village possédé.</p>
       <p>Tu sens revenir l’élan qui t’avait poussé, un jour, à partir à la recherche d’Aldren.</p>
       <p>Le lendemain, tu prends ton sac, selles ton cheval et quittes Valombre en direction de cette région inconnue. Une nouvelle aventure commence.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
@@ -5700,7 +5700,9 @@ const STORY = {
       <p>Tu repenses à tout le chemin parcouru. Une dernière pensée pour Sir Aldren. Une dernière pensée aussi pour cette vie d’aventure que tu ne vivras pas.</p>
       <p>Tu allumes les mèches. Les flammes brillent doucement et avancent sans trembler le long de la pierre.</p>
       <p>L’explosion déchire la caverne. Le souffle est si puissant qu’il te fait trébucher. La voûte se fissure et d’énormes blocs tombent sur la prison. Le vacarme te rend sourd. La première pierre te frappe avec une violence fulgurante.</p>
-      <p>Tu t’effondres au milieu de la poussière. Les pierres continuent de tomber, parfois loin de toi, parfois sur ton corps meurtri. Tu ne sauras jamais si l’esprit est détruit, enseveli ou simplement enfermé plus profondément. Tu espères avoir fait le bon choix.</p>
+      <p>Tu t’effondres au milieu de la poussière. Les pierres continuent de tomber, parfois loin de toi, parfois sur ton corps meurtri.</p>
+      <p>Ton esprit se perd dans la douleur. Tu t’évanouis.</p>
+      <p>Tu ne sauras jamais si l’esprit est détruit, enseveli ou simplement enfermé plus profondément. Tu espères avoir fait le bon choix.</p>
       <p>La lumière disparaît sous les décombres.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
