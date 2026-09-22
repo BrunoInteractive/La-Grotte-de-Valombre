@@ -4420,7 +4420,7 @@ const STORY = {
     ]
   },
   c109: {
-    number: 'PAGE 130', title: 'La grille condamnée', noImage: true, image: 'La grille condamnée',
+    number: 'PAGE 130', title: 'La grille condamnée', image: 'La grille condamnée',
     text: s => `<p>Au bas de l’escalier, une épaisse grille de fer ferme l’accès à une petite pièce. Derrière les barreaux, tu aperçois un coffre de bois.</p>
       <p>La grille est recouverte d’une épaisse couche de terre noire, sèche et poudreuse. Quelques grains se détachent au moindre courant d’air.</p>
       ${s.flags.tabletsExamined ? '<p>La grille est désormais ouverte.</p>' : '<p>Pour atteindre le coffre, il faudrait forcer la grille. Tu risques alors de soulever cette poussière et d’en respirer.</p>'}
@@ -4585,7 +4585,8 @@ const STORY = {
   c115: {
     number: 'PAGE 136',
     title: 'Le palier inférieur',
-    image: 'Le palier inférieur',
+    noImage: true,
+
     onEnter: s => {
       if (s.flags.knightFate !== 'locked' || s.flags.knightWellAttackDone) return;
       s.flags.knightWellAttackDone = true;
@@ -4673,6 +4674,8 @@ const STORY = {
       <p>Tu suis la galerie indiquée par les Veilleurs.</p>
 
       <p>Elle descend entre des murs renforcés de blocs bruts. Des niches contiennent encore des coins de métal, des masses et des fragments de corde pétrifiée par l’âge.</p>
+
+      <p>À intervalles réguliers, des sortes de lanternes-flambeaux sont fixées au mur. Leur lumière jaune intense ne faiblit pas, comme si elles brûlaient sans fin. En leur centre tremble pourtant une clarté bleutée.</p>
 
       <p>Au bout se trouve une porte de pierre noire, à peine plus haute que toi.</p>
 
@@ -4819,7 +4822,7 @@ const STORY = {
   },
 
   c139: {
-    number: 'PAGE 115', title: "L’ampoule du poste de secours", noImage: true,
+    number: 'PAGE 115', title: "L’ampoule du poste de secours", image: 'L’ampoule du poste de secours',
     text: `<p>Au milieu des flacons brisés, tu découvres une ampoule intacte. Sur l’étiquette : « Traitement de la terre noire ».</p><p>Tu la protèges dans ton sac. Les autres flacons sont vides ou inutilisables.</p>`,
     choices: [{label: "Poursuivre la fouille du poste", to: 'c107'}, {label:'Quitter le poste et revenir au carrefour',to:'c106'}]
   },
@@ -5295,7 +5298,7 @@ const STORY = {
     choices:[{label:'Revenir dans la cache',to:'c186'},{label:'Quitter la cache',to:'c107'}]
   },
   c190: {
-    number:'PAGE 123',title:'Le sachet de terre noire',noImage:true,
+    number:'PAGE 123',title:'Le sachet de terre noire',image:'Le sachet de terre noire',
     text:s=>`<p>Tu avances la main vers l’étagère en évitant les poussières épaisses qui couvrent le bois.</p>
       ${s.visited?.c140 || hasItem(s,'sacoche_terre_noire')
         ? '<p>La place du petit sachet est vide : tu as déjà emporté cette dose de terre noire.</p>'
@@ -5341,7 +5344,7 @@ const STORY = {
       :[{label:'Poursuivre le combat',to:'c192'}]
   },
   c194: {
-    number:'PAGE 128',title:'Le sac du rat',noImage:true,
+    number:'PAGE 128',title:'Le sac du rat',image:'Le sac du rat',
     onEnter:s=>{if(s.combats?.reserveRat?.hp<=0)s.flags.reserveRatDead=true;},
     text:s=>`${!s.combats?.reserveRat || s.combats.reserveRat.hp>0
         ? '<p>Le rat garde toujours son sac au milieu des débris. Impossible de l’atteindre tant qu’il est vivant.</p>'
