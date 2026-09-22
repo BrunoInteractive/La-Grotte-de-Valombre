@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 81,
+  "contentVersion": 82,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.77 — Travail : rencontre avec la femme et épée rouge au début de la descente (après page 138), numérotation inchangée.",
+  "buildLabel": "V68.79 — Travail : rencontre avec la femme dès la porte après le puits, avant le dédale.",
   "pageMapVersion": 78
 }
