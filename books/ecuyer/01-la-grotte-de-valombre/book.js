@@ -4694,14 +4694,12 @@ const STORY = {
         <p>La plateforme donne sur une galerie basse encombrée d’outils rongés par la rouille et de paniers de pierre effondrés.</p>
         <p>Les Veilleurs ont creusé ici.</p>
         <p>Plus loin, une flèche gravée sous un œil fermé indique une galerie descendante.</p>
-        <p>Une toux rauque s’élève soudain de la galerie. Quelqu’un est là, tout près.</p>
       `;
     },
-    // Parcours imposé en Travail : 136 -> 189 -> 194/195 -> 137.
-    // Ne pas consulter les anciens drapeaux de rencontre : ils pouvaient sauter la femme.
+    // La femme apparaît juste après la porte : 136 -> 137 -> 189 -> 194/195 -> 138.
     choices: state => state.hp <= 0
       ? fatalChoices()
-      : [{ label: 'Suivre la toux et rencontrer la femme', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
+      : [{ label: 'Poursuivre dans la galerie', to: 'c116' }]
   },
   c116: {
     number: 'PAGE 137',
@@ -4743,15 +4741,18 @@ const STORY = {
       <p>Tu n’as aucune preuve qu’elle lui appartienne.</p>
 
       <p>La porte résiste d’abord, puis cède sous ton épaule dans un grondement sourd.</p>
+      ${!state.flags.labyrinthWomanGiftTaken ? '<p>De l’autre côté, une toux rauque retentit dans un passage latéral. Quelqu’un est là, tout près.</p>' : ''}
     `,
-    // Après la rencontre : suite fixe, sans redirection en fonction d'anciennes sauvegardes.
-    choices: [{ label: 'Reprendre la descente', to: 'c117' }]
+    // Une ancienne sauvegarde où la femme a déjà donné l’épée ne répète pas la scène.
+    choices: s => s.flags.labyrinthWomanGiftTaken
+      ? [{ label: 'Reprendre la descente', to: 'c117' }]
+      : [{ label: 'Suivre la toux', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
   },
 
   c117: {
     number: 'PAGE 138', title: 'Sous la Cité morte', image: 'Sous la Cité morte',
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
-    text: `<p>Tu retrouves l’escalier derrière la porte noire. Il s’enfonce sous la cité, entre des blocs fendillés.</p>
+    text: s => `<p>${s.flags.labyrinthWomanGiftTaken ? 'Après avoir quitté la femme, tu retrouves l’escalier derrière la porte noire.' : 'Tu retrouves l’escalier derrière la porte noire.'} Il s’enfonce sous la cité, entre des blocs fendillés.</p>
       <p>Dans la poussière des marches, les traces de bottes se poursuivent vers les profondeurs.</p>
       <p>L’air se réchauffe. Un coup sourd résonne plus bas. Tu resserres ta prise sur ton arme.</p>`,
     choices: [{ label: 'Descendre dans le dédale', to: 'c152' }]
@@ -5184,7 +5185,7 @@ const STORY = {
   },
   c172: {
     number: 'PAGE 189', title: 'La femme du dédale',
-    text:`<p>Au détour de la galerie, une femme est accroupie sous une flamme immobile. Son visage reste dans l’ombre. Elle semble humaine.</p>
+    text:`<p>Dans le passage latéral, une femme est accroupie sous une flamme immobile. Son visage reste dans l’ombre. Elle semble humaine.</p>
       <blockquote>« Vous aussi, vous cherchez quelqu’un ? Approchez. Je n’ai plus la force de courir. »</blockquote>`,
     choices:[{label:'Lui demander ce qui lui est arrivé',to:'c173'}]
   },
@@ -5230,14 +5231,14 @@ const STORY = {
     text:`<p>Tu lui promets de tenter de libérer ceux qui sont enfermés plus bas.</p>
       <p>Un coup bref. Son corps cesse de trembler. Une larme reste au bord de sa joue.</p>
       <p>Tu reprends la galerie. Derrière toi, la flamme ne vacille pas.</p>`,
-    choices:[{label:'Reprendre la galerie',to:'c116'}]
+    choices:[{label:'Reprendre la descente',to:'c117'}]
   },
   c178: {
     number: 'PAGE 195', title: '', noImage: true,
     text:`<p>Tu ranges ton arme. Elle détourne la tête.</p>
       <blockquote>« Alors partez. Avant que je ne me relève autrement. »</blockquote>
       <p>Tu la laisses sous la flamme. Un cri étouffé te poursuit jusqu’au tournant.</p>`,
-    choices:[{label:'Reprendre la galerie',to:'c116'}]
+    choices:[{label:'Reprendre la descente',to:'c117'}]
   },
   c179: {
     number: 'PAGE 196', title: '', noImage: true,
@@ -6862,7 +6863,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 82,
+    contentVersion: 83,
     pageMapVersion: 78,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
