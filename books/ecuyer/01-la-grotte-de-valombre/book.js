@@ -4694,11 +4694,16 @@ const STORY = {
         <p>La plateforme donne sur une galerie basse encombrée d’outils rongés par la rouille et de paniers de pierre effondrés.</p>
         <p>Les Veilleurs ont creusé ici.</p>
         <p>Plus loin, une flèche gravée sous un œil fermé indique une galerie descendante.</p>
+        ${!(state.flags.labyrinthWomanMetEarly && state.flags.labyrinthWomanFate) ? '<p>Une toux rauque s’élève soudain de la galerie. Quelqu’un est là, tout près.</p>' : ''}
       `;
     },
+    // La rencontre s'effectue dès la sortie du puits. Le drapeau de fin évite
+    // de la refaire en poursuivant normalement après les pages 194 ou 195.
     choices: state => state.hp <= 0
       ? fatalChoices()
-      : [{ label: 'Poursuivre dans la galerie', to: 'c116' }]
+      : state.flags.labyrinthWomanMetEarly && state.flags.labyrinthWomanFate
+        ? [{ label: 'Poursuivre dans la galerie', to: 'c116' }]
+        : [{ label: 'Suivre la toux et rencontrer la femme', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
   },
   c116: {
     number: 'PAGE 137',
@@ -4740,12 +4745,12 @@ const STORY = {
       <p>Tu n’as aucune preuve qu’elle lui appartienne.</p>
 
       <p>La porte résiste d’abord, puis cède sous ton épaule dans un grondement sourd.</p>
-      <p>De l’autre côté, une toux rauque retentit tout près.</p>
+      ${state.flags.labyrinthWomanMetEarly && state.flags.labyrinthWomanFate ? '' : '<p>Une toux rauque retentit tout près. Il faut retrouver la femme avant de descendre.</p>'}
     `,
-    // Rencontre obligatoire dès la descente, avant la page 138 et les combats du dédale.
-    choices: s => s.flags.labyrinthWomanFate
+    // Rattrapage d'une sauvegarde ou navigation TEST directe sur la page 137.
+    choices: s => s.flags.labyrinthWomanMetEarly && s.flags.labyrinthWomanFate
       ? [{ label: 'Reprendre la descente', to: 'c117' }]
-      : [{ label: 'Suivre la toux', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
+      : [{ label: 'Suivre la toux et rencontrer la femme', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
   },
 
   c117: {
@@ -4754,10 +4759,10 @@ const STORY = {
     text: `<p>Tu retrouves l’escalier derrière la porte noire. Il s’enfonce sous la cité, entre des blocs fendillés.</p>
       <p>Dans la poussière des marches, les traces de bottes se poursuivent vers les profondeurs.</p>
       <p>L’air se réchauffe. Un coup sourd résonne plus bas. Tu resserres ta prise sur ton arme.</p>`,
-    // Rattrapage des sauvegardes anciennes déjà placées sur 138 avant la rencontre.
-    choices: s => s.flags.labyrinthWomanFate
+    // Rattrapage des sauvegardes anciennes et des sauts directs via l'index TEST.
+    choices: s => s.flags.labyrinthWomanMetEarly && s.flags.labyrinthWomanFate
       ? [{ label: 'Descendre dans le dédale', to: 'c152' }]
-      : [{ label: 'Suivre la toux dans la galerie latérale', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
+      : [{ label: 'Suivre la toux et rencontrer la femme', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
   },
 
   c118: {
@@ -5234,14 +5239,14 @@ const STORY = {
     text:`<p>Tu lui promets de tenter de libérer ceux qui sont enfermés plus bas.</p>
       <p>Un coup bref. Son corps cesse de trembler. Une larme reste au bord de sa joue.</p>
       <p>Tu reprends la galerie. Derrière toi, la flamme ne vacille pas.</p>`,
-    choices:s=>[{label:s.flags.labyrinthWomanMetEarly?'Reprendre la descente':'Poursuivre vers la prison',to:s.flags.labyrinthWomanMetEarly?'c117':'c179'}]
+    choices:s=>[{label:s.flags.labyrinthWomanMetEarly?'Reprendre la galerie':'Poursuivre vers la prison',to:s.flags.labyrinthWomanMetEarly?'c116':'c179'}]
   },
   c178: {
     number: 'PAGE 195', title: '', noImage: true,
     text:`<p>Tu ranges ton arme. Elle détourne la tête.</p>
       <blockquote>« Alors partez. Avant que je ne me relève autrement. »</blockquote>
       <p>Tu la laisses sous la flamme. Un cri étouffé te poursuit jusqu’au tournant.</p>`,
-    choices:s=>[{label:s.flags.labyrinthWomanMetEarly?'Reprendre la descente':'Poursuivre vers la prison',to:s.flags.labyrinthWomanMetEarly?'c117':'c179'}]
+    choices:s=>[{label:s.flags.labyrinthWomanMetEarly?'Reprendre la galerie':'Poursuivre vers la prison',to:s.flags.labyrinthWomanMetEarly?'c116':'c179'}]
   },
   c179: {
     number: 'PAGE 196', title: '', noImage: true,
