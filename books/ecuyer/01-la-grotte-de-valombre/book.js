@@ -4631,7 +4631,6 @@ const STORY = {
   c115: {
     number: 'PAGE 136',
     title: 'Le palier inférieur',
-    noImage: true,
 
     onEnter: s => {
       if (s.flags.knightFate !== 'locked' || s.flags.knightWellAttackDone) return;
@@ -5101,7 +5100,7 @@ const STORY = {
     choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthLedge?[{label:'Revenir au passage',to:'c158'}]:s.flags.labyrinthLedge.success?[{label:'Reprendre la course dans la galerie',to:'c168'}]:[{label:'Te hisser sur la corniche inférieure',to:'c160'}]
   },
   c160: {
-    number: 'PAGE 177', title: '', noImage: true,
+    number: 'PAGE 177', title: '',
     text:s=>`<p>Tu retombes sur la corniche. ${s.flags.labyrinthLedge?.damaged?'La chute t’a coûté un point de Vie.':'Tu retrouves un appui.'}</p>
       <p>À peine redressé, tu entends des griffes sur la pierre. Un rampant au museau allongé se hisse hors de l’obscurité. Ses mâchoires claquent à la hauteur de tes jambes.</p>`,
     choices:s=>s.hp<=0?fatalChoices():[{label:'L’affronter avant qu’il ne bondisse',to:'c161',effect:s=>{if(s.combats?.labyrinthCaiman?.hp<=0)replayCombat(s,'labyrinthCaiman');}}]
@@ -5151,7 +5150,7 @@ const STORY = {
     choices:[{label:'Poursuivre dans les galeries',to:'c168'}]
   },
   c168: {
-    number: 'PAGE 185', title: '', noImage: true,
+    number: 'PAGE 185', title: '',
     text:`<p>Après deux virages, une ancienne arche effondrée barre la galerie. Sous les pierres, une ouverture à peine assez large pour ramper subsiste. À côté, des dalles disjointes dessinent un passage plus direct au-dessus d’un gouffre.</p>
       <p>La pierre est coupante sous l’arche. Les dalles, elles, bougent au moindre pas. Un grondement monte des profondeurs. Il faut choisir ton passage.</p>`,
     choices:[
