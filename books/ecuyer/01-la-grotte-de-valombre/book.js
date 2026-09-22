@@ -5102,7 +5102,7 @@ const STORY = {
     choices:s=>s.hp<=0?fatalChoices():[{label:'L’affronter avant qu’il ne bondisse',to:'c161',effect:s=>{if(s.combats?.labyrinthCaiman?.hp<=0)replayCombat(s,'labyrinthCaiman');}}]
   },
   c161: {
-    number: 'PAGE 178', title: '', noImage: true,
+    number: 'PAGE 178', title: '',
     text:s=>{const e=ENEMIES.labyrinthCaiman,c=combatState(s,'labyrinthCaiman',e);
       if(c.hp<=0)return `${enemyCardHtml(s,'labyrinthCaiman',e)}${combatRoundHtml(s,'labyrinthCaiman',e)}${throwingBladeResultHtml(s,'labyrinthCaiman',e)}<p>Le rampant s’immobilise. Plusieurs corps sont étendus plus loin sur la corniche.</p>`;
       return `<p>La bête fond sur toi. Sa gueule frappe au ras du sol, près du vide.</p>${enemyCardHtml(s,'labyrinthCaiman',e)}${combatRoundHtml(s,'labyrinthCaiman',e)}${throwingBladeResultHtml(s,'labyrinthCaiman',e)}`;},
@@ -5110,7 +5110,7 @@ const STORY = {
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Examiner la corniche',to:'c163'}]:combatActionChoices(s,'labyrinthCaiman',e,'c161');}
   },
   c162: {
-    number: 'PAGE 179', title: '', noImage: true,
+    number: 'PAGE 179', title: '',
     text:s=>`<p>Tu lances une lame vers le rampant.</p>${enemyCardHtml(s,'labyrinthCaiman',ENEMIES.labyrinthCaiman)}${throwingBladeResultHtml(s,'labyrinthCaiman',ENEMIES.labyrinthCaiman)}`,
     choices:s=>{const e=ENEMIES.labyrinthCaiman,c=combatState(s,'labyrinthCaiman',e);
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Examiner la corniche',to:'c163'}]:combatActionChoices(s,'labyrinthCaiman',e,'c161');}
@@ -6869,10 +6869,16 @@ const STORY = {
     pageByNode: PAGE_BY_NODE,
     navigationTitles: PAGE_NAV_TITLES,
     padPage,
-    imageBaseForPage: n => `La-Grotte-de-Valombre-${padPage(n)}`,
-    // Règle V68.1 : une page n'affiche QUE le fichier portant son propre numéro.
-    // Les anciens numéros de scènes et le suffixe historique -V63 sont exclus.
+    imageBaseForPage: n => (n === 178 || n === 179)
+      ? 'La-Grotte-de-Valombre-Combat'
+      : `La-Grotte-de-Valombre-${padPage(n)}`,
+    // Exception : les pages 178 et 179 réutilisent une seule illustration de combat.
+    // Toutes les autres pages continuent à utiliser exclusivement leur propre numéro.
     imageCandidatesForPage: n => {
+      if (n === 178 || n === 179) return [
+        'La-Grotte-de-Valombre-Combat',
+        'pages/La-Grotte-de-Valombre-Combat'
+      ];
       const filename = `La-Grotte-de-Valombre-${padPage(n)}`;
       return n <= 47
         ? [filename, `pages/${filename}`]
