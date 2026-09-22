@@ -469,7 +469,15 @@ function labyrinthVoiceTier(s) {
 function labyrinthTrap(s, key) {
   const tier = labyrinthVoiceTier(s);
   const bonus = tier === 'clear' ? 2 : tier === 'faint' ? 1 : 0;
-  const success = roll3D6(s, 'Dextérité' + (bonus ? ` (+${bonus} grâce à la voix)` : ''), currentDexterity(s) + bonus);
+  const ledge = key === 'labyrinthLedge';
+  const threshold = ledge && tier === 'faint' ? 10 : ledge && tier === 'silent' ? 9 : currentDexterity(s) + bonus;
+  const ordinarySuccess = roll3D6(s, 'Dextérité' + (bonus && !(ledge && tier === 'faint') ? ` (+${bonus} grâce à la voix)` : ''), threshold);
+  // 3d6 : P(total <= 10) = 108/216 = 1/2.
+  // P(total <= 8) = 56/216 ; parmi les 25 résultats de somme 9,
+  // 16 commencent par un dé <= 3, soit (56 + 16)/216 = 1/3.
+  const success = ledge && tier === 'silent'
+    ? s.lastTotal < 9 || (s.lastTotal === 9 && s.lastDice[0] <= 3)
+    : ordinarySuccess;
   s.flags[key] = {
     tier, success,
     rollCount: s.rollCount,
@@ -489,7 +497,9 @@ function labyrinthTrap(s, key) {
 function labyrinthTrapResult(s, key) {
   const r = s.flags[key];
   if (!r || !Array.isArray(r.dice)) return '';
-  return `<div class="dice-result"><p class="roll-number">Épreuve de Dextérité</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.stat}</strong></p><p><strong>${r.success ? 'Réussite' : 'Échec'}</strong></p></div>`;
+  const special = key === 'labyrinthLedge' && r.tier === 'silent'
+    ? '<p>Sur un total de 9, le premier dé doit être inférieur ou égal à 3.</p>' : '';
+  return `<div class="dice-result"><p class="roll-number">Épreuve de Dextérité</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.stat}</strong></p>${special}<p><strong>${r.success ? 'Réussite' : 'Échec'}</strong></p></div>`;
 }
 function labyrinthTakeCorpseLoot(s) {
   if (s.flags.labyrinthCorpseLooted) return;
@@ -524,6 +534,40 @@ function labyrinthHeal(s, id) {
   removeItem(s,id);
   return true;
 }
+
+// Dernier acte : la lame noire peut rompre le lien OU atteindre l'esprit.
+function takeBlackBlade(s) {
+  if (hasItem(s, 'lame_noire')) return;
+  addItem(s, 'lame_noire', 'Lame noire', 'Arme rituelle retrouvée dans les affaires de Sir Aldren. Elle peut trancher le sceau ou frapper l’esprit.');
+  s.flags.blackBladeRecovered = true;
+}
+function cavernCombat(s) {
+  if (s.flags.cavernCombat) return;
+  const success = roll3D6(s, 'Dextérité', currentDexterity(s));
+  s.flags.cavernCombat = { success, dice:[...s.lastDice], total:s.lastTotal, stat:s.lastStat };
+  if (!success) {
+    s.hp = Math.max(0, s.hp - 6); // blessures directes de l'assaut : −6 Vie.
+    raiseContamination(s, 4);
+  }
+}
+function finalMazeRoll(s, direction) {
+  if (s.flags.finalMazeFound) return;
+  const attempt = (s.flags.finalMazeTurns || 0) + 1;
+  const diceCount = attempt <= 5 ? 3 : attempt <= 10 ? 2 : 1;
+  const dice = Array.from({length:diceCount}, () => cryptoDie6());
+  const total = dice.reduce((a,b)=>a+b, 0);
+  const threshold = Math.max(1, currentDexterity(s) - contaminationLevel(s));
+  const success = total <= threshold;
+  s.flags.finalMazeTurns = attempt;
+  s.flags.finalMazeFound = success;
+  s.flags.finalMazeLast = {attempt, direction, dice, total, threshold, success};
+}
+function finalMazeRollHtml(s) {
+  const r = s.flags.finalMazeLast;
+  if (!r) return '';
+  return `<div class="dice-result"><p class="roll-number">Passage ${r.attempt} · ${r.dice.length} dé${r.dice.length > 1 ? 's' : ''}</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.threshold}</strong></p><p><strong>${r.success ? 'Tu découvres la sortie.' : 'Le chemin se replie sur lui-même.'}</strong></p></div>`;
+}
+function terminalChoices() { return fatalChoices(); }
 
 function dormantPerception(state, location) {
   const earth = contaminationLevel(state);
@@ -5046,8 +5090,8 @@ const STORY = {
     number: 'PAGE 176', title: '', noImage: true,
     text:s=>{const r=s.flags.labyrinthLedge;
       if(!r)return '<p>Le passage vacille. Tu n’as pas encore franchi la dalle glissante.</p>';
-      return `${labyrinthTrapResult(s,'labyrinthLedge')}${r.success?'<p>Tu avances de prise en prise et atteins l’autre rive. Tu as franchi le passage.</p>':'<p>Malgré la dalle évitée, ton pied glisse sur l’arête humide. Tu bascules, heurtes la paroi et te rattrapes de justesse à une corniche inférieure.</p>'}`;},
-    choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthLedge?[{label:'Revenir au passage',to:'c158'}]:s.flags.labyrinthLedge.success?[{label:'Gagner la sortie de la salle',to:'c167'}]:[{label:'Te hisser sur la corniche inférieure',to:'c160'}]
+      return `${labyrinthTrapResult(s,'labyrinthLedge')}${r.success?'<p>Tu avances de prise en prise et atteins l’autre rive. Sans t’arrêter, tu retrouves la galerie qui s’enfonce plus loin.</p>':'<p>Malgré la dalle évitée, ton pied glisse sur l’arête humide. Tu bascules, heurtes la paroi et te rattrapes de justesse à une corniche inférieure.</p>'}`;},
+    choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthLedge?[{label:'Revenir au passage',to:'c158'}]:s.flags.labyrinthLedge.success?[{label:'Reprendre la course dans la galerie',to:'c168'}]:[{label:'Te hisser sur la corniche inférieure',to:'c160'}]
   },
   c160: {
     number: 'PAGE 177', title: '', noImage: true,
@@ -5086,13 +5130,13 @@ const STORY = {
   },
   c165: {
     number: 'PAGE 182', title: '', noImage: true,
-    text:`<p>Tu plantes tes doigts dans les joints de la paroi et te hisses hors de la corniche. Un bloc se détache à l’endroit où tu te trouvais.</p>`,
-    choices:[{label:'Rejoindre la passerelle supérieure',to:'c166'}]
+    text:`<p>Tu plantes tes doigts dans les joints de la paroi et te hisses hors de la corniche. Un bloc se détache à l’endroit où tu te trouvais. Tu agrippes le rebord, roules sur la pierre humide et regagnes la galerie principale.</p>`,
+    choices:[{label:'Reprendre la course dans la galerie',to:'c168'}]
   },
   c166: {
     number: 'PAGE 183', title: '', noImage: true,
     text:`<p>Tu agrippes le rebord, roules sur la pierre humide et retrouves le chemin étroit. Derrière toi, la corniche disparaît dans la poussière.</p>`,
-    choices:[{label:'Atteindre l’autre bout de la salle',to:'c167'}]
+    choices:[{label:'Rejoindre directement la galerie',to:'c168'}]
   },
   c167: {
     number: 'PAGE 184', title: '', noImage: true,
@@ -5143,7 +5187,7 @@ const STORY = {
     number: 'PAGE 190', title: '', noImage: true,
     text:`<p>« J’ai perdu quelqu’un là-dessous. Je suis venue le chercher. »</p>
       <p>Elle désigne les galeries.</p>
-      <blockquote>« Les pièges sont partout. Au début, la voix me prévenait : la pierre qui tombe, le sol qui cède… Mais elle me suivait partout. J’ai cru qu’elle voulait m’avaler. »</blockquote>
+      <blockquote>« Les pièges sont partout. Au début, la voix me prévenait : la pierre qui tombe, le sol qui cède… Mais elle me suivait partout. J’ai cru qu’elle voulait me contrôler. »</blockquote>
       <p>Une secousse la fait grimacer. Elle ne parvient pas à tendre la jambe.</p>`,
     choices:[{label:'Lui demander pourquoi la voix s’est tue',to:'c174'}]
   },
@@ -5195,7 +5239,7 @@ const STORY = {
     text:s=>`<p>La dernière galerie s’incline vers une porte entrouverte. Au-delà, aucun bruit.</p>
       ${hasItem(s,'ampoule_femme')&&hasItem(s,'terre_femme')?'<p>Dans ton sac, le liquide blanc et la terre noire pèsent presque le même poids. L’un affaiblit l’emprise, l’autre étouffe la voix mais rapproche de la transformation.</p>':'<p>Tu fais l’inventaire de tes dernières ressources avant la porte.</p>'}
       ${labyrinthVoiceTier(s)==='clear'?'<p>La voix murmure encore : « Par ici… »</p>':labyrinthVoiceTier(s)==='faint'?'<p>Quelques syllabes se mêlent au bruit de ton souffle.</p>':'<p>Tu n’entends plus aucune voix.</p>'}
-      <p>Il reste un instant avant de franchir la porte.</p>`,
+      <p>Tu mesures le danger avant de franchir la porte. <strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>`,
     choices:s=>[
       ...(hasItem(s,'ampoule_femme')&&contaminationLevel(s)>0?[{label:'Utiliser l’ampoule blanche',to:'c180',effect:labyrinthUseWhite}]:[]),
       ...(hasItem(s,'terre_femme')?[{label:contaminationLevel(s)+3>=13?'Absorber la terre noire malgré le risque de transformation':'Absorber une dose de terre noire',to:'c181',effect:labyrinthUseEarth}]:[]),
@@ -5222,15 +5266,11 @@ const STORY = {
     choices:[{label:'Franchir la porte',to:'c183'}]
   },
   c183: {
-    number: 'PAGE 200', title: 'Le silence après le dédale', noImage: true,
-    text:`<p>Tu franchis le seuil. L’air devient frais. Les pas, les chutes et les grondements cessent enfin.</p>
-      <p>Une immense cavité s’ouvre devant toi. Des constructions anciennes émergent d’une brume légère. Pour la première fois depuis la cité, tu peux t’arrêter et regarder.</p>
-      <p>Ta respiration est courte. Tes mains tremblent encore sur l’épée rouge. Quelque part, plus loin, se trouve la prison.</p>
-      <p><em>Fin de ce prototype du dédale. Le monde suivant reprendra dans le calme.</em></p>`,
-    choices:[
-      {label:'Reprendre au dernier point de sauvegarde',action:'checkpoint'},
-      {label:'Recommencer depuis le début',action:'restart'}
-    ]
+    number: 'PAGE 200', title: 'Au-delà du dédale', noImage: true,
+    text:`<p>Tu franchis le seuil. La galerie devient plus large, puis le sol descend entre deux parois brutes.</p>
+      <p>Les grondements s’éloignent. Une immense ouverture se dessine devant toi et une brume bleutée remonte jusqu’à tes pieds.</p>
+      <p>Tu resserres ta prise sur ton arme et avances.</p>`,
+    choices:[{label:'Entrer dans la gigantesque caverne',to:'c201'}]
   },
 
 
@@ -5439,6 +5479,214 @@ const STORY = {
     choices:[{label:'Rejoindre la salle ronde',to:'c104'}]
   },
 
+  // V68.70 : dernier acte, pages 201–218. Garder les scènes brèves et les choix réels.
+  c201: {
+    number:'PAGE 201',title:'La caverne des condamnés',noImage:true,
+    text:`<p>Tu débouches dans une caverne gigantesque. Une brume bleutée efface les distances. Tu n’en distingues ni les murs ni le plafond.</p>
+      <p>Des corps sont éparpillés partout. Tu avances entre eux. Sous ta botte, un os ancien craque.</p>
+      <p>À gauche, une silhouette se redresse. À droite, d’autres formes se lèvent ou rampent vers toi. Elles sont des dizaines.</p>
+      <p>Tu dégaines ton arme. Impossible de leur échapper.</p>`,
+    choices:[{label:'Affronter la horde — test de Dextérité',to:'c202',diceTest:true,effect:cavernCombat}]
+  },
+  c202: {
+    number:'PAGE 202',title:'Le carnage',noImage:true,
+    text:s=>{
+      const r=s.flags.cavernCombat;
+      if(!r) return '<p>La horde approche. Tu n’as pas encore affronté les créatures.</p>';
+      return `${r.success
+        ? `<p>Le combat éclate. Tu frappes de toutes tes forces. Les corps tombent un à un, mais d’autres avancent. Certains gémissent et pleurent. D’autres ne semblent même pas ressentir la douleur. Rien n’est tout à fait humain, rien n’est tout à fait monstrueux.</p>
+           <p>Tu te bats pendant ce qui te semble être des heures. Enfin, un dernier être rampe vers toi, les jambes en sang.</p>
+           <blockquote>« Mets fin à tout ça… Par pitié. »</blockquote>
+           <p>Tu lui assènes un coup d’épée. Le silence retombe. Tes bras tremblent.</p>`
+        : `<p>Tu abats les premières silhouettes, puis elles te submergent. Des mains agrippent tes jambes tandis que tu repousses un autre assaillant. Ta peau se lacère. Les plaintes se mêlent aux coups. Tu te bats jusqu’à l’épuisement.</p>
+           <p>Les derniers corps s’effondrent. Tu es encore debout, mais ta respiration déchire ta poitrine. Tes blessures laissent entrer la terre noire. <strong>−6 Vie · +4 Terre noire.</strong></p>`}
+        <p>Au fond de la caverne, une porte gigantesque est sculptée à même la roche.</p>`;
+    },
+    choices:s=>!s.flags.cavernCombat?[{label:'Revenir au combat',to:'c201'}]:s.hp<=0 || s.flags.blackEarthTransformed?terminalChoices():[{label:'Approcher de la porte gigantesque',to:'c203'}]
+  },
+  c203: {
+    number:'PAGE 203',title:'Sir Aldren',noImage:true,
+    text:s=>`<p>À chaque pas vers la porte, une vibration étrange semble traverser la pierre.</p>
+      <blockquote>« ${heroName(s)}… »</blockquote>
+      <p>Dans un recoin, un homme est adossé à la paroi. Son visage est creusé, ses lèvres desséchées. Tu reconnais Sir Aldren.</p>
+      <p>Il est blessé, affamé, mais vivant. Le bas de son corps disparaît dans l’obscurité.</p>`,
+    choices:[
+      {label:'Te jeter sur lui pour l’aider',to:'c204',effect:s=>{if(s.flags.aldrenOutcome)return;s.flags.aldrenOutcome='rushed';s.hp=Math.max(0,s.hp-3);raiseContamination(s,2);}},
+      {label:'Lui parler en gardant tes distances',to:'c205'},
+      {label:'Le tuer immédiatement pour ne prendre aucun risque',to:'c206',effect:s=>{s.flags.aldrenOutcome='killed_immediately';takeBlackBlade(s);}}
+    ]
+  },
+  c204: {
+    number:'PAGE 204',title:'Le piège d’Aldren',noImage:true,
+    text:`<p>Tu tends la main vers lui. Trop tard, tu distingues la masse qui a remplacé ses jambes. Un tentacule réagit à ton approche et te lacère le visage.</p>
+      <p><strong>−3 Vie · +2 Terre noire.</strong></p>
+      <p>Tu recules et, d’un grand coup d’épée, tu abats la créature qui porte encore le visage d’Aldren. Son corps s’immobilise. Dans ses affaires, un éclat noir apparaît entre les tentacules.</p>`,
+    choices:s=>s.hp<=0||s.flags.blackEarthTransformed?terminalChoices():[{label:'Récupérer la lame noire dans ses affaires',to:'c206',effect:takeBlackBlade}]
+  },
+  c205: {
+    number:'PAGE 205',title:'Les dernières paroles',noImage:true,
+    text:`<p>« Je ne sais plus quoi faire. Écouter la voix… ou tuer ce qui nous appelle ? Je ne distingue plus mes propres pensées. »</p>
+      <p>Aldren montre du regard le bas de son corps. Sous son manteau, des tentacules enserrent sa sacoche.</p>
+      <blockquote>« J’ai trouvé la lame noire. Elle est là. Mais mon corps ne m’obéit plus. Je ne peux même pas te la donner. »</blockquote>
+      <p>Ses traits se crispent. Quelque chose remue sous le tissu.</p>`,
+    choices:[
+      {label:'Achever Aldren et prendre la lame',to:'c206',effect:s=>{s.flags.aldrenOutcome='killed_after_talk';takeBlackBlade(s);}},
+      {label:'Couper les tentacules pour dégager la sacoche',to:'c207',effect:s=>{if(s.flags.aldrenOutcome)return;s.flags.aldrenOutcome='severed';s.hp=Math.max(0,s.hp-1);takeBlackBlade(s);}},
+      {label:'Ne pas le blesser et le laisser dans le recoin',to:'c208',effect:s=>{s.flags.aldrenOutcome='spared';}}
+    ]
+  },
+  c206: {
+    number:'PAGE 206',title:'La lame noire',noImage:true,
+    text:s=>`<p>${s.flags.aldrenOutcome==='killed_after_talk'
+      ? 'Un coup suffit. La tête d’Aldren roule dans l’obscurité. Les tentacules se détendent dans un dernier sursaut.'
+      :s.flags.aldrenOutcome==='killed_immediately'
+        ? 'Tu frappes sans attendre. Le visage d’Aldren disparaît dans l’ombre. Une masse de tentacules se détend sous son manteau.'
+        :'Les tentacules s’immobilisent autour de la sacoche. Tu la dégages avec précaution.'}</p>
+      <p>À l’intérieur repose une petite lame noire, froide et étonnamment lourde. Ainsi Aldren l’avait trouvée… Pourquoi ne s’en est-il pas servi contre l’esprit ?</p>
+      <p><strong>Lame noire récupérée.</strong></p>`,
+    choices:[{label:'Poursuivre vers les galeries derrière la porte',to:'c209'}]
+  },
+  c207: {
+    number:'PAGE 207',title:'Le prix du sauvetage',noImage:true,
+    text:`<p>Tu frappes les tentacules. Ils se défendent. Chaque coup arrache un cri au chevalier. Tu continues jusqu’à ce que la chair qui fut ses jambes cesse de bouger.</p>
+      <p>Aldren s’évanouit de douleur. Il respire encore. La sacoche est enfin libre, et tu en extrais la lame noire.</p>
+      <p><strong>−1 Vie. Lame noire récupérée.</strong></p>`,
+    choices:s=>s.hp<=0?terminalChoices():[{label:'Le laisser respirer et poursuivre',to:'c209'}]
+  },
+  c208: {
+    number:'PAGE 208',title:'Laisser Aldren',noImage:true,
+    text:`<p>Tu ranges ton arme. Aldren baisse la tête, incapable de retenir les mouvements de son corps. La lame noire reste dans la sacoche prise entre les tentacules.</p>
+      <blockquote>« Va… Ne reste pas près de moi. »</blockquote>
+      <p>Tu lui obéis et t’engages seul dans les galeries derrière la porte.</p>`,
+    choices:[{label:'Entrer dans le labyrinthe',to:'c209'}]
+  },
+  c209: {
+    number:'PAGE 209',title:'Le labyrinthe impossible',noImage:true,
+    text:s=>{
+      const turns=s.flags.finalMazeTurns||0;
+      const scenes=[
+        'Un passage descend puis remonte sans raison. Deux ouvertures identiques s’offrent à toi.',
+        'Tu retrouves une pierre fendue que tu jurerais avoir dépassée. Le couloir bifurque encore.',
+        'La roche se resserre. La gauche semble conduire vers un mur, la droite vers des marches noyées de brume.',
+        'Une pente douce devient un escalier brutal. Deux galeries s’écartent à nouveau.',
+        'Un courant d’air arrive de deux côtés opposés. Impossible d’en reconnaître l’origine.',
+        'Tu passes sous une arche irrégulière. Au-delà, deux couloirs se contredisent.'
+      ];
+      const r=s.flags.finalMazeLast;
+      return `<p>${scenes[turns%scenes.length]}</p>
+        <p>Les directions ne semblent obéir à aucune logique. À chaque intersection, tu risques de tourner en rond.</p>
+        ${r?finalMazeRollHtml(s):''}
+        ${r&&!r.success?'<p>La galerie te ramène vers un autre embranchement. Tu dois choisir sans t’arrêter.</p>':''}
+        ${s.flags.finalMazeFound?'<p>Un souffle d’air frais te parvient. Devant toi, une ouverture mène enfin hors du dédale.</p>':''}`;
+    },
+    choices:s=>s.flags.finalMazeFound
+      ?[{label:'Suivre l’air frais',to:'c210'}]
+      :[{label:'Prendre le passage de gauche',stay:true,effect:t=>finalMazeRoll(t,'gauche')},
+        {label:'Prendre le passage de droite',stay:true,effect:t=>finalMazeRoll(t,'droite')}]
+  },
+  c210: {
+    number:'PAGE 210',title:'Une autre survivante',noImage:true,
+    text:`<p>Tu entres dans une petite pièce sombre. Une femme inconnue est assise contre la roche. Ses vêtements sont déchirés et sa respiration sifflante.</p>
+      <blockquote>« J’y étais presque. À deux doigts de mettre fin au règne de cette chose. »</blockquote>
+      <p>Tu lui demandes comment elle sait qu’il faut détruire l’esprit.</p>
+      <blockquote>« Comment ça ? »</blockquote>
+      <p>Elle te regarde sans comprendre, puis désigne les galeries d’un geste épuisé.</p>
+      <blockquote>« Regarde ce que ça a fait de nous. Je ne peux plus aller plus loin, mais j’ai assez de poudre pour abattre la voûte et refermer la prison. Prends mon sac si tu veux. »</blockquote>`,
+    choices:s=>[
+      ...(!s.flags.explosivePowderTaken?[{label:'Prendre la poudre, la mèche et le nécessaire d’allumage',stay:true,effect:s=>{if(!s.flags.explosivePowderTaken){addItem(s,'poudre_effondrement','Sac de poudre explosive','Avec sa mèche et son nécessaire d’allumage. Peut provoquer un effondrement dans la prison.');s.flags.explosivePowderTaken=true;}}}]:[]),
+      {label:'Poursuivre vers la prison',to:'c211'}
+    ]
+  },
+  c211: {
+    number:'PAGE 211',title:'La chambre de l’esprit',noImage:true,
+    text:`<p>Tu franchis une dernière ouverture. La salle est ronde et gigantesque. Des boules de feu magiques flottent dans des supports fixés à la paroi. Leur lumière jaune intense entoure un centre bleuté.</p>
+      <p>Au milieu de la chambre, une sphère entièrement verte diffuse un éclat presque aveuglant. De longues veines de lumière partent d’elle et s’enfoncent dans la roche.</p>
+      <p>Une voix résonne dans ta tête.</p>
+      <blockquote>« Enfin. Approche. »</blockquote>`,
+    choices:[{label:'Écouter ce que l’esprit veut te dire',to:'c212'}]
+  },
+  c212: {
+    number:'PAGE 212',title:'La vérité du prisonnier',noImage:true,
+    text:s=>`<p>La sphère verte se contracte doucement. La voix se répand dans la salle.</p>
+      ${contaminationLevel(s)<=3
+        ? `<blockquote>« Autrefois, cette vallée prospérait. Ses récoltes nourrissaient les villages voisins. Un sorcier d’une autre région craignait cette richesse : les marchands délaissaient ses routes et ses marchés.</blockquote>
+           <blockquote>Il a persuadé les habitants qu’une puissance maléfique les menaçait. Il les a enrôlés pour bâtir ma prison et a donné à ses gardiens le nom de Veilleurs. Je suis l’âme de cette terre. Libère-moi et je lui rendrai sa force. »</blockquote>
+           <p>Le récit est clair. La chaleur de la lumière t’invite à t’approcher.</p>`
+        :contaminationLevel(s)<=8
+          ? `<blockquote>« Cette vallée prospérait… Un sorcier a voulu la ruiner. Il a fait croire aux habitants que j’étais un démon. Il leur a fait bâtir ma prison… »</blockquote>
+             <p>Tu demandes d’où vient cet esprit et pourquoi personne ne l’a défendu. La sphère frémit.</p>
+             <blockquote>« Je… J’ai toujours été ici. Ils… Ils ne savaient pas… »</blockquote>
+             <p>Les réponses ne s’accordent plus. La voix reprend son récit sans répondre à tes questions.</p>`
+          : `<p>La terre noire brouille chaque parole. Des images de moissons, de chaînes et de flammes se mêlent à des mots sans suite.</p>
+             <blockquote>« La vallée… le sorcier… ouv… défend… »</blockquote>
+             <p>Tu n’arrives plus à reconstituer ce qu’elle raconte. Ton propre souffle couvre sa voix.</p>`}
+      <p>Devant toi, des liens de lumière maintiennent la sphère à la pierre. Tu distingues aussi son cœur, au milieu de l’éclat vert.</p>
+      ${hasItem(s,'lame_noire')?'<p>La lame noire semble pouvoir atteindre aussi bien les liens que le cœur de la sphère.</p>':''}
+      ${hasItem(s,'poudre_effondrement')?'<p>Le sac de poudre pourrait faire céder la voûte au-dessus de la prison.</p>':''}
+      <p><strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>`,
+    choices:s=>{
+      const blade=hasItem(s,'lame_noire'), powder=hasItem(s,'poudre_effondrement');
+      if(blade) return [
+        {label:'Trancher le lien et libérer l’esprit avec la lame noire',to:'c213'},
+        {label:'Frapper le cœur et détruire l’esprit avec la lame noire',to:'c214'},
+        ...(powder?[{label:'Faire exploser la voûte avec la poudre',to:'c215',effect:t=>{removeItem(t,'poudre_effondrement');t.hp=0;}}]:[])
+      ];
+      if(powder) return [{label:'Déclencher l’effondrement avec la poudre',to:'c215',effect:t=>{removeItem(t,'poudre_effondrement');t.hp=0;}}];
+      return [
+        {label:'Tenter de libérer l’esprit avec ton arme',to:'c216',effect:t=>{t.flags.finalOrdinaryIntent='libérer';t.weapon='none';t.hp=0;}},
+        {label:'Tenter de tuer l’esprit avec ton arme',to:'c216',effect:t=>{t.flags.finalOrdinaryIntent='tuer';t.weapon='none';t.hp=0;}}
+      ];
+    }
+  },
+  c213: {
+    number:'PAGE 213',title:'L’esprit libéré',noImage:true,
+    text:`<p>La lame noire tranche un lien de lumière. Tous les autres se rompent à sa suite. Une vague verte traverse la caverne et t’enveloppe.</p>
+      <p>Une chaleur immense efface tes blessures, ta faim, ta fatigue. Tu cours vers la surface sans sentir le poids de ton corps.</p>
+      <p>Valombre t’accueille. Les semaines passent. Les commerces fleurissent, les routes s’ouvrent et les familles reviennent. On t’admire partout. Même des inconnus te fixent avec une ferveur troublante.</p>
+      <p>Les habitants t’obéissent avant que tu aies fini de parler. Tu voudrais t’en inquiéter, mais ce pouvoir n’est pas désagréable. Les mois passent. Plus personne n’ose te contredire.</p>`,
+    choices:[{label:'Voir ce que devient Valombre',to:'c217'}]
+  },
+  c214: {
+    number:'PAGE 214',title:'La fin de l’esprit',noImage:true,
+    text:`<p>Tu enfonces la lame noire dans le cœur de la lumière. La sphère se déchire dans un souffle vert. Puis viennent le noir et un silence absolu.</p>
+      <p>Tu retrouves ton chemin jusqu’à la surface. Les semaines et les mois passent. Valombre reprend lentement vie. Tu participes au retour du commerce avec les régions voisines, mais tu rêves encore de repartir.</p>
+      <p>Un jour, un marchand apporte sur la place une plaque ancienne marquée de l’œil fermé. Tu la reconnais immédiatement.</p>
+      <blockquote>« D’où vient-elle ? »</blockquote>
+      <blockquote>« D’une région lointaine. Il y en avait plusieurs sur un marché. Personne ne sait les dater. »</blockquote>
+      <p>Un autre œil fermé. Une autre prison, peut-être.</p>
+      <p>Le lendemain, tu prends ton sac, selles ton cheval et pars vers cette région inconnue.</p>
+      <p><strong>Fin de l’aventure.</strong></p>`,
+    choices:terminalChoices()
+  },
+  c215: {
+    number:'PAGE 215',title:'L’effondrement',noImage:true,
+    text:`<p>Tu déroules la mèche et l’allumes. Une lumière brève court jusqu’au sac de poudre.</p>
+      <p>L’explosion déchire la caverne. La voûte se fissure et d’énormes blocs tombent sur la prison. Le vacarme te rend sourd. La première pierre te frappe avec une violence fulgurante.</p>
+      <p>Tu t’effondres au milieu de la poussière. Tu ne sauras jamais si l’esprit est détruit, enseveli ou simplement enfermé plus profondément. Tu espères avoir fait le bon choix.</p>
+      <p>La lumière disparaît sous les décombres.</p>
+      <p><strong>Fin de l’aventure.</strong></p>`,
+    choices:terminalChoices()
+  },
+  c216: {
+    number:'PAGE 216',title:'Une arme ordinaire',noImage:true,
+    text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
+      <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
+      <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
+      <p>Tu perds peu à peu connaissance. Puis tout disparaît.</p>
+      <p><strong>Fin de l’aventure.</strong></p>`,
+    choices:terminalChoices()
+  },
+  c217: {
+    number:'PAGE 217',title:'La fin d’un règne',noImage:true,
+    text:`<p>Sur la place de Valombre, un marchand inconnu s’approche de toi. Il te parle d’une voix douce. Tu te penches pour l’entendre.</p>
+      <p>D’un mouvement brutal, il tire une lame noire de sous son manteau et te l’enfonce profondément dans la poitrine.</p>
+      <p>Une douleur fulgurante te traverse. La force qui t’habitait depuis la grotte disparaît d’un seul coup. Tu tombes à genoux.</p>
+      <blockquote>« La malédiction doit prendre fin. »</blockquote>
+      <p>Il retire la lame et frappe à nouveau. Tu t’effondres sur les pavés. Ton règne s’achève à Valombre.</p>
+      <p><strong>Fin de l’aventure.</strong></p>`,
+    choices:terminalChoices()
+  },
+
 };
 
 
@@ -5514,6 +5762,24 @@ const STORY = {
   // Libellés complets de l’outil de navigation TEST.
   // Les titres narratifs de STORY restent volontairement masqués sur certaines pages.
   const PAGE_NAV_TITLES = {
+    'c201': 'La caverne des condamnés',
+    'c202': 'Le carnage',
+    'c203': 'Sir Aldren',
+    'c204': 'Le piège d’Aldren',
+    'c205': 'Les dernières paroles',
+    'c206': 'La lame noire',
+    'c207': 'Le prix du sauvetage',
+    'c208': 'Laisser Aldren',
+    'c209': 'Le labyrinthe impossible',
+    'c210': 'Une autre survivante',
+    'c211': 'La chambre de l’esprit',
+    'c212': 'La vérité du prisonnier',
+    'c213': 'L’esprit libéré',
+    'c214': 'La fin de l’esprit',
+    'c215': 'L’effondrement',
+    'c216': 'Une arme ordinaire',
+    'c217': 'La fin d’un règne',
+
     'c196': 'La bague de lumière', 'c197': 'La silhouette', 'c198': 'Le jeune chevalier', 'c199': 'La main du chevalier', 'c200': 'Continuer seul',
     'c105': 'Le registre du médecin', 'c106': 'Le carrefour des soins', 'c107': 'Le poste de secours', 'c108': 'La réserve de terre noire',
     "c0": "Prologue — Valombre",
@@ -5681,7 +5947,7 @@ const STORY = {
 };
 
   // L'ordre d'affichage peut changer ; les identifiants cN restent stables pour les liens et les sauvegardes.
-  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183'];
+  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c214', 'c215', 'c216', 'c217'];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -6095,6 +6361,8 @@ const STORY = {
   }
 
   const TEST_ITEM_CATALOG = [
+    { id:'lame_noire', name:'Lame noire — Aldren', description:'Permet de libérer ou détruire l’esprit.' },
+    { id:'poudre_effondrement', name:'Sac de poudre explosive', description:'Permet de faire s’effondrer la prison.' },
     {
       id: 'parchemin',
       name: 'Notes d’Aldren',
@@ -6233,7 +6501,10 @@ const STORY = {
       return;
     }
     if (enabled) addItem(state, entry.id, entry.name, entry.description);
-    else removeItem(state, entry.id);
+    else {
+      removeItem(state, entry.id);
+      if (entry.id === 'lame_noire' && state.weapon === 'black_blade') state.weapon = 'none';
+    }
   }
 
   function testInventoryHtml(state) {
@@ -6433,6 +6704,7 @@ const STORY = {
       }
 
       if (action === 'equip-black-blade') {
+        if (!hasItem(state,'lame_noire')) { api.openInventory(); return true; }
         state.weapon = 'black_blade';
         api.saveState();
         api.render();
@@ -6537,7 +6809,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 74,
+    contentVersion: 80,
     pageMapVersion: 77,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
@@ -6563,7 +6835,8 @@ const STORY = {
     characterSheetHtml,
     inventory,
     checkpoints: [
-      { node: 'c20', label: 'Entrée de la grotte', onlyIfNone: true }
+      { node: 'c20', label: 'Entrée de la grotte', onlyIfNone: true },
+      { node: 'c201', label: 'La caverne des condamnés' }
     ],
     legacyStorageKeys: ['ldveh.book.ecuyer-01.save.v1', 'ldveh.book.ecuyer-01-valombre.save.v1', 'valombre_save_v12_3d6_stats18'],
     legacyCheckpointKeys: ['ldveh.book.ecuyer-01.checkpoint.v1', 'ldveh.book.ecuyer-01-valombre.checkpoint.v1', 'valombre_checkpoint_v12_3d6_stats18'],

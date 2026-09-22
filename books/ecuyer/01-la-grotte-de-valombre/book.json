@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 79,
+  "contentVersion": 80,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.69 — Travail : images 169/170/171/173/174 et ajustement page 175.",
+  "buildLabel": "V68.70 — Travail : fin jouable (pages 201–217), dédale simplifié et jet 176 recalibré.",
   "pageMapVersion": 77
 }
