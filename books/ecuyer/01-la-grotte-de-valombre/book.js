@@ -4972,8 +4972,8 @@ const STORY = {
   },
   // V68.32 : monde sous la cité, dédale défensif. Illustrations explicitement désactivées en attente de création WebP.
   c152: {
-    number: 'PAGE 169', title: 'Le dédale des défenses', noImage: true,
-    text: `<p>La galerie est brûlante. La poussière flotte entre les pierres sales. Dans des supports de fer, de petites flammes immobiles diffusent une lumière bleu pâle et or. Elles ne semblent rien consumer.</p>
+    number: 'PAGE 169', title: 'Le dédale des défenses',
+    text: `<p>La galerie est brûlante. La poussière flotte entre les pierres sales.</p>
       <p>Un pas traînant secoue le sol. Au coude suivant, une masse presque humaine avance vers toi. Un bras racle la paroi. Sa tête penche sans trouver ton regard.</p>
       <p>À gauche, une fente étroite s’ouvre dans la roche. À droite, un renfoncement peut te dissimuler. La chose approche.</p>`,
     choices: [
@@ -4983,7 +4983,7 @@ const STORY = {
     ]
   },
   c153: {
-    number: 'PAGE 170', title: '', noImage: true,
+    number: 'PAGE 170', title: '',
     text: s => { const e=ENEMIES.labyrinthWanderer, c=combatState(s,'labyrinthWanderer',e);
       if(c.hp<=0) return `${enemyCardHtml(s,'labyrinthWanderer',e)}${combatRoundHtml(s,'labyrinthWanderer',e)}${throwingBladeResultHtml(s,'labyrinthWanderer',e)}<p>Ton dernier coup abat la chose. Ses pas cessent de faire vibrer la galerie. Un grondement répond au loin.</p>`;
       if(s.hp<=0) return `${combatRoundHtml(s,'labyrinthWanderer',e)}<p>Tu t’effondres contre la paroi.</p>`;
@@ -4992,7 +4992,7 @@ const STORY = {
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Courir vers les galeries suivantes',to:'c168'}]:combatActionChoices(s,'labyrinthWanderer',e,'c153');}
   },
   c154: {
-    number: 'PAGE 171', title: '', noImage: true,
+    number: 'PAGE 171', title: '',
     text: s => `<p>Ta lame file vers la créature.</p>${enemyCardHtml(s,'labyrinthWanderer',ENEMIES.labyrinthWanderer)}${throwingBladeResultHtml(s,'labyrinthWanderer',ENEMIES.labyrinthWanderer)}`,
     choices: s => {const e=ENEMIES.labyrinthWanderer,c=combatState(s,'labyrinthWanderer',e);
       return s.hp<=0?fatalChoices():c.hp<=0?[{label:'Poursuivre dans la galerie',to:'c168'}]:combatActionChoices(s,'labyrinthWanderer',e,'c153');}
@@ -5009,7 +5009,7 @@ const STORY = {
     }}]
   },
   c156: {
-    number: 'PAGE 173', title: '', noImage: true,
+    number: 'PAGE 173', title: '',
     text:s=>{
       // Ancienne sauvegarde : cette page concluait immédiatement l'embuscade.
       if(!s.flags.labyrinthAmbushDone)return '<p>Tu as déjà traversé le renfoncement. La galerie continue devant toi.</p>';
@@ -5030,7 +5030,7 @@ const STORY = {
     }
   },
   c157: {
-    number: 'PAGE 174', title: '', noImage: true,
+    number: 'PAGE 174', title: '',
     text:`<p>Tu te glisses de profil dans la fente. Derrière toi, le lourd pas s’arrête : la créature ne peut pas passer.</p>
       <p>Le tunnel s’ouvre soudain sur une salle immense. Une arête rocheuse traverse le vide. Sa surface luit d’humidité.</p>`,
     choices:[{label:'T’engager sur l’arête',to:'c158'}]
@@ -5038,7 +5038,7 @@ const STORY = {
   c158: {
     number: 'PAGE 175', title: '', noImage: true,
     text:s=>`<p>La traversée commence. Un faux pas suffirait à te précipiter plus bas.</p>
-      ${labyrinthVoiceTier(s)==='clear'?'<p>Alors que tu allais prendre appui sur une dalle, ta jambe s’arrête net, comme retenue par une force invisible. Tu décides de contourner la pierre. Elle s’effondre quelques secondes plus tard.</p>':labyrinthVoiceTier(s)==='faint'?'<p>Ta jambe hésite soudain. Un murmure confus te retient juste assez pour que tu remarques une dalle instable et la contournes.</p>':'<p>Aucune force ne guide tes pas. Tu distingues une dalle fissurée et l’évites de justesse.</p>'}
+      ${labyrinthVoiceTier(s)==='clear'?'<p>Alors que tu allais prendre appui sur une dalle, ta jambe s’arrête net, comme retenue par une force invisible. Tu décides de contourner la pierre. Elle s’effondre quelques secondes plus tard.</p>':labyrinthVoiceTier(s)==='faint'?'<p>Un murmure confus glisse jusqu’à toi. Tu ne comprends pas les mots, mais tu sens qu’un danger t’attend. Tu t’engages avec prudence, sans savoir où poser le pied.</p>':'<p>Aucune force ne guide tes pas. Tu distingues une dalle fissurée et l’évites de justesse.</p>'}
       <p>Il reste à franchir la partie la plus étroite, humide et sans prise sûre.</p>`,
     choices:[{label:'Franchir le passage glissant',to:'c159', diceTest:true,effect:s=>labyrinthTrap(s,'labyrinthLedge')}]
   },
