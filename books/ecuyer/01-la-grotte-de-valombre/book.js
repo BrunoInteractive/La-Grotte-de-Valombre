@@ -5497,13 +5497,14 @@ const STORY = {
       const r=s.flags.cavernCombat;
       if(!r) return '<p>La horde approche. Tu n’as pas encore affronté les créatures.</p>';
       return `${r.success
-        ? `<p>Le combat éclate. Tu frappes de toutes tes forces. Les corps tombent un à un, mais d’autres avancent. Certains gémissent et pleurent. D’autres ne semblent même pas ressentir la douleur. Rien n’est tout à fait humain, rien n’est tout à fait monstrueux.</p>
+        ? `<p>Le combat éclate. Tu frappes de toutes tes forces. Les corps tombent un à un, mais d’autres avancent. Certains gémissent et pleurent. D’autres ne semblent même pas ressentir la douleur. Impossible de savoir si tu affrontes des monstres ou des êtres humains. Tu en viens même à te demander si tous ces corps ne sont pas les fragments d’un seul ennemi dispersé aux quatre coins de la grotte.</p>
            <p>Tu te bats pendant ce qui te semble être des heures. Enfin, un dernier être rampe vers toi, les jambes en sang.</p>
            <blockquote>« Mets fin à tout ça… Par pitié. »</blockquote>
            <p>Tu lui assènes un coup d’épée. Le silence retombe. Tes bras tremblent.</p>`
-        : `<p>Tu abats les premières silhouettes, puis elles te submergent. Des mains agrippent tes jambes tandis que tu repousses un autre assaillant. Ta peau se lacère sous des coups que tu ne peux pas tous esquiver. Les plaintes se mêlent aux chocs.</p>
-           <p>Les corps tombent un à un, le carnage est total. Rien n’est tout à fait humain, rien n’est tout à fait monstrueux. Certains gémissent, d’autres pleurent. D’autres encore avancent sans sembler ressentir la moindre douleur.</p>
+        : `<p>Tu abats les premières silhouettes, puis elles te submergent. Des mains agrippent tes jambes tandis que tu repousses un autre assaillant. Ta peau se lacère sous les coups. Tu ne peux pas esquiver toutes les attaques. Les plaintes se mêlent aux chocs.</p>
+           <p>Les corps tombent un à un, le carnage est total. Impossible de savoir si tu affrontes des monstres ou des êtres humains. Tu en viens même à te demander si tous ces corps ne sont pas les fragments d’un seul ennemi dispersé aux quatre coins de la grotte. Certains gémissent, d’autres pleurent. D’autres encore avancent sans sembler ressentir la moindre douleur.</p>
            <p>Tu te bats pendant ce qui te semble être des heures entières… mais ils sont trop nombreux. Pendant que tu te débats avec l’un, un autre se jette sur toi. Tes jambes deviennent lourdes. Tu finis pourtant par l’emporter, au prix de blessures profondes. <strong>−6 Vie · +4 Terre noire.</strong></p>`}
+        <p>Il te faut quelques minutes pour reprendre ton souffle et trouver le courage de continuer.</p>
         <p>Au fond de la caverne, une porte gigantesque est sculptée à même la roche.</p>`;
     },
     choices:s=>!s.flags.cavernCombat?[{label:'Revenir au combat',to:'c201'}]:s.hp<=0 || s.flags.blackEarthTransformed?terminalChoices():[{label:'Approcher de la porte gigantesque',to:'c203'}]
@@ -5544,9 +5545,9 @@ const STORY = {
   c206: {
     number:'PAGE 206',title:'La lame noire',noImage:true,
     text:s=>`<p>${s.flags.aldrenOutcome==='killed_after_talk'
-      ? 'Le silence retombe. Tu hésites un instant avant de t’agenouiller près de lui. Une larme glisse sur ta joue. Tuer ton héros était le prix à payer pour poursuivre la mission.'
+      ? 'Tu saisis ton épée et, le plus vite possible, avant que l’hésitation ne t’arrête dans ton élan, tu tranches la tête de Sir Aldren. Une larme glisse sur ta joue tandis que tu t’agenouilles près de lui. Tuer ton héros était le prix à payer pour poursuivre la mission.'
       :s.flags.aldrenOutcome==='killed_immediately'
-        ? 'Le silence retombe brutalement après ton geste. Quand tu t’agenouilles près de lui, la certitude te frappe de plein fouet : c’était bien Sir Aldren. Une larme te brûle les yeux tandis que tu reprends ton souffle.'
+        ? 'Tu dégaines et frappes immédiatement, avant que la peur ne te fasse hésiter. La tête de Sir Aldren roule dans l’obscurité. Quand tu t’agenouilles près de lui, la certitude te frappe de plein fouet : c’était bien ton chevalier. Une larme te brûle les yeux tandis que tu reprends ton souffle.'
         :s.flags.aldrenOutcome==='rushed'
           ? 'Tu restes un instant immobile devant le corps d’Aldren. La violence du combat t’a arraché toute joie trop vite. Une larme coule sur ta joue avant même que tu t’en rendes compte.'
           :'Les tentacules s’immobilisent autour de la sacoche. Tu la dégages avec précaution, le cœur serré en regardant le chevalier inanimé.'}</p>
@@ -5586,7 +5587,7 @@ const STORY = {
       ];
       const r=s.flags.finalMazeLast;
       return `<p>${scenes[turns%scenes.length]}</p>
-        <p>Les directions ne semblent obéir à aucune logique. À chaque intersection, tu risques de tourner en rond.</p>
+        ${turns===0?'<p>Les directions ne semblent obéir à aucune logique. À chaque intersection, tu risques de tourner en rond.</p>':''}
         ${r?finalMazeRollHtml(s):''}
         ${r&&!r.success?'<p>Tu reprends ta marche. Le labyrinthe semble se refermer derrière toi, sans jamais t’offrir le moindre repère fiable.</p>':''}
         ${s.flags.finalMazeFound?'<p>Un souffle d’air frais te parvient. Devant toi, une ouverture mène enfin hors du dédale.</p>':''}`;
@@ -5611,7 +5612,7 @@ const STORY = {
   },
   c211: {
     number:'PAGE 211',title:'La chambre de l’esprit',noImage:true,
-    text:`<p>Tu franchis une dernière ouverture. La salle est ronde et gigantesque. Des boules de feu magiques flottent dans des supports fixés à la paroi. Leur lumière jaune intense entoure un centre bleuté.</p>
+    text:`<p>Tu franchis une dernière ouverture. La salle est ronde et gigantesque. Des boules de feu flottent dans des supports fixés à la paroi. Leur lumière jaune intense entoure un centre bleuté.</p>
       <p>Au milieu de la chambre, une sphère entièrement verte diffuse un éclat presque aveuglant. De longues veines de lumière partent d’elle et s’enfoncent dans la roche.</p>
       <p>Une voix résonne dans ta tête.</p>
       <blockquote>« Enfin. Approche. »</blockquote>`,
@@ -5620,16 +5621,15 @@ const STORY = {
   c212: {
     number:'PAGE 212',title:'La vérité du prisonnier',noImage:true,
     text:s=>`<p>La sphère verte se contracte doucement. La voix se répand dans la salle.</p>
+      ${contaminationLevel(s)<=8?'<blockquote>« Te voilà enfin. Merci d’avoir affronté tous ces dangers pour me libérer. Le temps presse. Mes forces s’épuisent. »</blockquote>':''}
       ${contaminationLevel(s)<=3
-        ? `<blockquote>« Autrefois, cette vallée prospérait. Ses récoltes nourrissaient les villages voisins. Un sorcier d’une autre région craignait cette richesse : les marchands délaissaient ses routes et ses marchés.</blockquote>
-           <blockquote>Il a persuadé les habitants qu’une puissance maléfique les menaçait. Il les a enrôlés pour bâtir ma prison et a donné à ses gardiens le nom de Veilleurs. Je suis l’âme de cette terre. Libère-moi et je lui rendrai sa force. »</blockquote>
-           <p>Le récit est clair. La chaleur de la lumière t’invite à t’approcher.</p>`
+        ? `<blockquote>« Avant, cette vallée prospérait. Ses récoltes nourrissaient les villages voisins. Un sorcier d’une autre région craignait cette richesse : les marchands délaissaient ses routes et ses marchés. Il a persuadé les habitants qu’une puissance maléfique les menaçait. Il les a enrôlés pour bâtir ma prison et a donné à ses gardiens le nom de Veilleurs. Je suis l’âme de cette terre. Libère-moi et je lui rendrai sa force. »</blockquote>`
         :contaminationLevel(s)<=8
-          ? `<blockquote>« Cette vallée prospérait… Un sorcier a voulu la ruiner. Il a fait croire aux habitants que j’étais un démon. Il leur a fait bâtir ma prison… »</blockquote>
-             <p>Tu demandes d’où il vient et pourquoi personne ne l’a défendu. La sphère frémit.</p>
-             <p>S’ensuit un silence total. Tu as beau reposer la question, aucune réponse ne vient.</p>`
+          ? `<blockquote>« Avant, cette vallée prospérait… La jalousie d’un sorcier voisin a semé le chaos. Il a réussi à convaincre les habitants que j’étais un démon. Il leur a fait construire cette prison… »</blockquote>
+             <p>Tu demandes d’où il vient et pourquoi tous les villageois ont cru le sorcier.</p>
+             <p>S’ensuit un silence total. Tu as beau reposer la question, aucune réponse ne vient. Le doute s’installe en toi.</p>`
           : `<p>La terre noire brouille chaque parole. Des images de moissons, de chaînes et de flammes se mêlent à des mots sans suite.</p>
-             <blockquote>« La vallée… le sorcier… ouv… défend… »</blockquote>
+             <blockquote>« La vallée… le sorcier… sauvé… défend… »</blockquote>
              <p>Tu n’arrives plus à reconstituer ce qu’elle raconte. C’est certainement ton niveau de terre noire qui empêche son discours d’arriver jusqu’à toi.</p>`}
       <p>Devant toi, des liens de lumière maintiennent la sphère à la pierre. Tu distingues aussi son cœur, au milieu de l’éclat vert.</p>
       ${hasItem(s,'lame_noire')?'<p>La lame noire semble pouvoir atteindre aussi bien les liens que le cœur de la sphère.</p>':''}
