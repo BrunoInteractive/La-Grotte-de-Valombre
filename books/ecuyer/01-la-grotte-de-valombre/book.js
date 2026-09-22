@@ -5191,9 +5191,8 @@ const STORY = {
     choices:s=>s.hp<=0?fatalChoices():[{label:'Poursuivre dans la galerie',to:s.flags.labyrinthWomanGiftTaken?'c179':'c172'}]
   },
   c172: {
-    number: 'PAGE 189', title: 'La femme du dédale', noImage: true,
+    number: 'PAGE 189', title: 'La femme du dédale',
     text:`<p>Au détour de la galerie, une femme est accroupie sous une flamme immobile. Son visage reste dans l’ombre. Elle semble humaine.</p>
-      <p>Un piège claque derrière toi. Elle lève les yeux.</p>
       <blockquote>« Vous aussi, vous cherchez quelqu’un ? Approchez. Je n’ai plus la force de courir. »</blockquote>`,
     choices:[{label:'Lui demander ce qui lui est arrivé',to:'c173'}]
   },
@@ -5215,7 +5214,7 @@ const STORY = {
     choices:[{label:'Prendre le sac qu’elle te tend',to:'c175',effect:labyrinthWomanGift}]
   },
   c175: {
-    number: 'PAGE 192', title: '', noImage: true,
+    number: 'PAGE 192', title: '',
     text:s=>`<p>Son sac contient une ampoule de liquide blanc, un sachet de terre noire et une potion de guérison.</p>
       <p>Elle observe ton arme. « Vous comptiez vraiment descendre avec ça ? »</p>
       <p>Elle tire de son fourreau une épée à la lame rouge sombre, fine et solide.</p>
