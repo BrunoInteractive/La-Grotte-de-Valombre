@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 78,
+  "contentVersion": 79,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.63 — Travail : note sur les chemins et la rejouabilité dans la fiche du héros",
+  "buildLabel": "V68.66 — Travail : inventaire de test complété (sacoche et objets du récit)",
   "pageMapVersion": 77
 }

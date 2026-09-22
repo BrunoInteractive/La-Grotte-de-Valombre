@@ -459,22 +459,23 @@ function youngKnightRollHtml(s) {
   return `<div class="dice-result"><p class="roll-number">Épreuve de Dextérité</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.stat}</strong></p><p><strong>${r.success ? 'Réussite' : 'Échec'}</strong></p></div>`;
 }
 
-// V68 : la contamination module ce qui est entendu, jamais un jet de résistance.
-// Une décision du joueur n'est pas forcée par ce niveau.
-// Dédale : la voix anticipe les pièges, mais ne protège jamais des combats.
+// Dédale : la voix retient parfois le corps et signale des pièges.
+// Même bien guidé, le héros doit réussir les passages physiques.
+// La voix n'accorde aucun bonus pendant les combats.
 function labyrinthVoiceTier(s) {
   const c = contaminationLevel(s);
   return c <= 3 ? 'clear' : c <= 8 ? 'faint' : 'silent';
 }
 function labyrinthTrap(s, key) {
   const tier = labyrinthVoiceTier(s);
-  const success = tier === 'clear' ? true : roll3D6(s, 'Dextérité' + (tier === 'faint' ? ' (+1 grâce à la voix)' : ''), currentDexterity(s) + (tier === 'faint' ? 1 : 0));
+  const bonus = tier === 'clear' ? 2 : tier === 'faint' ? 1 : 0;
+  const success = roll3D6(s, 'Dextérité' + (bonus ? ` (+${bonus} grâce à la voix)` : ''), currentDexterity(s) + bonus);
   s.flags[key] = {
     tier, success,
-    rollCount: tier === 'clear' ? null : s.rollCount,
-    dice: tier === 'clear' ? null : [...s.lastDice],
-    stat: tier === 'clear' ? null : s.lastStat,
-    total: tier === 'clear' ? null : s.lastTotal,
+    rollCount: s.rollCount,
+    dice: [...s.lastDice],
+    stat: s.lastStat,
+    total: s.lastTotal,
     damaged: false
   };
   if (!success && !s.flags[key + 'DamageOnce']) {
@@ -487,7 +488,7 @@ function labyrinthTrap(s, key) {
 }
 function labyrinthTrapResult(s, key) {
   const r = s.flags[key];
-  if (!r || r.tier === 'clear' || !Array.isArray(r.dice)) return '';
+  if (!r || !Array.isArray(r.dice)) return '';
   return `<div class="dice-result"><p class="roll-number">Épreuve de Dextérité</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.stat}</strong></p><p><strong>${r.success ? 'Réussite' : 'Échec'}</strong></p></div>`;
 }
 function labyrinthTakeCorpseLoot(s) {
@@ -4997,13 +4998,33 @@ const STORY = {
     number: 'PAGE 172', title: '', noImage: true,
     text: `<p>Tu t’aplatis dans la faille. Un pas. Puis un autre. Chaque choc fait tomber une pincée de poussière sur ton épaule.</p>
       <p>Ta paume glisse sur la poignée. Tu la resserres. Le souffle de la chose passe tout près. Son flanc découvre une ouverture.</p>`,
-    choices:[{label:'Surgir et frapper',to:'c156'}]
+    choices:[{label:'Surgir et frapper',to:'c156',effect:s=>{
+      if(s.flags.labyrinthAmbushDone)return;
+      const fight=combatState(s,'labyrinthWanderer',ENEMIES.labyrinthWanderer);
+      if(fight.hp>0)fight.hp=Math.max(0,fight.hp-3);
+      s.flags.labyrinthAmbushDone=true;
+    }}]
   },
   c156: {
     number: 'PAGE 173', title: '', noImage: true,
-    text:`<p>Tu jaillis du recoin. Ton coup atteint la créature avant qu’elle puisse se retourner. Elle heurte la paroi et s’affaisse.</p>
-      <p>Plus loin, une pierre tombe. Quelque chose d’autre a entendu.</p>`,
-    choices:[{label:'Continuer sans attendre',to:'c168'}]
+    text:s=>{
+      // Ancienne sauvegarde : cette page concluait immédiatement l'embuscade.
+      if(!s.flags.labyrinthAmbushDone)return '<p>Tu as déjà traversé le renfoncement. La galerie continue devant toi.</p>';
+      const enemy=ENEMIES.labyrinthWanderer;
+      const fight=combatState(s,'labyrinthWanderer',enemy);
+      return `<p>Tu jaillis du recoin et entailles le flanc de la créature. <strong>Ton attaque surprise lui inflige 3 dégâts sans riposte.</strong> Elle recule, mais se retourne et te barre le passage.</p>
+        ${enemyCardHtml(s,'labyrinthWanderer',enemy)}
+        ${fight.lastBlade?throwingBladeResultHtml(s,'labyrinthWanderer',enemy):combatRoundHtml(s,'labyrinthWanderer',enemy)}
+        ${fight.hp<=0?'<p>La créature s’effondre enfin. Tu peux reprendre ta course.</p>':''}`;
+    },
+    choices:s=>{
+      if(!s.flags.labyrinthAmbushDone)return [{label:'Poursuivre la route',to:'c168'}];
+      const enemy=ENEMIES.labyrinthWanderer;
+      const fight=combatState(s,'labyrinthWanderer',enemy);
+      return s.hp<=0?fatalChoices():fight.hp<=0
+        ?[{label:'Continuer sans attendre',to:'c168'}]
+        :combatActionChoices(s,'labyrinthWanderer',enemy,'c156');
+    }
   },
   c157: {
     number: 'PAGE 174', title: '', noImage: true,
@@ -5014,15 +5035,15 @@ const STORY = {
   c158: {
     number: 'PAGE 175', title: '', noImage: true,
     text:s=>`<p>La traversée commence. Un faux pas suffirait à te précipiter plus bas.</p>
-      ${labyrinthVoiceTier(s)==='clear'?'<p>Une voix souffle tout près : « La dalle claire… évite-la. » Une partie du passage se détache sous tes yeux.</p>':labyrinthVoiceTier(s)==='faint'?'<p>Un murmure traverse ta tête : « Pas… là… » Tu hésites devant les pierres humides.</p>':'<p>Aucun murmure. Seulement l’eau qui goutte dans le vide.</p>'}
-      <p>Le chemin se rétrécit encore.</p>`,
-    choices:[{label:'Franchir le passage glissant',to:'c159', diceTest: s => labyrinthVoiceTier(s) !== 'clear',effect:s=>labyrinthTrap(s,'labyrinthLedge')}]
+      ${labyrinthVoiceTier(s)==='clear'?'<p>Alors que tu allais prendre appui sur une dalle, ta jambe s’arrête net, comme retenue par une force invisible. Tu décides de contourner la pierre. Elle s’effondre quelques secondes plus tard.</p>':labyrinthVoiceTier(s)==='faint'?'<p>Ta jambe hésite soudain. Un murmure confus te retient juste assez pour que tu remarques une dalle instable et la contournes.</p>':'<p>Aucune force ne guide tes pas. Tu distingues une dalle fissurée et l’évites de justesse.</p>'}
+      <p>Il reste à franchir la partie la plus étroite, humide et sans prise sûre.</p>`,
+    choices:[{label:'Franchir le passage glissant',to:'c159', diceTest:true,effect:s=>labyrinthTrap(s,'labyrinthLedge')}]
   },
   c159: {
     number: 'PAGE 176', title: '', noImage: true,
     text:s=>{const r=s.flags.labyrinthLedge;
       if(!r)return '<p>Le passage vacille. Tu n’as pas encore franchi la dalle glissante.</p>';
-      return `${labyrinthTrapResult(s,'labyrinthLedge')}${r.success?(r.tier==='clear'?'<p>La voix te fait déplacer ton pied juste à temps. La dalle s’effondre derrière toi. Tu atteins l’autre rive sans glisser.</p>':'<p>Tu prends appui sur une saillie sèche et franchis le vide. Tu tiens debout.</p>'):'<p>Ton pied dérape. Tu bascules, heurtes la paroi et te rattrapes de justesse à une corniche inférieure.</p>'}`;},
+      return `${labyrinthTrapResult(s,'labyrinthLedge')}${r.success?'<p>Tu avances de prise en prise et atteins l’autre rive. Tu as franchi le passage.</p>':'<p>Malgré la dalle évitée, ton pied glisse sur l’arête humide. Tu bascules, heurtes la paroi et te rattrapes de justesse à une corniche inférieure.</p>'}`;},
     choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthLedge?[{label:'Revenir au passage',to:'c158'}]:s.flags.labyrinthLedge.success?[{label:'Gagner la sortie de la salle',to:'c167'}]:[{label:'Te hisser sur la corniche inférieure',to:'c160'}]
   },
   c160: {
@@ -5049,7 +5070,7 @@ const STORY = {
     number: 'PAGE 180', title: '', noImage: true,
     text:s=>`<p>Des corps gisent contre la roche. Plusieurs ont les bottes tournées vers le vide.</p>
       ${s.flags.labyrinthCorpseLooted?'<p>La sacoche ouverte est vide.</p>':'<p>Une sacoche reste prise sous la sangle d’un manteau. Son fermoir tient encore.</p>'}
-      <p>Un grondement roule dans le plafond. Tu dois repartir.</p>`,
+      <p>Des griffes raclent la pierre au bout de la corniche. Tu dois repartir.</p>`,
     choices:s=>s.flags.labyrinthCorpseLooted?[{label:'Remonter',to:'c165'}]:[
       {label:'Saisir la sacoche',to:'c164',effect:labyrinthTakeCorpseLoot},
       {label:'Laisser les corps et remonter',to:'c165'}]
@@ -5057,8 +5078,8 @@ const STORY = {
   c164: {
     number: 'PAGE 181', title: '', noImage: true,
     text:s=>`<p>Tu arraches la sacoche à la sangle et l’ouvres : une potion de guérison et trois petites lames de jet.</p>
-      <p>Une fissure s’étend juste au-dessus de toi.</p>`,
-    choices:[{label:'Remonter avant l’effondrement',to:'c165'}]
+      <p>Un nouveau bruit de griffes approche. Tu ne peux pas rester ici.</p>`,
+    choices:[{label:'Remonter avant que la créature approche',to:'c165'}]
   },
   c165: {
     number: 'PAGE 182', title: '', noImage: true,
@@ -5077,31 +5098,35 @@ const STORY = {
   },
   c168: {
     number: 'PAGE 185', title: '', noImage: true,
-    text:`<p>Deux virages. Une flamme surnaturelle tremble enfin dans son support.</p>
-      <p>Un coup profond secoue la montagne. La galerie se fend devant toi : sous une arche tombée, un espace demeure. À côté, des dalles disjointes forment un passage plus direct au-dessus d’un gouffre.</p>
-      <p>Le plafond commence à s’écrouler.</p>`,
+    text:`<p>Après deux virages, une ancienne arche effondrée barre la galerie. Sous les pierres, une ouverture à peine assez large pour ramper subsiste. À côté, des dalles disjointes dessinent un passage plus direct au-dessus d’un gouffre.</p>
+      <p>La pierre est coupante sous l’arche. Les dalles, elles, bougent au moindre pas. Un grondement monte des profondeurs. Il faut choisir ton passage.</p>`,
     choices:[
-      {label:'Glisser sous l’arche effondrée',to:'c169'},
-      {label:'Bondir par-dessus les dalles brisées',to:'c170', diceTest: s => labyrinthVoiceTier(s) !== 'clear',effect:s=>labyrinthTrap(s,'labyrinthArch')}
+      {label:'Se glisser sous l’arche effondrée',to:'c169',diceTest:true,effect:s=>labyrinthTrap(s,'labyrinthArchCrawl')},
+      {label:'Bondir par-dessus les dalles brisées',to:'c170',diceTest:true,effect:s=>labyrinthTrap(s,'labyrinthArch')}
     ]
   },
   c169: {
     number: 'PAGE 186', title: '', noImage: true,
-    text:`<p>Tu te jettes sous l’arche. Une pluie de gravats s’écrase là où tu te trouvais. Tu rampes, déchires ta manche contre la roche et ressors de l’autre côté.</p>
-      <p>Quelqu’un tousse au bout de la galerie.</p>`,
-    choices:[{label:'Suivre la toux',to:'c172'}]
+    text:s=>{
+      const r=s.flags.labyrinthArchCrawl;
+      if(!r)return '<p>Tu te penches devant l’ouverture étroite sous l’arche.</p>';
+      return `${labyrinthTrapResult(s,'labyrinthArchCrawl')}${r.success
+        ?'<p>Tu te glisses entre les pierres, contrôles ton souffle et parviens à ramper jusqu’à l’autre côté. Quelqu’un tousse au bout de la galerie.</p>'
+        :'<p>Ton épaule se coince entre deux blocs. En te dégageant d’un coup, tu t’entailles profondément le bras. <strong>−1 Vie.</strong> Tu finis par te traîner de l’autre côté. Une toux retentit dans le couloir.</p>'}`;
+    },
+    choices:s=>s.hp<=0?fatalChoices():[{label:'Suivre la toux',to:'c172'}]
   },
   c170: {
     number: 'PAGE 187', title: '', noImage: true,
     text:s=>{const r=s.flags.labyrinthArch;
       if(!r)return '<p>Les dalles tremblent devant le vide.</p>';
-      return `${labyrinthTrapResult(s,'labyrinthArch')}${r.success?(r.tier==='clear'?'<p>La voix t’indique une dalle solide. Tu bondis dessus, puis de l’autre côté, juste avant l’effondrement.</p>':'<p>Tu bonds. La dernière dalle tombe sous ton talon, mais tu atteins la rive opposée.</p>'):'<p>Une dalle s’abaisse sous ton pied. Tu glisses dans l’ouverture et heurtes une marche plus basse.</p>'}`;},
+      return `${labyrinthTrapResult(s,'labyrinthArch')}${r.success?(r.tier==='clear'?'<p>Une force guide ton élan vers une dalle stable. Tu prends appui dessus et atteins l’autre côté avant qu’elle ne bascule.</p>':'<p>Tu bonds. Une dalle tombe derrière ton talon, mais tu atteins la rive opposée.</p>'):'<p>Ton élan ne suffit pas. Une dalle s’abaisse sous ton pied. Tu glisses dans l’ouverture et heurtes une marche plus basse.</p>'}`;},
     choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthArch?[{label:'Revenir à l’arche',to:'c168'}]:s.flags.labyrinthArch.success?[{label:'Suivre la toux dans le couloir',to:'c172'}]:[{label:'Te relever sans attendre',to:'c171'}]
   },
   c171: {
     number: 'PAGE 188', title: '', noImage: true,
     text:s=>`<p>Tu te hisses sur la marche. ${s.flags.labyrinthArch?.damaged?'La chute t’a coûté un point de Vie.':'Tu retrouves ton équilibre.'}</p>
-      <p>Au-dessus de toi, la dernière dalle s’écrase et ferme le passage. Une toux retentit au bout du couloir.</p>`,
+      <p>La dernière dalle bascule dans le vide et condamne le passage. Une toux retentit au bout du couloir.</p>`,
     choices:s=>s.hp<=0?fatalChoices():[{label:'Suivre la toux',to:'c172'}]
   },
   c172: {
@@ -6136,6 +6161,48 @@ const STORY = {
       name: 'Ampoule blanche — test',
       description: 'Ampoule fictive, indépendante des trois lieux du récit. Terre noire : −4 points, ne soigne pas les blessures.'
       },
+    // Objets véritables accessibles directement depuis le mode Travail.
+    // Cocher ne modifie jamais les drapeaux de fouille : la simulation ne consomme pas le lieu.
+    {
+      id: 'sacoche_terre_noire',
+      name: 'Sacoche de terre noire — réserve',
+      description: 'Dose unique : +3 points de terre noire.'
+    },
+    {
+      id: 'ampoule_blanche_commune',
+      name: 'Ampoule blanche — poste de secours',
+      description: 'Dose unique : −4 points de terre noire, sans soigner les blessures.'
+    },
+    {
+      id: 'ampoule_blanche_cache',
+      name: 'Ampoule blanche — cache du soignant',
+      description: 'Dose unique : −4 points de terre noire, sans soigner les blessures.'
+    },
+    {
+      id: 'ampoule_femme',
+      name: 'Ampoule blanche — dédale',
+      description: 'Dose unique : −4 points de terre noire, sans soigner les blessures.'
+    },
+    {
+      id: 'terre_femme',
+      name: 'Terre noire — dédale',
+      description: 'Dose unique : +3 points de terre noire.'
+    },
+    {
+      id: 'potion_corniche',
+      name: 'Potion de guérison — corniche',
+      description: 'Restaure 1 dé de Vie.'
+    },
+    {
+      id: 'potion_femme',
+      name: 'Potion de guérison — dédale',
+      description: 'Restaure 1 dé de Vie.'
+    },
+    {
+      id: 'epee_sorciere',
+      name: 'Épée rouge du forgeron-sorcier',
+      description: 'Une fois cochée, peut être équipée dans l’inventaire. Puissance 8, Dextérité −1.'
+    },
     {
       id: 'bouclier_chevalier',
       name: 'Bouclier du chevalier',
@@ -6458,6 +6525,7 @@ const STORY = {
 
   BookRegistry.register({
     id: 'ecuyer-01',
+    initialMaxHp: 18, // Valeur de départ fixe, avant les bonus des objets.
     seriesId: 'ecuyer',
     seriesLabel: 'ÉCUYER 01',
     episode: 1,

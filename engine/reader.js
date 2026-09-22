@@ -53,7 +53,7 @@ function defaultSeriesProfile() {
     seriesId: BOOK.seriesId,
     heroGender: 'female',
     heroName: 'Aélis',
-    baseStats: { maxHp: 18, force: 8, dexterity: 13 },
+    baseStats: { maxHp: Number.isFinite(BOOK.initialMaxHp) ? BOOK.initialMaxHp : 18, force: 8, dexterity: 13 },
     memory: {},
     completedBooks: []
   };
@@ -62,12 +62,29 @@ function defaultSeriesProfile() {
 function loadSeriesProfile() {
   try {
     const saved = localStorage.getItem(SERIES_KEY);
-    return saved ? { ...defaultSeriesProfile(), ...JSON.parse(saved) } : defaultSeriesProfile();
+    const profile = saved ? { ...defaultSeriesProfile(), ...JSON.parse(saved) } : defaultSeriesProfile();
+    // V68.64 : un ancien profil pouvait mémoriser les +3 PV du collier comme base.
+    // On restaure le maximum initial défini par le livre sans effacer les choix du héros.
+    if (Number.isFinite(BOOK.initialMaxHp)) {
+      profile.baseStats = { ...defaultSeriesProfile().baseStats, ...(profile.baseStats || {}), maxHp: BOOK.initialMaxHp };
+    }
+    return profile;
   } catch { return defaultSeriesProfile(); }
 }
 let seriesProfile = loadSeriesProfile();
 
 function defaultState() { return BOOK.createInitialState(seriesProfile); }
+
+function correctLegacyVitality(loaded) {
+  if (!Number.isFinite(BOOK.initialMaxHp) || !loaded || typeof loaded !== 'object') return false;
+  const allowedMax = BOOK.initialMaxHp + (loaded.flags?.collarEquipped ? 3 : 0);
+  // Ce livre n'a qu'une seule source de Vie maximale supplémentaire : le collier.
+  if (!Number.isFinite(loaded.maxHp) || loaded.maxHp <= allowedMax) return false;
+  const extra = loaded.maxHp - allowedMax;
+  loaded.maxHp = allowedMax;
+  loaded.hp = Math.max(0, Math.min(allowedMax, (Number.isFinite(loaded.hp) ? loaded.hp : allowedMax) - extra));
+  return true;
+}
 
 function migrateLegacySaveIfNeeded() {
   try {
@@ -105,7 +122,9 @@ function loadState() {
       BOOK.migrateState(previous);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(previous));
     }
-    return { ...defaultState(), ...previous };
+    const loaded = { ...defaultState(), ...previous };
+    if (correctLegacyVitality(loaded)) localStorage.setItem(STORAGE_KEY, JSON.stringify(loaded));
+    return loaded;
   } catch { return defaultState(); }
 }
 let state = loadState();
@@ -117,7 +136,8 @@ function syncSeriesFromState() {
   seriesProfile.heroGender = state.heroGender === 'male' ? 'male' : 'female';
   seriesProfile.heroName = state.heroName || (seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis');
   seriesProfile.baseStats = {
-    maxHp: state.maxHp || seriesProfile.baseStats.maxHp,
+    // Le collier modifie les PV de la partie, jamais les statistiques initiales.
+    maxHp: Number.isFinite(BOOK.initialMaxHp) ? BOOK.initialMaxHp : (state.maxHp || seriesProfile.baseStats.maxHp),
     force: state.baseForce || seriesProfile.baseStats.force,
     dexterity: state.baseDexterity || seriesProfile.baseStats.dexterity
   };
@@ -155,6 +175,7 @@ function restartFromCheckpoint() {
       localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(previous));
     }
     state = { ...defaultState(), ...previous };
+    if (correctLegacyVitality(state)) localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(state));
     state.journal = journalBackup || state.journal || '';
     saveState(); closeDrawer(); closeModal(); closeJournal(); render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
