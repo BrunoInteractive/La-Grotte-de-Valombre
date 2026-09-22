@@ -4741,12 +4741,12 @@ const STORY = {
       <p>Tu n’as aucune preuve qu’elle lui appartienne.</p>
 
       <p>La porte résiste d’abord, puis cède sous ton épaule dans un grondement sourd.</p>
-      ${!state.flags.labyrinthWomanGiftTaken ? '<p>De l’autre côté, une toux rauque retentit dans un passage latéral. Quelqu’un est là, tout près.</p>' : ''}
+      <p>De l’autre côté, une toux rauque retentit dans un passage latéral. Quelqu’un est là, tout près.</p>
     `,
-    // Une ancienne sauvegarde où la femme a déjà donné l’épée ne répète pas la scène.
-    choices: s => s.flags.labyrinthWomanGiftTaken
-      ? [{ label: 'Reprendre la descente', to: 'c117' }]
-      : [{ label: 'Suivre la toux', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
+    // Ne pas confondre objet déjà récupéré et rencontre effectuée : le mode TEST
+    // et les anciennes sauvegardes peuvent déjà posséder les objets de la femme.
+    // Dans le parcours, la page 137 mène TOUJOURS à la rencontre (189).
+    choices: [{ label: 'Suivre la toux', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
   },
 
   c117: {
@@ -6863,7 +6863,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 83,
+    contentVersion: 84,
     pageMapVersion: 78,
     saveVersion: 18,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',

@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 83,
+  "contentVersion": 84,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 18,
-  "buildLabel": "V68.83 — Travail : puits → porte → femme → descente, sans retour à la porte.",
+  "buildLabel": "V68.84 — Travail : page 137 mène toujours à la rencontre avec la femme, indépendamment des objets possédés.",
   "pageMapVersion": 78
 }
