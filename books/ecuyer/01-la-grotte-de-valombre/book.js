@@ -5729,6 +5729,22 @@ const STORY = {
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
   },
+  c219: {
+    number:'PAGE 219',title:'La transformation',
+    text:`<p>Tu sens d’abord une brûlure, profonde, impossible à localiser.</p>
+      <p>Une douleur insoutenable traverse ton corps, comme si quelque chose cherchait à naître sous ta peau.</p>
+      <p>Tes membres se raidissent. Ta respiration se brise.</p>
+      <p>Tu tombes à genoux.</p>
+      <p>Tu sens ta chair se déformer.</p>
+      <p>Quelque chose pousse en toi, t’ouvre, te remplace.</p>
+      <p>Tes pensées se brouillent.</p>
+      <p>Le souvenir de Valombre, de Sir Aldren, de ta mission…</p>
+      <p>Puis tout s’efface.</p>
+      <p>Il ne reste plus qu’un corps tordu…</p>
+      <p>et une volonté qui n’est plus la tienne.</p>
+      <p><strong>Fin de l’aventure.</strong></p>`,
+    choices:terminalChoices()
+  },
 
 };
 
@@ -5820,6 +5836,7 @@ const STORY = {
     'c213': 'L’esprit libéré',
     'c214': 'La fin de l’esprit',
     'c218': 'Le retour à Valombre',
+    'c219': 'La transformation',
     'c215': 'L’effondrement',
     'c216': 'Une arme ordinaire',
     'c217': 'La fin d’un règne',
@@ -5991,7 +6008,7 @@ const STORY = {
 };
 
   // L'ordre d'affichage peut changer ; les identifiants cN restent stables pour les liens et les sauvegardes.
-  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c214', 'c218', 'c215', 'c216', 'c217'];
+  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c214', 'c218', 'c215', 'c216', 'c217', 'c219'];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -6053,7 +6070,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 78,
+      pageMapVersion: 80,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -6408,8 +6425,8 @@ const STORY = {
   // Identifiants techniques conservés : les sauvegardes sur les anciennes fins restent valides.
   function migratePageNumbersV78(state) {
     migrateVialKnowledgeV77(state);
-    if (state.pageMapVersion >= 78) return state;
-    state.pageMapVersion = 78;
+    if (state.pageMapVersion >= 80) return state;
+    state.pageMapVersion = 80;
     return state;
   }
 
@@ -6863,8 +6880,8 @@ const STORY = {
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
     contentVersion: 84,
-    pageMapVersion: 78,
-    saveVersion: 18,
+    pageMapVersion: 80,
+    saveVersion: 20,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
     story: STORY,
@@ -6877,11 +6894,20 @@ const STORY = {
       : `La-Grotte-de-Valombre-${padPage(n)}`,
     // Exception : les pages 178 et 179 réutilisent une seule illustration de combat.
     // Toutes les autres pages continuent à utiliser exclusivement leur propre numéro.
-    imageCandidatesForPage: n => {
+    imageCandidatesForPage: (n, state) => {
       if (n === 178 || n === 179) return [
         'La-Grotte-de-Valombre-Combat',
         'pages/La-Grotte-de-Valombre-Combat'
       ];
+      if (n === 219) {
+        const transformation = state?.heroGender === 'male'
+          ? 'La-Grotte-de-Valombre-transformation-Aubin'
+          : 'La-Grotte-de-Valombre-transformation-Aelis';
+        return [
+          `pages/${transformation}`,
+          transformation
+        ];
+      }
       const filename = `La-Grotte-de-Valombre-${padPage(n)}`;
       return n <= 47
         ? [filename, `pages/${filename}`]

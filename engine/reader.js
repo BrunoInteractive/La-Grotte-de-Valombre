@@ -214,7 +214,7 @@ function loadPageImage(pageNumber, title) {
   const token = ++pageImageLoadToken;
   const base = BOOK.imageBaseForPage(pageNumber);
   const candidates = typeof BOOK.imageCandidatesForPage === 'function'
-    ? BOOK.imageCandidatesForPage(pageNumber)
+    ? BOOK.imageCandidatesForPage(pageNumber, state)
     : [base];
   imageLabel.textContent = candidates[0]?.split('/').pop() || base;
   storyImage.classList.add('hidden');
@@ -329,18 +329,20 @@ function resolvePendingDice() {
 }
 
 function render() {
-  const node = STORY[state.node] || STORY.start;
-  const pendingDice = state.pendingDice?.destination === state.node ? state.pendingDice : null;
+  const transformedView = Boolean(state.flags?.blackEarthTransformed && !(STORY[state.node] && STORY[state.node].sheet));
+  const renderNodeId = transformedView ? 'c219' : state.node;
+  const node = STORY[renderNodeId] || STORY.start;
+  const pendingDice = !transformedView && state.pendingDice?.destination === state.node ? state.pendingDice : null;
   if (node.sheet) {
     ++pageImageLoadToken; // annule une éventuelle image de la page précédente
     chapterNumber.textContent = 'FICHE DU HÉROS';
     imageFrame.classList.add('hidden');
   } else {
-    const mappedPage = PAGE_BY_NODE[state.node];
+    const mappedPage = PAGE_BY_NODE[renderNodeId];
     const declaredPage = node.number ? parseInt(String(node.number).replace(/\D/g, ''), 10) : NaN;
     const pageNumber = Number.isInteger(mappedPage) ? mappedPage : (Number.isFinite(declaredPage) ? declaredPage : 1);
     chapterNumber.textContent = pageNumber === 0 ? 'PROLOGUE · 000' : `PAGE ${padPage(pageNumber)}`;
-    if (node.noImage || pendingDice || state.lastDicePage === state.node) {
+    if (node.noImage || pendingDice || state.lastDicePage === renderNodeId) {
       ++pageImageLoadToken;
       imageFrame.classList.add('hidden');
       storyImage.removeAttribute('src');
@@ -356,7 +358,7 @@ function render() {
     ? `<div class="dice-result dice-test-waiting"><p class="roll-number">Épreuve de Dextérité</p><div class="dice-faces"><span class="die-visual combat-die-pending">?</span><span class="die-visual combat-die-pending">?</span><span class="die-visual combat-die-pending">?</span></div></div>`
     : (typeof node.text === 'function' ? node.text(state) : node.text);
   // On a solved dice page, show the actual three dice first, then the narrative resolution below.
-  if (!pendingDice && state.lastDicePage === state.node && Array.isArray(state.lastDice)) {
+  if (!pendingDice && state.lastDicePage === renderNodeId && Array.isArray(state.lastDice)) {
     let panel = storyText.querySelector('.dice-result');
     if (!panel) {
       const holder = document.createElement('div');
@@ -395,9 +397,6 @@ function render() {
   }
 
   const availableChoices = pendingDice ? [{label:'Jeter les dés', action:'resolveDice'}] : state.flags?.blackEarthTransformed && !node.sheet ? [{label:"Reprendre au dernier point de sauvegarde",action:"checkpoint"},{label:"Recommencer depuis le début",action:"restart"}] : state.hp <= 0 && !node.sheet ? fatalChoices() : typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
-  if (state.flags?.blackEarthTransformed && !node.sheet) {
-    storyText.innerHTML = '<p>La terre noire gagne ton corps. Tes membres se déforment, et la voix du Dormeur s’éteint pour toujours. Tu es devenu l’un des gardiens de la prison.</p><p><strong>Fin de l’aventure : transformation à 13 points.</strong></p>';
-  }
   choices.innerHTML = '';
   availableChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
