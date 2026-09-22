@@ -4749,8 +4749,10 @@ const STORY = {
     onEnter: s => setCheckpoint(s, 'Sous la Cité morte'),
     text: `<p>De l’autre côté de la porte noire, l’escalier s’enfonce sous la cité, entre des blocs fendillés.</p>
       <p>Dans la poussière des marches, les traces de bottes se poursuivent vers les profondeurs.</p>
-      <p>L’air se réchauffe. Un coup sourd résonne plus bas. Tu resserres ta prise sur ton arme.</p>`,
-    choices: [{ label: 'Descendre dans le dédale', to: 'c152' }]
+      <p>L’air se réchauffe. Un coup sourd résonne plus bas. Tu resserres ta prise sur ton arme. Une toux étouffée monte d’une galerie latérale.</p>`,
+    choices: s => s.flags.labyrinthWomanGiftTaken
+      ? [{ label: 'Descendre dans le dédale', to: 'c152' }]
+      : [{ label: 'Suivre la toux dans la galerie latérale', to: 'c172', effect: t => { t.flags.labyrinthWomanMetEarly = true; } }]
   },
 
   c118: {
@@ -4999,19 +5001,19 @@ const STORY = {
   },
 
   c132: {
-    number: 'PAGE 153', title: 'La première sentinelle', noImage: true,
+    number: 'PAGE 153', title: 'La première sentinelle',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu affrontes la première sentinelle, l’épée levée.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
   },
   c133: {
-    number: 'PAGE 154', title: 'Le tir sur la première sentinelle', noImage: true,
+    number: 'PAGE 154', title: 'Le tir sur la première sentinelle',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu vises la première sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
   },
   c134: {
-    number: 'PAGE 155', title: 'La seconde sentinelle', noImage: true,
+    number: 'PAGE 155', title: 'La seconde sentinelle',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu te tournes vers la seconde sentinelle et frappes.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
@@ -5160,27 +5162,27 @@ const STORY = {
       const r=s.flags.labyrinthArchCrawl;
       if(!r)return '<p>Tu te penches devant l’ouverture étroite sous l’arche.</p>';
       return `${labyrinthTrapResult(s,'labyrinthArchCrawl')}${r.success
-        ?'<p>Tu te glisses entre les pierres, contrôles ton souffle et parviens à ramper jusqu’à l’autre côté. Quelqu’un tousse au bout de la galerie.</p>'
-        :'<p>Ton épaule se coince entre deux blocs. En te dégageant d’un coup, tu t’entailles profondément le bras. <strong>−1 Vie.</strong> Tu finis par te traîner de l’autre côté. Une toux retentit dans le couloir.</p>'}`;
+        ?'<p>Tu te glisses entre les pierres, contrôles ton souffle et parviens à ramper jusqu’à l’autre côté. Le passage descend encore devant toi.</p>'
+        :'<p>Ton épaule se coince entre deux blocs. En te dégageant d’un coup, tu t’entailles profondément le bras. <strong>−1 Vie.</strong> Tu finis par te traîner de l’autre côté. Le passage descend encore devant toi.</p>'}`;
     },
-    choices:s=>s.hp<=0?fatalChoices():[{label:'Suivre la toux',to:'c172'}]
+    choices:s=>s.hp<=0?fatalChoices():[{label:'Poursuivre dans la galerie',to:s.flags.labyrinthWomanGiftTaken?'c179':'c172'}]
   },
   c170: {
     number: 'PAGE 187', title: '', noImage: true,
     text:s=>{const r=s.flags.labyrinthArch;
       if(!r)return '<p>Les dalles tremblent devant le vide.</p>';
       return `${labyrinthTrapResult(s,'labyrinthArch')}${r.success?(r.tier==='clear'?'<p>Une force guide ton élan vers une dalle stable. Tu prends appui dessus et atteins l’autre côté avant qu’elle ne bascule.</p>':'<p>Tu bonds. Une dalle tombe derrière ton talon, mais tu atteins la rive opposée.</p>'):'<p>Ton élan ne suffit pas. Une dalle s’abaisse sous ton pied. Tu glisses dans l’ouverture et heurtes une marche plus basse.</p>'}`;},
-    choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthArch?[{label:'Revenir à l’arche',to:'c168'}]:s.flags.labyrinthArch.success?[{label:'Suivre la toux dans le couloir',to:'c172'}]:[{label:'Te relever sans attendre',to:'c171'}]
+    choices:s=>s.hp<=0?fatalChoices():!s.flags.labyrinthArch?[{label:'Revenir à l’arche',to:'c168'}]:s.flags.labyrinthArch.success?[{label:'Poursuivre dans le couloir',to:s.flags.labyrinthWomanGiftTaken?'c179':'c172'}]:[{label:'Te relever sans attendre',to:'c171'}]
   },
   c171: {
     number: 'PAGE 188', title: '', noImage: true,
     text:s=>`<p>Tu te hisses sur la marche. ${s.flags.labyrinthArch?.damaged?'La chute t’a coûté un point de Vie.':'Tu retrouves ton équilibre.'}</p>
-      <p>La dernière dalle bascule dans le vide et condamne le passage. Une toux retentit au bout du couloir.</p>`,
-    choices:s=>s.hp<=0?fatalChoices():[{label:'Suivre la toux',to:'c172'}]
+      <p>La dernière dalle bascule dans le vide et condamne le passage. Une nouvelle galerie descend devant toi.</p>`,
+    choices:s=>s.hp<=0?fatalChoices():[{label:'Poursuivre dans la galerie',to:s.flags.labyrinthWomanGiftTaken?'c179':'c172'}]
   },
   c172: {
     number: 'PAGE 189', title: 'La femme du dédale', noImage: true,
-    text:`<p>Au troisième virage, une femme est accroupie sous une flamme immobile. Son visage reste dans l’ombre. Elle semble humaine.</p>
+    text:`<p>Au détour de la galerie, une femme est accroupie sous une flamme immobile. Son visage reste dans l’ombre. Elle semble humaine.</p>
       <p>Un piège claque derrière toi. Elle lève les yeux.</p>
       <blockquote>« Vous aussi, vous cherchez quelqu’un ? Approchez. Je n’ai plus la force de courir. »</blockquote>`,
     choices:[{label:'Lui demander ce qui lui est arrivé',to:'c173'}]
@@ -5227,14 +5229,14 @@ const STORY = {
     text:`<p>Tu lui promets de tenter de libérer ceux qui sont enfermés plus bas.</p>
       <p>Un coup bref. Son corps cesse de trembler. Une larme reste au bord de sa joue.</p>
       <p>Tu reprends la galerie. Derrière toi, la flamme ne vacille pas.</p>`,
-    choices:[{label:'Poursuivre vers la prison',to:'c179'}]
+    choices:s=>[{label:s.flags.labyrinthWomanMetEarly?'Descendre dans le dédale':'Poursuivre vers la prison',to:s.flags.labyrinthWomanMetEarly?'c152':'c179'}]
   },
   c178: {
     number: 'PAGE 195', title: '', noImage: true,
     text:`<p>Tu ranges ton arme. Elle détourne la tête.</p>
       <blockquote>« Alors partez. Avant que je ne me relève autrement. »</blockquote>
       <p>Tu la laisses sous la flamme. Un cri étouffé te poursuit jusqu’au tournant.</p>`,
-    choices:[{label:'Poursuivre vers la prison',to:'c179'}]
+    choices:s=>[{label:s.flags.labyrinthWomanMetEarly?'Descendre dans le dédale':'Poursuivre vers la prison',to:s.flags.labyrinthWomanMetEarly?'c152':'c179'}]
   },
   c179: {
     number: 'PAGE 196', title: '', noImage: true,
@@ -5358,7 +5360,7 @@ const STORY = {
     ]
   },
   c191: {
-    number:'PAGE 125',title:'Quelque chose dans les sacs',noImage:true,
+    number:'PAGE 125',title:'Quelque chose dans les sacs',
     text:s=>`<p>Tu ouvres un premier sac. Une poussière épaisse se soulève. Le couinement cesse.</p>
       <p>Tu tires sur la cordelette du suivant. Un rat difforme, beaucoup trop gros pour l’espace qu’il occupe, jaillit entre les plis. Il se jette sur toi, les pattes tendues.</p>
       <p>Tu recules juste assez pour dégainer. Il bondit à nouveau.</p>
@@ -5366,7 +5368,7 @@ const STORY = {
     choices:s=>combatActionChoices(s,'reserveRat',ENEMIES.reserveRat,'c192')
   },
   c192: {
-    number:'PAGE 126',title:'Le combat de la réserve',noImage:true,
+    number:'PAGE 126',title:'Le combat de la réserve',
     text:s=>`<p>Les sacs se déchirent autour de vous. Le rat attaque dans un froissement de toile et de bois.</p>
       ${enemyCardHtml(s,'reserveRat',ENEMIES.reserveRat)}
       ${s.combats?.reserveRat?.lastBlade?throwingBladeResultHtml(s,'reserveRat',ENEMIES.reserveRat):combatRoundHtml(s,'reserveRat',ENEMIES.reserveRat)}
@@ -5376,7 +5378,7 @@ const STORY = {
       :combatActionChoices(s,'reserveRat',ENEMIES.reserveRat,'c192')
   },
   c193: {
-    number:'PAGE 127',title:'La lame contre le rat',noImage:true,
+    number:'PAGE 127',title:'La lame contre le rat',
     text:s=>`<p>Tu lances une lame avant que le rat puisse te rejoindre.</p>
       ${enemyCardHtml(s,'reserveRat',ENEMIES.reserveRat)}
       ${throwingBladeResultHtml(s,'reserveRat',ENEMIES.reserveRat)}
@@ -5412,7 +5414,7 @@ const STORY = {
     choices:[{label:'Revenir dans la réserve',to:'c108'},{label:'Quitter la réserve et revenir au carrefour',to:'c106'}]
   },
   c135: {
-    number: 'PAGE 156', title: 'Le tir sur la seconde sentinelle', noImage: true,
+    number: 'PAGE 156', title: 'Le tir sur la seconde sentinelle',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu vises la seconde sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
