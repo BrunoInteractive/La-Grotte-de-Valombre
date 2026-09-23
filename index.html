@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#251e17" />
+  <meta name="theme-color" content="#10191f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.webmanifest" />
@@ -11,8 +11,8 @@
   <meta name="apple-mobile-web-app-title" content="Valombre" />
   <meta name="application-name" content="La Grotte de Valombre" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="description" content="La Grotte de Valombre — livre-jeu interactif médiéval fantastique." />
-  <title>La Grotte de Valombre — Livre-jeu</title>
+  <meta name="description" content="La Grotte de Valombre." />
+  <title>La Grotte de Valombre</title>
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:wght@500;600&display=swap');
 
@@ -1326,7 +1326,7 @@ button { font: inherit; }
 
 
 /* =========================================================
-   V68.119 — TEST DA ARDOISE / PARCHEMIN
+   V68.120 — TEST DA V2 · GRIMOIRE / ARDOISE
    Refonte purement visuelle : aucune mécanique modifiée.
    ========================================================= */
 :root {
@@ -1665,13 +1665,147 @@ body::before {
   .enemy-card-title { font-size:20px; }
 }
 
+
+/* =========================================================
+   V68.120 — TEST DA V2 · GRIMOIRE / ARDOISE
+   Texture papier, cadres et cartouches renforcés.
+   ========================================================= */
+
+/* Papier plus organique : micro-grain, irrégularités et vignettage très léger. */
+.story-card {
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 15% 24%, rgba(91,65,34,.055) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 73% 14%, rgba(106,78,43,.038) 0 1.1px, transparent 1.8px),
+    radial-gradient(circle at 87% 76%, rgba(83,59,30,.045) 0 .8px, transparent 1.5px),
+    linear-gradient(102deg, rgba(95,67,33,.045), transparent 10%, transparent 88%, rgba(88,60,30,.04)),
+    linear-gradient(180deg, #f0e7d4 0%, #e7dbc4 54%, #e2d4b9 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.36),
+    inset 0 0 28px rgba(92,63,30,.075),
+    inset 0 -14px 28px rgba(82,55,26,.035);
+}
+.story-card::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.48;
+  background:
+    repeating-linear-gradient(17deg, rgba(89,63,34,.014) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(103deg, rgba(255,255,255,.025) 0 1px, transparent 1px 8px);
+  mix-blend-mode:multiply;
+}
+.story-card > * { position:relative; z-index:1; }
+
+/* Cadre d'image plus proche d'une planche de grimoire : double filet bronze. */
+.image-frame {
+  border:1px solid #a6814d;
+  outline:1px solid rgba(45,31,19,.92);
+  outline-offset:3px;
+  box-shadow:
+    0 0 0 5px rgba(177,139,80,.14),
+    0 0 0 6px rgba(22,29,33,.95),
+    inset 0 0 0 1px rgba(230,199,142,.30),
+    inset 0 0 0 5px rgba(7,13,16,.33),
+    0 10px 26px rgba(0,0,0,.32);
+}
+.image-frame::before {
+  content:'';
+  position:absolute;
+  z-index:3;
+  inset:6px;
+  pointer-events:none;
+  border:1px solid rgba(192,153,91,.42);
+  box-shadow:inset 0 0 18px rgba(0,0,0,.28);
+}
+.image-frame::after {
+  z-index:4;
+  box-shadow:
+    inset 0 0 0 3px rgba(14,21,25,.24),
+    inset 0 0 28px rgba(0,0,0,.28);
+}
+
+/* Cartouches sombres : matière ardoise/fer patiné plutôt qu'aplat uniforme. */
+.choice-btn,
+.enemy-card,
+.status-tags,
+.footer-btn,
+.drawer-action {
+  background:
+    radial-gradient(circle at 20% 8%, rgba(117,145,153,.075), transparent 30%),
+    radial-gradient(circle at 84% 110%, rgba(0,0,0,.22), transparent 36%),
+    repeating-linear-gradient(116deg, rgba(255,255,255,.012) 0 1px, transparent 1px 7px),
+    linear-gradient(180deg, #273840 0%, #1a282f 52%, #142027 100%);
+}
+.choice-btn {
+  border-color:#aa8249;
+  box-shadow:
+    inset 0 0 0 1px rgba(7,11,13,.94),
+    inset 0 0 0 3px rgba(190,149,84,.13),
+    inset 0 10px 24px rgba(255,255,255,.018),
+    0 6px 15px rgba(0,0,0,.16);
+}
+.choice-btn::before,
+.choice-btn::after {
+  border-color:#b18b51;
+}
+.choice-btn:hover {
+  background:
+    radial-gradient(circle at 20% 8%, rgba(130,159,168,.09), transparent 30%),
+    linear-gradient(180deg, #31454f 0%, #203138 100%);
+}
+
+.status-tags {
+  border-color:#a47d48;
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.46),
+    inset 0 0 0 1px rgba(229,194,132,.12),
+    inset 0 0 24px rgba(0,0,0,.20);
+}
+.tag {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.034), rgba(255,255,255,.012)),
+    rgba(7,14,18,.16);
+  border-color:rgba(181,143,83,.34);
+  box-shadow:inset 0 0 10px rgba(0,0,0,.12);
+}
+
+/* Barre haute plus sobre, avec Livre 01 comme seule ligne éditoriale. */
+.eyebrow {
+  color:#bea77f;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  font-size:10px;
+}
+.topbar {
+  border-bottom:1px solid rgba(174,139,85,.20);
+  margin-bottom:8px;
+}
+
+/* Les panneaux secondaires restent dans le même langage papier/grimoire. */
+.modal-card,
+.journal-sheet,
+.drawer {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(98,69,34,.04) 0 1px, transparent 1.6px),
+    linear-gradient(180deg, #f0e7d4 0%, #e1d2b6 100%);
+  box-shadow:inset 0 0 24px rgba(91,63,31,.055), 0 18px 44px rgba(0,0,0,.33);
+}
+
+@media (max-width:700px) {
+  .image-frame { outline-offset:2px; box-shadow:0 0 0 3px rgba(177,139,80,.13), 0 0 0 4px rgba(22,29,33,.95), inset 0 0 0 1px rgba(230,199,142,.28), inset 0 0 0 4px rgba(7,13,16,.30), 0 7px 18px rgba(0,0,0,.28); }
+  .image-frame::before { inset:4px; }
+  .topbar { margin-bottom:6px; }
+}
 </style>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow" id="bookEyebrow">ÉCUYER 01 · LIVRE-JEU INTERACTIF</div>
+        <div class="eyebrow" id="bookEyebrow">Livre 01</div>
         <h1 id="bookTitle">La Grotte de Valombre</h1>
       </div>
       <button id="menuBtn" class="icon-btn" aria-label="Ouvrir le menu">☰</button>
@@ -1720,7 +1854,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.119 · TEST DA</h3>
+      <h3>Pages · TEST — V68.120 · TEST DA V2</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -1739,8 +1873,8 @@ body::before {
 
   <script src="./engine/core.js"></script>
   <script src="./app/catalog.js"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.119"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.119"></script>
-  <script src="./engine/reader.js?v=68.119"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.120"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.120"></script>
+  <script src="./engine/reader.js?v=68.120"></script>
 </body>
 </html>

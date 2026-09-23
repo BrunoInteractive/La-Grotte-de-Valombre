@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 119,
+  "contentVersion": 120,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 23,
-  "buildLabel": "V68.119 — Travail · TEST DA ardoise/parchemin : refonte visuelle générale, sans modification des mécaniques.",
+  "buildLabel": "V68.120 — Travail · TEST DA V2 : texture parchemin renforcée, cadres d’images bronze, cartouches ardoise texturés, en-tête simplifié « Livre 01 ».",
   "pageMapVersion": 85
 }
