@@ -5640,9 +5640,13 @@ const STORY = {
     }
   },
   c213: {
-    number:'PAGE 213',title:'L’esprit libéré',noImage:true,
-    text:`<p>La lame noire tranche un lien de lumière. Tous les autres se rompent à sa suite. Une vague verte traverse la caverne et t’enveloppe. La chaleur pénètre jusque dans tes os. La douleur, la faim et l’épuisement disparaissent. Tu te redresses avec une force que tu ne te connaissais pas.</p>
-      <p>Tu reprends le chemin de la surface. Les passages qui t’avaient semblé interminables se franchissent presque sans effort. Là où tu devais ramper, escalader et reprendre ton souffle, tu avances maintenant d’un pas assuré. Aucun monstre ne t’attaque. Tu en aperçois même deux qui reculent dans l’obscurité, puis s’enfuient à ta vue.</p>
+    number:'PAGE 213',title:'L’esprit libéré',
+    text:`<p>La lame noire tranche un lien de lumière. Tous les autres se rompent à sa suite. Une vague verte traverse la caverne et t’enveloppe. La chaleur pénètre jusque dans tes os. La douleur, la faim et l’épuisement disparaissent. Tu te redresses avec une force que tu ne te connaissais pas.</p>`,
+    choices:[{label:'Reprendre le chemin de la surface',to:'c220'}]
+  },
+  c220: {
+    number:'PAGE 214',title:'Le chemin du retour',
+    text:`<p>Les passages qui t’avaient semblé interminables se franchissent presque sans effort. Là où tu devais ramper, escalader et reprendre ton souffle, tu avances maintenant d’un pas assuré. Aucun monstre ne t’attaque. Tu en aperçois même deux qui reculent dans l’obscurité, puis s’enfuient à ta vue.</p>
       <p>Lorsque tu retrouves enfin la lumière du jour, tu te sens léger, puissant, presque indestructible.</p>
       <p>Tu retournes à Valombre. Les habitants se montrent étrangement chaleureux, bien plus que de coutume. Ils t’accueillent avec des sourires, t’offrent à boire, insistent pour porter tes affaires. Tu n’as pourtant raconté à personne ce qui s’est passé dans la grotte.</p>
       <p>Les semaines passent. Les commerces fleurissent, les routes s’ouvrent et les familles reviennent. On t’admire partout. Même des inconnus te fixent avec une ferveur troublante. Tu as parfois l’impression que certains ont parcouru des lieues simplement pour t’apercevoir.</p>
@@ -5652,7 +5656,7 @@ const STORY = {
     choices:[{label:'Voir ce que devient Valombre',to:'c217'}]
   },
   c214: {
-    number:'PAGE 214',title:'La fin de l’esprit',noImage:true,
+    number:'PAGE 215',title:'La fin de l’esprit',noImage:true,
     text:s=>`<p>Tu enfonces la lame noire dans le cœur de la lumière. La sphère se déchire dans un souffle vert. Une onde terrifiante t’arrache presque l’arme des mains et te projette en arrière.</p>
       <p>Puis le souffle faiblit et tout redevient noir. Un noir calme, presque apaisant. Un silence absolu.</p>
       <p>Tu restes longtemps immobile. Après les combats, les pièges et les voix qui t’ont poursuivi jusque dans les profondeurs, tu peux enfin reprendre ta respiration.</p>
@@ -5666,7 +5670,7 @@ const STORY = {
     choices:[{label:'Rejoindre Valombre',to:'c218'}]
   },
   c218: {
-    number:'PAGE 215',title:'Le retour à Valombre',noImage:true,
+    number:'PAGE 216',title:'Le retour à Valombre',noImage:true,
     text:s=>`<p>De retour au village, tout te paraît calme. Le bruit d’une porte qu’on ouvre, une conversation sur la place, l’odeur du pain : ces choses ordinaires te bouleversent après ce que tu viens de traverser.</p>
       <p>Les semaines passent, puis les mois. Valombre reprend lentement vie. Les étals se remplissent, les familles reviennent et tu aides les habitants à renouer le commerce avec les régions voisines. Rien ne change d’un coup, mais chaque petite victoire compte.</p>
       ${s.flags.aldrenOutcome==='severed'
@@ -5685,7 +5689,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c215: {
-    number:'PAGE 216',title:'L’effondrement',noImage:true,
+    number:'PAGE 217',title:'L’effondrement',noImage:true,
     text:`<p>Tu places la poudre aux quatre coins de la pièce, puis tu déroules les mèches jusqu’au centre.</p>
       <p>Tu repenses à tout le chemin parcouru. Une dernière pensée pour Sir Aldren. Une dernière pensée aussi pour cette vie d’aventure que tu ne vivras pas.</p>
       <p>Tu allumes les mèches. Les flammes brillent doucement et avancent sans trembler le long de la pierre.</p>
@@ -5698,7 +5702,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c216: {
-    number:'PAGE 217',title:'Une arme ordinaire',noImage:true,
+    number:'PAGE 218',title:'Une arme ordinaire',noImage:true,
     text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
       <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
       <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
@@ -5707,7 +5711,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c217: {
-    number:'PAGE 218',title:'La fin d’un règne',noImage:true,
+    number:'PAGE 219',title:'La fin d’un règne',noImage:true,
     text:`<p>Un beau jour, sur la place de Valombre, un marchand inconnu s’approche de toi. Il te parle d’une voix douce. Tu te penches pour l’entendre.</p>
       <p>D’un mouvement brutal, il tire une lame noire de sous son manteau et te l’enfonce profondément dans la poitrine.</p>
       <p>Une douleur fulgurante te traverse. La force qui t’habitait depuis la grotte disparaît d’un seul coup. Tu tombes à genoux.</p>
@@ -5717,7 +5721,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c219: {
-    number:'PAGE 219',title:'La transformation',
+    number:'PAGE 220',title:'La transformation',
     text:`<p><strong>Ton taux de terre noire vient de dépasser le niveau critique.</strong></p>
       <p>Tu sens d’abord une brûlure, profonde, impossible à localiser.</p>
       <p>Une douleur insoutenable traverse ton corps, comme si quelque chose cherchait à naître sous ta peau.</p>
@@ -5822,6 +5826,7 @@ const STORY = {
     'c211': 'La chambre de l’esprit',
     'c212': 'La vérité du prisonnier',
     'c213': 'L’esprit libéré',
+    'c220': 'Le chemin du retour',
     'c214': 'La fin de l’esprit',
     'c218': 'Le retour à Valombre',
     'c219': 'La transformation',
@@ -5996,7 +6001,7 @@ const STORY = {
 };
 
   // L'ordre d'affichage peut changer ; les identifiants cN restent stables pour les liens et les sauvegardes.
-  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c214', 'c218', 'c215', 'c216', 'c217', 'c219'];
+  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c220', 'c214', 'c218', 'c215', 'c216', 'c217', 'c219'];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -6058,7 +6063,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 83,
+      pageMapVersion: 84,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -6413,8 +6418,8 @@ const STORY = {
   // Identifiants techniques conservés : les sauvegardes sur les anciennes fins restent valides.
   function migratePageNumbersV78(state) {
     migrateVialKnowledgeV77(state);
-    if (state.pageMapVersion >= 83) return state;
-    state.pageMapVersion = 83;
+    if (state.pageMapVersion >= 84) return state;
+    state.pageMapVersion = 84;
     return state;
   }
 
@@ -6868,7 +6873,7 @@ const STORY = {
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
     contentVersion: 92,
-    pageMapVersion: 83,
+    pageMapVersion: 84,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
@@ -6887,7 +6892,7 @@ const STORY = {
         'La-Grotte-de-Valombre-Combat',
         'pages/La-Grotte-de-Valombre-Combat'
       ];
-      if (n === 219) {
+      if (n === 220) {
         const transformation = state?.heroGender === 'male'
           ? 'La-Grotte-de-Valombre-transformation-Aubin'
           : 'La-Grotte-de-Valombre-transformation-Aelis';
