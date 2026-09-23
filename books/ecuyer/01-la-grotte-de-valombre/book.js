@@ -553,20 +553,28 @@ function cavernCombat(s) {
 function finalMazeRoll(s, direction) {
   if (s.flags.finalMazeFound) return;
   const attempt = (s.flags.finalMazeTurns || 0) + 1;
-  const diceCount = attempt <= 5 ? 3 : attempt <= 10 ? 2 : 1;
+  // Les quatre premiers passages servent uniquement à perdre le héros dans le dédale.
+  // Aucune sortie ne peut être trouvée avant le cinquième jet.
+  const forcedSearch = attempt <= 4;
+  const calculatedAttempt = Math.max(0, attempt - 4);
+  const diceCount = forcedSearch ? 3 : calculatedAttempt <= 5 ? 3 : calculatedAttempt <= 10 ? 2 : 1;
   const dice = Array.from({length:diceCount}, () => cryptoDie6());
   const total = dice.reduce((a,b)=>a+b, 0);
   const threshold = Math.max(1, currentDexterity(s) - contaminationLevel(s));
-  const success = total <= threshold;
-  const hpLoss = attempt % 3 === 0 ? 1 : 0;
+  const success = forcedSearch ? false : total <= threshold;
+  // La fatigue ne commence qu'une fois les quatre passages obligatoires franchis.
+  const hpLoss = !forcedSearch && calculatedAttempt % 3 === 0 ? 1 : 0;
   if (hpLoss) s.hp = Math.max(0, s.hp - hpLoss);
   s.flags.finalMazeTurns = attempt;
   s.flags.finalMazeFound = success;
-  s.flags.finalMazeLast = {attempt, direction, dice, total, threshold, success, hpLoss};
+  s.flags.finalMazeLast = {attempt, direction, dice, total, threshold, success, hpLoss, forcedSearch, calculatedAttempt};
 }
 function finalMazeRollHtml(s) {
   const r = s.flags.finalMazeLast;
   if (!r) return '';
+  if (r.forcedSearch) {
+    return `<div class="dice-result"><p class="roll-number">Passage ${r.attempt} · ${r.dice.length} dés</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p><strong>Impossible de savoir si tu avances réellement. Aucun repère ne te permet encore de trouver une issue.</strong></p></div>`;
+  }
   return `<div class="dice-result"><p class="roll-number">Passage ${r.attempt} · ${r.dice.length} dé${r.dice.length > 1 ? 's' : ''}</p><div class="dice-faces">${r.dice.map(renderDie).join('')}</div><p>Total : <strong>${r.total}</strong> · Seuil : <strong>${r.threshold}</strong></p><p><strong>${r.success ? 'Tu découvres la sortie.' : 'Le chemin se replie sur lui-même.'}</strong></p>${r.hpLoss ? '<p>La marche forcée rouvre tes blessures. <strong>−1 Vie.</strong></p>' : ''}</div>`;
 }
 function terminalChoices() { return fatalChoices(); }
@@ -5583,7 +5591,8 @@ const STORY = {
         'Après plusieurs virages, tu retrouves une longue allée rectiligne éclairée au loin par une flamme orange. Tu t’arrêtes. C’est exactement l’image que tu gardes d’un passage emprunté quelques minutes plus tôt. Peut-être tournes-tu en rond depuis le début.'
       ];
       const r=s.flags.finalMazeLast;
-      return `<p>${scenes[turns%scenes.length]}</p>
+      return `${turns===0?'<p>Tu ouvres difficilement la porte aux dimensions inhumaines. Une fois entrouverte, tu parviens à te glisser de l’autre côté.</p>':''}
+        <p>${scenes[turns%scenes.length]}</p>
         ${turns===0?'<p>Le labyrinthe s’étend bien au-delà de ce que tu peux voir. Les hauts murs masquent presque tout repère, et les mêmes arches, les mêmes pierres et les mêmes lueurs se répètent d’un passage à l’autre. Très vite, tu ne sais plus si tu avances ou si tu reviens sur tes propres pas.</p>':''}
         ${r?finalMazeRollHtml(s):''}
         ${r&&!r.success?'<p>Tu reprends ta marche. Le labyrinthe semble se refermer derrière toi, sans jamais t’offrir le moindre repère fiable.</p>':''}
@@ -6891,7 +6900,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 106,
+    contentVersion: 108,
     pageMapVersion: 85,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
