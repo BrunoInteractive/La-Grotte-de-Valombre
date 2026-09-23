@@ -442,11 +442,22 @@ function render() {
   statusTags.innerHTML = '';
   if (!node.sheet) {
     const protection = BOOK.rules && typeof BOOK.rules.currentProtection === 'function' ? BOOK.rules.currentProtection(state) : 0;
-    const labels = [`♥ ${state.hp}/${state.maxHp}`, `🛡 ${protection}`, `Force ${currentForce(state)}`, `Dextérité ${currentDexterity(state)}`, `Puissance de l’arme ${state.weapon === 'none' ? 0 : combatPower(state)}`, ...(state.contamination>0 ? [`Terre noire ${state.contamination}/13`] : [])];
-    if (state.flags?.physicianNotesRead && state.contamination >= 9 && state.contamination < 13) labels.push(state.contamination >= 12 ? '⚠ Transformation très proche' : '⚠ Risque de transformation');
-    if (state.silver > 0) labels.push(`${state.silver} argent`);
-    if (state.goldCoins > 0) labels.push(`${state.goldCoins} or`);
-    labels.forEach(label => { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = label; statusTags.appendChild(tag); });
+    const hpRatio = state.maxHp > 0 ? state.hp / state.maxHp : 0;
+    const earth = Number(state.contamination || 0);
+    const stats = [
+      {icon:'♥', label:'Vie', value:`${state.hp}/${state.maxHp}`, cls: hpRatio <= .3 ? 'status-critical' : hpRatio <= .55 ? 'status-warning' : ''},
+      {icon:'🛡', label:'Protection', value:String(protection)},
+      {icon:'⚔', label:'Force', value:String(currentForce(state))},
+      {icon:'◆', label:'Dextérité', value:String(currentDexterity(state))},
+      {icon:'✦', label:'Puissance', value:String(state.weapon === 'none' ? 0 : combatPower(state))},
+      {icon:'●', label:'Terre noire', value:`${earth}/13`, cls: earth >= 12 ? 'status-critical' : earth >= 9 ? 'status-warning' : ''}
+    ];
+    stats.forEach(stat => {
+      const tag = document.createElement('span');
+      tag.className = `tag ${stat.cls || ''}`.trim();
+      tag.innerHTML = `<span class="tag-icon">${stat.icon}</span><span class="tag-copy"><small>${stat.label}</small><strong>${stat.value}</strong></span>`;
+      statusTags.appendChild(tag);
+    });
   }
 
   const availableChoices = pendingDice ? [{label:'Jeter les dés', action:'resolveDice'}] : state.flags?.blackEarthTransformed && !node.sheet ? [{label:"Reprendre au dernier point de sauvegarde",action:"checkpoint"},{label:"Recommencer depuis le début",action:"restart"}] : state.hp <= 0 && !node.sheet ? fatalChoices() : typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);

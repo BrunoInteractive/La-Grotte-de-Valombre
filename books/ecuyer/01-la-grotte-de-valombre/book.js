@@ -316,10 +316,25 @@ function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
   return list;
 }
 
+function heroCombatCardHtml(state) {
+  const protection = currentProtection(state);
+  const protectionMax = maxProtection(state);
+  return `<div class="enemy-card hero-combat-card" aria-label="Ta fiche de combat">
+      <div class="enemy-card-title">TOI — ${heroName(state)}</div>
+      <div class="enemy-card-stats hero-combat-stats">
+        <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${state.hp} / ${state.maxHp}</strong></div>
+        <div><span class="enemy-icon">🛡</span><span>Protection</span><strong>${protection} / ${protectionMax}</strong></div>
+        <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${currentForce(state)}</strong></div>
+        <div><span class="enemy-icon">◆</span><span>Dextérité</span><strong>${currentDexterity(state)}</strong></div>
+        <div><span class="enemy-icon">†</span><span>Arme</span><strong>${weaponLabel(state)}</strong></div>
+        <div><span class="enemy-icon">✦</span><span>Puissance</span><strong>${state.weapon === 'none' ? 0 : combatPower(state)}</strong></div>
+        <div><span class="enemy-icon">●</span><span>Terre noire</span><strong>${contaminationLevel(state)} / 13</strong></div>
+      </div>
+    </div>`;
+}
 function enemyCardHtml(state, key, enemy) {
   const combat = combatState(state, key, enemy);
-  return `
-    <div class="enemy-card" aria-label="Fiche de l’adversaire">
+  const enemyHtml = `<div class="enemy-card" aria-label="Fiche de l’adversaire">
       <div class="enemy-card-title">${enemy.name}</div>
       <div class="enemy-card-stats">
         <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${combat.hp} / ${enemy.maxHp}</strong></div>
@@ -329,6 +344,7 @@ function enemyCardHtml(state, key, enemy) {
         <div><span class="enemy-icon">✦</span><span>Dégâts</span><strong>${forceDamageBonus(enemy.force) + (Number.isFinite(enemy.weaponPower) ? enemy.weaponPower : 0)}</strong></div>
       </div>
     </div>`;
+  return `<div class="combat-status-pair">${heroCombatCardHtml(state)}${enemyHtml}</div>`;
 }
 
 function combatRoundHtml(state, key, enemy) {
@@ -625,7 +641,8 @@ function ensureSentinels(state) {
 }
 function sentinelCardsHtml(state) {
   const f = ensureSentinels(state);
-  return `<div class="enemy-card"><div class="enemy-card-title">DEUX SENTINELLES NOIRES</div><div class="enemy-card-stats"><div><span>Sentinelle 1</span><strong>${f.hp[0]}/4 Vie</strong></div><div><span>Sentinelle 2</span><strong>${f.hp[1]}/4 Vie</strong></div><div><span>Dextérité</span><strong>8 chacune</strong></div><div><span>Dégâts</span><strong>1 chacune</strong></div></div></div>`;
+  const enemyHtml = `<div class="enemy-card"><div class="enemy-card-title">DEUX SENTINELLES NOIRES</div><div class="enemy-card-stats"><div><span>Sentinelle 1</span><strong>${f.hp[0]}/4 Vie</strong></div><div><span>Sentinelle 2</span><strong>${f.hp[1]}/4 Vie</strong></div><div><span>Dextérité</span><strong>8 chacune</strong></div><div><span>Dégâts</span><strong>1 chacune</strong></div></div></div>`;
+  return `<div class="combat-status-pair">${heroCombatCardHtml(state)}${enemyHtml}</div>`;
 }
 function sentinelRound(state, target, blade) {
   state.flags.sentinelResultAcknowledged = false;
@@ -3794,7 +3811,7 @@ const STORY = {
   // La page 65 sert désormais à la découverte facultative de la sacoche du pont.
   c65: {
     number: 'PAGE 65',
-    title: 'La sacoche du Veilleur',
+    title: '',
     noImage: true,
     onEnter: s => {
       if (!s.flags.bridgeSatchelSearched) {
@@ -3941,7 +3958,7 @@ const STORY = {
 
   c70: {
     number: 'PAGE 70',
-    title: 'Les bâtisseurs',
+    title: '',
     image: 'Les bâtisseurs de la cité',
     text: `
       <p>La première scène montre des hommes et des femmes bâtissant les maisons de la cité. Ils portent des blocs, posent des poutres et aménagent les rues.</p>
@@ -3972,7 +3989,7 @@ const STORY = {
 
   c72: {
     number: 'PAGE 72',
-    title: 'L’appel',
+    title: '',
     noImage: true,
     image: 'L’appel à travers la pierre',
     text: `
@@ -4044,7 +4061,7 @@ const STORY = {
     choices: [{ label: 'Poursuivre vers la salle de garde', to: 'c77', effect: s => { s.flags.quartersRefectory = true; } }]
   },
   c77: {
-    number: 'PAGE 77', title: 'Les consignes de garde', noImage: true, image: 'Le poste de garde',
+    number: 'PAGE 77', title: '', noImage: true, image: 'Le poste de garde',
     text: `
       <p>Un plan des galeries couvre le mur du poste. Sur un pupitre, les premiers registres parlent de rondes, de réserves et de surveillance des accès.</p>
       <p>Puis viennent des consignes concernant ceux qui entendent l'appel :</p>
@@ -4057,7 +4074,7 @@ const STORY = {
     ]
   },
   c78: {
-    number: 'PAGE 78', title: 'Les derniers manuscrits', noImage: true, image: 'Les registres oubliés',
+    number: 'PAGE 78', title: '', noImage: true, image: 'Les registres oubliés',
     text: `
       <p>Tu ouvres un registre relié de cuir noir. Deux gardes y sont décrits après avoir reçu volontairement de la terre noire.</p>
       <blockquote>ILS NE RÉPONDENT PLUS À L'APPEL. LEURS ORDRES DE GARDE RESTENT MAL COMPRIS.</blockquote>
@@ -4079,7 +4096,7 @@ const STORY = {
     choices: s => sentinelChoices(s)
   },
   c80: {
-    number: 'PAGE 80', title: 'Deux contre un', image: 'Le combat dans le poste de garde',
+    number: 'PAGE 80', title: '', image: 'Le combat dans le poste de garde',
     text: s => `
       <p>Les deux sentinelles te pressent dans l'espace étroit du poste de garde.</p>
       ${sentinelCardsHtml(s)}
@@ -4136,7 +4153,7 @@ const STORY = {
     choices: [{ label: 'Rejoindre les appartements', to: 'c84' }]
   },
   c84: {
-    number: 'PAGE 84', title: 'Les derniers jours', image: 'Les appartements désertés',
+    number: 'PAGE 84', title: '', image: 'Les appartements désertés',
     text: `
       <p>Les lits sont renversés. Des vêtements gisent dans les couloirs. Un coup de hache a entaillé une porte.</p>
       <p>Dans une chambre, deux rapports datés du même jour se contredisent.</p>
@@ -4182,7 +4199,7 @@ const STORY = {
     ]
   },
   c88: {
-    number: 'PAGE 88', title: 'Le collier du prisonnier', noImage: true, image: 'Le collier de vitalité',
+    number: 'PAGE 88', title: '', noImage: true, image: 'Le collier de vitalité',
     text: `
       <p>Tu frappes d'un seul coup, sans laisser à l'homme le temps de se redresser.</p>
       <p>Sa tête roule sur les dalles. Le corps retombe.</p>
@@ -4195,7 +4212,7 @@ const STORY = {
     ]
   },
   c89: {
-    number: 'PAGE 89', title: 'Le métal sous la peau', noImage: true, image: 'Le collier incrusté',
+    number: 'PAGE 89', title: '', noImage: true, image: 'Le collier incrusté',
     onEnter: s => equipVeilleurCollar(s),
     text: s => `
       ${s.flags.collarTorn
@@ -4212,7 +4229,7 @@ const STORY = {
     choices: [{ label: 'Fuir par la fissure', to: 'c91' }]
   },
   c90: {
-    number: 'PAGE 90', title: 'La fuite', noImage: true, image: 'Les corps qui remuent',
+    number: 'PAGE 90', title: '', noImage: true, image: 'Les corps qui remuent',
     text: `
       <p>Tu recules vers la fissure.</p>
       <p>Derrière toi, plusieurs corps commencent à bouger. Une main racle les dalles.</p>
@@ -4221,7 +4238,7 @@ const STORY = {
     choices: [{ label: 'Quitter les anciens quartiers', to: 'c91' }]
   },
   c91: {
-    number: 'PAGE 91', title: 'Quitter les quartiers', noImage: true, image: 'La galerie de service',
+    number: 'PAGE 91', title: '', noImage: true, image: 'La galerie de service',
     text: s => `
       <p>Tu retrouves la galerie de sortie des appartements.</p>
       ${s.flags.isolationChoice === 'flee' ? '<p>Le grattement de la chambre d’isolement s’est tu derrière les parois.</p>' : ''}
@@ -4317,7 +4334,7 @@ const STORY = {
     }
   },
   c98: {
-    number: 'PAGE 98', title: 'La sortie du quartier', noImage: true, image: 'La fuite du quartier d’observation',
+    number: 'PAGE 98', title: '', noImage: true, image: 'La fuite du quartier d’observation',
     text: s => {
       const fate = s.flags.knightFate;
       if (fate === 'dead') return `<p>Tu t’éloignes de la cellule. Le couloir est désormais silencieux.</p><p>Au-delà de l’arche, trois chemins se rejoignent dans une salle ronde.</p>`;
@@ -4338,7 +4355,7 @@ const STORY = {
     choices: [{ label: 'Lire un des carnets', to: 'c100' }]
   },
   c100: {
-    number: 'PAGE 100', title: 'Un carnet de suivi', noImage: true, image: 'Les carnets du dispensaire',
+    number: 'PAGE 100', title: '', noImage: true, image: 'Les carnets du dispensaire',
     text: `
       <p>Tu ouvres l’un des carnets. Une écriture régulière énumère les observations du médecin :</p>
       <blockquote>Jour 01 : Armand Varel est arrivé. Il entend la voix. Son corps résiste encore, son esprit aussi.</blockquote>
@@ -4352,7 +4369,7 @@ const STORY = {
     choices: [{ label: 'Consulter les derniers registres', to: 'c101' }]
   },
   c101: {
-    number: 'PAGE 101', title: 'Les derniers registres', noImage: true, image: 'Le registre des expériences',
+    number: 'PAGE 101', title: '', noImage: true, image: 'Le registre des expériences',
     text: `
       <p>Les derniers registres ne parlent plus vraiment de soins.</p>
       <blockquote>Sujet 17 : décès.</blockquote>
@@ -4379,7 +4396,7 @@ const STORY = {
     ]
   },
   c103: {
-    number: 'PAGE 103', title: 'La machine d’injection', noImage: true,
+    number: 'PAGE 103', title: '', noImage: true,
     text: s => `<p>Tu t’approches du bras articulé. Un tuyau le relie à la cuve de terre noire. Son aiguille pointe vers une table à sangles.</p>
       <p>Le levier est coincé à mi-course. La rouille ronge l’articulation et le métal tremble à chaque grincement.</p>
       ${s.flags.labLeverBroken
@@ -4394,7 +4411,7 @@ const STORY = {
   },
   c104: {
     number: 'PAGE 111',
-    title: 'Les défenses du sceau',
+    title: '',
     image: 'Le mécanisme des gardiens',
     text: `
       <p>Tu débouches dans une salle ronde.</p>
@@ -4409,7 +4426,7 @@ const STORY = {
   },
 
   c105: {
-    number: 'PAGE 112', title: 'Le registre du médecin', noImage: true, image: 'Le registre du médecin',
+    number: 'PAGE 112', title: '', noImage: true, image: 'Le registre du médecin',
     onEnter: s => { s.flags.physicianNotesRead=true; updateVialKnowledge(s); },
     text: `<p>Dans le couloir, un registre médical repose sur un pupitre. Des observations y comparent l'emprise et les effets de la terre noire.</p>
       <blockquote>« Plus la terre noire gagne le corps, plus l'appel faiblit. Mais la transformation progresse. »</blockquote>
@@ -4490,7 +4507,7 @@ const STORY = {
       ]
   },
   c110: {
-    number: 'PAGE 131', title: 'Les parchemins confisqués', image: 'Les parchemins confisqués',
+    number: 'PAGE 131', title: '', image: 'Les parchemins confisqués',
     // La navigation libre en Travail applique la première exposition, sauf si la grille a déjà été ouverte.
     onEnter: s => { if (!s.flags.tabletsExamined) exposeTabletGate(s); },
     text: s => `${s.flags.tabletsDustExposure
@@ -4514,7 +4531,7 @@ const STORY = {
   },
   c111: {
     number: 'PAGE 132',
-    title: 'Le journal des confiscations',
+    title: '',
     noImage: true,
     image: 'Le journal des confiscations',
     text: `<p>À côté du coffre, un petit journal de bord repose sur un pupitre.</p>
@@ -4766,73 +4783,73 @@ const STORY = {
   },
 
   c118: {
-    number: 'PAGE 139', title: "La fiole emportée", noImage: true,
+    number: 'PAGE 139', title: '', noImage: true,
     text: `<p>Tu glisses la fiole blanche dans ta sacoche. Tu ignores encore ce qu’elle contient.</p><p>Tu rejoins la place du village.</p>`,
     choices: [{label: "Rejoindre la place", to: 'c3'}]
   },
 
   c119: {
-    number: 'PAGE 140', title: "La fiole emportée", noImage: true,
+    number: 'PAGE 140', title: '', noImage: true,
     text: `<p>Tu protèges la fiole au fond de ta sacoche et quittes Valombre sans attendre.</p><p>Le sentier de la montagne t’attend.</p>`,
     choices: [{label: "Prendre le sentier de la grotte", to: 'c8'}]
   },
 
   c120: {
-    number: 'PAGE 141', title: "La potion du marchand", noImage: true,
+    number: 'PAGE 141', title: '', noImage: true,
     text: `<p>Tu poses les trois pièces sur l’étal. Le marchand te remet la potion, que tu ranges soigneusement pour la suite du voyage.</p>`,
     choices: [{label: "Retourner sur la place", to: 'c3'}]
   },
 
   c121: {
-    number: 'PAGE 142', title: "L’épée de la forgeronne", noImage: true,
+    number: 'PAGE 142', title: '', noImage: true,
     text: `<p>Tu rends l’épée lourde à la forgeronne et essaies quelques mouvements avec la lame plus courte. Ton bras retrouve de la liberté, même si l’arme frappera moins fort.</p><p>Tu la remercies et ressors sur la place.</p>`,
     choices: [{label: "Retourner sur la place", to: 'c3'}]
   },
 
   c122: {
-    number: 'PAGE 143', title: "Une lame contre la masse", noImage: true,
+    number: 'PAGE 143', title: '', noImage: true,
     text: `<p>Tu lances une lame vers la masse sombre. Tu guettes l’effet de ton tir.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c27'}]
   },
 
   c123: {
-    number: 'PAGE 144', title: "Une lame contre le disparu", noImage: true,
+    number: 'PAGE 144', title: '', noImage: true,
     text: `<p>Ta lame file vers le disparu de Rochebrume. Tu guettes l’effet du projectile.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c38'}]
   },
 
   c124: {
-    number: 'PAGE 145', title: "Une lame sur l’îlot", noImage: true,
+    number: 'PAGE 145', title: '', noImage: true,
     text: `<p>Tu lances une lame vers la créature de l’îlot. Tu attends de voir si elle poursuivra sa marche.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c47'}]
   },
 
   c125: {
-    number: 'PAGE 146', title: "Une lame au-dessus du vide", noImage: true,
+    number: 'PAGE 146', title: '', noImage: true,
     text: `<p>Tu projettes une lame contre le marcheur qui grimpe sous le pont. La créature se replie autour d’une corde. Tu dois voir si elle tient encore.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c62'}]
   },
 
   c126: {
-    number: 'PAGE 147', title: "Une lame dans le couloir", noImage: true,
+    number: 'PAGE 147', title: '', noImage: true,
     text: `<p>Tu projettes une lame vers le chevalier transformé. Tu guettes sa réaction dans l’étroitesse de la cellule.</p>`,
     choices: [{label: "Voir le résultat du tir", to: 'c97'}]
   },
 
   c127: {
-    number: 'PAGE 148', title: "L’anneau récupéré", noImage: true,
+    number: 'PAGE 148', title: '', noImage: true,
     text: `<p>Tu soulèves l’anneau de la dalle. Il semble presque ne rien peser. Le symbole de l’œil fermé apparaît sur sa tranche.</p><p>Tu regagnes la barque.</p>`,
     choices: [{label: "Reprendre la barque", to: 'c48'}]
   },
 
   c128: {
-    number: 'PAGE 149', title: "Le gantelet du Veilleur", noImage: true,
+    number: 'PAGE 149', title: '', noImage: true,
     text: `<p>Tu détaches doucement le gantelet de la main du squelette. Les plaques sont encore solides, tu l’ajustes à ton bras avant de franchir la porte du quartier haut.</p>`,
     choices: [{label: "Franchir la porte", to: 'c67'}]
   },
 
   c130: {
-    number: 'PAGE 151', title: "La lame de diversion", noImage: true,
+    number: 'PAGE 151', title: '', noImage: true,
     text: `<p>Tu projettes une lame au-delà du pont. Elle fend la brume et disparaît sous les planches.</p>
       <p>La lame de jet tinte contre une pierre très loin sous le pont.</p>
       <p>La chose lâche aussitôt la face inférieure du pont et disparaît dans la brume à sa poursuite.</p>
@@ -4841,7 +4858,7 @@ const STORY = {
   },
 
   c131: {
-    number: 'PAGE 152', title: "La corde du Veilleur", noImage: true,
+    number: 'PAGE 152', title: '', noImage: true,
     onEnter: s => { if (hasItem(s, 'ceinture_rouge')) s.flags.bridgeCordTaken = true; },
     text: state => hasItem(state, 'ceinture_rouge')
       ? `<p>Tu réexamines la ceinture de corde rouge déjà rangée dans ton équipement. Son tressage est intact.</p>`
@@ -4853,7 +4870,7 @@ const STORY = {
   },
 
   c136: {
-    number: 'PAGE 157', title: "Les lames récupérées", noImage: true,
+    number: 'PAGE 157', title: '', noImage: true,
     text: s => s.history?.filter(id => id === 'c136').length > 1
       ? `<p>La boîte de l’armurerie est vide. Les cinq lames ont déjà été récupérées.</p>`
       : `<p>Tu enveloppes les cinq lames dans un morceau de tissu et les glisses dans ton équipement. Tu repars vers les bureaux.</p>`,
@@ -4880,13 +4897,13 @@ const STORY = {
   },
 
   c139: {
-    number: 'PAGE 115', title: "L’ampoule du poste de secours", image: 'L’ampoule du poste de secours',
+    number: 'PAGE 115', title: '', image: 'L’ampoule du poste de secours',
     text: `<p>Au milieu des flacons brisés, tu découvres une ampoule intacte. Sur l’étiquette : « Traitement de la terre noire ».</p><p>Tu la protèges dans ton sac. Les autres flacons sont vides ou inutilisables.</p>`,
     choices: [{label: "Poursuivre la fouille du poste", to: 'c107'}, {label:'Quitter le poste et revenir au carrefour',to:'c106'}]
   },
 
   c140: {
-    number: 'PAGE 124', title: "La sacoche de terre noire", noImage: true,
+    number: 'PAGE 124', title: '', noImage: true,
     text: `<p>Tu refermes soigneusement la sacoche, sans toucher à la poudre, puis la ranges dans ton sac.</p><p>Tu peux encore inspecter les autres recoins de la réserve, si tu oses.</p>`,
     choices: [{label:'Poursuivre la fouille de la réserve',to:'c108'}, {label: "Quitter la réserve et revenir au carrefour", to: 'c106'}]
   },
@@ -4987,7 +5004,7 @@ const STORY = {
     choices: [{ label: 'Voir le résultat du tir', to: 'c149' }]
   },
   c151: {
-    number:'PAGE 105',title:'Le bras qui cède',noImage:true,
+    number:'PAGE 105',title:'',noImage:true,
     text:s=>!s.flags.labLeverBroken
       ? '<p>Le levier n’a pas été actionné. Le mécanisme grince encore dans la salle voisine.</p>'
       : `${injectionRollHtml(s)}
@@ -5001,7 +5018,7 @@ const STORY = {
       : [{label:'Revenir devant le mécanisme',to:'c103'}]
   },
   c129: {
-    number: 'PAGE 150', title: 'Avancer sans bruit', noImage: true,
+    number: 'PAGE 150', title: '', noImage: true,
     text: s => `${diceResultHtml(s)}${s.flags.bridgeCalmPassed
       ? '<p>Tu te forces à avancer sans accélérer. La chose accompagne tes pas sous les planches, puis finit par s’immobiliser. Tu atteins les dernières planches avant qu’elle ne remonte.</p>'
       : '<p>Tu avances en retenant ton souffle, mais une planche gémit sous ta botte. La chose s’immobilise sous toi, puis ses longs doigts se referment sur le bord du pont. Elle te barre la route.</p>'}`,
@@ -5017,7 +5034,7 @@ const STORY = {
     choices: s => sentinelResultChoices(s)
   },
   c133: {
-    number: 'PAGE 154', title: 'Le tir sur la première sentinelle',
+    number: 'PAGE 154', title: '',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu vises la première sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
@@ -5278,7 +5295,7 @@ const STORY = {
          {label:'Le laisser en place',to:'c107'}]
   },
   c185: {
-    number:'PAGE 117',title:'Le verrou',noImage:true,
+    number:'PAGE 117',title:'',noImage:true,
     text:`<p>Tu tires le livre vers toi. Un bruit sourd résonne derrière le mur : un verrou vient de se libérer.</p>
       <p>Entre deux étagères, une étroite trappe pivote lentement. L’ouverture laisse passer une seule personne. Aucun bruit ne vient de l’autre côté.</p>`,
     choices:s=>[...(!s.visited?.c186?[{label:'Se glisser par la trappe',to:'c186'}]:[]),{label:'Rester dans le poste de secours',to:'c107'}]
@@ -5294,7 +5311,7 @@ const STORY = {
     ]
   },
   c187: {
-    number:'PAGE 119',title:'Le cahier du soignant',noImage:true,
+    number:'PAGE 119',title:'',noImage:true,
     text:`<p>Tu ouvres le cahier. Une main tremblante a rempli les pages d’une écriture serrée.</p>
       <blockquote>« J’ai décidé de raconter cette histoire, même si personne ne doit jamais la lire. J’ai besoin de déposer ce poids quelque part.</blockquote>
       <blockquote>Je ne crois plus aux Veilleurs. Ils sont devenus pires que ce qu’ils prétendent combattre. D’ailleurs, nous ne savons même pas ce que nous combattons.</blockquote>
@@ -5309,7 +5326,7 @@ const STORY = {
     choices:s=>[...(!s.visited?.c188?[{label:'Fouiller le coffre',to:'c188'}]:[]),{label:'Revenir dans la cache',to:'c186'}]
   },
   c188: {
-    number:'PAGE 120',title:'Le dernier remède',noImage:true,
+    number:'PAGE 120',title:'',noImage:true,
     text:s=>`<p>Le coffre contient des étoffes moisies et des flacons brisés. Sous un morceau de toile, un emplacement a été ménagé dans le bois.</p>
       ${s.flags.secretAmpouleTaken
         ? '<p>L’emplacement de l’ampoule blanche est vide. Tu as déjà pris le dernier remède du soignant.</p>'
@@ -5326,12 +5343,12 @@ const STORY = {
     ]
   },
   c189: {
-    number:'PAGE 121',title:'L’ampoule du soignant',noImage:true,
+    number:'PAGE 121',title:'',noImage:true,
     text:`<p>Tu enveloppes la petite ampoule dans un coin de ton vêtement et la ranges avec précaution. Le liquide blanc frémit derrière le verre.</p><p>Le soignant a peut-être perdu la vie pour préserver cette seule dose.</p>`,
     choices:[{label:'Revenir dans la cache',to:'c186'},{label:'Quitter la cache',to:'c107'}]
   },
   c190: {
-    number:'PAGE 123',title:'Le sachet de terre noire',image:'Le sachet de terre noire',
+    number:'PAGE 123',title:'',image:'Le sachet de terre noire',
     text:s=>`<p>Tu avances la main vers l’étagère en évitant les poussières épaisses qui couvrent le bois.</p>
       ${s.visited?.c140 || hasItem(s,'sacoche_terre_noire')
         ? '<p>La place du petit sachet est vide : tu as déjà emporté cette dose de terre noire.</p>'
@@ -5357,7 +5374,7 @@ const STORY = {
     choices:s=>combatActionChoices(s,'reserveRat',ENEMIES.reserveRat,'c192')
   },
   c192: {
-    number:'PAGE 126',title:'Le combat de la réserve',
+    number:'PAGE 126',title:'',
     text:s=>`<p>Les sacs se déchirent autour de vous. Le rat attaque dans un froissement de toile et de bois.</p>
       ${enemyCardHtml(s,'reserveRat',ENEMIES.reserveRat)}
       ${s.combats?.reserveRat?.lastBlade?throwingBladeResultHtml(s,'reserveRat',ENEMIES.reserveRat):combatRoundHtml(s,'reserveRat',ENEMIES.reserveRat)}
@@ -5367,7 +5384,7 @@ const STORY = {
       :combatActionChoices(s,'reserveRat',ENEMIES.reserveRat,'c192')
   },
   c193: {
-    number:'PAGE 127',title:'La lame contre le rat',
+    number:'PAGE 127',title:'',
     text:s=>`<p>Tu lances une lame avant que le rat puisse te rejoindre.</p>
       ${enemyCardHtml(s,'reserveRat',ENEMIES.reserveRat)}
       ${throwingBladeResultHtml(s,'reserveRat',ENEMIES.reserveRat)}
@@ -5377,7 +5394,7 @@ const STORY = {
       :[{label:'Poursuivre le combat',to:'c192'}]
   },
   c194: {
-    number:'PAGE 128',title:'Le sac du rat',image:'Le sac du rat',
+    number:'PAGE 128',title:'',image:'Le sac du rat',
     onEnter:s=>{if(s.combats?.reserveRat?.hp<=0)s.flags.reserveRatDead=true;},
     text:s=>`${!s.combats?.reserveRat || s.combats.reserveRat.hp>0
         ? '<p>Le rat garde toujours son sac au milieu des débris. Impossible de l’atteindre tant qu’il est vivant.</p>'
@@ -5398,19 +5415,19 @@ const STORY = {
     ]
   },
   c195: {
-    number:'PAGE 129',title:'Les trois lames récupérées',noImage:true,
+    number:'PAGE 129',title:'',noImage:true,
     text:s=>`<p>Tu essuies les trois lames et les ranges dans ton équipement.</p><p><strong>Tu possèdes maintenant ${s.throwingBlades} lame${s.throwingBlades>1?'s':''} de jet.</strong></p>`,
     choices:[{label:'Revenir dans la réserve',to:'c108'},{label:'Quitter la réserve et revenir au carrefour',to:'c106'}]
   },
   c135: {
-    number: 'PAGE 156', title: 'Le tir sur la seconde sentinelle',
+    number: 'PAGE 156', title: '',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu vises la seconde sentinelle et lances ta lame.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
   },
 
   c196: {
-    number:'PAGE 106',title:'La bague de lumière',image:'La bague de lumière',
+    number:'PAGE 106',title:'',image:'La bague de lumière',
     text:s=>s.flags.labLeverBroken
       ? `<p>Entre deux plaques rouillées repose une bague. Une lueur douce émane du métal et éclaire légèrement tout ce qui s’en approche.</p>
          ${s.flags.labRingTaken
@@ -5455,7 +5472,7 @@ const STORY = {
          {label:'Lui dire que tu préfères continuer seul',to:'c200',effect:t=>{t.flags.youngKnightOutcome='left';}}]
   },
   c199: {
-    number:'PAGE 109',title:'La main du chevalier',noImage:true,
+    number:'PAGE 109',title:'',noImage:true,
     text:s=>!s.flags.youngKnightRoll
       ? '<p>Le jeune chevalier attend toujours que tu décides de lui tendre la main.</p>'
       : `<p>Tu saisis sa main. Sous tes doigts, la peau est rugueuse, irritante, épaisse et étrangement molle. Ce n’est pas une main : son bras s’étire comme un tentacule.</p>
@@ -6900,8 +6917,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 109,
-    pageMapVersion: 85,
+    contentVersion: 110,
+    pageMapVersion: 86,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
