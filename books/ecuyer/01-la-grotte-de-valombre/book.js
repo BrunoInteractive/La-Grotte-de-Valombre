@@ -5514,7 +5514,7 @@ const STORY = {
     choices:s=>s.hp<=0||s.flags.blackEarthTransformed?terminalChoices():[{label:'Récupérer la lame noire dans ses affaires',to:'c206',effect:takeBlackBlade}]
   },
   c205: {
-    number:'PAGE 205',title:'Les dernières paroles',noImage:true,
+    number:'PAGE 205',title:'Les dernières paroles',
     text:`<p>« Je ne sais plus quoi faire. Écouter la voix… ou tuer ce qui nous appelle ? Je ne distingue plus mes propres pensées. »</p>
       <p>Aldren montre du regard le bas de son corps. Sous son manteau, des tentacules enserrent sa sacoche.</p>
       <blockquote>« J’ai trouvé la lame noire. Elle est là. Mais mon corps ne m’obéit plus. Je ne peux même pas te la donner. »</blockquote>
@@ -5541,11 +5541,12 @@ const STORY = {
   },
   c207: {
     number:'PAGE 207',title:'Le prix du sauvetage',noImage:true,
-    text:`<p>Tu frappes les tentacules pour dégager la sacoche. Ils se tordent autour d’Aldren et se défendent comme s’ils faisaient désormais partie de lui. Chaque coup arrache un cri au chevalier. Tu continues pourtant. Tu n’as plus d’autre moyen.</p>
+    text:`<p>Tu frappes les tentacules pour dégager la sacoche. Ils se tordent autour d’Aldren et se défendent comme s’ils faisaient désormais partie de lui. Soudain, l’un d’eux se détend et te fouette au visage. La douleur t’aveugle un instant. <strong>−1 Vie.</strong></p>
+      <p>Tu recules d’un pas, puis reprends aussitôt l’attaque, sans relâche. Chaque coup arrache un cri au chevalier. Tu continues pourtant. Tu n’as plus d’autre moyen.</p>
       <p>La chair noire se replie, se déchire, puis finit par retomber contre la pierre. Aldren ne crie plus.</p>
       <p>Tu te penches vers lui. Son regard est encore ouvert, mais sa respiration s’éteint. Il est mort sous tes coups, avec cette chose qui avait remplacé une partie de son corps.</p>
       <p>Tu restes un instant près de ton maître, puis tu dégages enfin la sacoche et en extrais la lame noire. Tu l’as récupérée, mais le prix à payer était sa vie.</p>
-      <p><strong>−1 Vie. Lame noire récupérée.</strong></p>`,
+      <p><strong>Lame noire récupérée.</strong></p>`,
     choices:s=>s.hp<=0?terminalChoices():[{label:'Poursuivre avec la lame noire',to:'c209'}]
   },
   c208: {
@@ -6885,7 +6886,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 101,
+    contentVersion: 103,
     pageMapVersion: 85,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
