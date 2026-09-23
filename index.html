@@ -2196,6 +2196,60 @@ body::before {
   text-shadow:0 1px 1px rgba(0,0,0,.42) !important;
 }
 
+
+
+/* =========================================================
+   V68.127 — TEXTURE PHOTO UNIFIÉE + DESTINATION EN BAS
+   La même texture JPG des boutons est appliquée au HUD et
+   aux encarts ennemis. La destination est à nouveau ancrée
+   en bas du bouton de choix.
+   ========================================================= */
+.status-tags,
+.enemy-card {
+  background: var(--ui-button-texture) center center / cover repeat !important;
+  background-color:#23343c !important;
+  background-blend-mode:normal !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(7,10,12,.96),
+    inset 0 0 0 2px rgba(197,156,93,.34),
+    0 6px 16px rgba(0,0,0,.24) !important;
+}
+
+/* On laisse la photo visible à travers chaque cellule du HUD / ennemi. */
+.tag,
+.enemy-card-stats > div {
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+/* Les états de danger restent lisibles sans masquer la pierre. */
+.tag.status-warning {
+  background:rgba(157,102,34,.13) !important;
+}
+.tag.status-critical {
+  background:rgba(132,49,43,.15) !important;
+}
+
+/* La ligne jaune + "Rendez-vous..." est collée en bas du cartouche. */
+.choice-copy { position:relative; z-index:2; }
+.choice-dest {
+  position:absolute !important;
+  z-index:2;
+  left:10px !important;
+  right:10px !important;
+  bottom:8px !important;
+  top:auto !important;
+  min-height:30px;
+  display:grid;
+  place-items:center;
+  padding:4px 9px;
+  margin:0 !important;
+  border:0 !important;
+  border-top:1px solid rgba(199,156,91,.62) !important;
+  background:transparent !important;
+  color:#d2bd91 !important;
+}
+
 </style>
 </head>
 <body>
