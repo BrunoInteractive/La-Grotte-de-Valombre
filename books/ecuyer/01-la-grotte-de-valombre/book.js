@@ -5559,7 +5559,7 @@ const STORY = {
     choices:[{label:'Entrer dans le labyrinthe',to:'c209'}]
   },
   c209: {
-    number:'PAGE 209',title:'Le labyrinthe impossible',noImage:true,
+    number:'PAGE 209',title:'Le labyrinthe impossible',
     text:s=>{
       const turns=s.flags.finalMazeTurns||0;
       const scenes=[
@@ -5587,7 +5587,7 @@ const STORY = {
         {label:'Prendre le passage de droite',stay:true,effect:t=>finalMazeRoll(t,'droite')}]
   },
   c210: {
-    number:'PAGE 210',title:'Une autre survivante',noImage:true,
+    number:'PAGE 210',title:'Une autre survivante',
     text:`<p>Tu entres dans une petite pièce sombre. Une femme inconnue est assise contre la roche. Ses vêtements abîmés laissent deviner qu’elle est une guerrière, mais toute sa force semble l’avoir quittée depuis longtemps.</p>
       <blockquote>« J’y étais presque. À deux doigts de mettre fin au règne de cette chose. »</blockquote>
       <p>Tu lui demandes comment elle sait qu’il faut détruire l’esprit.</p>
@@ -5609,7 +5609,7 @@ const STORY = {
     choices:[{label:'Écouter ce que l’esprit veut te dire',to:'c212'}]
   },
   c212: {
-    number:'PAGE 212',title:'La vérité du prisonnier',noImage:true,
+    number:'PAGE 212',title:'La vérité du prisonnier',
     text:s=>`<p>La sphère verte se contracte doucement. La voix se répand dans la salle.</p>
       ${contaminationLevel(s)<=8?'<blockquote>« Te voilà enfin. Merci d’avoir affronté tous ces dangers pour me libérer. Le temps presse. Mes forces s’épuisent. »</blockquote>':''}
       ${contaminationLevel(s)<=3
@@ -6872,7 +6872,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 96,
+    contentVersion: 97,
     pageMapVersion: 84,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
