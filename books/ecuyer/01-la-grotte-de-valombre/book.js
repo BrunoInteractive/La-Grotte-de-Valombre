@@ -5635,8 +5635,8 @@ const STORY = {
         ...(powder?[{label:'Faire exploser la voûte avec la poudre',to:'c215',effect:t=>{removeItem(t,'poudre_effondrement');t.hp=0;}}]:[])
       ];
       return [
-        {label:'Tenter de libérer l’esprit avec ton arme',to:'c216',effect:t=>{t.weapon='none';t.hp=0;}},
-        {label:'Tenter de détruire l’esprit avec ton arme',to:'c221',effect:t=>{t.weapon='none';t.hp=0;}},
+        {label:'Tenter de libérer l’esprit avec ton arme',to:'c216',effect:t=>{t.flags.finalOrdinaryIntent='libérer';t.weapon='none';t.hp=0;}},
+        {label:'Tenter de détruire l’esprit avec ton arme',to:'c221',effect:t=>{t.flags.finalOrdinaryIntent='tuer';t.weapon='none';t.hp=0;}},
         ...(powder?[{label:'Déclencher l’effondrement avec la poudre',to:'c215',effect:t=>{removeItem(t,'poudre_effondrement');t.hp=0;}}]:[])
       ];
     }
@@ -5704,12 +5704,11 @@ const STORY = {
     choices:terminalChoices()
   },
   c216: {
-    number:'PAGE 218',title:'Rompre les liens',
-    text:`<p>Tu lèves ton arme et frappes de toutes tes forces l’un des liens rouge sombre qui retiennent la sphère.</p>
-      <p>La lame heurte le lien dans un choc sec. Rien ne cède. Au contraire, une vibration terrible parcourt le métal et remonte le long de tes bras.</p>
-      <p>Tu frappes une seconde fois. Cette fois, la lame éclate entre tes mains. Une onde brûlante te traverse la poitrine et te projette au sol.</p>
-      <p>Au-dessus de toi, les liens se resserrent autour de la lumière verte. La sphère reste prisonnière.</p>
-      <p>Ton souffle devient de plus en plus court. La caverne se brouille, puis disparaît.</p>
+    number:'PAGE 218',title:'Une arme ordinaire',
+    text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
+      <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
+      <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
+      <p>Tu perds peu à peu connaissance. Puis tout disparaît.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
   },
@@ -5741,12 +5740,11 @@ const STORY = {
     choices:terminalChoices()
   },
   c221: {
-    number:'PAGE 221',title:'Frapper le cœur',
-    text:`<p>Tu t’approches de la sphère et lèves ton arme. Si tu ne peux pas la libérer, tu peux encore tenter de détruire ce qui se cache en son cœur.</p>
-      <p>Tu frappes de toutes tes forces.</p>
-      <p>Au contact de la lumière verte, ta lame se brise en plusieurs morceaux. Le choc est si violent que les fragments disparaissent dans l’éclat tandis qu’une onde traverse tes bras et te jette en arrière.</p>
-      <p>Tu heurtes la pierre. La sphère, elle, n’a presque pas bougé. Sa lumière pulse toujours devant toi, intacte.</p>
-      <p>La douleur t’empêche de reprendre ton souffle. Tes pensées se dispersent peu à peu, jusqu’à ce que la caverne s’efface autour de toi.</p>
+    number:'PAGE 221',title:'Une arme ordinaire',
+    text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
+      <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
+      <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
+      <p>Tu perds peu à peu connaissance. Puis tout disparaît.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
   },
@@ -5846,7 +5844,7 @@ const STORY = {
     'c215': 'L’effondrement',
     'c216': 'Une arme ordinaire',
     'c217': 'La fin d’un règne',
-    'c221': 'Frapper le cœur',
+    'c221': 'Une arme ordinaire',
 
     'c196': 'La bague de lumière', 'c197': 'La silhouette', 'c198': 'Le jeune chevalier', 'c199': 'La main du chevalier', 'c200': 'Continuer seul',
     'c105': 'Le registre du médecin', 'c106': 'Le carrefour des soins', 'c107': 'Le poste de secours', 'c108': 'La réserve de terre noire',
@@ -6886,7 +6884,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 103,
+    contentVersion: 104,
     pageMapVersion: 85,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
