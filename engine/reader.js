@@ -444,12 +444,17 @@ function render() {
     const protection = BOOK.rules && typeof BOOK.rules.currentProtection === 'function' ? BOOK.rules.currentProtection(state) : 0;
     const hpRatio = state.maxHp > 0 ? state.hp / state.maxHp : 0;
     const earth = Number(state.contamination || 0);
+    const compactWeapon = state.weapon === 'heavy' ? 'Épée lourde'
+      : state.weapon === 'light' ? 'Épée légère'
+      : state.weapon === 'black_blade' ? 'Lame noire'
+      : state.weapon === 'sorcerer_sword' ? 'Épée rouge'
+      : 'Aucune';
     const stats = [
       {icon:'♥', label:'Vie', value:`${state.hp}/${state.maxHp}`, cls: hpRatio <= .3 ? 'status-critical' : hpRatio <= .55 ? 'status-warning' : ''},
-      {icon:'🛡', label:'Protection', value:String(protection)},
-      {icon:'⚔', label:'Force', value:String(currentForce(state))},
       {icon:'◆', label:'Dextérité', value:String(currentDexterity(state))},
-      {icon:'✦', label:'Puissance', value:String(state.weapon === 'none' ? 0 : combatPower(state))},
+      {icon:'⚔', label:'Force', value:String(currentForce(state))},
+      {icon:'†', label:'Arme', value:compactWeapon},
+      {icon:'🛡', label:'Protection', value:String(protection)},
       {icon:'●', label:'Terre noire', value:`${earth}/13`, cls: earth >= 12 ? 'status-critical' : earth >= 9 ? 'status-warning' : ''}
     ];
     stats.forEach(stat => {

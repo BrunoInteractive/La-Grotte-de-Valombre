@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 110,
+  "contentVersion": 111,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 23,
-  "buildLabel": "V68.110 — Travail : barre d’état permanente, fiche héros en combat et nettoyage des titres.",
+  "buildLabel": "V68.112 — Travail : nettoyage renforcé des titres visibles.",
   "pageMapVersion": 85
 }

@@ -316,6 +316,13 @@ function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
   return list;
 }
 
+function compactWeaponLabel(state) {
+  if (state.weapon === 'heavy') return 'Épée lourde';
+  if (state.weapon === 'light') return 'Épée légère';
+  if (state.weapon === 'black_blade') return 'Lame noire';
+  if (state.weapon === 'sorcerer_sword') return 'Épée rouge';
+  return 'Aucune';
+}
 function heroCombatCardHtml(state) {
   const protection = currentProtection(state);
   const protectionMax = maxProtection(state);
@@ -323,11 +330,10 @@ function heroCombatCardHtml(state) {
       <div class="enemy-card-title">TOI — ${heroName(state)}</div>
       <div class="enemy-card-stats hero-combat-stats">
         <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${state.hp} / ${state.maxHp}</strong></div>
-        <div><span class="enemy-icon">🛡</span><span>Protection</span><strong>${protection} / ${protectionMax}</strong></div>
-        <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${currentForce(state)}</strong></div>
         <div><span class="enemy-icon">◆</span><span>Dextérité</span><strong>${currentDexterity(state)}</strong></div>
-        <div><span class="enemy-icon">†</span><span>Arme</span><strong>${weaponLabel(state)}</strong></div>
-        <div><span class="enemy-icon">✦</span><span>Puissance</span><strong>${state.weapon === 'none' ? 0 : combatPower(state)}</strong></div>
+        <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${currentForce(state)}</strong></div>
+        <div><span class="enemy-icon">†</span><span>Arme</span><strong>${compactWeaponLabel(state)}</strong></div>
+        <div><span class="enemy-icon">🛡</span><span>Protection</span><strong>${protection} / ${protectionMax}</strong></div>
         <div><span class="enemy-icon">●</span><span>Terre noire</span><strong>${contaminationLevel(state)} / 13</strong></div>
       </div>
     </div>`;
@@ -3323,7 +3329,7 @@ const STORY = {
 
   c55: {
     number: 'PAGE 55',
-    title: 'Devant la fissure',
+    title:'',
     noImage: true,
     image: 'Devant la fissure',
     text: state => `
@@ -3737,7 +3743,7 @@ const STORY = {
 
   c63: {
     number: 'PAGE 63',
-    title: 'L’autre extrémité du pont',
+    title:'',
     image: 'L’autre extrémité du pont',
     text: state => {
       const intro = state.flags.bridgeSolution === 'calm'
@@ -3904,7 +3910,7 @@ const STORY = {
   // Page retirée du parcours : une ancienne sauvegarde sur cette page reste lisible.
   c68: {
     number: 'PAGE 68',
-    title: 'Vers la place',
+    title:'',
     noImage: true,
     text: `<p>Tu achèves la descente du quartier haut. La place ensoleillée est toute proche.</p>`,
     choices: [{ label: 'Rejoindre la place', to: 'c69' }]
@@ -4008,7 +4014,7 @@ const STORY = {
 
   c73: {
     number: 'PAGE 73',
-    title: 'Le seuil',
+    title:'',
     image: 'Les voyageurs au seuil',
     text: `
       <p>La dernière scène représente plusieurs voyageurs au pied de la porte.</p>
@@ -4086,7 +4092,7 @@ const STORY = {
     choices: [{ label: 'Dégainer et faire face', to: 'c79', effect: s => { if (s.sentinelFight?.hp?.every(h => h <= 0)) replaySentinels(s); } }]
   },
   c79: {
-    number: 'PAGE 79', title: 'Les deux sentinelles', image: 'Les sentinelles contaminées',
+    number: 'PAGE 79', title:'', image: 'Les sentinelles contaminées',
     text: s => `
       <p>Deux silhouettes entrent dans le poste de garde. Elles portent les restes d'un uniforme.</p>
       <p>Leurs traits demeurent presque humains. Une terre noire et épaisse coule de leurs bouches.</p>
@@ -4176,7 +4182,7 @@ const STORY = {
     ]
   },
   c86: {
-    number: 'PAGE 86', title: 'Entre les parois', noImage: true, image: 'Le passage trop étroit',
+    number: 'PAGE 86', title:'', noImage: true, image: 'Le passage trop étroit',
     text: `
       <p>Tu progresses de profil. La roche frotte contre tes épaules et tu dois parfois tourner la tête pour avancer.</p>
       <p>Après plusieurs mètres, l'ouverture s'élargit.</p>
@@ -4655,7 +4661,7 @@ const STORY = {
 
   c115: {
     number: 'PAGE 136',
-    title: 'Le palier inférieur',
+    title:'',
 
     onEnter: s => {
       if (s.flags.knightFate !== 'locked' || s.flags.knightWellAttackDone) return;
@@ -5028,7 +5034,7 @@ const STORY = {
   },
 
   c132: {
-    number: 'PAGE 153', title: 'La première sentinelle',
+    number: 'PAGE 153', title:'',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu affrontes la première sentinelle, l’épée levée.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
@@ -5040,7 +5046,7 @@ const STORY = {
     choices: s => sentinelResultChoices(s)
   },
   c134: {
-    number: 'PAGE 155', title: 'La seconde sentinelle',
+    number: 'PAGE 155', title:'',
     onEnter: s => { s.flags.sentinelResultAcknowledged = true; },
     text: s => `<p>Tu te tournes vers la seconde sentinelle et frappes.</p>${sentinelCardsHtml(s)}${sentinelResultHtml(s)}`,
     choices: s => sentinelResultChoices(s)
@@ -5276,7 +5282,7 @@ const STORY = {
     choices:[{label:'Franchir la porte',to:'c183'}]
   },
   c183: {
-    number: 'PAGE 200', title: 'Au-delà du dédale',
+    number: 'PAGE 200', title:'',
     text:`<p>Tu franchis le seuil. La galerie devient plus large, puis le sol descend entre deux parois brutes.</p>
       <p>Les grondements s’éloignent. Une immense ouverture se dessine devant toi et une brume bleutée remonte jusqu’à tes pieds.</p>
       <p>Tu resserres ta prise sur ton arme et avances.</p>`,
@@ -5285,7 +5291,7 @@ const STORY = {
 
 
   c184: {
-    number:'PAGE 116',title:'Le livre de bois',noImage:true,
+    number:'PAGE 116',title:'',noImage:true,
     text:s=>`<p>Tu effleures les reliures couvertes de poussière. L’une d’elles ne s’ouvre pas.</p>
       <p>Ce n’est pas un livre : couverture et pages ont été taillées dans un même bloc de bois. Tu tires légèrement dessus. Une résistance vient de derrière l’étagère, comme si l’objet était relié à quelque chose.</p>
       ${s.flags.secretPassageOpened?'<p>Le mécanisme est déjà libéré. La trappe demeure ouverte entre les étagères.</p>':'<p>Il suffirait de tirer plus fort.</p>'}`,
@@ -5366,7 +5372,7 @@ const STORY = {
     ]
   },
   c191: {
-    number:'PAGE 125',title:'Quelque chose dans les sacs',
+    number:'PAGE 125',title:'',
     text:s=>`<p>Tu ouvres un premier sac. Une poussière épaisse se soulève. Le couinement cesse.</p>
       <p>Tu tires sur la cordelette du suivant. Un rat difforme, beaucoup trop gros pour l’espace qu’il occupe, jaillit entre les plis. Il se jette sur toi, les pattes tendues.</p>
       <p>Tu recules juste assez pour dégainer. Il bondit à nouveau.</p>
@@ -5446,7 +5452,7 @@ const STORY = {
     ]
   },
   c197: {
-    number:'PAGE 107',title:'Une silhouette dans le couloir',image:'Une silhouette dans le couloir',
+    number:'PAGE 107',title:'',image:'Une silhouette dans le couloir',
     text:s=>`<p>Un peu plus loin, un corps est accroupi dans l’angle d’un mur. Tu entends des sanglots.</p>
       ${s.flags.youngKnightOutcome==='defeated'
         ? '<p>Le jeune chevalier ne bouge plus. Tu détournes les yeux.</p>'
@@ -5459,7 +5465,7 @@ const STORY = {
          {label:'Ne pas prendre le risque et continuer d’avancer',to:'c200',effect:t=>{t.flags.youngKnightOutcome='left';}}]
   },
   c198: {
-    number:'PAGE 108',title:'Le jeune chevalier',noImage:true,
+    number:'PAGE 108',title:'',noImage:true,
     text:`<p>Il essaie d’essuyer ses joues, mais ses épaules continuent de trembler.</p>
       <blockquote>« Je croyais être plus fort que les autres. Je suis venu défier la malédiction. »</blockquote>
       <p>Il regarde autour de lui, affolé.</p>
@@ -5483,7 +5489,7 @@ const STORY = {
     choices:[{label:'Reprendre la route vers la salle ronde',to:'c104'}]
   },
   c200: {
-    number:'PAGE 110',title:'Continuer seul',noImage:true,
+    number:'PAGE 110',title:'',noImage:true,
     text:`<p>« Je suis désolé. Je dois continuer seul. »</p>
       <p>Le jeune chevalier laisse retomber sa main. Tu t’éloignes sans savoir s’il comprend encore tes paroles. Ses sanglots s’effacent derrière toi.</p>`,
     choices:[{label:'Rejoindre la salle ronde',to:'c104'}]
@@ -5500,7 +5506,7 @@ const STORY = {
     choices:[{label:'Affronter la horde — test de Dextérité',to:'c202',diceTest:true,effect:cavernCombat}]
   },
   c202: {
-    number:'PAGE 202',title:'Le carnage',
+    number:'PAGE 202',title:'',
     text:s=>{
       const r=s.flags.cavernCombat;
       if(!r) return '<p>La horde approche. Tu n’as pas encore affronté les créatures.</p>';
@@ -5531,7 +5537,7 @@ const STORY = {
     ]
   },
   c204: {
-    number:'PAGE 204',title:'Le piège d’Aldren',
+    number:'PAGE 204',title:'',
     text:`<p>Tu te précipites vers lui. Trop tard, tu distingues la masse infâme qui a remplacé ses jambes. Un tentacule bondit et te lacère le visage.</p>
       <p><strong>−3 Vie · +2 Terre noire.</strong></p>
       <p>Tu recules en suffoquant. Aldren te regarde encore, perdu entre douleur et honte. Alors tu lèves ton arme. Le coup part presque tout seul. Le corps qui porte encore le visage du chevalier s’effondre enfin.</p>
@@ -5539,7 +5545,7 @@ const STORY = {
     choices:s=>s.hp<=0||s.flags.blackEarthTransformed?terminalChoices():[{label:'Récupérer la lame noire dans ses affaires',to:'c206',effect:takeBlackBlade}]
   },
   c205: {
-    number:'PAGE 205',title:'Les dernières paroles',
+    number:'PAGE 205',title:'',
     text:`<p>« Je ne sais plus quoi faire. Écouter la voix… ou tuer ce qui nous appelle ? Je ne distingue plus mes propres pensées. »</p>
       <p>Aldren montre du regard le bas de son corps. Sous son manteau, des tentacules enserrent sa sacoche.</p>
       <blockquote>« J’ai trouvé la lame noire. Elle est là. Mais mon corps ne m’obéit plus. Je ne peux même pas te la donner. »</blockquote>
@@ -5552,7 +5558,7 @@ const STORY = {
     ]
   },
   c206: {
-    number:'PAGE 206',title:'La lame noire',noImage:true,
+    number:'PAGE 206',title:'',noImage:true,
     text:s=>`<p>${s.flags.aldrenOutcome==='killed_after_talk'
       ? 'Tu saisis ton épée. Aldren te regarde une dernière fois sans détourner les yeux. Tu avances la lame et la lui enfonces dans la poitrine. Son corps se tend, puis se relâche contre la pierre. Une larme glisse sur ta joue. Pendant un instant, tu revois le chevalier qui t’a appris à tenir une arme, à monter à cheval et à ne pas fuir devant la peur. Tu viens de transpercer ton maître de ta propre épée. Tu restes à genoux près de lui quelques secondes, incapable de bouger.'
       :s.flags.aldrenOutcome==='killed_immediately'
@@ -5565,7 +5571,7 @@ const STORY = {
     choices:[{label:'Poursuivre vers les galeries derrière la porte',to:'c209'}]
   },
   c207: {
-    number:'PAGE 207',title:'Le prix du sauvetage',noImage:true,
+    number:'PAGE 207',title:'',noImage:true,
     text:`<p>Tu frappes les tentacules pour dégager la sacoche. Ils se tordent autour d’Aldren et se défendent comme s’ils faisaient désormais partie de lui. Soudain, l’un d’eux se détend et te fouette au visage. La douleur t’aveugle un instant. <strong>−1 Vie.</strong></p>
       <p>Tu recules d’un pas, puis reprends aussitôt l’attaque, sans relâche. Chaque coup arrache un cri au chevalier. Tu continues pourtant. Tu n’as plus d’autre moyen.</p>
       <p>La chair noire se replie, se déchire, puis finit par retomber contre la pierre. Aldren ne crie plus.</p>
@@ -5575,7 +5581,7 @@ const STORY = {
     choices:s=>s.hp<=0?terminalChoices():[{label:'Poursuivre avec la lame noire',to:'c209'}]
   },
   c208: {
-    number:'PAGE 208',title:'La demande d’Aldren',noImage:true,
+    number:'PAGE 208',title:'',noImage:true,
     text:`<p>Tu ranges ton arme. Aldren comprend immédiatement ce que tu refuses de faire.</p>
       <blockquote>« Non. Écoute-moi. La lame est indispensable. Tue-moi. Prends-la. Va jusqu’au bout. »</blockquote>
       <p>Il insiste, tente encore de te convaincre. Tu sais qu’il a raison. Après tout ce que tu as découvert, tu as compris que la lame noire pourrait être indispensable pour affronter ce qui se trouve au bout de ces galeries.</p>
@@ -5586,7 +5592,7 @@ const STORY = {
     ]
   },
   c222: {
-    number:'PAGE 222',title:'Laisser Aldren',noImage:true,
+    number:'PAGE 222',title:'',noImage:true,
     text:`<p>Tu recules. Aldren ferme les yeux.</p>
       <p>La lame noire reste dans la sacoche prise entre les tentacules. Tu sais ce que cela peut te coûter. Tu poursuis pourtant ta quête sans elle.</p>`,
     choices:[{label:'Entrer dans le labyrinthe',to:'c209'}]
@@ -5643,7 +5649,7 @@ const STORY = {
     choices:[{label:'Écouter ce que l’esprit veut te dire',to:'c212'}]
   },
   c212: {
-    number:'PAGE 212',title:'La vérité du prisonnier',
+    number:'PAGE 212',title:'',
     text:s=>`<p>La sphère verte se contracte doucement. La voix se répand dans la salle.</p>
       ${contaminationLevel(s)<=8?'<blockquote>« Te voilà enfin. Merci d’avoir affronté tous ces dangers pour me libérer. Le temps presse. Mes forces s’épuisent. »</blockquote>':''}
       ${contaminationLevel(s)<=3
@@ -5679,7 +5685,7 @@ const STORY = {
     choices:[{label:'Reprendre le chemin de la surface',to:'c220'}]
   },
   c220: {
-    number:'PAGE 214',title:'Le chemin du retour',
+    number:'PAGE 214',title:'',
     text:`<p>Les passages qui t’avaient semblé interminables se franchissent presque sans effort. Là où tu devais ramper, escalader et reprendre ton souffle, tu avances maintenant d’un pas assuré. Aucun monstre ne t’attaque. Tu en aperçois même deux qui reculent dans l’obscurité, puis s’enfuient à ta vue.</p>
       <p>Lorsque tu retrouves enfin la lumière du jour, tu te sens léger, puissant, presque indestructible.</p>
       <p>Tu retournes à Valombre. Les habitants se montrent étrangement chaleureux, bien plus que de coutume. Ils t’accueillent avec des sourires, t’offrent à boire, insistent pour porter tes affaires. Tu n’as pourtant raconté à personne ce qui s’est passé dans la grotte.</p>
@@ -5736,7 +5742,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c216: {
-    number:'PAGE 218',title:'Une arme ordinaire',
+    number:'PAGE 218',title:'',
     text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
       <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
       <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
@@ -5772,7 +5778,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c221: {
-    number:'PAGE 221',title:'Une arme ordinaire',
+    number:'PAGE 221',title:'',
     text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
       <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
       <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
@@ -6917,7 +6923,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 110,
+    contentVersion: 112,
     pageMapVersion: 86,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
