@@ -5656,7 +5656,7 @@ const STORY = {
     choices:[{label:'Voir ce que devient Valombre',to:'c217'}]
   },
   c214: {
-    number:'PAGE 215',title:'La fin de l’esprit',noImage:true,
+    number:'PAGE 215',title:'La fin de l’esprit',
     text:s=>`<p>Tu enfonces la lame noire dans le cœur de la lumière. La sphère se déchire dans un souffle vert. Une onde terrifiante t’arrache presque l’arme des mains et te projette en arrière.</p>
       <p>Puis le souffle faiblit et tout redevient noir. Un noir calme, presque apaisant. Un silence absolu.</p>
       <p>Tu restes longtemps immobile. Après les combats, les pièges et les voix qui t’ont poursuivi jusque dans les profondeurs, tu peux enfin reprendre ta respiration.</p>
@@ -5670,7 +5670,7 @@ const STORY = {
     choices:[{label:'Rejoindre Valombre',to:'c218'}]
   },
   c218: {
-    number:'PAGE 216',title:'Le retour à Valombre',noImage:true,
+    number:'PAGE 216',title:'Le retour à Valombre',
     text:s=>`<p>De retour au village, tout te paraît calme. Le bruit d’une porte qu’on ouvre, une conversation sur la place, l’odeur du pain : ces choses ordinaires te bouleversent après ce que tu viens de traverser.</p>
       <p>Les semaines passent, puis les mois. Valombre reprend lentement vie. Les étals se remplissent, les familles reviennent et tu aides les habitants à renouer le commerce avec les régions voisines. Rien ne change d’un coup, mais chaque petite victoire compte.</p>
       ${s.flags.aldrenOutcome==='severed'
@@ -5689,7 +5689,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c215: {
-    number:'PAGE 217',title:'L’effondrement',noImage:true,
+    number:'PAGE 217',title:'L’effondrement',
     text:`<p>Tu places la poudre aux quatre coins de la pièce, puis tu déroules les mèches jusqu’au centre.</p>
       <p>Tu repenses à tout le chemin parcouru. Une dernière pensée pour Sir Aldren. Une dernière pensée aussi pour cette vie d’aventure que tu ne vivras pas.</p>
       <p>Tu allumes les mèches. Les flammes brillent doucement et avancent sans trembler le long de la pierre.</p>
@@ -5702,7 +5702,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c216: {
-    number:'PAGE 218',title:'Une arme ordinaire',noImage:true,
+    number:'PAGE 218',title:'Une arme ordinaire',
     text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
       <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
       <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
@@ -5711,7 +5711,7 @@ const STORY = {
     choices:terminalChoices()
   },
   c217: {
-    number:'PAGE 219',title:'La fin d’un règne',noImage:true,
+    number:'PAGE 219',title:'La fin d’un règne',
     text:`<p>Un beau jour, sur la place de Valombre, un marchand inconnu s’approche de toi. Il te parle d’une voix douce. Tu te penches pour l’entendre.</p>
       <p>D’un mouvement brutal, il tire une lame noire de sous son manteau et te l’enfonce profondément dans la poitrine.</p>
       <p>Une douleur fulgurante te traverse. La force qui t’habitait depuis la grotte disparaît d’un seul coup. Tu tombes à genoux.</p>
@@ -6872,7 +6872,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 97,
+    contentVersion: 98,
     pageMapVersion: 84,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
