@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 111,
+  "contentVersion": 114,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 23,
-  "buildLabel": "V68.112 — Travail : nettoyage renforcé des titres visibles.",
+  "buildLabel": "V68.114 — Travail : fiche héros agrandie retirée des combats ; le cartouche permanent du bas reste la référence pour les caractéristiques.",
   "pageMapVersion": 85
 }

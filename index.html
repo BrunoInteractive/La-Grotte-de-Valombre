@@ -890,18 +890,6 @@ button { font: inherit; }
    COMBATS OPPOSÉS — V16 TEST
    ========================================================= */
 
-.combat-status-pair {
-  max-width:860px;
-  margin:18px auto 20px;
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-  align-items:start;
-}
-.combat-status-pair .enemy-card { max-width:none; margin:0; height:100%; }
-.hero-combat-card { border-color:#6d644c; background:rgba(255,255,255,.13); }
-.hero-combat-card .enemy-card-title { color:#3c3828; }
-.hero-combat-stats > div:last-child { grid-column:auto; }
 .enemy-card {
   max-width: 560px;
   margin: 18px auto 20px;
@@ -1334,7 +1322,6 @@ button { font: inherit; }
   .tag-icon { font-size:14px; }
   .tag-copy small { font-size:9px; }
   .tag-copy strong { font-size:14px; }
-  .combat-status-pair { grid-template-columns:1fr; gap:8px; }
 }
 
 </style>
@@ -1392,7 +1379,7 @@ button { font: inherit; }
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.112</h3>
+      <h3>Pages · TEST — V68.114</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -1411,7 +1398,7 @@ button { font: inherit; }
 
   <script src="./engine/core.js"></script>
   <script src="./app/catalog.js"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.109"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.114"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.70"></script>
   <script src="./engine/reader.js?v=68.109"></script>
 </body>

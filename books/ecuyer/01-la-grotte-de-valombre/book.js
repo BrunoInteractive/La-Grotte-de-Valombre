@@ -316,41 +316,19 @@ function combatActionChoices(state, key, enemy, pageId, rollLabel = null) {
   return list;
 }
 
-function compactWeaponLabel(state) {
-  if (state.weapon === 'heavy') return 'Épée lourde';
-  if (state.weapon === 'light') return 'Épée légère';
-  if (state.weapon === 'black_blade') return 'Lame noire';
-  if (state.weapon === 'sorcerer_sword') return 'Épée rouge';
-  return 'Aucune';
-}
-function heroCombatCardHtml(state) {
-  const protection = currentProtection(state);
-  const protectionMax = maxProtection(state);
-  return `<div class="enemy-card hero-combat-card" aria-label="Ta fiche de combat">
-      <div class="enemy-card-title">TOI — ${heroName(state)}</div>
-      <div class="enemy-card-stats hero-combat-stats">
-        <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${state.hp} / ${state.maxHp}</strong></div>
-        <div><span class="enemy-icon">◆</span><span>Dextérité</span><strong>${currentDexterity(state)}</strong></div>
-        <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${currentForce(state)}</strong></div>
-        <div><span class="enemy-icon">†</span><span>Arme</span><strong>${compactWeaponLabel(state)}</strong></div>
-        <div><span class="enemy-icon">🛡</span><span>Protection</span><strong>${protection} / ${protectionMax}</strong></div>
-        <div><span class="enemy-icon">●</span><span>Terre noire</span><strong>${contaminationLevel(state)} / 13</strong></div>
-      </div>
-    </div>`;
-}
 function enemyCardHtml(state, key, enemy) {
   const combat = combatState(state, key, enemy);
   const enemyHtml = `<div class="enemy-card" aria-label="Fiche de l’adversaire">
       <div class="enemy-card-title">${enemy.name}</div>
       <div class="enemy-card-stats">
         <div><span class="enemy-icon">♥</span><span>Vie</span><strong>${combat.hp} / ${enemy.maxHp}</strong></div>
-        <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${enemy.force}</strong></div>
         <div><span class="enemy-icon">◆</span><span>Dextérité</span><strong>${enemy.dexterity}</strong></div>
-        <div><span class="enemy-icon">⚔</span><span>Arme</span><strong>${enemy.weaponName || 'Aucune'}</strong></div>
+        <div><span class="enemy-icon">⚔</span><span>Force</span><strong>${enemy.force}</strong></div>
+        <div><span class="enemy-icon">†</span><span>Arme</span><strong>${enemy.weaponName || 'Aucune'}</strong></div>
         <div><span class="enemy-icon">✦</span><span>Dégâts</span><strong>${forceDamageBonus(enemy.force) + (Number.isFinite(enemy.weaponPower) ? enemy.weaponPower : 0)}</strong></div>
       </div>
     </div>`;
-  return `<div class="combat-status-pair">${heroCombatCardHtml(state)}${enemyHtml}</div>`;
+  return enemyHtml;
 }
 
 function combatRoundHtml(state, key, enemy) {
@@ -647,8 +625,8 @@ function ensureSentinels(state) {
 }
 function sentinelCardsHtml(state) {
   const f = ensureSentinels(state);
-  const enemyHtml = `<div class="enemy-card"><div class="enemy-card-title">DEUX SENTINELLES NOIRES</div><div class="enemy-card-stats"><div><span>Sentinelle 1</span><strong>${f.hp[0]}/4 Vie</strong></div><div><span>Sentinelle 2</span><strong>${f.hp[1]}/4 Vie</strong></div><div><span>Dextérité</span><strong>8 chacune</strong></div><div><span>Dégâts</span><strong>1 chacune</strong></div></div></div>`;
-  return `<div class="combat-status-pair">${heroCombatCardHtml(state)}${enemyHtml}</div>`;
+  const enemyHtml = `<div class="enemy-card"><div class="enemy-card-title">DEUX SENTINELLES NOIRES</div><div class="enemy-card-stats"><div><span>Sentinelle 1</span><strong>${f.hp[0]}/4 Vie</strong></div><div><span>Sentinelle 2</span><strong>${f.hp[1]}/4 Vie</strong></div><div><span>Dextérité</span><strong>8 chacune</strong></div><div><span>Force</span><strong>4 chacune</strong></div><div><span>Dégâts</span><strong>1 chacune</strong></div></div></div>`;
+  return enemyHtml;
 }
 function sentinelRound(state, target, blade) {
   state.flags.sentinelResultAcknowledged = false;
@@ -6923,7 +6901,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 112,
+    contentVersion: 114,
     pageMapVersion: 86,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
