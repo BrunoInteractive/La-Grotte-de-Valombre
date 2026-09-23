@@ -1799,6 +1799,89 @@ body::before {
   .image-frame::before { inset:4px; }
   .topbar { margin-bottom:6px; }
 }
+
+
+/* =========================================================
+   V68.121 — TEST DA V3 · TEXTURE BOUTONS / HUD
+   Passe ciblée : texture ardoise plus visible sur les choix.
+   Le HUD reste dynamique et fixé en bas comme dans la logique actuelle.
+   ========================================================= */
+
+/* Texture nettement visible : couches de patine, stries et grain minéral. */
+.choice-btn {
+  overflow:hidden;
+  isolation:isolate;
+  border:1px solid #b08a52;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(147,177,185,.12) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 71% 36%, rgba(5,12,16,.28) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 37% 82%, rgba(169,195,198,.07) 0 1px, transparent 1.8px),
+    repeating-linear-gradient(18deg, rgba(255,255,255,.025) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(111deg, rgba(0,0,0,.055) 0 1px, transparent 1px 8px),
+    linear-gradient(180deg, #31434b 0%, #24343c 42%, #18252c 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(6,10,13,.94),
+    inset 0 0 0 3px rgba(191,151,88,.20),
+    inset 0 14px 26px rgba(255,255,255,.025),
+    inset 0 -18px 30px rgba(0,0,0,.17),
+    0 7px 16px rgba(0,0,0,.20);
+}
+.choice-btn::before,
+.choice-btn::after {
+  z-index:3;
+  border-color:#c09a5e;
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,.45));
+}
+.choice-btn:hover {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(161,194,201,.14) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 71% 36%, rgba(5,12,16,.24) 0 1.2px, transparent 2px),
+    repeating-linear-gradient(18deg, rgba(255,255,255,.03) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(111deg, rgba(0,0,0,.05) 0 1px, transparent 1px 8px),
+    linear-gradient(180deg, #3a505a 0%, #293d45 48%, #1d2d34 100%);
+}
+.choice-btn:active {
+  transform:translateY(1px);
+  box-shadow:
+    inset 0 0 0 1px rgba(6,10,13,.95),
+    inset 0 0 0 3px rgba(191,151,88,.22),
+    inset 0 12px 26px rgba(0,0,0,.18),
+    0 3px 9px rgba(0,0,0,.17);
+}
+.choice-copy, .choice-dest { position:relative; z-index:2; }
+.choice-copy {
+  color:#f4ead7;
+  text-shadow:0 1px 1px rgba(0,0,0,.55), 0 0 8px rgba(0,0,0,.18);
+}
+.choice-dest {
+  border-top:1px solid rgba(203,163,97,.42);
+  color:#c7b590;
+}
+
+/* HUD : conserver son comportement dynamique, avec matière cohérente mais lisible. */
+.status-tags {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(123,151,158,.08), transparent 30%),
+    repeating-linear-gradient(118deg, rgba(255,255,255,.012) 0 1px, transparent 1px 7px),
+    linear-gradient(180deg, rgba(35,50,58,.985), rgba(17,27,33,.985));
+}
+.tag {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012)),
+    rgba(7,14,18,.20);
+}
+
+@media (max-width:700px) {
+  .choice-btn {
+    box-shadow:
+      inset 0 0 0 1px rgba(6,10,13,.94),
+      inset 0 0 0 2px rgba(191,151,88,.19),
+      inset 0 10px 22px rgba(255,255,255,.022),
+      inset 0 -14px 24px rgba(0,0,0,.15),
+      0 5px 12px rgba(0,0,0,.18);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1854,7 +1937,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.120 · TEST DA V2</h3>
+      <h3>Pages · TEST — V68.121 · TEST DA V3</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -1873,8 +1956,8 @@ body::before {
 
   <script src="./engine/core.js"></script>
   <script src="./app/catalog.js"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.120"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.120"></script>
-  <script src="./engine/reader.js?v=68.120"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.121"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.121"></script>
+  <script src="./engine/reader.js?v=68.121"></script>
 </body>
 </html>
