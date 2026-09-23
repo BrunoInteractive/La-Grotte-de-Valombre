@@ -5518,11 +5518,12 @@ const STORY = {
     text:`<p>« Je ne sais plus quoi faire. Écouter la voix… ou tuer ce qui nous appelle ? Je ne distingue plus mes propres pensées. »</p>
       <p>Aldren montre du regard le bas de son corps. Sous son manteau, des tentacules enserrent sa sacoche.</p>
       <blockquote>« J’ai trouvé la lame noire. Elle est là. Mais mon corps ne m’obéit plus. Je ne peux même pas te la donner. »</blockquote>
-      <p>Ses traits se crispent. Quelque chose remue sous le tissu. Tu reconnais encore sa voix, mais son corps lui échappe déjà.</p>`,
+      <p>Ses traits se crispent. Quelque chose remue sous le tissu. Tu reconnais encore sa voix, mais son corps lui échappe déjà.</p>
+      <p>Cette lame noire… celle dont parlent toutes les fresques et tous les avertissements. La laisser ici, même pour un temps, pourrait être un risque.</p>`,
     choices:[
       {label:'Achever Aldren et prendre la lame',to:'c206',effect:s=>{s.flags.aldrenOutcome='killed_after_talk';takeBlackBlade(s);}},
       {label:'Couper les tentacules pour dégager la sacoche',to:'c207',effect:s=>{if(s.flags.aldrenOutcome)return;s.flags.aldrenOutcome='severed';s.hp=Math.max(0,s.hp-1);takeBlackBlade(s);}},
-      {label:'Ne pas le blesser et le laisser dans le recoin',to:'c208',effect:s=>{s.flags.aldrenOutcome='spared';}}
+      {label:'Ne pas prendre le risque de le blesser davantage. Revenir le chercher plus tard',to:'c208',effect:s=>{s.flags.aldrenOutcome='spared';}}
     ]
   },
   c206: {
@@ -6884,7 +6885,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 100,
+    contentVersion: 101,
     pageMapVersion: 85,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
