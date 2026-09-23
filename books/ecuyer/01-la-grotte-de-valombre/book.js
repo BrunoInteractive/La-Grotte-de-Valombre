@@ -5588,7 +5588,7 @@ const STORY = {
   },
   c210: {
     number:'PAGE 210',title:'Une autre survivante',noImage:true,
-    text:`<p>Tu entres dans une petite pièce sombre. Une femme inconnue est assise contre la roche. Ses vêtements sont déchirés et sa respiration sifflante.</p>
+    text:`<p>Tu entres dans une petite pièce sombre. Une femme inconnue est assise contre la roche. Ses vêtements abîmés laissent deviner qu’elle est une guerrière, mais toute sa force semble l’avoir quittée depuis longtemps.</p>
       <blockquote>« J’y étais presque. À deux doigts de mettre fin au règne de cette chose. »</blockquote>
       <p>Tu lui demandes comment elle sait qu’il faut détruire l’esprit.</p>
       <blockquote>« Comment ça ? »</blockquote>
@@ -5601,8 +5601,9 @@ const STORY = {
   },
   c211: {
     number:'PAGE 211',title:'La chambre de l’esprit',noImage:true,
-    text:`<p>Tu franchis une dernière ouverture. La salle est ronde et gigantesque. Des boules de feu flottent dans des supports fixés à la paroi. Leur lumière jaune intense entoure un centre bleuté.</p>
-      <p>Au milieu de la chambre, une sphère entièrement verte diffuse un éclat presque aveuglant. De longues veines de lumière partent d’elle et s’enfoncent dans la roche.</p>
+    text:`<p>Tu franchis une dernière ouverture. La salle est ronde et gigantesque. Les parois montent très haut dans l’ombre, suintantes, presque perdues dans l’obscurité. Tout autour, d’étranges flammes immobiles reposent dans des supports fixés à la pierre. Leur lumière jaune intense entoure un centre qui baigne dans une lueur d’un vert violent, comme si ce feu ne venait pas de ce monde.</p>
+      <p>Le sol luit d’humidité. Une brume basse rampe entre les pointes de roche noire, et les reflets verts et dorés tremblent sur la pierre comme sur une eau sombre. L’air semble plus lourd ici, chargé d’une chaleur étrange et d’un silence oppressant.</p>
+      <p>Au milieu de la chambre, une sphère entièrement verte diffuse un éclat presque aveuglant. De longues veines sombres et lumineuses l’enserrent, puis remontent et s’enfoncent dans la roche, comme si toute la caverne vivait à son rythme.</p>
       <p>Une voix résonne dans ta tête.</p>
       <blockquote>« Enfin. Approche. »</blockquote>`,
     choices:[{label:'Écouter ce que l’esprit veut te dire',to:'c212'}]
