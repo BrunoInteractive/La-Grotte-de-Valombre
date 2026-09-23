@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 108,
+  "contentVersion": 109,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 23,
-  "buildLabel": "V68.108 — Travail : quatre jets obligatoires dans le labyrinthe avant le début des tests de sortie.",
+  "buildLabel": "V68.109 — Travail : messages distincts pour les trois fins découvertes et pour les morts, avec récapitulatif du journal après une fin.",
   "pageMapVersion": 85
 }

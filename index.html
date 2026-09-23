@@ -1232,6 +1232,35 @@ button { font: inherit; }
 .journal-entry p {font-size:clamp(15px,2.8vw,17px);line-height:1.5;margin:0;color:#3c3024;}
 .journal-empty {font-style:italic;color:#695740;line-height:1.5;}
 @media(max-width:620px){.journal-panel{padding:7px}.journal-sheet{width:100%;max-height:calc(100dvh - 14px)}.journal-head{padding:16px 13px 12px}.journal-content{padding:10px 13px 20px}.journal-entry{padding:12px}}
+
+/* V68.109 — messages de fin et récapitulatif du journal. */
+.adventure-conclusion {
+  margin: 30px 0 20px;
+  padding: 18px 20px;
+  border: 2px solid #9b7a50;
+  background: rgba(245,232,201,.72);
+  box-shadow: 0 6px 18px rgba(47,36,25,.10);
+}
+.adventure-conclusion h3,
+.ending-journal-recap h3 {
+  margin: 0 0 10px;
+  font-family: var(--display-font);
+  font-size: clamp(24px,4vw,32px);
+  line-height: 1.15;
+  color: #3b2b1e;
+}
+.adventure-conclusion p { margin:0; line-height:1.45; }
+.adventure-conclusion-death { border-color:#76513f; }
+.ending-journal-recap {
+  margin: 22px 0 10px;
+  padding-top: 18px;
+  border-top: 4px double #92714c;
+}
+.ending-journal-list { display:flex; flex-direction:column; gap:12px; margin-top:14px; }
+.ending-journal-entry { border-left:3px solid #a7834c; background:rgba(255,252,242,.42); padding:12px 14px; }
+.ending-journal-entry h4 { margin:0 0 6px; font-family:var(--display-font); font-size:clamp(18px,3.3vw,22px); color:#35291f; }
+.ending-journal-entry p { margin:0; font-size:clamp(15px,2.6vw,17px); line-height:1.45; color:#3c3024; }
+.ending-journal-empty { font-style:italic; color:#695740; }
 /* V68.51 — sentinelles : affichage des dés enregistrés */
 
 /* V68.51 — Résultats de combat : deuxième sentinelle. */
@@ -1318,7 +1347,7 @@ button { font: inherit; }
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.108</h3>
+      <h3>Pages · TEST — V68.109</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -1337,8 +1366,8 @@ button { font: inherit; }
 
   <script src="./engine/core.js"></script>
   <script src="./app/catalog.js"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.97"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.109"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.70"></script>
-  <script src="./engine/reader.js?v=68.92"></script>
+  <script src="./engine/reader.js?v=68.109"></script>
 </body>
 </html>

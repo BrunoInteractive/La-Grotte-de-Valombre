@@ -273,6 +273,57 @@ function currentRunJournalEntries() {
   }
   return entries;
 }
+
+function appendAdventureConclusion(renderNodeId) {
+  // Trois fins narratives sont considérées comme découvertes, même lorsque
+  // le héros y laisse la vie (l'effondrement et la fin d'un règne).
+  const discoveredEndingNodes = new Set(['c215', 'c217', 'c218']);
+  const discoveredEnding = discoveredEndingNodes.has(renderNodeId);
+  const deathEnding = !discoveredEnding && (state.hp <= 0 || state.flags?.blackEarthTransformed || renderNodeId === 'c216' || renderNodeId === 'c221');
+  if (!discoveredEnding && !deathEnding) return;
+
+  const notice = document.createElement('section');
+  notice.className = `adventure-conclusion ${discoveredEnding ? 'adventure-conclusion-success' : 'adventure-conclusion-death'}`;
+
+  const title = document.createElement('h3');
+  title.textContent = discoveredEnding ? 'Une fin possible' : 'Votre aventure s’achève ici';
+  const copy = document.createElement('p');
+  copy.textContent = discoveredEnding
+    ? 'Vous avez découvert l’une des fins possibles de La Grotte de Valombre. Pour en apprendre davantage sur cette histoire, vous pouvez recommencer l’aventure, emprunter de nouveaux passages et faire d’autres choix.'
+    : 'C’est la fin de votre aventure. Vous n’avez pas réussi à résoudre l’énigme de Valombre. Vous pouvez recommencer l’aventure, faire de nouveaux choix, emprunter de nouveaux passages et tenter de libérer votre village.';
+  notice.append(title, copy);
+  storyText.appendChild(notice);
+
+  if (!discoveredEnding) return;
+
+  const recap = document.createElement('section');
+  recap.className = 'ending-journal-recap';
+  const recapTitle = document.createElement('h3');
+  recapTitle.textContent = 'Ce que votre journal révèle';
+  const entries = currentRunJournalEntries();
+  recap.appendChild(recapTitle);
+  if (!entries.length) {
+    const empty = document.createElement('p');
+    empty.className = 'ending-journal-empty';
+    empty.textContent = 'Vous avez atteint cette fin sans consigner de découverte majeure dans votre journal.';
+    recap.appendChild(empty);
+  } else {
+    const list = document.createElement('div');
+    list.className = 'ending-journal-list';
+    entries.forEach(entry => {
+      const item = document.createElement('article');
+      item.className = 'ending-journal-entry';
+      const heading = document.createElement('h4');
+      heading.textContent = STORY[entry.page]?.title?.trim() || entry.title;
+      const text = document.createElement('p');
+      text.textContent = entry.text;
+      item.append(heading, text);
+      list.appendChild(item);
+    });
+    recap.appendChild(list);
+  }
+  storyText.appendChild(recap);
+}
 function renderJournal() {
   journalList.replaceChildren();
   const entries = currentRunJournalEntries();
@@ -375,6 +426,8 @@ function render() {
       panel.append(verdict);
     }
   }
+
+  appendAdventureConclusion(renderNodeId);
 
   document.querySelectorAll('.hero-gender-input').forEach(input => {
     input.addEventListener('change', event => {
