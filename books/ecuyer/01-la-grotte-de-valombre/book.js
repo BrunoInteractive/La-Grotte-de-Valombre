@@ -5600,10 +5600,10 @@ const STORY = {
     ]
   },
   c211: {
-    number:'PAGE 211',title:'La chambre de l’esprit',noImage:true,
-    text:`<p>Tu franchis une dernière ouverture. La salle est ronde et gigantesque. Les parois montent très haut dans l’ombre, suintantes, presque perdues dans l’obscurité. Tout autour, d’étranges flammes immobiles reposent dans des supports fixés à la pierre. Leur lumière jaune intense entoure un centre qui baigne dans une lueur d’un vert violent, comme si ce feu ne venait pas de ce monde.</p>
-      <p>Le sol luit d’humidité. Une brume basse rampe entre les pointes de roche noire, et les reflets verts et dorés tremblent sur la pierre comme sur une eau sombre. L’air semble plus lourd ici, chargé d’une chaleur étrange et d’un silence oppressant.</p>
-      <p>Au milieu de la chambre, une sphère entièrement verte diffuse un éclat presque aveuglant. De longues veines sombres et lumineuses l’enserrent, puis remontent et s’enfoncent dans la roche, comme si toute la caverne vivait à son rythme.</p>
+    number:'PAGE 211',title:'La chambre de l’esprit',
+    text:`<p>Tu franchis une dernière ouverture. La salle est ronde et gigantesque. Les parois montent très haut dans l’ombre, suintantes, presque perdues dans l’obscurité. Au centre, une lueur d’un vert violent semble jaillir de la pierre elle-même.</p>
+      <p>Le sol luit d’humidité. Une brume basse rampe entre les pointes de roche noire. L’air semble plus lourd ici, chargé d’une chaleur étrange et d’un silence oppressant.</p>
+      <p>Au milieu de la chambre, une sphère entièrement verte diffuse un éclat presque aveuglant. De longs liens d’un rouge sombre l’enserrent et s’ancrent profondément dans la roche. Ils semblent moins la soutenir que la retenir, comme s’ils empêchaient sa lumière — ou quelque chose d’elle — de se répandre dans toute la caverne.</p>
       <p>Une voix résonne dans ta tête.</p>
       <blockquote>« Enfin. Approche. »</blockquote>`,
     choices:[{label:'Écouter ce que l’esprit veut te dire',to:'c212'}]
@@ -6872,7 +6872,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 92,
+    contentVersion: 96,
     pageMapVersion: 84,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
