@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 121,
+  "contentVersion": 122,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 23,
-  "buildLabel": "V68.121 — Travail · TEST DA V3 : texture ardoise renforcée et visible sur les boutons de choix ; HUD conservé dynamique et harmonisé.",
+  "buildLabel": "V68.122 — Travail · TEST DA V4 : texture ardoise bleu-noir unifiée sur tous les éléments interactifs ; aucune image ajoutée.",
   "pageMapVersion": 85
 }

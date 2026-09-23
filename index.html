@@ -1882,6 +1882,192 @@ body::before {
   }
 }
 
+
+/* =========================================================
+   V68.122 — TEST DA V4 · TEXTURE ARDOISE UNIFIÉE
+   Même matière sombre sur tous les éléments interactifs.
+   CSS uniquement : aucune image ajoutée.
+   ========================================================= */
+:root {
+  --ui-slate-surface:
+    radial-gradient(ellipse at 9% 14%, rgba(116,151,160,.16) 0%, rgba(116,151,160,.045) 20%, transparent 42%),
+    radial-gradient(ellipse at 82% 92%, rgba(2,8,12,.36) 0%, rgba(2,8,12,.11) 32%, transparent 60%),
+    radial-gradient(circle at 29% 72%, rgba(154,181,184,.070) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 68% 23%, rgba(205,220,218,.045) 0 .8px, transparent 1.5px),
+    radial-gradient(circle at 88% 48%, rgba(0,0,0,.18) 0 1.1px, transparent 2px),
+    radial-gradient(circle at 47% 38%, rgba(0,0,0,.14) 0 .9px, transparent 1.8px),
+    repeating-linear-gradient(16deg, rgba(255,255,255,.019) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(107deg, rgba(0,0,0,.040) 0 1px, transparent 1px 9px),
+    linear-gradient(180deg, #263a43 0%, #1d2e36 48%, #142229 100%);
+  --ui-slate-surface-hover:
+    radial-gradient(ellipse at 9% 14%, rgba(137,174,183,.18) 0%, rgba(137,174,183,.055) 20%, transparent 42%),
+    radial-gradient(ellipse at 82% 92%, rgba(2,8,12,.30) 0%, rgba(2,8,12,.09) 32%, transparent 60%),
+    radial-gradient(circle at 29% 72%, rgba(177,201,202,.080) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 68% 23%, rgba(218,229,226,.052) 0 .8px, transparent 1.5px),
+    repeating-linear-gradient(16deg, rgba(255,255,255,.023) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(107deg, rgba(0,0,0,.034) 0 1px, transparent 1px 9px),
+    linear-gradient(180deg, #304751 0%, #243842 50%, #192931 100%);
+  --ui-bronze:#b38b50;
+  --ui-bronze-soft:rgba(190,148,83,.33);
+  --ui-cream:#f0e4cc;
+  --ui-cream-muted:#c8b894;
+}
+
+/* Matière commune : ardoise bleu-noir, patinée, bord bronze et léger biseau. */
+.choice-btn,
+.footer-btn,
+.drawer-action,
+.inventory-action-btn,
+.icon-btn,
+.page-nav-btn,
+.hero-choice-card,
+.tag,
+.enemy-card,
+.enemy-card-stats > div {
+  background:var(--ui-slate-surface);
+  background-color:#18272e;
+  color:var(--ui-cream);
+  border-color:var(--ui-bronze);
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.96),
+    inset 0 0 0 3px rgba(190,148,83,.16),
+    inset 0 11px 22px rgba(255,255,255,.020),
+    inset 0 -16px 24px rgba(0,0,0,.16),
+    0 4px 11px rgba(0,0,0,.17);
+}
+
+.choice-btn:hover,
+.footer-btn:hover,
+.drawer-action:hover,
+.inventory-action-btn:hover:not(:disabled),
+.icon-btn:hover,
+.page-nav-btn:hover,
+.hero-choice-card:hover {
+  background:var(--ui-slate-surface-hover);
+  border-color:#c39a5e;
+}
+
+.choice-btn:active,
+.footer-btn:active,
+.drawer-action:active,
+.inventory-action-btn:active:not(:disabled),
+.icon-btn:active,
+.page-nav-btn:active {
+  transform:translateY(1px);
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.97),
+    inset 0 0 0 3px rgba(190,148,83,.18),
+    inset 0 10px 22px rgba(0,0,0,.18),
+    0 2px 7px rgba(0,0,0,.14);
+}
+
+/* Boutons narratifs : même matière que la référence, en grand format. */
+.choice-btn {
+  border-width:1px;
+  outline:1px solid rgba(18,12,7,.82);
+  outline-offset:2px;
+}
+.choice-btn::before,
+.choice-btn::after { border-color:#c29a5d; }
+.choice-copy { color:#f4ead7; }
+.choice-dest { color:#c7b690; border-top-color:rgba(199,156,91,.44); }
+
+/* HUD : chaque case reprend exactement la même matière. */
+.status-tags {
+  background:var(--ui-slate-surface);
+  background-color:#142229;
+  border-color:#aa8249;
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.46),
+    inset 0 0 0 1px rgba(5,9,11,.94),
+    inset 0 0 0 3px rgba(190,148,83,.11),
+    inset 0 -18px 26px rgba(0,0,0,.18);
+}
+.tag {
+  min-width:0;
+  border-color:rgba(184,142,79,.48);
+}
+.tag-copy small { color:#bba984; }
+.tag-copy strong { color:#f2e6cf; }
+.tag-icon { color:#c49a5b; }
+.tag.status-warning {
+  background:var(--ui-slate-surface), linear-gradient(rgba(116,76,27,.20),rgba(116,76,27,.20));
+  border-color:#a87535;
+}
+.tag.status-critical {
+  background:var(--ui-slate-surface), linear-gradient(rgba(116,43,38,.23),rgba(116,43,38,.23));
+  border-color:#9c5045;
+}
+
+/* Barre basse, menu, inventaire et actions : une seule famille visuelle. */
+.footer-btn, .drawer-action, .inventory-action-btn, .icon-btn {
+  color:#ede0c6;
+  text-shadow:0 1px 1px rgba(0,0,0,.42);
+}
+.footer-btn span {
+  background:#b68c4e;
+  color:#152027;
+  box-shadow:inset 0 0 0 1px rgba(255,238,195,.22);
+}
+.inventory-action-btn {
+  outline:1px solid rgba(42,27,16,.78);
+  outline-offset:-3px;
+}
+.inventory-action-btn:disabled {
+  opacity:.38;
+  filter:saturate(.65);
+}
+
+/* Navigation TEST : texture conservée, état courant plus clair. */
+.page-nav-btn {
+  margin:4px 0;
+  border:1px solid rgba(178,137,77,.42);
+  padding:10px 9px;
+}
+.page-nav-btn.current {
+  background:var(--ui-slate-surface-hover);
+  border-color:#c0985c;
+  box-shadow:
+    inset 4px 0 0 #c0985c,
+    inset 0 0 0 1px rgba(5,9,11,.95),
+    inset 0 0 0 3px rgba(190,148,83,.16);
+}
+.page-nav-number { color:#c6a66e; }
+.page-nav-title { color:#f0e5cf; }
+
+/* Sélection du héros : carte interactive sombre, texte remis en clair. */
+.hero-choice-card {
+  border-color:rgba(183,141,79,.70);
+}
+.hero-choice-card.selected {
+  background:var(--ui-slate-surface-hover);
+  border-color:#c39a5e;
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.96),
+    inset 0 0 0 3px rgba(195,154,94,.27),
+    0 0 0 1px rgba(195,154,94,.14);
+}
+.hero-choice-name { color:#f1e4cb; }
+.hero-choice-rank { color:#c1b08e; }
+.hero-choice-portrait { border-color:rgba(192,149,86,.65); }
+
+/* Petits panneaux de combat : même matière que les boutons, sans modifier la logique. */
+.enemy-card-title { color:#f1e4cb; border-bottom-color:rgba(190,148,83,.44); }
+.enemy-card-stats span:not(.enemy-icon) { color:#c0ae89; }
+.enemy-card-stats strong { color:#f3e7d0; }
+.enemy-icon { color:#c39a5d; }
+
+@media (max-width:700px) {
+  .choice-btn, .footer-btn, .drawer-action, .inventory-action-btn, .icon-btn, .page-nav-btn, .hero-choice-card, .tag, .enemy-card, .enemy-card-stats > div {
+    box-shadow:
+      inset 0 0 0 1px rgba(5,9,11,.96),
+      inset 0 0 0 2px rgba(190,148,83,.15),
+      inset 0 8px 18px rgba(255,255,255,.018),
+      inset 0 -12px 20px rgba(0,0,0,.14),
+      0 3px 8px rgba(0,0,0,.15);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1937,7 +2123,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.121 · TEST DA V3</h3>
+      <h3>Pages · TEST — V68.122 · TEST DA V4</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -1956,8 +2142,8 @@ body::before {
 
   <script src="./engine/core.js"></script>
   <script src="./app/catalog.js"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.121"></script>
-  <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.121"></script>
-  <script src="./engine/reader.js?v=68.121"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
+  <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
+  <script src="./engine/reader.js?v=68.122"></script>
 </body>
 </html>
