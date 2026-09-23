@@ -5571,20 +5571,20 @@ const STORY = {
     text:s=>{
       const turns=s.flags.finalMazeTurns||0;
       const scenes=[
-        'Le chemin se rétrécit puis s’agrandit de nouveau, jusqu’à ressembler exactement à celui que tu viens de quitter.',
-        'Le passage tourne à droite, puis à gauche, puis de nouveau à droite. Tu as la sensation de tourner en rond.',
-        'Le chemin monte légèrement avant de redescendre aussitôt. Toutes les pierres semblent identiques.',
-        'Deux galeries se croisent dans un angle impossible. Tu jurerais qu’aucune d’elles n’existait il y a un instant.',
-        'Une fissure laisse passer un souffle d’air, mais il s’éteint presque aussitôt. Les deux directions paraissent aussi fausses l’une que l’autre.',
-        'Le plafond s’abaisse brusquement puis la galerie s’ouvre à nouveau. Rien ne permet de savoir si tu avances vraiment.',
-        'Tu franchis un coude serré et retrouves presque le même couloir, comme si la roche copiait ce que tu venais de voir.',
-        'Le sol penche vers la gauche tandis que la paroi semble t’attirer vers la droite. Le dédale joue avec tes repères.',
-        'Une série de marches taillées grossièrement monte puis s’interrompt devant deux issues semblables.',
-        'La brume s’épaissit entre les pierres. Chaque détour semble effacer le précédent avant même que tu aies pu le mémoriser.'
+        'Tu avances entre de hautes parois de pierre noire. Après plusieurs détours, un carrefour s’ouvre devant toi. Les deux passages sont parfaitement semblables, jusqu’aux mêmes fissures dans les murs.',
+        'Tu débouches dans une nouvelle allée bordée de murs identiques aux précédents. Une lueur orange apparaît au-dessus des pierres. Tu es presque certain de l’avoir déjà vue, sans pouvoir dire quand ni où.',
+        'Le couloir tourne deux fois puis rejoint une intersection en croix. Chaque direction ressemble à celle que tu viens de quitter. Même la brume semble immobile, comme si rien ne permettait de mesurer le chemin parcouru.',
+        'Une haute tour de pierre dépasse des murs au loin, couronnée d’une flamme. Quelques minutes plus tard, tu aperçois une tour exactement semblable dans une autre direction. Tu ne sais plus s’il s’agit de la même.',
+        'Tu longes une succession d’arches sombres et de murs humides. Au prochain croisement, tu reconnais une pierre fendue près du sol. Ou peut-être en as-tu simplement vu une identique ailleurs.',
+        'La galerie débouche sur trois passages presque parfaitement alignés. Même largeur, mêmes blocs sombres, mêmes lueurs au loin. Tu cherches un détail qui pourrait les distinguer, mais n’en trouves aucun.',
+        'Tu crois reconnaître le chemin. Une arche, une flamme derrière un mur, une tache claire sur la pierre. Pourtant, lorsque tu avances, tout semble légèrement différent. Assez pour te faire douter de ta mémoire.',
+        'Les murs se succèdent à perte de vue. Par instants, tu aperçois au-dessus d’eux d’autres couloirs, d’autres tours et d’autres lumières. Le dédale paraît immense, mais à ton niveau chaque passage ressemble au précédent.',
+        'Tu arrives devant un nouveau carrefour. Sur la gauche, une arche sombre. Sur la droite, une autre arche sombre. Tu pourrais jurer être déjà passé ici, mais rien ne te permet de le prouver.',
+        'Après plusieurs virages, tu retrouves une longue allée rectiligne éclairée au loin par une flamme orange. Tu t’arrêtes. C’est exactement l’image que tu gardes d’un passage emprunté quelques minutes plus tôt. Peut-être tournes-tu en rond depuis le début.'
       ];
       const r=s.flags.finalMazeLast;
       return `<p>${scenes[turns%scenes.length]}</p>
-        ${turns===0?'<p>Les directions ne semblent obéir à aucune logique. À chaque intersection, tu risques de tourner en rond.</p>':''}
+        ${turns===0?'<p>Le labyrinthe s’étend bien au-delà de ce que tu peux voir. Les hauts murs masquent presque tout repère, et les mêmes arches, les mêmes pierres et les mêmes lueurs se répètent d’un passage à l’autre. Très vite, tu ne sais plus si tu avances ou si tu reviens sur tes propres pas.</p>':''}
         ${r?finalMazeRollHtml(s):''}
         ${r&&!r.success?'<p>Tu reprends ta marche. Le labyrinthe semble se refermer derrière toi, sans jamais t’offrir le moindre repère fiable.</p>':''}
         ${s.flags.finalMazeFound?'<p>Un souffle d’air frais te parvient. Devant toi, une ouverture mène enfin hors du dédale.</p>':''}`;
@@ -6891,7 +6891,7 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 105,
+    contentVersion: 106,
     pageMapVersion: 85,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
