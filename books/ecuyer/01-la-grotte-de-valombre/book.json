@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 84,
+  "contentVersion": 92,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
-  "saveVersion": 18,
-  "buildLabel": "V68.89 — Travail : page 196 simplifiée, usage libre de l’inventaire avant la porte finale.",
-  "pageMapVersion": 78
+  "saveVersion": 23,
+  "buildLabel": "V68.92 — Travail : images 200/202/203/204 et réécriture Aldren pages 203, 206, 207, 208.",
+  "pageMapVersion": 83
 }

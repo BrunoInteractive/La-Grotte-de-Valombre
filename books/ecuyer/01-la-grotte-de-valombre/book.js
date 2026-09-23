@@ -5240,7 +5240,7 @@ const STORY = {
     choices:[{label:'Reprendre la descente',to:'c117'}]
   },
   c179: {
-    number: 'PAGE 196', title: '', noImage: true,
+    number: 'PAGE 196', title: 'La porte du dédale', noImage: true,
     text:s=>`<p>La dernière galerie s’incline vers une porte entrouverte. Au-delà, aucun bruit.</p>
       <p>Tu fais l’inventaire de tes dernières ressources avant la porte.</p>
       <p>Tu as maintenant bien compris le dilemme. Sans terre noire, la voix risque encore de t’orienter. Avec trop de terre noire, tu risques de ne plus pouvoir esquiver correctement les pièges… ni même de garder le contrôle de ton corps.</p>
@@ -5250,27 +5250,8 @@ const STORY = {
       <p>Tu peux encore utiliser les objets de ton inventaire avant d’avancer.</p>`,
     choices:[{label:'Franchir la porte',to:'c183'}]
   },
-  c180: {
-    number: 'PAGE 197', title: '', noImage: true,
-    text:s=>`<p>Le liquide blanc coule sur ta langue. Son goût amer fait reculer la terre noire.</p>
-      <p>La voix revient par bribes, ou devient plus distincte. Tu presses le pas vers la porte.</p><p><strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>`,
-    choices:[{label:'Franchir la porte',to:'c183'}]
-  },
-  c181: {
-    number: 'PAGE 198', title: '', noImage: true,
-    text:s=>`<p>La poudre sèche colle à ta gorge. La voix s’éloigne, mais une douleur sourde s’installe sous ta peau.</p>
-      <p><strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>
-      ${s.flags.blackEarthTransformed?'<p>Tes doigts se crispent. La transformation commence avant que tu puisses avancer.</p>':'<p>Tu atteins la porte en serrant les dents.</p>'}`,
-    choices:s=>s.flags.blackEarthTransformed?fatalChoices():[{label:'Franchir la porte',to:'c183'}]
-  },
-  c182: {
-    number: 'PAGE 199', title: '', noImage: true,
-    text:`<p>Tu repousses les deux substances au fond du sac. Ni l’une ni l’autre ne décidera pour toi, pas maintenant.</p>
-      <p>La porte est juste devant.</p>`,
-    choices:[{label:'Franchir la porte',to:'c183'}]
-  },
   c183: {
-    number: 'PAGE 200', title: 'Au-delà du dédale', noImage: true,
+    number: 'PAGE 200', title: 'Au-delà du dédale',
     text:`<p>Tu franchis le seuil. La galerie devient plus large, puis le sol descend entre deux parois brutes.</p>
       <p>Les grondements s’éloignent. Une immense ouverture se dessine devant toi et une brume bleutée remonte jusqu’à tes pieds.</p>
       <p>Tu resserres ta prise sur ton arme et avances.</p>`,
@@ -5494,7 +5475,7 @@ const STORY = {
     choices:[{label:'Affronter la horde — test de Dextérité',to:'c202',diceTest:true,effect:cavernCombat}]
   },
   c202: {
-    number:'PAGE 202',title:'Le carnage',noImage:true,
+    number:'PAGE 202',title:'Le carnage',
     text:s=>{
       const r=s.flags.cavernCombat;
       if(!r) return '<p>La horde approche. Tu n’as pas encore affronté les créatures.</p>';
@@ -5512,10 +5493,10 @@ const STORY = {
     choices:s=>!s.flags.cavernCombat?[{label:'Revenir au combat',to:'c201'}]:s.hp<=0 || s.flags.blackEarthTransformed?terminalChoices():[{label:'Approcher de la porte gigantesque',to:'c203'}]
   },
   c203: {
-    number:'PAGE 203',title:'Sir Aldren',noImage:true,
+    number:'PAGE 203',title:'Sir Aldren',
     text:s=>`<p>À chaque pas vers la porte, une vibration étrange semble traverser la pierre.</p>
       <blockquote>« ${heroName(s)}… »</blockquote>
-      <p>Dans un recoin, un homme est adossé à la paroi. Tu reconnais Sir Aldren.</p>
+      <p>Contre une paroi de la grotte, un homme est adossé à la roche. Tu reconnais Sir Aldren.</p>
       <p>Il est vivant. Tu le savais. Une joie brutale te traverse et tu peines à la contenir. Mais, à mesure que tu t’approches, elle se brise. Toute la souffrance se lit sur son visage : ses lèvres sont gercées, son teint est livide, ses joues sont creusées. Il n’est plus que l’ombre de ce qu’il était.</p>
       <p>Le bas de son corps disparaît dans l’obscurité.</p>`,
     choices:[
@@ -5525,7 +5506,7 @@ const STORY = {
     ]
   },
   c204: {
-    number:'PAGE 204',title:'Le piège d’Aldren',noImage:true,
+    number:'PAGE 204',title:'Le piège d’Aldren',
     text:`<p>Tu te précipites vers lui. Trop tard, tu distingues la masse infâme qui a remplacé ses jambes. Un tentacule bondit et te lacère le visage.</p>
       <p><strong>−3 Vie · +2 Terre noire.</strong></p>
       <p>Tu recules en suffoquant. Aldren te regarde encore, perdu entre douleur et honte. Alors tu lèves ton arme. Le coup part presque tout seul. Le corps qui porte encore le visage du chevalier s’effondre enfin.</p>
@@ -5547,28 +5528,34 @@ const STORY = {
   c206: {
     number:'PAGE 206',title:'La lame noire',noImage:true,
     text:s=>`<p>${s.flags.aldrenOutcome==='killed_after_talk'
-      ? 'Tu saisis ton épée et, le plus vite possible, avant que l’hésitation ne t’arrête dans ton élan, tu tranches la tête de Sir Aldren. Une larme glisse sur ta joue tandis que tu t’agenouilles près de lui. Tuer ton héros était le prix à payer pour poursuivre la mission.'
+      ? 'Tu saisis ton épée. Aldren te regarde une dernière fois sans détourner les yeux. Tu avances la lame et la lui enfonces dans la poitrine. Son corps se tend, puis se relâche contre la pierre. Une larme glisse sur ta joue. Pendant un instant, tu revois le chevalier qui t’a appris à tenir une arme, à monter à cheval et à ne pas fuir devant la peur. Tu viens de transpercer ton maître de ta propre épée. Tu restes à genoux près de lui quelques secondes, incapable de bouger.'
       :s.flags.aldrenOutcome==='killed_immediately'
-        ? 'Tu dégaines et frappes immédiatement, avant que la peur ne te fasse hésiter. La tête de Sir Aldren roule dans l’obscurité. Quand tu t’agenouilles près de lui, la certitude te frappe de plein fouet : c’était bien ton chevalier. Une larme te brûle les yeux tandis que tu reprends ton souffle.'
+        ? 'Tu dégaines avant que la peur ne te fasse hésiter et tu transperces Aldren en plein cœur. Son regard croise le tien au moment où la lame s’enfonce. Quand son corps retombe contre la paroi, la certitude te frappe de plein fouet : c’était bien ton chevalier. Celui qui t’a formé, protégé et guidé. Une larme te brûle les yeux tandis que tu retires lentement ton épée.'
         :s.flags.aldrenOutcome==='rushed'
-          ? 'Tu restes un instant immobile devant le corps d’Aldren. La violence du combat t’a arraché toute joie trop vite. Une larme coule sur ta joue avant même que tu t’en rendes compte.'
-          :'Les tentacules s’immobilisent autour de la sacoche. Tu la dégages avec précaution, le cœur serré en regardant le chevalier inanimé.'}</p>
+          ? 'Tu retires lentement ton épée de la poitrine d’Aldren. Tu voulais le sauver et c’est ta propre lame qui vient de mettre fin à ses souffrances. La violence de l’instant t’arrache toute joie d’avoir enfin retrouvé ton maître. Une larme coule sur ta joue avant même que tu t’en rendes compte.'
+          :'Les tentacules s’immobilisent autour de la sacoche. Tu la dégages avec précaution, le cœur serré en regardant le chevalier.'}</p>
       <p>À l’intérieur repose une petite lame noire, froide et étonnamment lourde. Ainsi Aldren l’avait trouvée… Pourquoi ne s’en est-il pas servi contre l’esprit ?</p>
       <p><strong>Lame noire récupérée.</strong></p>`,
     choices:[{label:'Poursuivre vers les galeries derrière la porte',to:'c209'}]
   },
   c207: {
     number:'PAGE 207',title:'Le prix du sauvetage',noImage:true,
-    text:`<p>Tu frappes les tentacules. Ils se défendent. Chaque coup arrache un cri au chevalier. Tu continues jusqu’à ce que la chair qui fut ses jambes cesse de bouger.</p>
-      <p>Aldren s’évanouit de douleur. Il respire encore. Tu dégages enfin la sacoche et en extrais la lame noire, avec la sensation amère de l’avoir arrachée au prix de sa chair.</p>
+    text:`<p>Tu frappes les tentacules pour dégager la sacoche. Ils se tordent autour d’Aldren et se défendent comme s’ils faisaient désormais partie de lui. Chaque coup arrache un cri au chevalier. Tu continues pourtant. Tu n’as plus d’autre moyen.</p>
+      <p>La chair noire se replie, se déchire, puis finit par retomber contre la pierre. Aldren ne crie plus.</p>
+      <p>Tu te penches vers lui. Son regard est encore ouvert, mais sa respiration s’éteint. Il est mort sous tes coups, avec cette chose qui avait remplacé une partie de son corps.</p>
+      <p>Tu restes un instant près de ton maître, puis tu dégages enfin la sacoche et en extrais la lame noire. Tu l’as récupérée, mais le prix à payer était sa vie.</p>
       <p><strong>−1 Vie. Lame noire récupérée.</strong></p>`,
-    choices:s=>s.hp<=0?terminalChoices():[{label:'Le laisser respirer et poursuivre',to:'c209'}]
+    choices:s=>s.hp<=0?terminalChoices():[{label:'Poursuivre avec la lame noire',to:'c209'}]
   },
   c208: {
     number:'PAGE 208',title:'Laisser Aldren',noImage:true,
-    text:`<p>Tu ranges ton arme. Aldren baisse la tête, incapable de retenir les mouvements de son corps. La lame noire reste dans la sacoche prise entre les tentacules.</p>
-      <blockquote>« Va… Ne reste pas près de moi. »</blockquote>
-      <p>Tu lui obéis et t’engages seul dans les galeries derrière la porte.</p>`,
+    text:`<p>Tu ranges ton arme. Aldren comprend immédiatement ce que tu refuses de faire.</p>
+      <blockquote>« Non. Écoute-moi. La lame est indispensable. Tue-moi. Prends-la. Va jusqu’au bout. »</blockquote>
+      <p>Il insiste, tente encore de te convaincre. Tu sais qu’il a raison. Après tout ce que tu as découvert, tu as compris que la lame noire pourrait être indispensable pour affronter ce qui se trouve au bout de ces galeries.</p>
+      <p>Mais tu ne peux pas porter volontairement un coup à celui qui fut ton maître et ton guide pendant si longtemps. S’il doit mourir ici, ce sera avec l’honneur qui lui reste, pas de ta main.</p>
+      <p>Tu recules. Aldren ferme les yeux.</p>
+      <blockquote>« Alors va. »</blockquote>
+      <p>La lame noire reste dans la sacoche prise entre les tentacules. Tu sais ce que cela peut te coûter. Tu poursuis pourtant ta quête sans elle.</p>`,
     choices:[{label:'Entrer dans le labyrinthe',to:'c209'}]
   },
   c209: {
@@ -5669,7 +5656,7 @@ const STORY = {
       <p>Puis le souffle faiblit et tout redevient noir. Un noir calme, presque apaisant. Un silence absolu.</p>
       <p>Tu restes longtemps immobile. Après les combats, les pièges et les voix qui t’ont poursuivi jusque dans les profondeurs, tu peux enfin reprendre ta respiration.</p>
       ${s.flags.aldrenOutcome==='severed'
-        ? '<p>Tu repenses à Aldren, laissé inconscient derrière toi. Tu ignores s’il survivra à ses blessures. Il t’a pourtant permis d’aller jusqu’au bout.</p>'
+        ? '<p>Tu repenses à Aldren, mort lorsque tu as tenté de libérer sa sacoche des tentacules. Il t’a pourtant permis d’aller jusqu’au bout.</p>'
         :s.flags.aldrenOutcome==='spared'
           ? '<p>Tu repenses à Aldren, toujours prisonnier de son corps dans la caverne. Tu l’as laissé vivant. Tu ignores ce qu’il adviendra de lui.</p>'
           : '<p>Le visage d’Aldren revient devant tes yeux. Tu l’as enfin retrouvé, pour le perdre presque aussitôt. Son enseignement t’a conduit jusqu’ici, et tu aurais voulu qu’il puisse voir ce moment.</p>'}
@@ -5682,7 +5669,7 @@ const STORY = {
     text:s=>`<p>De retour au village, tout te paraît calme. Le bruit d’une porte qu’on ouvre, une conversation sur la place, l’odeur du pain : ces choses ordinaires te bouleversent après ce que tu viens de traverser.</p>
       <p>Les semaines passent, puis les mois. Valombre reprend lentement vie. Les étals se remplissent, les familles reviennent et tu aides les habitants à renouer le commerce avec les régions voisines. Rien ne change d’un coup, mais chaque petite victoire compte.</p>
       ${s.flags.aldrenOutcome==='severed'
-        ? '<p>Tu repenses souvent à Aldren. Tu l’as laissé vivant, mais dans un état terrible, et tu ignores s’il a pu survivre. Ses leçons t’accompagnent à chacun de tes choix.</p>'
+        ? '<p>Tu repenses souvent à Aldren, mort dans les profondeurs lorsque tu as tenté de libérer sa sacoche. Ses leçons t’accompagnent à chacun de tes choix.</p>'
         :s.flags.aldrenOutcome==='spared'
           ? '<p>Tu n’oublies pas Aldren, que tu as dû laisser dans les profondeurs. Tu voudrais savoir ce qu’il est devenu. Son courage et ses enseignements restent présents dans ta mémoire.</p>'
           : '<p>Sir Aldren reste dans ta mémoire. Son absence te serre encore le cœur, mais tu veux honorer ce qu’il t’a appris. Chaque fois que tu aides quelqu’un, tu te surprends à penser à lui.</p>'}
@@ -6070,7 +6057,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 81,
+      pageMapVersion: 83,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -6425,8 +6412,8 @@ const STORY = {
   // Identifiants techniques conservés : les sauvegardes sur les anciennes fins restent valides.
   function migratePageNumbersV78(state) {
     migrateVialKnowledgeV77(state);
-    if (state.pageMapVersion >= 81) return state;
-    state.pageMapVersion = 81;
+    if (state.pageMapVersion >= 83) return state;
+    state.pageMapVersion = 83;
     return state;
   }
 
@@ -6879,9 +6866,9 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 84,
-    pageMapVersion: 81,
-    saveVersion: 21,
+    contentVersion: 92,
+    pageMapVersion: 83,
+    saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
     story: STORY,
@@ -6889,13 +6876,13 @@ const STORY = {
     pageByNode: PAGE_BY_NODE,
     navigationTitles: PAGE_NAV_TITLES,
     padPage,
-    imageBaseForPage: n => (n === 178 || n === 179)
+    imageBaseForPage: n => (n === 178 || n === 179 || n === 202)
       ? 'La-Grotte-de-Valombre-Combat'
       : `La-Grotte-de-Valombre-${padPage(n)}`,
-    // Exception : les pages 178 et 179 réutilisent une seule illustration de combat.
+    // Exception : les pages 178, 179 et 202 réutilisent l’illustration de combat.
     // Toutes les autres pages continuent à utiliser exclusivement leur propre numéro.
     imageCandidatesForPage: (n, state) => {
-      if (n === 178 || n === 179) return [
+      if (n === 178 || n === 179 || n === 202) return [
         'La-Grotte-de-Valombre-Combat',
         'pages/La-Grotte-de-Valombre-Combat'
       ];

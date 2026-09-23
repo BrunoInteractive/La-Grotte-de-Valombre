@@ -342,7 +342,7 @@ function render() {
     const declaredPage = node.number ? parseInt(String(node.number).replace(/\D/g, ''), 10) : NaN;
     const pageNumber = Number.isInteger(mappedPage) ? mappedPage : (Number.isFinite(declaredPage) ? declaredPage : 1);
     chapterNumber.textContent = pageNumber === 0 ? 'PROLOGUE · 000' : `PAGE ${padPage(pageNumber)}`;
-    if (node.noImage || pendingDice || state.lastDicePage === renderNodeId) {
+    if (node.noImage || pendingDice || (state.lastDicePage === renderNodeId && renderNodeId !== 'c202')) {
       ++pageImageLoadToken;
       imageFrame.classList.add('hidden');
       storyImage.removeAttribute('src');
