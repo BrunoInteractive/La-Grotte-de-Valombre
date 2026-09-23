@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 114,
+  "contentVersion": 119,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 23,
-  "buildLabel": "V68.114 — Travail : fiche héros agrandie retirée des combats ; le cartouche permanent du bas reste la référence pour les caractéristiques.",
+  "buildLabel": "V68.119 — Travail · TEST DA ardoise/parchemin : refonte visuelle générale, sans modification des mécaniques.",
   "pageMapVersion": 85
 }
