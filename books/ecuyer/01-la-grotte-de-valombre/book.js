@@ -5242,14 +5242,13 @@ const STORY = {
   c179: {
     number: 'PAGE 196', title: '', noImage: true,
     text:s=>`<p>La dernière galerie s’incline vers une porte entrouverte. Au-delà, aucun bruit.</p>
-      ${hasItem(s,'ampoule_femme')&&hasItem(s,'terre_femme')?'<p>Dans ton sac, le liquide blanc et la terre noire pèsent presque le même poids. L’un affaiblit l’emprise, l’autre étouffe la voix mais rapproche de la transformation.</p>':'<p>Tu fais l’inventaire de tes dernières ressources avant la porte.</p>'}
-      ${labyrinthVoiceTier(s)==='clear'?'<p>La voix murmure encore : « Par ici… »</p>':labyrinthVoiceTier(s)==='faint'?'<p>Quelques syllabes se mêlent au bruit de ton souffle.</p>':'<p>Tu n’entends plus aucune voix.</p>'}
-      <p>Tu mesures le danger avant de franchir la porte. <strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>`,
-    choices:s=>[
-      ...(hasItem(s,'ampoule_femme')&&contaminationLevel(s)>0?[{label:'Utiliser l’ampoule blanche',to:'c180',effect:labyrinthUseWhite}]:[]),
-      ...(hasItem(s,'terre_femme')?[{label:contaminationLevel(s)+3>=13?'Absorber la terre noire malgré le risque de transformation':'Absorber une dose de terre noire',to:'c181',effect:labyrinthUseEarth}]:[]),
-      {label:'Ne rien prendre et avancer',to:'c182'}
-    ]
+      <p>Tu fais l’inventaire de tes dernières ressources avant la porte.</p>
+      <p>Tu as maintenant bien compris le dilemme. Sans terre noire, la voix risque encore de t’orienter. Avec trop de terre noire, tu risques de ne plus pouvoir esquiver correctement les pièges… ni même de garder le contrôle de ton corps.</p>
+      <p>Le liquide blanc peut faire reculer la contamination. La terre noire, elle, peut étouffer la voix, mais t’approche du point de rupture.</p>
+      <p>Tu vérifies une dernière fois ce qu’il te reste. Il te faut faire un dernier choix avant de passer la prochaine porte.</p>
+      <p><strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>
+      <p>Tu peux encore utiliser les objets de ton inventaire avant d’avancer.</p>`,
+    choices:[{label:'Franchir la porte',to:'c183'}]
   },
   c180: {
     number: 'PAGE 197', title: '', noImage: true,
@@ -6071,7 +6070,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 80,
+      pageMapVersion: 81,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -6426,8 +6425,8 @@ const STORY = {
   // Identifiants techniques conservés : les sauvegardes sur les anciennes fins restent valides.
   function migratePageNumbersV78(state) {
     migrateVialKnowledgeV77(state);
-    if (state.pageMapVersion >= 80) return state;
-    state.pageMapVersion = 80;
+    if (state.pageMapVersion >= 81) return state;
+    state.pageMapVersion = 81;
     return state;
   }
 
@@ -6881,8 +6880,8 @@ const STORY = {
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
     contentVersion: 84,
-    pageMapVersion: 80,
-    saveVersion: 20,
+    pageMapVersion: 81,
+    saveVersion: 21,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
     story: STORY,
