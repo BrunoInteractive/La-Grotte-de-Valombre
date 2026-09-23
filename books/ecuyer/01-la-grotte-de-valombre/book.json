@@ -4,12 +4,12 @@
   "orderInSeries": 1,
   "title": "La Grotte de Valombre",
   "access": "free",
-  "contentVersion": 96,
+  "contentVersion": 100,
   "entry": "book.js",
   "assetBase": "images",
   "episode": 1,
   "slug": "la-grotte-de-valombre",
   "saveVersion": 23,
-  "buildLabel": "V68.97 — Travail : page 211, liens rouge sombre retenant la sphère.",
-  "pageMapVersion": 83
+  "buildLabel": "V68.100 — Travail : choix ordinaires séparés pour libérer ou détruire la sphère.",
+  "pageMapVersion": 85
 }

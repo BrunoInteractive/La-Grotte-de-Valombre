@@ -5621,7 +5621,7 @@ const STORY = {
           : `<p>La terre noire brouille chaque parole. Des images de moissons, de chaînes et de flammes se mêlent à des mots sans suite.</p>
              <blockquote>« La vallée… le sorcier… sauvé… défend… »</blockquote>
              <p>Tu n’arrives plus à reconstituer ce qu’elle raconte. C’est certainement ton niveau de terre noire qui empêche son discours d’arriver jusqu’à toi.</p>`}
-      <p>Devant toi, des liens de lumière maintiennent la sphère à la pierre. Tu distingues aussi son cœur, au milieu de l’éclat vert.</p>
+      <p>Devant toi, les liens rouge sombre maintiennent la sphère à la pierre. Tu distingues aussi son cœur, au milieu de l’éclat vert.</p>
       ${hasItem(s,'lame_noire')?'<p>La lame noire semble pouvoir atteindre aussi bien les liens que le cœur de la sphère.</p>':''}
       ${hasItem(s,'poudre_effondrement')?'<p>Le sac de poudre pourrait faire céder la voûte au-dessus de la prison.</p>':''}
       <p><strong>Terre noire : ${contaminationLevel(s)}/13.</strong></p>`,
@@ -5632,10 +5632,10 @@ const STORY = {
         {label:'Frapper le cœur et détruire l’esprit avec la lame noire',to:'c214'},
         ...(powder?[{label:'Faire exploser la voûte avec la poudre',to:'c215',effect:t=>{removeItem(t,'poudre_effondrement');t.hp=0;}}]:[])
       ];
-      if(powder) return [{label:'Déclencher l’effondrement avec la poudre',to:'c215',effect:t=>{removeItem(t,'poudre_effondrement');t.hp=0;}}];
       return [
-        {label:'Tenter de libérer l’esprit avec ton arme',to:'c216',effect:t=>{t.flags.finalOrdinaryIntent='libérer';t.weapon='none';t.hp=0;}},
-        {label:'Tenter de tuer l’esprit avec ton arme',to:'c216',effect:t=>{t.flags.finalOrdinaryIntent='tuer';t.weapon='none';t.hp=0;}}
+        {label:'Tenter de libérer l’esprit avec ton arme',to:'c216',effect:t=>{t.weapon='none';t.hp=0;}},
+        {label:'Tenter de détruire l’esprit avec ton arme',to:'c221',effect:t=>{t.weapon='none';t.hp=0;}},
+        ...(powder?[{label:'Déclencher l’effondrement avec la poudre',to:'c215',effect:t=>{removeItem(t,'poudre_effondrement');t.hp=0;}}]:[])
       ];
     }
   },
@@ -5702,11 +5702,12 @@ const STORY = {
     choices:terminalChoices()
   },
   c216: {
-    number:'PAGE 218',title:'Une arme ordinaire',
-    text:s=>`<p>Tu lèves ton arme pour ${s.flags.finalOrdinaryIntent==='libérer'?'trancher les liens de lumière':'frapper le cœur de la sphère'}.</p>
-      <p>Au premier contact, une résonance insoutenable traverse la salle. La lame éclate entre tes mains. Le choc remonte jusqu’à tes épaules. Tu sens les os de tes bras céder.</p>
-      <p>Tu t’effondres sur la pierre. La douleur est si forte que ton souffle se bloque. Tes pensées se brouillent tandis que la lumière verte continue de briller au-dessus de toi.</p>
-      <p>Tu perds peu à peu connaissance. Puis tout disparaît.</p>
+    number:'PAGE 218',title:'Rompre les liens',
+    text:`<p>Tu lèves ton arme et frappes de toutes tes forces l’un des liens rouge sombre qui retiennent la sphère.</p>
+      <p>La lame heurte le lien dans un choc sec. Rien ne cède. Au contraire, une vibration terrible parcourt le métal et remonte le long de tes bras.</p>
+      <p>Tu frappes une seconde fois. Cette fois, la lame éclate entre tes mains. Une onde brûlante te traverse la poitrine et te projette au sol.</p>
+      <p>Au-dessus de toi, les liens se resserrent autour de la lumière verte. La sphère reste prisonnière.</p>
+      <p>Ton souffle devient de plus en plus court. La caverne se brouille, puis disparaît.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
   },
@@ -5734,6 +5735,16 @@ const STORY = {
       <p>Puis tout s’efface.</p>
       <p>Il ne reste plus qu’un corps tordu…</p>
       <p>et une volonté qui n’est plus la tienne.</p>
+      <p><strong>Fin de l’aventure.</strong></p>`,
+    choices:terminalChoices()
+  },
+  c221: {
+    number:'PAGE 221',title:'Frapper le cœur',
+    text:`<p>Tu t’approches de la sphère et lèves ton arme. Si tu ne peux pas la libérer, tu peux encore tenter de détruire ce qui se cache en son cœur.</p>
+      <p>Tu frappes de toutes tes forces.</p>
+      <p>Au contact de la lumière verte, ta lame se brise en plusieurs morceaux. Le choc est si violent que les fragments disparaissent dans l’éclat tandis qu’une onde traverse tes bras et te jette en arrière.</p>
+      <p>Tu heurtes la pierre. La sphère, elle, n’a presque pas bougé. Sa lumière pulse toujours devant toi, intacte.</p>
+      <p>La douleur t’empêche de reprendre ton souffle. Tes pensées se dispersent peu à peu, jusqu’à ce que la caverne s’efface autour de toi.</p>
       <p><strong>Fin de l’aventure.</strong></p>`,
     choices:terminalChoices()
   },
@@ -5833,6 +5844,7 @@ const STORY = {
     'c215': 'L’effondrement',
     'c216': 'Une arme ordinaire',
     'c217': 'La fin d’un règne',
+    'c221': 'Frapper le cœur',
 
     'c196': 'La bague de lumière', 'c197': 'La silhouette', 'c198': 'Le jeune chevalier', 'c199': 'La main du chevalier', 'c200': 'Continuer seul',
     'c105': 'Le registre du médecin', 'c106': 'Le carrefour des soins', 'c107': 'Le poste de secours', 'c108': 'La réserve de terre noire',
@@ -6001,7 +6013,7 @@ const STORY = {
 };
 
   // L'ordre d'affichage peut changer ; les identifiants cN restent stables pour les liens et les sauvegardes.
-  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c220', 'c214', 'c218', 'c215', 'c216', 'c217', 'c219'];
+  const PAGE_ORDER = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41', 'c42', 'c43', 'c44', 'c45', 'c46', 'c47', 'c48', 'c49', 'c50', 'c51', 'c52', 'c53', 'c54', 'c55', 'c56', 'c57', 'c58', 'c59', 'c60', 'c61', 'c62', 'c63', 'c64', 'c65', 'c66', 'c67', 'c68', 'c69', 'c70', 'c71', 'c72', 'c73', 'c74', 'c75', 'c76', 'c77', 'c78', 'c79', 'c80', 'c81', 'c82', 'c83', 'c84', 'c85', 'c86', 'c87', 'c88', 'c89', 'c90', 'c91', 'c92', 'c93', 'c94', 'c95', 'c96', 'c97', 'c98', 'c99', 'c100', 'c101', 'c102', 'c103', 'c138', 'c151', 'c196', 'c197', 'c198', 'c199', 'c200', 'c104', 'c105', 'c106', 'c107', 'c139', 'c184', 'c185', 'c186', 'c187', 'c188', 'c189', 'c108', 'c190', 'c140', 'c191', 'c192', 'c193', 'c194', 'c195', 'c109', 'c110', 'c111', 'c112', 'c113', 'c114', 'c115', 'c116', 'c117', 'c118', 'c119', 'c120', 'c121', 'c122', 'c123', 'c124', 'c125', 'c126', 'c127', 'c128', 'c129', 'c130', 'c131', 'c132', 'c133', 'c134', 'c135', 'c136', 'c137', 'c141', 'c142', 'c143', 'c144', 'c145', 'c146', 'c147', 'c148', 'c149', 'c150', 'c152', 'c153', 'c154', 'c155', 'c156', 'c157', 'c158', 'c159', 'c160', 'c161', 'c162', 'c163', 'c164', 'c165', 'c166', 'c167', 'c168', 'c169', 'c170', 'c171', 'c172', 'c173', 'c174', 'c175', 'c176', 'c177', 'c178', 'c179', 'c180', 'c181', 'c182', 'c183', 'c201', 'c202', 'c203', 'c204', 'c205', 'c206', 'c207', 'c208', 'c209', 'c210', 'c211', 'c212', 'c213', 'c220', 'c214', 'c218', 'c215', 'c216', 'c217', 'c219', 'c221'];
   const PAGE_BY_NODE = Object.fromEntries(PAGE_ORDER.map((id, i) => [id, i]));
   const padPage = n => String(n).padStart(3, '0');
 
@@ -6063,7 +6075,7 @@ const STORY = {
     const base = seriesProfile.baseStats || {};
     return {
       node: 'start',
-      pageMapVersion: 84,
+      pageMapVersion: 85,
       heroGender: seriesProfile.heroGender === 'male' ? 'male' : 'female',
       heroName: seriesProfile.heroGender === 'male' ? 'Aubin' : 'Aélis',
       inventory: {},
@@ -6418,8 +6430,8 @@ const STORY = {
   // Identifiants techniques conservés : les sauvegardes sur les anciennes fins restent valides.
   function migratePageNumbersV78(state) {
     migrateVialKnowledgeV77(state);
-    if (state.pageMapVersion >= 84) return state;
-    state.pageMapVersion = 84;
+    if (state.pageMapVersion >= 85) return state;
+    state.pageMapVersion = 85;
     return state;
   }
 
@@ -6872,8 +6884,8 @@ const STORY = {
     title: 'La Grotte de Valombre',
     description: 'Première aventure de la série de l’Écuyer.',
     access: 'free',
-    contentVersion: 98,
-    pageMapVersion: 84,
+    contentVersion: 100,
+    pageMapVersion: 85,
     saveVersion: 23,
     assetBase: './books/ecuyer/01-la-grotte-de-valombre/images',
     showMissingIllustrationPlaceholder: true, // uniquement pour la version Travail
