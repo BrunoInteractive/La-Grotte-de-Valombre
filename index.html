@@ -2453,7 +2453,7 @@ body::before {
    - l’inventaire et la fiche perso utilisent la texture parchemin
    ========================================================= */
 :root {
-  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg?v=139');
+  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg?v=140');
 }
 
 /* Boutons croix : plus de texture ardoise. */
@@ -2687,6 +2687,123 @@ body::before {
   }
 }
 
+
+
+/* =========================================================
+   V68.140 — TITRE DIRECT SUR IMAGE + ICÔNES JPG PERSONNALISABLES
+   - titre directement posé sur l'image / le parchemin, sans fond ni trait
+   - "La Grotte de Valombre" à peine plus grand que la ligne collection
+   - icône JPG personnalisable pour chaque caractéristique
+   - fichiers attendus (non inclus dans le zip) :
+     ./assets/ui/icons/vie.jpg
+     ./assets/ui/icons/dexterite.jpg
+     ./assets/ui/icons/force.jpg
+     ./assets/ui/icons/arme.jpg
+     ./assets/ui/icons/protection.jpg
+     ./assets/ui/icons/terre-noire.jpg
+   ========================================================= */
+:root {
+  --ui-icon-vie:url('./assets/ui/icons/vie.jpg?v=140');
+  --ui-icon-dexterite:url('./assets/ui/icons/dexterite.jpg?v=140');
+  --ui-icon-force:url('./assets/ui/icons/force.jpg?v=140');
+  --ui-icon-arme:url('./assets/ui/icons/arme.jpg?v=140');
+  --ui-icon-protection:url('./assets/ui/icons/protection.jpg?v=140');
+  --ui-icon-terre-noire:url('./assets/ui/icons/terre-noire.jpg?v=140');
+}
+
+.image-banner,
+.card-banner {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,.85), 0 1px 2px rgba(0,0,0,.95) !important;
+}
+.image-banner {
+  top: 10px !important;
+  left: 12px !important;
+  padding: 0 !important;
+  max-width: min(72%, 420px) !important;
+  color: #f3e7cf !important;
+}
+.card-banner {
+  display:none;
+  margin: 0 0 10px !important;
+  padding: 0 !important;
+  color: #6b4b2c !important;
+  text-shadow: none !important;
+}
+.card-banner .book-page-banner-kicker,
+.card-banner .book-page-banner-title {
+  color:#5b3a21 !important;
+  text-shadow:none !important;
+}
+.book-page-banner-kicker {
+  font-size: 7px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .05em !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+}
+.book-page-banner-title {
+  margin-top: 1px !important;
+  font-size: 9px !important;
+  line-height: 1.02 !important;
+  font-weight: 600 !important;
+  letter-spacing: .015em !important;
+}
+@media (max-width:700px) {
+  .image-banner {
+    top: 8px !important;
+    left: 10px !important;
+    right: 52px !important;
+    max-width: none !important;
+  }
+  .book-page-banner-kicker {
+    font-size: 6px !important;
+    letter-spacing: .04em !important;
+  }
+  .book-page-banner-title {
+    font-size: 8px !important;
+  }
+}
+
+/* Icônes JPG remplaçables par simple changement de fichier. */
+.tag-icon,
+.enemy-icon {
+  color: transparent !important;
+  font-size: 0 !important;
+}
+.tag-icon.icon-jpg,
+.enemy-icon.icon-jpg {
+  width: 14px !important;
+  height: 14px !important;
+  flex: 0 0 14px !important;
+  display:inline-block !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  background-size:contain !important;
+  border-radius: 2px;
+}
+.enemy-icon.icon-jpg {
+  width: 15px !important;
+  height: 15px !important;
+  flex-basis: 15px !important;
+}
+@media (max-width:700px) {
+  .tag-icon.icon-jpg,
+  .enemy-icon.icon-jpg {
+    width: 12px !important;
+    height: 12px !important;
+    flex-basis: 12px !important;
+  }
+}
+.icon-vie { background-image: var(--ui-icon-vie) !important; }
+.icon-dexterite { background-image: var(--ui-icon-dexterite) !important; }
+.icon-force { background-image: var(--ui-icon-force) !important; }
+.icon-arme { background-image: var(--ui-icon-arme) !important; }
+.icon-protection { background-image: var(--ui-icon-protection) !important; }
+.icon-terre-noire { background-image: var(--ui-icon-terre-noire) !important; }
+
 </style>
 </head>
 <body>
@@ -2750,7 +2867,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.138 · TEST DA V17</h3>
+      <h3>Pages · TEST — V68.140 · PATCH TITRE + ICÔNES</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -2805,5 +2922,68 @@ body::before {
   setTimeout(syncBookBanner, 700);
 })();
 </script>
+
+<script>
+(function(){
+  function normalizeLabel(str){
+    return (str || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function iconClassFromLabel(label){
+    const key = normalizeLabel(label);
+    if(key.startsWith('vie')) return 'icon-vie';
+    if(key.startsWith('dexterite')) return 'icon-dexterite';
+    if(key.startsWith('force')) return 'icon-force';
+    if(key.startsWith('arme')) return 'icon-arme';
+    if(key.startsWith('protection')) return 'icon-protection';
+    if(key.startsWith('terre noire') || key.startsWith('terre-noire')) return 'icon-terre-noire';
+    return '';
+  }
+
+  function patchHeroTags(root=document){
+    root.querySelectorAll('.status-tags .tag').forEach(tag => {
+      const labelEl = tag.querySelector('.tag-copy small');
+      const iconEl = tag.querySelector('.tag-icon');
+      if(!labelEl || !iconEl) return;
+      const iconClass = iconClassFromLabel(labelEl.textContent);
+      if(!iconClass) return;
+      iconEl.className = 'tag-icon icon-jpg ' + iconClass;
+      iconEl.textContent = '';
+      iconEl.setAttribute('aria-hidden', 'true');
+    });
+  }
+
+  function patchEnemyTags(root=document){
+    root.querySelectorAll('.enemy-card-stats > div').forEach(box => {
+      const labelEl = Array.from(box.querySelectorAll('span')).find(el => !el.classList.contains('enemy-icon'));
+      const iconEl = box.querySelector('.enemy-icon');
+      if(!labelEl || !iconEl) return;
+      const iconClass = iconClassFromLabel(labelEl.textContent);
+      if(!iconClass) return;
+      iconEl.className = 'enemy-icon icon-jpg ' + iconClass;
+      iconEl.textContent = '';
+      iconEl.setAttribute('aria-hidden', 'true');
+    });
+  }
+
+  function applyIconPatch(root=document){
+    patchHeroTags(root);
+    patchEnemyTags(root);
+  }
+
+  const observer = new MutationObserver(() => applyIconPatch(document));
+  observer.observe(document.documentElement, { childList:true, subtree:true });
+  document.addEventListener('DOMContentLoaded', () => applyIconPatch(document));
+  window.addEventListener('load', () => applyIconPatch(document));
+  setTimeout(() => applyIconPatch(document), 50);
+  setTimeout(() => applyIconPatch(document), 250);
+  setTimeout(() => applyIconPatch(document), 700);
+})();
+</script>
+
 </body>
 </html>
