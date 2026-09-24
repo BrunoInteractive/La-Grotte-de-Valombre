@@ -3598,6 +3598,50 @@ body::before {
   z-index: 8 !important;
 }
 
+/* =========================================================
+   V68.150 — CADRE PNG À LA PLACE EXACTE DE L’ANCIEN CADRE
+   Le PNG devient le cadre du conteneur d’image.
+   ========================================================= */
+
+.image-frame {
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* Quand une vraie image est affichée, on remplace le cadre CSS
+   par le cadre PNG, exactement sur le bord du conteneur. */
+.image-frame.has-story-image {
+  border-style: solid !important;
+  border-color: transparent !important;
+  border-width: clamp(10px, 1.35vw, 18px) !important;
+
+  border-image-source: url('./assets/ui/cadres/cadre-image.png?v=68150') !important;
+  border-image-slice: 120 100 120 100 !important;
+  border-image-width: 1 !important;
+  border-image-outset: 0 !important;
+  border-image-repeat: stretch !important;
+
+  background: #0f171c !important;
+  box-shadow: none !important;
+}
+
+.image-frame.has-story-image::before,
+.image-frame.has-story-image::after {
+  display: none !important;
+}
+
+/* L’illustration remplit bien l’intérieur du cadre. */
+.image-frame.has-story-image .story-image,
+.image-frame.has-story-image .image-placeholder {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Le cartouche au-dessus reste visible. */
+.image-banner {
+  z-index: 8 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3617,7 +3661,6 @@ body::before {
           <div class="book-page-banner-title">La Grotte de Valombre</div>
         </div>
         <img id="storyImage" class="story-image hidden" alt="" />
-        <img id="storyFrameOverlay" class="story-frame-overlay hidden" src="./assets/ui/cadres/cadre-image.png?v=68149" alt="" aria-hidden="true" />
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
           <small id="imageLabel">La-Grotte-de-Valombre-001</small>
@@ -3692,40 +3735,49 @@ body::before {
   </div>
 
 
+
+
   <script>
   (function () {
     const storyImage = document.getElementById('storyImage');
-    const frameOverlay = document.getElementById('storyFrameOverlay');
+    const imageFrame = document.getElementById('imageFrame');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
 
-    if (!storyImage || !frameOverlay) return;
+    if (!storyImage || !imageFrame) return;
 
-    function syncStoryFrame() {
-      const imageVisible =
-        !storyImage.classList.contains('hidden') &&
-        !!storyImage.getAttribute('src');
+    function syncFrameClass() {
+      const hasSrc = !!storyImage.getAttribute('src');
+      const imageVisible = !storyImage.classList.contains('hidden') && hasSrc;
+      const placeholderVisible = imagePlaceholder &&
+        !imagePlaceholder.classList.contains('hidden') &&
+        getComputedStyle(imagePlaceholder).display !== 'none';
 
-      frameOverlay.classList.toggle('hidden', !imageVisible);
+      imageFrame.classList.toggle('has-story-image', imageVisible && !placeholderVisible);
     }
 
-    /* Si le fichier du cadre n'est pas encore présent, aucun pictogramme cassé. */
-    frameOverlay.addEventListener('error', function () {
-      frameOverlay.classList.add('hidden');
-    });
+    storyImage.addEventListener('load', syncFrameClass);
+    storyImage.addEventListener('error', syncFrameClass);
 
-    storyImage.addEventListener('load', syncStoryFrame);
-    storyImage.addEventListener('error', syncStoryFrame);
-
-    new MutationObserver(syncStoryFrame).observe(storyImage, {
+    new MutationObserver(syncFrameClass).observe(storyImage, {
       attributes: true,
-      attributeFilter: ['class', 'src']
+      attributeFilter: ['class', 'src', 'style']
     });
 
-    syncStoryFrame();
+    if (imagePlaceholder) {
+      new MutationObserver(syncFrameClass).observe(imagePlaceholder, {
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', syncFrameClass);
+    window.addEventListener('load', syncFrameClass);
+    setTimeout(syncFrameClass, 60);
   })();
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.149"></script>
+  <script src="./app/catalog.js?v=68.150"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -3788,7 +3840,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.149"></script>
+  <script src="./engine/reader.js?v=68.150"></script>
 
 <script>
 (function(){
