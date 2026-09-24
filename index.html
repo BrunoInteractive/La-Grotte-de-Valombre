@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68167");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68168");
 }
 
 /* =========================
@@ -5025,6 +5025,81 @@ body.library-home-open .app-shell {
   }
 }
 
+/* =========================================================
+   V68.168 — HOME DANS LE FOOTER + RESTART PLUS EXPLICITE
+   ========================================================= */
+
+/* Le bouton Home n'existe plus en haut.
+   Le footer accueille désormais : Inventaire / Journal / Home / Restart */
+.footer {
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr) 58px 58px !important;
+  align-items: stretch !important;
+}
+
+.footer-home-btn,
+.restart-icon-btn {
+  width: 58px !important;
+  min-width: 58px !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.footer-home-btn {
+  font-size: 0 !important;
+}
+
+.footer-home-btn .footer-icon-svg {
+  width: 24px !important;
+  height: 24px !important;
+  display: block !important;
+}
+
+.footer-home-btn .footer-icon-svg path {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.restart-icon-btn {
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 31px !important;
+  line-height: 1 !important;
+  color: #f5ecd8 !important;
+}
+
+@media (max-width:560px) {
+  .footer {
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) 50px 50px !important;
+  }
+
+  .footer-home-btn,
+  .restart-icon-btn {
+    width: 50px !important;
+    min-width: 50px !important;
+  }
+
+  .footer-home-btn .footer-icon-svg {
+    width: 21px !important;
+    height: 21px !important;
+  }
+
+  .restart-icon-btn {
+    font-size: 28px !important;
+  }
+}
+
+/* Neutralise l'ancien placement absolu du bouton home haut de page,
+   au cas où d'anciens styles subsisteraient. */
+.library-return-btn {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5051,8 +5126,7 @@ body.library-home-open .app-shell {
     </div>
   </section>
 <div class="app-shell">
-    <button id="libraryReturnBtn" class="library-return-btn" type="button" aria-label="Retour à la bibliothèque" title="Retour à la bibliothèque">⌂</button>
-    <header class="topbar">
+<header class="topbar">
       <div class="topbar-book-meta" aria-hidden="true">
         <div class="eyebrow" id="bookEyebrow">Chroniques d’un autre temps - Livre 01</div>
         <h1 id="bookTitle">La Grotte de Valombre</h1>
@@ -5090,7 +5164,12 @@ body.library-home-open .app-shell {
       <button id="characterBtn" class="footer-btn footer-character-hidden" aria-hidden="true" tabindex="-1">Fiche perso</button>
       <button id="inventoryBtn" class="footer-btn">Inventaire <span id="inventoryCount">0</span></button>
       <button id="journalBtn" class="footer-btn" type="button">Journal de bord</button>
-      <button id="restartBtn" class="footer-btn restart-icon-btn" type="button" aria-label="Recommencer l’aventure" title="Recommencer l’aventure">↶</button>
+      <button id="libraryReturnBtn" class="footer-btn footer-home-btn" type="button" aria-label="Retour à la bibliothèque" title="Retour à la bibliothèque">
+        <svg class="footer-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4.5 10.8L12 5l7.5 5.8v8.2a.8.8 0 0 1-.8.8h-4.4v-5.2H9.7V19a.8.8 0 0 1-.8.8H5.3a.8.8 0 0 1-.8-.8z"></path>
+        </svg>
+      </button>
+      <button id="restartBtn" class="footer-btn restart-icon-btn" type="button" aria-label="Recommencer l’aventure" title="Recommencer l’aventure">↻</button>
     </footer>
   </div>
 
@@ -5388,7 +5467,7 @@ body.library-home-open .app-shell {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.167"></script>
+  <script src="./app/catalog.js?v=68.168"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5461,7 +5540,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.167"></script>
+  <script src="./engine/reader.js?v=68.168"></script>
 
 <script>
 (function(){
