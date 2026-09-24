@@ -3918,6 +3918,37 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.155 — PAGE DE SÉLECTION DU PERSONNAGE
+   Les cases Vie / Force / etc. prennent la texture pierre/ardoise.
+   ========================================================= */
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag {
+  border: 1px solid rgba(184,142,79,.52) !important;
+  background: var(--ui-slate-surface) !important;
+  background-color: #152229 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.96),
+    inset 0 0 0 2px rgba(190,148,83,.08),
+    inset 0 10px 18px rgba(255,255,255,.02),
+    inset 0 -12px 18px rgba(0,0,0,.14) !important;
+  color: #f0e4cf !important;
+}
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy small,
+.hero-sheet-grid.hero-sheet-tag-grid .tag-label {
+  color: #f5ecd8 !important;
+}
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy strong {
+  color: #eadcc1 !important;
+}
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag-icon,
+.hero-sheet-grid.hero-sheet-tag-grid .tag-icon.icon-jpg {
+  filter: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -4142,7 +4173,7 @@ body::before {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.154"></script>
+  <script src="./app/catalog.js?v=68.155"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -4215,7 +4246,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.154"></script>
+  <script src="./engine/reader.js?v=68.155"></script>
 
 <script>
 (function(){
