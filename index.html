@@ -3328,6 +3328,129 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.145 — FICHE PERSO : mêmes cartes que la barre de stats
+   ========================================================= */
+
+.character-modal-stats {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  margin-top: 12px !important;
+}
+
+.character-modal-stats .character-stat-card {
+  min-width: 0 !important;
+  min-height: 58px !important;
+  padding: 7px 5px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid rgba(184,142,79,.48) !important;
+  background: var(--ui-slate-surface) !important;
+  background-color: #142229 !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.94),
+    inset 0 0 0 2px rgba(190,148,83,.08),
+    inset 0 -12px 20px rgba(0,0,0,.14) !important;
+}
+
+.character-modal-stats .tag-copy {
+  min-width: 0 !important;
+  width: 100% !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  align-content: center !important;
+  justify-items: center !important;
+
+  gap: 4px !important;
+  text-align: center !important;
+}
+
+.character-modal-stats .tag-copy small {
+  width: 100% !important;
+  min-width: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 6px !important;
+  margin: 0 !important;
+
+  color: #bba984 !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+
+.character-modal-stats .tag-label {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.character-modal-stats .tag-copy strong {
+  width: 100% !important;
+  margin: 0 !important;
+
+  color: #f2e6cf !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+.character-modal-stats .tag-icon,
+.character-modal-stats .tag-icon.icon-jpg {
+  width: 17px !important;
+  height: 17px !important;
+  flex: 0 0 17px !important;
+
+  display: inline-block !important;
+  color: transparent !important;
+  font-size: 0 !important;
+
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+}
+
+/* Sur téléphone : 2 colonnes pour laisser une vraie largeur à chaque carte. */
+@media (max-width: 560px) {
+  .character-modal-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+
+  .character-modal-stats .character-stat-card {
+    min-height: 54px !important;
+    padding: 6px 4px !important;
+  }
+
+  .character-modal-stats .tag-copy small {
+    font-size: 8px !important;
+  }
+
+  .character-modal-stats .tag-copy strong {
+    font-size: 14px !important;
+  }
+
+  .character-modal-stats .tag-icon,
+  .character-modal-stats .tag-icon.icon-jpg {
+    width: 15px !important;
+    height: 15px !important;
+    flex-basis: 15px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3409,10 +3532,10 @@ body::before {
   </div>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.144"></script>
+  <script src="./app/catalog.js?v=68.145"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.144"></script>
+  <script src="./engine/reader.js?v=68.145"></script>
 
 <script>
 (function(){

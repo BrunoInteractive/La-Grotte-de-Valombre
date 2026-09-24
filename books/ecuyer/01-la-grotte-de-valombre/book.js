@@ -6875,12 +6875,24 @@ const STORY = {
         <div class="character-modal-name">${heroName(state)}</div>
         <div class="character-modal-rank">${heroRank(state)}</div>
         <div class="character-modal-stats">
-          <div><span>♥ Vie</span><strong>${state.hp} / ${state.maxHp}</strong></div>
-          <div><span>🛡 Protection</span><strong>${currentProtection(state)} / ${maxProtection(state)}</strong></div>
-          <div><span>Force</span><strong>${force}</strong></div>
-          <div><span>Dextérité</span><strong>${dexterity}</strong></div>
-          ${contaminationLevel(state)>0 ? `<div><span>Terre noire</span><strong>${contaminationLevel(state)} / 13 · ${state.flags.physicianNotesRead ? "Voir les notes du médecin" : "Effets inconnus"}</strong></div>` : ""}
-          <div><span>Puissance de l’arme</span><strong>${weaponPower}</strong></div>
+          <div class="character-stat-card">
+            <span class="tag-copy"><small><span class="tag-icon icon-jpg icon-vie" aria-hidden="true"></span><span class="tag-label">Vie</span></small><strong>${state.hp}/${state.maxHp}</strong></span>
+          </div>
+          <div class="character-stat-card">
+            <span class="tag-copy"><small><span class="tag-icon icon-jpg icon-dexterite" aria-hidden="true"></span><span class="tag-label">Dextérité</span></small><strong>${dexterity}</strong></span>
+          </div>
+          <div class="character-stat-card">
+            <span class="tag-copy"><small><span class="tag-icon icon-jpg icon-force" aria-hidden="true"></span><span class="tag-label">Force</span></small><strong>${force}</strong></span>
+          </div>
+          <div class="character-stat-card">
+            <span class="tag-copy"><small><span class="tag-icon icon-jpg icon-arme" aria-hidden="true"></span><span class="tag-label">Arme</span></small><strong>${state.weapon === 'none' ? '0' : `+${weaponPower}`}</strong></span>
+          </div>
+          <div class="character-stat-card">
+            <span class="tag-copy"><small><span class="tag-icon icon-jpg icon-protection" aria-hidden="true"></span><span class="tag-label">Protection</span></small><strong>${currentProtection(state)}</strong></span>
+          </div>
+          <div class="character-stat-card">
+            <span class="tag-copy"><small><span class="tag-icon icon-jpg icon-terre-noire" aria-hidden="true"></span><span class="tag-label">Terre noire</span></small><strong>${contaminationLevel(state)}/13</strong></span>
+          </div>
         </div>
         <div class="character-modal-equipment">
           <p><strong>Arme :</strong> ${weaponLabel(state)}</p>
