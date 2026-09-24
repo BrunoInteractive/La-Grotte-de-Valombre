@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68169");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68170");
 }
 
 /* =========================
@@ -5162,6 +5162,44 @@ body.library-home-open .app-shell {
   }
 }
 
+/* =========================================================
+   V68.170 — DÉCISION PARFAITEMENT CENTRÉE DANS LE BOUTON
+   ========================================================= */
+
+.choice-btn {
+  position: relative !important;
+}
+
+/* La décision principale est centrée sur toute la surface du bouton,
+   indépendamment du renvoi de page situé en bas à droite. */
+.choice-copy {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: calc(100% - 36px) !important;
+  max-width: none !important;
+
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  text-align: center !important;
+  line-height: 1.18 !important;
+}
+
+/* Le renvoi reste indépendant, en bas à droite. */
+.choice-dest {
+  z-index: 3 !important;
+}
+
+@media (max-width: 620px) {
+  .choice-copy {
+    width: calc(100% - 28px) !important;
+  }
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5529,7 +5567,7 @@ body.library-home-open .app-shell {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.169"></script>
+  <script src="./app/catalog.js?v=68.170"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5602,7 +5640,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.169"></script>
+  <script src="./engine/reader.js?v=68.170"></script>
 
 <script>
 (function(){
