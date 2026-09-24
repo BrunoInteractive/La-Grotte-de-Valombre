@@ -4031,6 +4031,85 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.157 — SÉLECTION PERSONNAGE : TEXTURE PIERRE EXACTE
+   Même matière que les boutons principaux.
+   ========================================================= */
+
+/* Carte du personnage : même matière pierre/ardoise que les boutons. */
+.hero-choice-card {
+  background: var(--ui-slate-surface) !important;
+  background-color: #18272e !important;
+  border: 1px solid var(--ui-bronze) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.96),
+    inset 0 0 0 3px rgba(190,148,83,.16),
+    inset 0 11px 22px rgba(255,255,255,.020),
+    inset 0 -16px 24px rgba(0,0,0,.16),
+    0 4px 11px rgba(0,0,0,.17) !important;
+}
+
+/* Cadre immédiatement autour de la photo. */
+.hero-choice-portrait {
+  padding: 8px !important;
+  border: 1px solid var(--ui-bronze) !important;
+  background: var(--ui-slate-surface) !important;
+  background-color: #18272e !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.96),
+    inset 0 0 0 3px rgba(190,148,83,.16),
+    inset 0 11px 22px rgba(255,255,255,.020),
+    inset 0 -16px 24px rgba(0,0,0,.16),
+    0 4px 11px rgba(0,0,0,.17) !important;
+}
+
+.hero-choice-portrait img {
+  border: 1px solid rgba(184,142,79,.48) !important;
+  box-shadow: 0 0 0 1px rgba(5,9,11,.72) !important;
+}
+
+/* Nom et rang lisibles sur la pierre. */
+.hero-choice-name {
+  color: #f5ecd8 !important;
+}
+
+.hero-choice-rank {
+  color: #d9c9aa !important;
+}
+
+/* Les caractéristiques de départ utilisent exactement la même matière. */
+.hero-sheet-grid.hero-sheet-tag-grid .tag {
+  background: var(--ui-slate-surface) !important;
+  background-color: #18272e !important;
+  border: 1px solid var(--ui-bronze) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.96),
+    inset 0 0 0 3px rgba(190,148,83,.16),
+    inset 0 11px 22px rgba(255,255,255,.020),
+    inset 0 -16px 24px rgba(0,0,0,.16),
+    0 4px 11px rgba(0,0,0,.17) !important;
+}
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy small,
+.hero-sheet-grid.hero-sheet-tag-grid .tag-label {
+  color: #f5ecd8 !important;
+}
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy strong {
+  color: #eadcc1 !important;
+}
+
+/* Sélection active : seulement un liseré plus lumineux, sans changer la texture. */
+.hero-choice-card.selected {
+  background: var(--ui-slate-surface) !important;
+  border-color: #d0a362 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.96),
+    inset 0 0 0 3px rgba(218,174,101,.22),
+    0 0 0 1px rgba(208,163,98,.34),
+    0 5px 14px rgba(0,0,0,.22) !important;
+}
+
 </style>
 </head>
 <body>
@@ -4255,7 +4334,7 @@ body::before {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.156"></script>
+  <script src="./app/catalog.js?v=68.157"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -4328,7 +4407,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.156"></script>
+  <script src="./engine/reader.js?v=68.157"></script>
 
 <script>
 (function(){
