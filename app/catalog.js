@@ -15,3 +15,20 @@ window.COLLECTION_CATALOG = {
     { id: 'policier-parisien-01', seriesId: 'policier-parisien', episode: 1, title: 'Le Policier parisien', access: 'premium', status: 'planned' }
   ]
 };
+
+/* V68.122 — charge les icônes personnalisables des caractéristiques.
+   Le reste du jeu demeure inchangé. */
+(function loadValombreStatIcons() {
+  if (window.__VALOMBRE_STAT_ICONS_LOADER__) return;
+  window.__VALOMBRE_STAT_ICONS_LOADER__ = true;
+
+  const css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = './assets/ui/stat-icons.css?v=68122';
+  document.head.appendChild(css);
+
+  const script = document.createElement('script');
+  script.src = './assets/ui/stat-icons.js?v=68122';
+  script.defer = true;
+  document.head.appendChild(script);
+})();

@@ -1,0 +1,48 @@
+
+/* La Grotte de Valombre — V68.122
+   Icônes JPG personnalisables dans la barre de caractéristiques */
+
+.valombre-stat-icon-card {
+  position: relative !important;
+  padding-left: 76px !important;
+}
+
+.valombre-stat-icon {
+  position: absolute !important;
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 7px !important;
+  border: 1px solid rgba(184, 142, 72, .68) !important;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.38),
+    inset 0 0 0 1px rgba(255,255,255,.05) !important;
+  background: #11191c !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+@media (max-width: 700px) {
+  .valombre-stat-icon-card {
+    padding-left: 58px !important;
+  }
+
+  .valombre-stat-icon {
+    left: 10px !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    border-radius: 6px !important;
+  }
+}
