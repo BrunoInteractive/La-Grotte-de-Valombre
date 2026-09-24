@@ -1,41 +1,67 @@
+/* La Grotte de Valombre — Icônes caractéristiques V4
+   Disposition voulue :
+   [ICÔNE] VIE 18/18
+   [ICÔNE] DEXTÉRITÉ 13
+   etc.
+   Ce fichier ne modifie pas les textures générales du jeu. */
 
-/* La Grotte de Valombre — Icônes caractéristiques V3
-   Disposition : [ICÔNE]  VIE  18/18
-   Même principe pour les 6 caractéristiques. */
-
-/* Neutralise l'ancien correctif V2 s'il est encore présent en cache. */
 .valombre-stat-icon-card {
   position: initial !important;
   padding-left: initial !important;
 }
-.valombre-stat-label-with-icon .valombre-stat-icon,
+
 .valombre-stat-icon {
   display: none !important;
 }
 
+/* La carte garde la DA existante ; on ne change que l'alignement interne. */
 .status-tags .tag {
   justify-content: flex-start !important;
   align-items: center !important;
-  gap: 8px !important;
   text-align: left !important;
 }
 
+/* reader.js place déjà l'icône dans <small>, avant le libellé. */
+.status-tags .tag-copy {
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 6px !important;
+  line-height: 1.05 !important;
+}
+
+.status-tags .tag-copy small {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.status-tags .tag-copy strong {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* L'icône reste bien à gauche du nom. */
 .status-tags .tag-icon {
-  flex: 0 0 28px !important;
-  width: 28px !important;
-  height: 28px !important;
-  display: grid !important;
+  flex: 0 0 26px !important;
+  width: 26px !important;
+  height: 26px !important;
+  display: inline-grid !important;
   place-items: center !important;
   font-size: 0 !important;
   line-height: 1 !important;
 }
 
-.status-tags .valombre-stat-img-v3 {
+.status-tags .valombre-stat-img-v4 {
   display: block !important;
-  width: 26px !important;
-  height: 26px !important;
-  max-width: 26px !important;
-  max-height: 26px !important;
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
   object-fit: contain !important;
   object-position: center !important;
   border: 0 !important;
@@ -45,43 +71,25 @@
   background: transparent !important;
 }
 
-.status-tags .tag-copy {
-  min-width: 0 !important;
-  flex: 1 1 auto !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: baseline !important;
-  justify-content: flex-start !important;
-  gap: 7px !important;
-  line-height: 1.05 !important;
-}
-
-.status-tags .tag-copy small,
-.status-tags .tag-copy strong {
-  margin: 0 !important;
-  white-space: nowrap !important;
-}
-
 @media (max-width: 700px) {
-  .status-tags .tag {
-    gap: 6px !important;
-    padding-left: 7px !important;
+  .status-tags .tag-copy {
+    gap: 5px !important;
+  }
+
+  .status-tags .tag-copy small {
+    gap: 5px !important;
   }
 
   .status-tags .tag-icon {
-    flex-basis: 24px !important;
-    width: 24px !important;
-    height: 24px !important;
-  }
-
-  .status-tags .valombre-stat-img-v3 {
+    flex-basis: 22px !important;
     width: 22px !important;
     height: 22px !important;
-    max-width: 22px !important;
-    max-height: 22px !important;
   }
 
-  .status-tags .tag-copy {
-    gap: 5px !important;
+  .status-tags .valombre-stat-img-v4 {
+    width: 20px !important;
+    height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
   }
 }

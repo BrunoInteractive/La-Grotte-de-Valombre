@@ -1,11 +1,10 @@
-
 (() => {
   'use strict';
 
   const ICONS = {
     'VIE': 'vie.png',
     'DEXTERITE': 'dexterite.jpg',
-    'FORCE': 'force.jpg',
+    'FORCE': 'force.png',
     'ARME': 'arme.jpg',
     'PROTECTION': 'protection.jpg',
     'TERRE NOIRE': 'terre-noire.jpg'
@@ -27,52 +26,54 @@
       .toUpperCase();
   }
 
-  function cleanOldV2(card) {
-    card.classList.remove('valombre-stat-icon-card');
+  function applyIcon(card) {
+    const labelEl = card.querySelector('.tag-label');
+    const slot = card.querySelector('.tag-icon');
+    if (!labelEl || !slot) return;
 
-    card.querySelectorAll('.valombre-stat-icon').forEach(img => img.remove());
-    card.querySelectorAll('.valombre-stat-label-with-icon').forEach(el => {
-      el.classList.remove('valombre-stat-label-with-icon');
-    });
+    const label = normalize(labelEl.textContent);
+    const filename = ICONS[label];
+    if (!filename) return;
+
+    const expected = new URL(filename + '?v=68139', ICON_BASE).href;
+    const current = slot.querySelector('.valombre-stat-img-v4');
+
+    if (current) {
+      if (current.src !== expected) current.src = expected;
+      return;
+    }
+
+    // On remplace uniquement le pictogramme texte natif.
+    // L'observer ne surveille pas le sous-arbre, donc aucune boucle.
+    slot.replaceChildren();
+
+    const img = document.createElement('img');
+    img.className = 'valombre-stat-img-v4';
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    img.decoding = 'async';
+    img.src = expected;
+
+    // Si une icône personnalisée manque, on rétablit un symbole simple.
+    const fallback = {
+      'VIE': '♥',
+      'DEXTERITE': '◆',
+      'FORCE': '⚔',
+      'ARME': '†',
+      'PROTECTION': '🛡',
+      'TERRE NOIRE': '●'
+    }[label] || '';
+
+    img.addEventListener('error', () => {
+      slot.replaceChildren(document.createTextNode(fallback));
+      slot.style.fontSize = '';
+    }, { once: true });
+
+    slot.appendChild(img);
   }
 
   function applyIcons() {
-    const cards = document.querySelectorAll('.status-tags .tag');
-
-    cards.forEach(card => {
-      cleanOldV2(card);
-
-      const copy = card.querySelector('.tag-copy');
-      const labelEl = copy ? copy.querySelector('small') : null;
-      if (!copy || !labelEl) return;
-
-      const label = normalize(labelEl.textContent);
-      const filename = ICONS[label];
-      if (!filename) return;
-
-      let slot = card.querySelector(':scope > .tag-icon');
-      if (!slot) {
-        slot = document.createElement('span');
-        slot.className = 'tag-icon';
-        card.insertBefore(slot, copy);
-      }
-
-      // Remplace les anciens pictogrammes texte par l'image choisie.
-      slot.textContent = '';
-
-      let img = slot.querySelector('.valombre-stat-img-v3');
-      if (!img) {
-        img = document.createElement('img');
-        img.className = 'valombre-stat-img-v3';
-        img.alt = '';
-        img.setAttribute('aria-hidden', 'true');
-        img.decoding = 'async';
-        slot.appendChild(img);
-      }
-
-      const expected = new URL(filename + '?v=68123', ICON_BASE).href;
-      if (img.src !== expected) img.src = expected;
-    });
+    document.querySelectorAll('.status-tags .tag').forEach(applyIcon);
   }
 
   if (document.readyState === 'loading') {
@@ -81,18 +82,20 @@
     applyIcons();
   }
 
-  // La barre est recréée à chaque changement de page.
-  const target = document.getElementById('statusTags') || document.documentElement;
-  let scheduled = false;
-
-  new MutationObserver(() => {
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(() => {
-      scheduled = false;
-      applyIcons();
-    });
-  }).observe(target, { childList: true, subtree: true });
+  // La barre est reconstruite par le jeu à chaque changement de page.
+  // On observe uniquement ses enfants directs : pas de boucle.
+  const target = document.getElementById('statusTags');
+  if (target) {
+    let scheduled = false;
+    new MutationObserver(() => {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(() => {
+        scheduled = false;
+        applyIcons();
+      });
+    }).observe(target, { childList: true });
+  }
 
   window.addEventListener('load', applyIcons);
 })();

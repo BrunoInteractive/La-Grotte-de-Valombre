@@ -16,7 +16,7 @@ window.COLLECTION_CATALOG = {
   ]
 };
 
-/* V68.123 — charge les icônes personnalisables des caractéristiques.
+/* V68.139 — charge les icônes personnalisables des caractéristiques.
    Le reste du jeu demeure inchangé. */
 (function loadValombreStatIcons() {
   if (window.__VALOMBRE_STAT_ICONS_LOADER__) return;
@@ -24,11 +24,11 @@ window.COLLECTION_CATALOG = {
 
   const css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = './assets/ui/stat-icons.css?v=68123';
+  css.href = './assets/ui/stat-icons.css?v=68139';
   document.head.appendChild(css);
 
   const script = document.createElement('script');
-  script.src = './assets/ui/stat-icons.js?v=68123';
+  script.src = './assets/ui/stat-icons.js?v=68139';
   script.defer = true;
   document.head.appendChild(script);
 })();

@@ -1,5 +1,6 @@
 {
-  "version": "68.124",
-  "channel": "joueurs",
-  "iconsFix": "native-v4"
+  "version": "68.139",
+  "baseCommit": "c268e2d",
+  "daRestored": true,
+  "iconsFix": "v4"
 }
