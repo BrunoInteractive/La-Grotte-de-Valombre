@@ -2537,20 +2537,110 @@ body::before {
 }
 
 
+
+
+/* =========================================================
+   V68.136 — DÉMARRAGE DIRECT + TITRE SUR IMAGE / PARCHEMIN
+   - suppression du bandeau titre en haut de page
+   - le menu devient flottant
+   - le titre du livre est posé directement sur l'image,
+     ou sur le parchemin lorsqu'il n'y a pas d'image
+   ========================================================= */
+.app-shell {
+  padding-top:max(8px, env(safe-area-inset-top)) !important;
+}
+.topbar {
+  position:absolute !important;
+  top:max(8px, env(safe-area-inset-top)) !important;
+  right:12px !important;
+  left:auto !important;
+  padding:0 !important;
+  margin:0 !important;
+  display:flex !important;
+  justify-content:flex-end !important;
+  width:auto !important;
+  z-index:60 !important;
+  color:transparent !important;
+}
+.topbar > :not(#menuBtn) { display:none !important; }
+#menuBtn.icon-btn {
+  position:relative;
+  pointer-events:auto;
+}
+.book-page-banner {
+  pointer-events:none;
+}
+.book-page-banner-kicker {
+  font-family:var(--body-font);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-size:11px;
+  line-height:1.25;
+}
+.book-page-banner-title {
+  margin-top:5px;
+  font-family:var(--display-font);
+  font-size:clamp(22px, 4.3vw, 34px);
+  line-height:.96;
+  font-weight:600;
+}
+.image-frame { position:relative; overflow:hidden; }
+.image-banner {
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:8;
+  max-width:min(78%, 520px);
+  padding:12px 14px 13px;
+  color:#f3e7cf;
+  text-shadow:0 2px 10px rgba(0,0,0,.85), 0 1px 2px rgba(0,0,0,.95);
+  background:linear-gradient(180deg, rgba(7,13,16,.42), rgba(7,13,16,.20));
+  border-left:2px solid rgba(226,194,135,.8);
+  box-shadow:inset 0 0 0 1px rgba(255,244,222,.10);
+}
+.card-banner {
+  display:none;
+  margin:0 0 18px;
+  padding:0 0 14px;
+  color:#6b4b2c;
+  border-bottom:1px solid rgba(145,112,67,.36);
+}
+.card-banner .book-page-banner-kicker {
+  color:#8b6741;
+  text-shadow:none;
+}
+.card-banner .book-page-banner-title {
+  color:#563721;
+  text-shadow:none;
+}
+@media (max-width:700px) {
+  .topbar { right:8px !important; top:max(8px, env(safe-area-inset-top)) !important; }
+  .image-banner {
+    top:10px;
+    left:10px;
+    right:56px;
+    max-width:none;
+    padding:10px 11px 11px;
+  }
+  .book-page-banner-kicker { font-size:10px; }
+  .book-page-banner-title { font-size:clamp(20px, 6vw, 28px); }
+  .card-banner { margin:0 0 14px; padding:0 0 12px; }
+}
+
 </style>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <div>
-        <div class="eyebrow" id="bookEyebrow">Livre 01</div>
-        <h1 id="bookTitle">La Grotte de Valombre</h1>
-      </div>
       <button id="menuBtn" class="icon-btn" aria-label="Ouvrir le menu">☰</button>
     </header>
 
     <main id="game" class="game" aria-live="polite" data-design="livre-jeu-80s">
       <section class="image-frame" id="imageFrame">
+        <div class="book-page-banner image-banner" id="pageBannerImage" aria-hidden="true">
+          <div class="book-page-banner-kicker">Chroniques d’un autre temps - Livre 01</div>
+          <div class="book-page-banner-title">La Grotte de Valombre</div>
+        </div>
         <img id="storyImage" class="story-image hidden" alt="" />
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
@@ -2559,6 +2649,10 @@ body::before {
       </section>
 
       <section class="story-card">
+        <div class="book-page-banner card-banner" id="pageBannerCard" aria-hidden="true">
+          <div class="book-page-banner-kicker">Chroniques d’un autre temps - Livre 01</div>
+          <div class="book-page-banner-title">La Grotte de Valombre</div>
+        </div>
         <div class="chapter-number" id="chapterNumber"></div>
         <h2 id="chapterTitle"></h2>
         <div id="storyText" class="story-text"></div>
@@ -2614,5 +2708,38 @@ body::before {
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
   <script src="./engine/reader.js?v=68.122"></script>
+
+<script>
+(function(){
+  const imageBanner = document.getElementById('pageBannerImage');
+  const cardBanner = document.getElementById('pageBannerCard');
+  const storyImage = document.getElementById('storyImage');
+  const imagePlaceholder = document.getElementById('imagePlaceholder');
+
+  function hasVisibleImage(){
+    if(!storyImage) return false;
+    const src = storyImage.getAttribute('src');
+    const imgVisible = !storyImage.classList.contains('hidden') && !!src;
+    const placeholderVisible = imagePlaceholder && !imagePlaceholder.classList.contains('hidden') && getComputedStyle(imagePlaceholder).display !== 'none';
+    return imgVisible && !placeholderVisible;
+  }
+
+  function syncBookBanner(){
+    const showOnImage = hasVisibleImage();
+    if(imageBanner) imageBanner.style.display = showOnImage ? 'block' : 'none';
+    if(cardBanner) cardBanner.style.display = showOnImage ? 'none' : 'block';
+  }
+
+  const observer = new MutationObserver(syncBookBanner);
+  if(storyImage) observer.observe(storyImage, {attributes:true, attributeFilter:['class','src','style']});
+  if(imagePlaceholder) observer.observe(imagePlaceholder, {attributes:true, attributeFilter:['class','style']});
+  document.addEventListener('DOMContentLoaded', syncBookBanner);
+  window.addEventListener('load', syncBookBanner);
+  document.addEventListener('click', function(){ setTimeout(syncBookBanner, 0); }, true);
+  setTimeout(syncBookBanner, 50);
+  setTimeout(syncBookBanner, 250);
+  setTimeout(syncBookBanner, 700);
+})();
+</script>
 </body>
 </html>
