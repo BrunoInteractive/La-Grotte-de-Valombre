@@ -44,7 +44,7 @@ const bookTitle = document.getElementById('bookTitle');
 const bookEyebrow = document.getElementById('bookEyebrow');
 
 bookTitle.textContent = BOOK.title;
-bookEyebrow.textContent = `${BOOK.seriesLabel || ''}${BOOK.seriesLabel ? ' · ' : ''}LIVRE-JEU INTERACTIF`;
+bookEyebrow.textContent = 'Chroniques d’un autre temps - Livre 01';
 document.title = `${BOOK.title} — Livre-jeu`;
 
 function defaultSeriesProfile() {
@@ -460,7 +460,7 @@ function render() {
     stats.forEach(stat => {
       const tag = document.createElement('span');
       tag.className = `tag ${stat.cls || ''}`.trim();
-      tag.innerHTML = `<span class="tag-icon">${stat.icon}</span><span class="tag-copy"><small>${stat.label}</small><strong>${stat.value}</strong></span>`;
+      tag.innerHTML = `<span class="tag-copy"><small><span class="tag-icon">${stat.icon}</span><span class="tag-label">${stat.label}</span></small><strong>${stat.value}</strong></span>`;
       statusTags.appendChild(tag);
     });
   }

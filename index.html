@@ -2250,6 +2250,155 @@ body::before {
   color:#d2bd91 !important;
 }
 
+
+
+/* =========================================================
+   V68.128 — POSITION DU RENVOI EN BAS DES BOUTONS
+   Le titre reste centré dans le cartouche ; la ligne bronze et
+   « Rendez-vous... » sont ancrés tout en bas du bouton.
+   ========================================================= */
+.choice-btn {
+  position: relative !important;
+  padding-bottom: 50px !important;
+}
+
+/* Important : le renvoi est enfant de .choice-copy. On remet
+   .choice-copy en position statique pour que le positionnement
+   absolu de .choice-dest se fasse par rapport au bouton entier. */
+.choice-copy {
+  position: static !important;
+  z-index: 2;
+}
+
+.choice-dest {
+  position: absolute !important;
+  left: 14px !important;
+  right: 14px !important;
+  bottom: 9px !important;
+  top: auto !important;
+  min-height: 31px !important;
+  margin: 0 !important;
+  padding: 5px 8px 0 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(199,156,91,.70) !important;
+  background: transparent !important;
+  color: #d2bd91 !important;
+  line-height: 1.15 !important;
+  z-index: 4 !important;
+}
+
+@media (max-width:700px) {
+  .choice-btn { padding-bottom: 46px !important; }
+  .choice-dest {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 7px !important;
+    min-height: 29px !important;
+    padding-top: 4px !important;
+  }
+}
+
+
+
+/* =========================================================
+   V68.129 — HUD MOBILE + ICÔNES ALIGNÉES + NOUVEL EN-TÊTE
+   - les icônes passent devant les libellés (Vie, Force, etc.)
+   - la barre de caractéristiques redevient fixe en bas d'écran
+   - le surtitre devient « Chroniques d’un autre temps - Livre 01 »
+   ========================================================= */
+.eyebrow {
+  text-transform:none !important;
+  letter-spacing:.04em !important;
+  font-size:13px !important;
+}
+
+.status-tags {
+  position:fixed !important;
+  left:50% !important;
+  bottom:max(8px, env(safe-area-inset-bottom)) !important;
+  transform:translateX(-50%) !important;
+  z-index:30 !important;
+  width:min(940px, calc(100vw - 20px)) !important;
+  display:grid !important;
+  grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+  gap:6px !important;
+  margin:0 !important;
+  padding:7px !important;
+}
+
+.tag {
+  min-width:0;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  min-height:64px;
+  padding:8px 10px !important;
+}
+
+.tag-copy {
+  min-width:0;
+  width:100%;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  gap:3px;
+}
+
+.tag-copy small {
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  white-space:nowrap;
+}
+
+.tag-copy strong {
+  margin-top:0 !important;
+  white-space:nowrap;
+}
+
+.tag-icon {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:14px;
+  flex:0 0 14px;
+  font-size:14px !important;
+  line-height:1 !important;
+}
+
+@media (max-width:700px) {
+  .app-shell { padding-bottom:calc(156px + env(safe-area-inset-bottom)) !important; }
+  .status-tags {
+    width:calc(100vw - 12px) !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:5px !important;
+    padding:6px !important;
+    bottom:max(6px, env(safe-area-inset-bottom)) !important;
+  }
+  .tag {
+    min-height:48px;
+    padding:6px 7px !important;
+  }
+  .tag-copy { gap:2px; }
+  .tag-copy small {
+    font-size:8px !important;
+    gap:5px !important;
+  }
+  .tag-copy strong {
+    font-size:13px !important;
+    line-height:1.08;
+  }
+  .tag-icon {
+    width:12px;
+    flex-basis:12px;
+    font-size:12px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2305,7 +2454,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.122 · TEST DA V4</h3>
+      <h3>Pages · TEST — V68.129 · TEST DA V11</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
