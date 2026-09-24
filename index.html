@@ -2076,7 +2076,7 @@ body::before {
    matière de pierre bleutée, sans quadrillage synthétique.
    ========================================================= */
 :root {
-  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=138");
+  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=139");
 }
 
 .choice-btn,
@@ -2453,7 +2453,7 @@ body::before {
    - l’inventaire et la fiche perso utilisent la texture parchemin
    ========================================================= */
 :root {
-  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg?v=138');
+  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg?v=139');
 }
 
 /* Boutons croix : plus de texture ardoise. */
@@ -2572,13 +2572,13 @@ body::before {
 }
 .book-page-banner-kicker {
   font-family:var(--body-font);
-  letter-spacing:.12em;
+  letter-spacing:.08em;
   text-transform:uppercase;
-  font-size:11px;
-  line-height:1.25;
+  font-size:7px;
+  line-height:1.1;
 }
 .book-page-banner-title {
-  margin-top:5px;
+  margin-top:3px;
   font-family:var(--display-font);
   font-size:clamp(22px, 4.3vw, 34px);
   line-height:.96;
@@ -2622,7 +2622,7 @@ body::before {
     max-width:none;
     padding:10px 11px 11px;
   }
-  .book-page-banner-kicker { font-size:10px; }
+  .book-page-banner-kicker { font-size:6px; letter-spacing:.07em; }
   .book-page-banner-title { font-size:clamp(20px, 6vw, 28px); }
   .card-banner { margin:0 0 14px; padding:0 0 12px; }
 }
@@ -2665,6 +2665,26 @@ body::before {
   background-image:none !important;
   background-color:rgba(255,255,255,.12) !important;
   box-shadow:none !important;
+}
+
+
+
+/* =========================================================
+   V68.139 — CACHE TEXTURES + COLLECTION TRÈS DISCRÈTE
+   Le surtitre de collection reste volontairement plus petit
+   que le numéro de page (13–14 px).
+   ========================================================= */
+.book-page-banner-kicker {
+  font-size:7px !important;
+  line-height:1.1 !important;
+  letter-spacing:.08em !important;
+  font-weight:500 !important;
+}
+@media (max-width:700px) {
+  .book-page-banner-kicker {
+    font-size:6px !important;
+    letter-spacing:.07em !important;
+  }
 }
 
 </style>
