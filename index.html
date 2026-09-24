@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68165");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68166");
 }
 
 /* =========================
@@ -4922,6 +4922,71 @@ body.library-home-open .app-shell {
   }
 }
 
+/* =========================================================
+   V68.166 — CARACTÉRISTIQUES UN PEU PLUS COMPACTES
+   ========================================================= */
+
+/* Un peu moins d'espace entre libellé et valeur. */
+.status-tags .tag-copy,
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy {
+  gap: 4px !important;
+}
+
+/* Valeurs légèrement plus petites. */
+.status-tags .stat-value-line strong,
+.hero-sheet-grid.hero-sheet-tag-grid .stat-value-line strong {
+  font-size: 16px !important;
+}
+
+.enemy-card-stats strong {
+  font-size: 16px !important;
+}
+
+/* Icônes très légèrement réduites pour accompagner la valeur. */
+.status-tags .stat-value-line .tag-icon,
+.hero-sheet-grid.hero-sheet-tag-grid .stat-value-line .tag-icon {
+  width: 17px !important;
+  height: 17px !important;
+  flex-basis: 17px !important;
+}
+
+/* Barre du bas : cases un peu moins hautes. */
+.status-tags .tag {
+  min-height: 54px !important;
+  padding: 5px 4px !important;
+}
+
+/* Sélection du personnage : même réduction légère. */
+.hero-sheet-grid.hero-sheet-tag-grid .tag {
+  min-height: 59px !important;
+  padding: 6px 6px !important;
+}
+
+/* Ennemi : un peu plus compact aussi. */
+.enemy-card-stats > div {
+  min-height: 59px !important;
+  row-gap: 3px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+@media (max-width: 760px) {
+  .status-tags .stat-value-line strong,
+  .hero-sheet-grid.hero-sheet-tag-grid .stat-value-line strong,
+  .enemy-card-stats strong {
+    font-size: 15px !important;
+  }
+
+  .status-tags .tag {
+    min-height: 52px !important;
+  }
+
+  .hero-sheet-grid.hero-sheet-tag-grid .tag,
+  .enemy-card-stats > div {
+    min-height: 56px !important;
+  }
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5238,7 +5303,7 @@ body.library-home-open .app-shell {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.165"></script>
+  <script src="./app/catalog.js?v=68.166"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5311,7 +5376,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.165"></script>
+  <script src="./engine/reader.js?v=68.166"></script>
 
 <script>
 (function(){
