@@ -3894,7 +3894,7 @@ body::before {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.151"></script>
+  <script src="./app/catalog.js?v=68.152"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -3905,10 +3905,20 @@ body::before {
     if (sessionStorage.getItem(RESTART_FLAG) === '1') {
       sessionStorage.removeItem(RESTART_FLAG);
       try {
+        /* Supprime la sauvegarde actuelle ET toutes les anciennes clés
+           que le moteur pourrait sinon restaurer automatiquement. */
+        const legacyKeys = [
+          'ldveh.book.ecuyer-01-valombre.save.v1',
+          'ldveh.book.ecuyer-01-valombre.checkpoint.v1',
+          'valombre_save_v12_3d6_stats18',
+          'valombre_checkpoint_v12_3d6_stats18'
+        ];
+
         Object.keys(localStorage).forEach(function(key){
           if (
             key.indexOf('ldveh.book.ecuyer-01.save.v') === 0 ||
-            key.indexOf('ldveh.book.ecuyer-01.checkpoint.v') === 0
+            key.indexOf('ldveh.book.ecuyer-01.checkpoint.v') === 0 ||
+            legacyKeys.includes(key)
           ) {
             localStorage.removeItem(key);
           }
@@ -3957,7 +3967,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.151"></script>
+  <script src="./engine/reader.js?v=68.152"></script>
 
 <script>
 (function(){
