@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68171");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68172");
 }
 
 /* =========================
@@ -5200,6 +5200,41 @@ body.library-home-open .app-shell {
   }
 }
 
+/* =========================================================
+   V68.172 — RENVOI DE PAGE AU RAS DU BAS, À DROITE
+   ========================================================= */
+
+.choice-dest {
+  position: absolute !important;
+  left: auto !important;
+  right: 8px !important;
+  top: auto !important;
+  bottom: 4px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  width: auto !important;
+  max-width: calc(100% - 16px) !important;
+
+  display: block !important;
+  text-align: right !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  z-index: 4 !important;
+}
+
+@media (max-width: 620px) {
+  .choice-dest {
+    right: 7px !important;
+    bottom: 3px !important;
+    max-width: calc(100% - 14px) !important;
+  }
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5567,7 +5602,7 @@ body.library-home-open .app-shell {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.171"></script>
+  <script src="./app/catalog.js?v=68.172"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5640,7 +5675,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.171"></script>
+  <script src="./engine/reader.js?v=68.172"></script>
 
 <script>
 (function(){
