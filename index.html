@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68163");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68165");
 }
 
 /* =========================
@@ -4778,6 +4778,150 @@ body.library-home-open .app-shell {
   }
 }
 
+/* =========================================================
+   V68.165 — CARACTÉRISTIQUES PLUS LISIBLES
+   Ligne 1 : libellé, même taille que "Inventaire"
+   Ligne 2 : icône + valeur
+   ========================================================= */
+
+/* -------- Joueur : barre basse + sélection du personnage -------- */
+
+.status-tags .tag-copy,
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  text-align: center !important;
+}
+
+.status-tags .stat-label-line,
+.hero-sheet-grid.hero-sheet-tag-grid .stat-label-line {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  color: #efe4d0 !important;
+  font-family: var(--body-font) !important;
+  font-size: 15px !important;
+  line-height: 1.05 !important;
+  font-weight: 500 !important;
+  letter-spacing: .015em !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+.status-tags .stat-value-line,
+.hero-sheet-grid.hero-sheet-tag-grid .stat-value-line {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  width: 100% !important;
+  min-height: 22px !important;
+}
+
+.status-tags .stat-value-line .tag-icon,
+.hero-sheet-grid.hero-sheet-tag-grid .stat-value-line .tag-icon {
+  position: static !important;
+  display: inline-block !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+  margin: 0 !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+.status-tags .stat-value-line strong,
+.hero-sheet-grid.hero-sheet-tag-grid .stat-value-line strong {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #fff6e6 !important;
+  font-family: var(--body-font) !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+}
+
+/* Donne un peu plus d'air aux cartes pour les deux vraies lignes. */
+.status-tags .tag {
+  min-height: 60px !important;
+  padding: 7px 5px !important;
+}
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag {
+  min-height: 66px !important;
+  padding: 8px 7px !important;
+}
+
+/* -------- Ennemi : même logique label / icône + valeur -------- */
+
+.enemy-card-stats > div {
+  grid-template-columns: auto auto !important;
+  grid-template-rows: auto auto !important;
+  justify-content: center !important;
+  align-items: center !important;
+  column-gap: 7px !important;
+  row-gap: 5px !important;
+  text-align: center !important;
+  min-height: 66px !important;
+}
+
+.enemy-card-stats > div > span:not(.enemy-icon) {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  justify-self: center !important;
+  color: #efe4d0 !important;
+  font-family: var(--body-font) !important;
+  font-size: 15px !important;
+  line-height: 1.05 !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+}
+
+.enemy-card-stats .enemy-icon {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  justify-self: end !important;
+  align-self: center !important;
+  margin: 0 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.enemy-card-stats strong {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  justify-self: start !important;
+  align-self: center !important;
+  margin: 0 !important;
+  color: #fff6e6 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+/* Sur mobile on garde la même lecture, sans réduire le libellé à 8-9 px. */
+@media (max-width: 760px) {
+  .status-tags .stat-label-line,
+  .hero-sheet-grid.hero-sheet-tag-grid .stat-label-line,
+  .enemy-card-stats > div > span:not(.enemy-icon) {
+    font-size: 14px !important;
+  }
+
+  .status-tags .stat-value-line strong,
+  .hero-sheet-grid.hero-sheet-tag-grid .stat-value-line strong,
+  .enemy-card-stats strong {
+    font-size: 17px !important;
+  }
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5024,8 +5168,77 @@ body.library-home-open .app-shell {
   })();
   </script>
 
+
+  <script>
+  (function () {
+    function reorganiseStatCard(tag) {
+      if (!tag || tag.dataset.statLayout165 === '1') return;
+
+      const copy = tag.querySelector('.tag-copy');
+      const icon = tag.querySelector('.tag-icon');
+      const value = tag.querySelector('strong');
+      if (!copy || !icon || !value) return;
+
+      let label = tag.querySelector('.tag-label');
+      let labelText = '';
+
+      if (label) {
+        labelText = label.textContent.trim();
+      } else {
+        const small = copy.querySelector('small');
+        if (small) {
+          const clone = small.cloneNode(true);
+          clone.querySelectorAll('.tag-icon').forEach(el => el.remove());
+          labelText = clone.textContent.trim();
+        }
+      }
+
+      if (!labelText) return;
+
+      const labelLine = document.createElement('span');
+      labelLine.className = 'tag-label stat-label-line';
+      labelLine.textContent = labelText;
+
+      const valueLine = document.createElement('span');
+      valueLine.className = 'stat-value-line';
+
+      valueLine.appendChild(icon);
+      valueLine.appendChild(value);
+
+      copy.replaceChildren(labelLine, valueLine);
+      tag.dataset.statLayout165 = '1';
+    }
+
+    function updateAllStats(root) {
+      (root || document).querySelectorAll('.status-tags .tag, .hero-sheet-tag-grid .tag')
+        .forEach(reorganiseStatCard);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      updateAllStats(document);
+
+      const observer = new MutationObserver(function () {
+        updateAllStats(document);
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    });
+
+    window.addEventListener('load', function () {
+      updateAllStats(document);
+    });
+
+    setTimeout(function () {
+      updateAllStats(document);
+    }, 100);
+  })();
+  </script>
+
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.164"></script>
+  <script src="./app/catalog.js?v=68.165"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5098,7 +5311,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.164"></script>
+  <script src="./engine/reader.js?v=68.165"></script>
 
 <script>
 (function(){
