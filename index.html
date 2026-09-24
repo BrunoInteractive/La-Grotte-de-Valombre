@@ -3642,6 +3642,78 @@ body::before {
   z-index: 8 !important;
 }
 
+/* =========================================================
+   V68.151 — CADRE PNG AU-DESSUS DE L'IMAGE
+   Le cadre est un overlay transparent au-dessus de l’illustration.
+   ========================================================= */
+
+.image-frame {
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* On garde le conteneur sans cadre PNG propre lorsqu'une image est affichée.
+   Le cadre visible sera l'overlay au-dessus. */
+.image-frame.has-story-image {
+  border-color: transparent !important;
+  border-image: none !important;
+  box-shadow: none !important;
+  background: #0f171c !important;
+}
+
+/* L'ancien décor CSS disparaît lorsqu'une illustration est présente */
+.image-frame.has-story-image::before,
+.image-frame.has-story-image::after {
+  display: none !important;
+}
+
+/* L'image doit rester sous le cadre */
+.story-image {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.image-placeholder {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Cadre PNG posé AU-DESSUS de l’image, mais avec centre transparent */
+.story-frame-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 7 !important;
+  box-sizing: border-box !important;
+
+  border-style: solid !important;
+  border-width: clamp(10px, 1.35vw, 18px) !important;
+  border-color: transparent !important;
+
+  border-image-source: url('./assets/ui/cadres/cadre-image.png?v=68151') !important;
+  border-image-slice: 120 100 120 100 !important;
+  border-image-width: 1 !important;
+  border-image-outset: 0 !important;
+  border-image-repeat: stretch !important;
+
+  background: transparent !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.story-frame-overlay.hidden {
+  display: none !important;
+}
+
+.image-banner {
+  z-index: 8 !important;
+}
+
+@media (max-width: 700px) {
+  .story-frame-overlay {
+    border-width: clamp(8px, 2.4vw, 13px) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3661,6 +3733,7 @@ body::before {
           <div class="book-page-banner-title">La Grotte de Valombre</div>
         </div>
         <img id="storyImage" class="story-image hidden" alt="" />
+        <div id="storyFrameOverlay" class="story-frame-overlay hidden" aria-hidden="true"></div>
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
           <small id="imageLabel">La-Grotte-de-Valombre-001</small>
@@ -3776,8 +3849,52 @@ body::before {
   })();
   </script>
 
+
+  <script>
+  (function () {
+    const storyImage = document.getElementById('storyImage');
+    const imageFrame = document.getElementById('imageFrame');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
+    const frameOverlay = document.getElementById('storyFrameOverlay');
+
+    if (!storyImage || !imageFrame || !frameOverlay) return;
+
+    function syncFrameOverlay() {
+      const hasSrc = !!storyImage.getAttribute('src');
+      const imageVisible = !storyImage.classList.contains('hidden') && hasSrc;
+      const placeholderVisible = imagePlaceholder &&
+        !imagePlaceholder.classList.contains('hidden') &&
+        getComputedStyle(imagePlaceholder).display !== 'none';
+
+      const show = imageVisible && !placeholderVisible;
+
+      imageFrame.classList.toggle('has-story-image', show);
+      frameOverlay.classList.toggle('hidden', !show);
+    }
+
+    storyImage.addEventListener('load', syncFrameOverlay);
+    storyImage.addEventListener('error', syncFrameOverlay);
+
+    new MutationObserver(syncFrameOverlay).observe(storyImage, {
+      attributes: true,
+      attributeFilter: ['class', 'src', 'style']
+    });
+
+    if (imagePlaceholder) {
+      new MutationObserver(syncFrameOverlay).observe(imagePlaceholder, {
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', syncFrameOverlay);
+    window.addEventListener('load', syncFrameOverlay);
+    setTimeout(syncFrameOverlay, 60);
+  })();
+  </script>
+
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.150"></script>
+  <script src="./app/catalog.js?v=68.151"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -3840,7 +3957,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.150"></script>
+  <script src="./engine/reader.js?v=68.151"></script>
 
 <script>
 (function(){
