@@ -2076,7 +2076,7 @@ body::before {
    matière de pierre bleutée, sans quadrillage synthétique.
    ========================================================= */
 :root {
-  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=137");
+  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=138");
 }
 
 .choice-btn,
@@ -2453,7 +2453,7 @@ body::before {
    - l’inventaire et la fiche perso utilisent la texture parchemin
    ========================================================= */
 :root {
-  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg?v=137');
+  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg?v=138');
 }
 
 /* Boutons croix : plus de texture ardoise. */
@@ -2629,6 +2629,8 @@ body::before {
 
 
 
+.topbar-book-meta { display:none !important; }
+
 /* =========================================================
    V68.137 — INVENTAIRE SANS PARCHEMIN + CACHE BUST TEXTURES
    - l'inventaire et ses sous-panneaux reviennent sur un fond simple
@@ -2644,9 +2646,8 @@ body::before {
 }
 
 /* La fiche perso seule garde la texture parchemin. */
-#modal[data-panel="character"] .modal-card,
-#modal[data-panel="character"] .character-modal-sheet,
-#modal[data-panel="character"] .character-modal-stats > div {
+.character-modal-sheet,
+.character-modal-stats > div {
   background-color:#e8dcc4 !important;
   background-image:var(--ui-parchment-texture) !important;
   background-position:top center !important;
@@ -2655,25 +2656,13 @@ body::before {
 }
 
 /* Inventaire : aucune texture parchemin sur le panneau ni sur ses cartes. */
-#modal[data-panel="inventory"] .modal-card,
-#modal[data-panel="inventory"] .inventory-equipment-card,
-#modal[data-panel="inventory"] .inventory-item,
-#modal[data-panel="inventory"] .test-inventory-panel,
-#modal[data-panel="inventory"] .test-item-row,
-#modal[data-panel="inventory"] .inventory-empty,
-#modal[data-panel="inventory"] .inventory-owned-section {
+.inventory-equipment-card,
+.inventory-item,
+.test-inventory-panel,
+.test-item-row,
+.inventory-empty,
+.inventory-owned-section {
   background-image:none !important;
-}
-
-#modal[data-panel="inventory"] .modal-card {
-  background:linear-gradient(180deg, #eee4cf 0%, #dfd1b5 100%) !important;
-}
-#modal[data-panel="inventory"] .inventory-equipment-card,
-#modal[data-panel="inventory"] .inventory-item,
-#modal[data-panel="inventory"] .test-inventory-panel,
-#modal[data-panel="inventory"] .test-item-row,
-#modal[data-panel="inventory"] .inventory-empty,
-#modal[data-panel="inventory"] .inventory-owned-section {
   background-color:rgba(255,255,255,.12) !important;
   box-shadow:none !important;
 }
@@ -2683,6 +2672,10 @@ body::before {
 <body>
   <div class="app-shell">
     <header class="topbar">
+      <div class="topbar-book-meta" aria-hidden="true">
+        <div class="eyebrow" id="bookEyebrow">Chroniques d’un autre temps - Livre 01</div>
+        <h1 id="bookTitle">La Grotte de Valombre</h1>
+      </div>
       <button id="menuBtn" class="icon-btn" aria-label="Ouvrir le menu">☰</button>
     </header>
 
@@ -2737,7 +2730,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.137 · TEST DA V16</h3>
+      <h3>Pages · TEST — V68.138 · TEST DA V17</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -2758,7 +2751,7 @@ body::before {
   <script src="./app/catalog.js"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.137"></script>
+  <script src="./engine/reader.js?v=68.138"></script>
 
 <script>
 (function(){
