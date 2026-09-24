@@ -2703,12 +2703,12 @@ body::before {
      ./assets/ui/icons/terre-noire.jpg
    ========================================================= */
 :root {
-  --ui-icon-vie:url('./assets/ui/icons/vie.jpg?v=140');
-  --ui-icon-dexterite:url('./assets/ui/icons/dexterite.jpg?v=140');
-  --ui-icon-force:url('./assets/ui/icons/force.jpg?v=140');
-  --ui-icon-arme:url('./assets/ui/icons/arme.jpg?v=140');
-  --ui-icon-protection:url('./assets/ui/icons/protection.jpg?v=140');
-  --ui-icon-terre-noire:url('./assets/ui/icons/terre-noire.jpg?v=140');
+  --ui-icon-vie:url('./assets/ui/icons/caracteristiques/vie.png?v=68140');
+  --ui-icon-dexterite:url('./assets/ui/icons/caracteristiques/dexterite.jpg?v=68140');
+  --ui-icon-force:url('./assets/ui/icons/caracteristiques/force.png?v=68140');
+  --ui-icon-arme:url('./assets/ui/icons/caracteristiques/arme.jpg?v=68140');
+  --ui-icon-protection:url('./assets/ui/icons/caracteristiques/protection.jpg?v=68140');
+  --ui-icon-terre-noire:url('./assets/ui/icons/caracteristiques/terre-noire.jpg?v=68140');
 }
 
 .image-banner,
@@ -2804,6 +2804,169 @@ body::before {
 .icon-protection { background-image: var(--ui-icon-protection) !important; }
 .icon-terre-noire { background-image: var(--ui-icon-terre-noire) !important; }
 
+/* =========================================================
+   V68.140 — BARRE DE CARACTÉRISTIQUES RESPONSIVE PROPRE
+   - contenu centré horizontalement et verticalement
+   - icônes visibles (PNG/JPG)
+   - adaptation propre à la largeur de l'écran
+   ========================================================= */
+.app-shell {
+  padding-bottom: calc(112px + env(safe-area-inset-bottom)) !important;
+}
+
+.status-tags {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  z-index: 30 !important;
+  width: min(980px, calc(100vw - 18px)) !important;
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.tag {
+  min-width: 0 !important;
+  min-height: 66px !important;
+  padding: 8px 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.tag-copy {
+  min-width: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  text-align: center !important;
+}
+
+.tag-copy small {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  font-size: clamp(8px, 0.75vw, 11px) !important;
+  line-height: 1 !important;
+}
+
+.tag-label {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+.tag-copy strong {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  line-height: 1.1 !important;
+  font-size: clamp(12px, 1.35vw, 18px) !important;
+  overflow-wrap: anywhere !important;
+  text-wrap: balance !important;
+}
+
+.tag-icon {
+  color: transparent !important;
+  font-size: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+  display: inline-block !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+}
+
+.tag-icon.icon-jpg {
+  width: 18px !important;
+  height: 18px !important;
+  flex-basis: 18px !important;
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    padding-bottom: calc(118px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .status-tags {
+    width: calc(100vw - 14px) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+
+  .tag {
+    min-height: 54px !important;
+    padding: 6px 6px !important;
+  }
+
+  .tag-copy {
+    gap: 3px !important;
+  }
+
+  .tag-copy small {
+    gap: 6px !important;
+    font-size: 8px !important;
+  }
+
+  .tag-copy strong {
+    font-size: clamp(11px, 3.7vw, 15px) !important;
+  }
+
+  .tag-icon,
+  .tag-icon.icon-jpg {
+    width: 15px !important;
+    height: 15px !important;
+    flex-basis: 15px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-shell {
+    padding-bottom: calc(186px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .status-tags {
+    width: calc(100vw - 12px) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    bottom: max(6px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .tag {
+    min-height: 50px !important;
+    padding: 6px 4px !important;
+  }
+
+  .tag-copy small {
+    gap: 5px !important;
+    font-size: 8px !important;
+  }
+
+  .tag-copy strong {
+    font-size: 13px !important;
+  }
+
+  .tag-icon,
+  .tag-icon.icon-jpg {
+    width: 14px !important;
+    height: 14px !important;
+    flex-basis: 14px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2885,10 +3048,10 @@ body::before {
   </div>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.139"></script>
+  <script src="./app/catalog.js?v=68.140"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.139"></script>
+  <script src="./engine/reader.js?v=68.140"></script>
 
 <script>
 (function(){
@@ -2946,7 +3109,7 @@ body::before {
 
   function patchHeroTags(root=document){
     root.querySelectorAll('.status-tags .tag').forEach(tag => {
-      const labelEl = tag.querySelector('.tag-copy small');
+      const labelEl = tag.querySelector('.tag-label');
       const iconEl = tag.querySelector('.tag-icon');
       if(!labelEl || !iconEl) return;
       const iconClass = iconClassFromLabel(labelEl.textContent);
