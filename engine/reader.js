@@ -10,9 +10,9 @@ GameRuntime.setActiveBook(BOOK);
 const STORY = BOOK.story;
 const PAGE_BY_NODE = BOOK.pageByNode;
 const padPage = BOOK.padPage;
-const STORAGE_KEY = `ldveh.book.${BOOK.id}.save.v${BOOK.saveVersion || 1}`;
-const CHECKPOINT_KEY = `ldveh.book.${BOOK.id}.checkpoint.v${BOOK.saveVersion || 1}`;
-const SERIES_KEY = `ldveh.series.${BOOK.seriesId}.profile.v2`;
+const STORAGE_KEY = `ldveh.book.${BOOK.id}.${BOOK.saveScope ? BOOK.saveScope + '.' : ''}save.v${BOOK.saveVersion || 1}`;
+const CHECKPOINT_KEY = `ldveh.book.${BOOK.id}.${BOOK.saveScope ? BOOK.saveScope + '.' : ''}checkpoint.v${BOOK.saveVersion || 1}`;
+const SERIES_KEY = `ldveh.series.${BOOK.seriesId}.${BOOK.saveScope ? BOOK.saveScope + '.' : ''}profile.v2`;
 
 const chapterNumber = document.getElementById('chapterNumber');
 const chapterTitle = document.getElementById('chapterTitle');
@@ -44,7 +44,7 @@ const bookTitle = document.getElementById('bookTitle');
 const bookEyebrow = document.getElementById('bookEyebrow');
 
 bookTitle.textContent = BOOK.title;
-bookEyebrow.textContent = 'Chroniques d’un autre temps - Livre 01';
+bookEyebrow.textContent = `${BOOK.seriesLabel || ''}${BOOK.seriesLabel ? ' · ' : ''}LIVRE-JEU INTERACTIF`;
 document.title = `${BOOK.title} — Livre-jeu`;
 
 function defaultSeriesProfile() {
@@ -450,22 +450,51 @@ function render() {
       : state.weapon === 'sorcerer_sword' ? 'Épée rouge'
       : 'Aucune';
     const stats = [
-      {icon:'♥', label:'Vie', value:`${state.hp}/${state.maxHp}`, cls: hpRatio <= .3 ? 'status-critical' : hpRatio <= .55 ? 'status-warning' : ''},
-      {icon:'◆', label:'Dextérité', value:String(currentDexterity(state))},
-      {icon:'⚔', label:'Force', value:String(currentForce(state))},
-      {icon:'†', label:'Arme', value:compactWeapon},
-      {icon:'🛡', label:'Protection', value:String(protection)},
-      {icon:'●', label:'Terre noire', value:`${earth}/13`, cls: earth >= 12 ? 'status-critical' : earth >= 9 ? 'status-warning' : ''}
+      {iconFile:'vie.png', fallback:'♥', label:'Vie', value:`${state.hp}/${state.maxHp}`, cls: hpRatio <= .3 ? 'status-critical' : hpRatio <= .55 ? 'status-warning' : ''},
+      {iconFile:'dexterite.jpg', fallback:'◆', label:'Dextérité', value:String(currentDexterity(state))},
+      {iconFile:'force.png', fallback:'⚔', label:'Force', value:String(currentForce(state))},
+      {iconFile:'arme.jpg', fallback:'†', label:'Arme', value:compactWeapon},
+      {iconFile:'protection.jpg', fallback:'🛡', label:'Protection', value:String(protection)},
+      {iconFile:'terre-noire.jpg', fallback:'●', label:'Terre noire', value:`${earth}/13`, cls: earth >= 12 ? 'status-critical' : earth >= 9 ? 'status-warning' : ''}
     ];
     stats.forEach(stat => {
       const tag = document.createElement('span');
       tag.className = `tag ${stat.cls || ''}`.trim();
-      tag.innerHTML = `<span class="tag-copy"><small><span class="tag-icon">${stat.icon}</span><span class="tag-label">${stat.label}</span></small><strong>${stat.value}</strong></span>`;
+
+      const iconSlot = document.createElement('span');
+      iconSlot.className = 'tag-icon';
+
+      const icon = document.createElement('img');
+      icon.className = 'stat-icon-img';
+      icon.alt = '';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.decoding = 'async';
+      icon.src = `./assets/ui/icons/caracteristiques/${stat.iconFile}?v=68124`;
+      icon.addEventListener('error', () => {
+        icon.remove();
+        iconSlot.textContent = stat.fallback;
+      }, { once: true });
+
+      iconSlot.appendChild(icon);
+
+      const copy = document.createElement('span');
+      copy.className = 'tag-copy';
+      copy.innerHTML = `<small>${stat.label}</small><strong>${stat.value}</strong>`;
+
+      tag.appendChild(iconSlot);
+      tag.appendChild(copy);
       statusTags.appendChild(tag);
     });
   }
 
-  const availableChoices = pendingDice ? [{label:'Jeter les dés', action:'resolveDice'}] : state.flags?.blackEarthTransformed && !node.sheet ? [{label:"Reprendre au dernier point de sauvegarde",action:"checkpoint"},{label:"Recommencer depuis le début",action:"restart"}] : state.hp <= 0 && !node.sheet ? fatalChoices() : typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
+  // Une fois une issue finale atteinte dans la chambre de l'esprit, la partie est terminée :
+  // impossible de revenir au checkpoint 200 pour tester immédiatement une autre fin.
+  const finalLockedEnding = new Set(['c215', 'c216', 'c217', 'c218', 'c221']).has(renderNodeId);
+  const availableChoices = pendingDice ? [{label:'Jeter les dés', action:'resolveDice'}]
+    : finalLockedEnding ? [{label:'Recommencer depuis le début', action:'restart'}]
+    : state.flags?.blackEarthTransformed && !node.sheet ? [{label:"Reprendre au dernier point de sauvegarde",action:"checkpoint"},{label:"Recommencer depuis le début",action:"restart"}]
+    : state.hp <= 0 && !node.sheet ? fatalChoices()
+    : typeof node.choices === 'function' ? node.choices(state) : (node.choices || []);
   choices.innerHTML = '';
   availableChoices.forEach((choice, i) => {
     const btn = document.createElement('button');
@@ -522,7 +551,6 @@ function restartGame() {
 }
 
 function showModal(title, html) {
-  modal.dataset.panel = title === 'Fiche perso' ? 'character' : 'plain';
   modalTitle.textContent = title;
   modalContent.innerHTML = html;
   modal.classList.remove('hidden');
@@ -537,7 +565,6 @@ function openCharacterSheet() {
 }
 
 function openInventory() {
-  modal.dataset.panel = 'inventory';
   modalTitle.textContent = 'Inventaire';
   const items = Object.entries(state.inventory);
   const topText = BOOK.inventory && BOOK.inventory.topLine ? BOOK.inventory.topLine(state) : '';
@@ -638,6 +665,11 @@ closeModalBtn.addEventListener('click', closeModal);
 modalBackdrop.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDrawer(); closeModal(); closeJournal(); } });
 
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(() => {});
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker
+    .register('./sw.js', { updateViaCache: 'none' })
+    .then(registration => registration.update().catch(() => {}))
+    .catch(() => {});
+}
 render();
 })();

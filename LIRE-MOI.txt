@@ -1,0 +1,33 @@
+LA GROTTE DE VALOMBRE — V68.124 — CORRECTIF ICÔNES
+
+Ce correctif remplace entièrement le système V3 qui pouvait faire disparaître
+les icônes.
+
+NOUVEAU PRINCIPE
+Les images sont maintenant créées directement par engine/reader.js.
+Il n'y a plus de script d'observation / réinjection des icônes.
+
+AFFICHAGE
+[ICÔNE]  VIE  18/18
+[ICÔNE]  DEXTÉRITÉ  13
+[ICÔNE]  FORCE  9
+etc.
+
+INCLUS
+- vie.png : coeur avec transparence
+- force.png : gantelet/poing avec transparence
+
+Les autres images restent attendues sous ces noms :
+- dexterite.jpg
+- arme.jpg
+- protection.jpg
+- terre-noire.jpg
+
+Si l'une de ces images manque, le jeu affiche automatiquement l'ancien
+pictogramme à sa place : aucune case ne reste vide.
+
+À FAIRE SUR GITHUB
+Décompresser le ZIP à la racine du dépôt et remplacer les fichiers présents.
+
+Le Service Worker passe en V68.124 afin que les testeurs récupèrent bien
+la correction sans perdre leur sauvegarde.
