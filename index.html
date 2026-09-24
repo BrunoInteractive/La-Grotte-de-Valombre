@@ -2076,7 +2076,7 @@ body::before {
    matière de pierre bleutée, sans quadrillage synthétique.
    ========================================================= */
 :root {
-  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=68159");
+  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=68160");
 }
 
 .choice-btn,
@@ -4314,6 +4314,79 @@ body::before {
   color: #eadcc1 !important;
 }
 
+/* =========================================================
+   V68.160 — SÉLECTION PERSONNAGE
+   Même texture ET même luminosité que les boutons actuels.
+   ========================================================= */
+
+/* Carte personnage + cadre portrait :
+   exactement la texture finale des boutons, sans voiles supplémentaires. */
+.hero-choice-card,
+.hero-choice-portrait {
+  background: var(--ui-button-texture) center center / cover repeat !important;
+  background-color: #23343c !important;
+  background-blend-mode: normal !important;
+  filter: brightness(1.18) contrast(1.03) saturate(1.02) !important;
+
+  border-color: var(--ui-bronze) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(7,10,12,.96),
+    inset 0 0 0 2px rgba(197,156,93,.34),
+    0 4px 10px rgba(0,0,0,.16) !important;
+}
+
+/* Le portrait ne doit pas être éclairci par le filtre du cadre.
+   On compense approximativement le filtre parent sur l'image elle-même. */
+.hero-choice-portrait img {
+  filter:
+    brightness(.847)
+    contrast(.971)
+    saturate(.980) !important;
+}
+
+/* Carte sélectionnée : même matière, seule la bordure indique la sélection. */
+.hero-choice-card.selected {
+  background: var(--ui-button-texture) center center / cover repeat !important;
+  background-color: #23343c !important;
+  background-blend-mode: normal !important;
+  filter: brightness(1.18) contrast(1.03) saturate(1.02) !important;
+  border-color: #d0a362 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(7,10,12,.96),
+    inset 0 0 0 2px rgba(218,174,101,.44),
+    0 0 0 1px rgba(208,163,98,.28),
+    0 4px 10px rgba(0,0,0,.18) !important;
+}
+
+/* Les 6 caractéristiques utilisent strictement le rendu des boutons. */
+.hero-sheet-grid.hero-sheet-tag-grid .tag {
+  background: var(--ui-button-texture) center center / cover repeat !important;
+  background-color: #23343c !important;
+  background-blend-mode: normal !important;
+  filter: brightness(1.18) contrast(1.03) saturate(1.02) !important;
+
+  border-color: var(--ui-bronze) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(7,10,12,.96),
+    inset 0 0 0 2px rgba(197,156,93,.34),
+    0 4px 10px rgba(0,0,0,.16) !important;
+}
+
+/* Textes conservés clairs comme dans la barre de caractéristiques. */
+.hero-choice-name,
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy small,
+.hero-sheet-grid.hero-sheet-tag-grid .tag-label {
+  color: #f5ecd8 !important;
+}
+
+.hero-choice-rank {
+  color: #d9c9aa !important;
+}
+
+.hero-sheet-grid.hero-sheet-tag-grid .tag-copy strong {
+  color: #eadcc1 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4538,7 +4611,7 @@ body::before {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.159"></script>
+  <script src="./app/catalog.js?v=68.160"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -4611,7 +4684,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.159"></script>
+  <script src="./engine/reader.js?v=68.160"></script>
 
 <script>
 (function(){
