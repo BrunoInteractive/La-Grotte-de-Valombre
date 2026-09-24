@@ -3565,6 +3565,39 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.149 — CADRE PNG AUTOUR DES ILLUSTRATIONS
+   Le PNG n'apparaît que lorsqu'une vraie illustration est chargée.
+   ========================================================= */
+
+.image-frame {
+  position: relative !important;
+}
+
+.story-frame-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 7 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  display: block !important;
+  object-fit: fill !important;
+
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.story-frame-overlay.hidden {
+  display: none !important;
+}
+
+/* Le titre posé sur l'image reste au-dessus du cadre. */
+.image-banner {
+  z-index: 8 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3584,6 +3617,7 @@ body::before {
           <div class="book-page-banner-title">La Grotte de Valombre</div>
         </div>
         <img id="storyImage" class="story-image hidden" alt="" />
+        <img id="storyFrameOverlay" class="story-frame-overlay hidden" src="./assets/ui/cadres/cadre-image.png?v=68149" alt="" aria-hidden="true" />
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
           <small id="imageLabel">La-Grotte-de-Valombre-001</small>
@@ -3657,8 +3691,41 @@ body::before {
     </div>
   </div>
 
+
+  <script>
+  (function () {
+    const storyImage = document.getElementById('storyImage');
+    const frameOverlay = document.getElementById('storyFrameOverlay');
+
+    if (!storyImage || !frameOverlay) return;
+
+    function syncStoryFrame() {
+      const imageVisible =
+        !storyImage.classList.contains('hidden') &&
+        !!storyImage.getAttribute('src');
+
+      frameOverlay.classList.toggle('hidden', !imageVisible);
+    }
+
+    /* Si le fichier du cadre n'est pas encore présent, aucun pictogramme cassé. */
+    frameOverlay.addEventListener('error', function () {
+      frameOverlay.classList.add('hidden');
+    });
+
+    storyImage.addEventListener('load', syncStoryFrame);
+    storyImage.addEventListener('error', syncStoryFrame);
+
+    new MutationObserver(syncStoryFrame).observe(storyImage, {
+      attributes: true,
+      attributeFilter: ['class', 'src']
+    });
+
+    syncStoryFrame();
+  })();
+  </script>
+
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.148"></script>
+  <script src="./app/catalog.js?v=68.149"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -3721,7 +3788,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.148"></script>
+  <script src="./engine/reader.js?v=68.149"></script>
 
 <script>
 (function(){
