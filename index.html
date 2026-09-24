@@ -2076,7 +2076,7 @@ body::before {
    matière de pierre bleutée, sans quadrillage synthétique.
    ========================================================= */
 :root {
-  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=68161");
+  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=68162");
 }
 
 .choice-btn,
@@ -4428,6 +4428,73 @@ body::before {
   overflow: hidden !important;
 }
 
+/* =========================================================
+   V68.162 — ILLUSTRATION SEULE
+   Aucun cadre PNG, aucun masque, aucun cache décoratif.
+   ========================================================= */
+
+.image-frame,
+.image-frame.has-story-image {
+  position: relative !important;
+  box-sizing: border-box !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow: hidden !important;
+}
+
+/* Supprime les anciens ornements CSS du conteneur. */
+.image-frame::before,
+.image-frame::after,
+.image-frame.has-story-image::before,
+.image-frame.has-story-image::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* L'illustration remplit simplement toute la zone 4:3. */
+.image-frame .story-image,
+.image-frame.has-story-image .story-image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  z-index: 2 !important;
+
+  object-fit: cover !important;
+  object-position: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: none !important;
+
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  clip-path: none !important;
+}
+
+/* Aucun ancien cadre superposé ne peut réapparaître. */
+.story-frame-overlay,
+#storyFrameOverlay {
+  display: none !important;
+}
+
+/* Placeholder normal lorsque l'illustration n'existe pas. */
+.image-frame .image-placeholder {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4447,8 +4514,7 @@ body::before {
           <div class="book-page-banner-title">La Grotte de Valombre</div>
         </div>
         <img id="storyImage" class="story-image hidden" alt="" />
-        <img id="storyFrameOverlay" class="story-frame-overlay hidden" src="./assets/ui/cadres/cadre-image.png?v=68161" alt="" aria-hidden="true" />
-        <div class="image-placeholder" id="imagePlaceholder">
+<div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
           <small id="imageLabel">La-Grotte-de-Valombre-001</small>
         </div>
@@ -4564,48 +4630,10 @@ body::before {
   </script>
 
 
-  <script>
-  (function () {
-    const storyImage = document.getElementById('storyImage');
-    const imageFrame = document.getElementById('imageFrame');
-    const imagePlaceholder = document.getElementById('imagePlaceholder');
-    const frameOverlay = document.getElementById('storyFrameOverlay');
+  
 
-    if (!storyImage || !imageFrame || !frameOverlay) return;
 
-    function syncFrameOverlay() {
-      const hasSrc = !!storyImage.getAttribute('src');
-      const imageVisible = !storyImage.classList.contains('hidden') && hasSrc;
-      const placeholderVisible = imagePlaceholder &&
-        !imagePlaceholder.classList.contains('hidden') &&
-        getComputedStyle(imagePlaceholder).display !== 'none';
-
-      const show = imageVisible && !placeholderVisible;
-
-      imageFrame.classList.toggle('has-story-image', show);
-      frameOverlay.classList.toggle('hidden', !show);
-    }
-
-    storyImage.addEventListener('load', syncFrameOverlay);
-    storyImage.addEventListener('error', syncFrameOverlay);
-
-    new MutationObserver(syncFrameOverlay).observe(storyImage, {
-      attributes: true,
-      attributeFilter: ['class', 'src', 'style']
-    });
-
-    if (imagePlaceholder) {
-      new MutationObserver(syncFrameOverlay).observe(imagePlaceholder, {
-        attributes: true,
-        attributeFilter: ['class', 'style']
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', syncFrameOverlay);
-    window.addEventListener('load', syncFrameOverlay);
-    setTimeout(syncFrameOverlay, 60);
-  })();
-  </script>
+  
 
 
   <script>
@@ -4613,46 +4641,45 @@ body::before {
     const storyImage = document.getElementById('storyImage');
     const imageFrame = document.getElementById('imageFrame');
     const imagePlaceholder = document.getElementById('imagePlaceholder');
-    const frameOverlay = document.getElementById('storyFrameOverlay');
 
-    if (!storyImage || !imageFrame || !frameOverlay) return;
+    if (!storyImage || !imageFrame) return;
 
-    function syncFinalStoryFrameOverlay() {
+    function syncStoryImageState() {
       const hasSrc = !!storyImage.getAttribute('src');
       const imageVisible = !storyImage.classList.contains('hidden') && hasSrc;
       const placeholderVisible = imagePlaceholder &&
         !imagePlaceholder.classList.contains('hidden') &&
         getComputedStyle(imagePlaceholder).display !== 'none';
 
-      const show = imageVisible && !placeholderVisible;
-
-      imageFrame.classList.toggle('has-story-image', show);
-      frameOverlay.classList.toggle('hidden', !show);
+      imageFrame.classList.toggle(
+        'has-story-image',
+        imageVisible && !placeholderVisible
+      );
     }
 
-    storyImage.addEventListener('load', syncFinalStoryFrameOverlay);
-    storyImage.addEventListener('error', syncFinalStoryFrameOverlay);
+    storyImage.addEventListener('load', syncStoryImageState);
+    storyImage.addEventListener('error', syncStoryImageState);
 
-    new MutationObserver(syncFinalStoryFrameOverlay).observe(storyImage, {
+    new MutationObserver(syncStoryImageState).observe(storyImage, {
       attributes: true,
       attributeFilter: ['class', 'src', 'style']
     });
 
     if (imagePlaceholder) {
-      new MutationObserver(syncFinalStoryFrameOverlay).observe(imagePlaceholder, {
+      new MutationObserver(syncStoryImageState).observe(imagePlaceholder, {
         attributes: true,
         attributeFilter: ['class', 'style']
       });
     }
 
-    document.addEventListener('DOMContentLoaded', syncFinalStoryFrameOverlay);
-    window.addEventListener('load', syncFinalStoryFrameOverlay);
-    setTimeout(syncFinalStoryFrameOverlay, 80);
+    document.addEventListener('DOMContentLoaded', syncStoryImageState);
+    window.addEventListener('load', syncStoryImageState);
+    setTimeout(syncStoryImageState, 60);
   })();
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.161"></script>
+  <script src="./app/catalog.js?v=68.162"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -4725,7 +4752,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.161"></script>
+  <script src="./engine/reader.js?v=68.162"></script>
 
 <script>
 (function(){
