@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68166");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68167");
 }
 
 /* =========================
@@ -4987,6 +4987,44 @@ body.library-home-open .app-shell {
   }
 }
 
+/* =========================================================
+   V68.167 — NAVIGATION ALIGNÉE SUR LE LIVRE
+   ========================================================= */
+
+.app-shell {
+  position: relative !important;
+}
+
+/* Accueil : bord gauche du livre, pas bord gauche de la fenêtre. */
+.library-return-btn {
+  position: absolute !important;
+  left: 18px !important;
+  right: auto !important;
+  top: max(12px, env(safe-area-inset-top)) !important;
+  z-index: 61 !important;
+}
+
+/* Menu : bord droit du livre, pas bord droit de la fenêtre. */
+.topbar {
+  position: absolute !important;
+  left: auto !important;
+  right: 18px !important;
+  top: max(12px, env(safe-area-inset-top)) !important;
+  z-index: 60 !important;
+}
+
+@media (max-width: 650px) {
+  .library-return-btn {
+    left: 12px !important;
+    top: max(10px, env(safe-area-inset-top)) !important;
+  }
+
+  .topbar {
+    right: 12px !important;
+    top: max(10px, env(safe-area-inset-top)) !important;
+  }
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5012,10 +5050,8 @@ body.library-home-open .app-shell {
       </div>
     </div>
   </section>
-
-  <button id="libraryReturnBtn" class="library-return-btn" type="button" aria-label="Retour à la bibliothèque" title="Retour à la bibliothèque">⌂</button>
-
-  <div class="app-shell">
+<div class="app-shell">
+    <button id="libraryReturnBtn" class="library-return-btn" type="button" aria-label="Retour à la bibliothèque" title="Retour à la bibliothèque">⌂</button>
     <header class="topbar">
       <div class="topbar-book-meta" aria-hidden="true">
         <div class="eyebrow" id="bookEyebrow">Chroniques d’un autre temps - Livre 01</div>
@@ -5201,34 +5237,83 @@ body.library-home-open .app-shell {
     const home = document.getElementById('libraryHome');
     const openBook01 = document.getElementById('openBook01');
     const returnBtn = document.getElementById('libraryReturnBtn');
+    const VIEW_KEY = 'livre-interactif.library.view';
 
-    function showLibrary() {
+    function rememberView(view) {
+      try {
+        sessionStorage.setItem(VIEW_KEY, view);
+      } catch (e) {}
+    }
+
+    function readRememberedView() {
+      try {
+        return sessionStorage.getItem(VIEW_KEY);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function showLibrary(options) {
+      const opts = options || {};
       if (!home) return;
+
       home.classList.remove('hidden');
       document.body.classList.add('library-home-open');
       document.body.classList.remove('library-book-open');
-      window.scrollTo(0, 0);
+
+      if (opts.remember !== false) {
+        rememberView('home');
+      }
+
+      if (opts.scroll !== false) {
+        window.scrollTo(0, 0);
+      }
     }
 
-    function openBook() {
+    function openBook(options) {
+      const opts = options || {};
       if (!home) return;
+
       home.classList.add('hidden');
       document.body.classList.remove('library-home-open');
       document.body.classList.add('library-book-open');
-      window.scrollTo(0, 0);
+
+      if (opts.remember !== false) {
+        rememberView('book01');
+      }
+
+      if (opts.scroll !== false) {
+        window.scrollTo(0, 0);
+      }
     }
 
     if (openBook01) {
-      openBook01.addEventListener('click', openBook);
+      openBook01.addEventListener('click', function () {
+        openBook({ remember: true, scroll: true });
+      });
     }
 
     if (returnBtn) {
-      returnBtn.addEventListener('click', showLibrary);
+      returnBtn.addEventListener('click', function () {
+        showLibrary({ remember: true, scroll: true });
+      });
+    }
+
+    /* Après un refresh, on reste là où on était.
+       La sauvegarde du lecteur continue ensuite de restaurer la page du livre. */
+    if (readRememberedView() === 'book01') {
+      openBook({ remember: false, scroll: false });
+    } else {
+      showLibrary({ remember: false, scroll: false });
     }
 
     window.ValombreLibrary = {
-      show: showLibrary,
-      openBook01: openBook
+      show: function () {
+        showLibrary({ remember: true, scroll: true });
+      },
+      openBook01: function () {
+        openBook({ remember: true, scroll: true });
+      }
     };
   })();
   </script>
@@ -5303,7 +5388,7 @@ body.library-home-open .app-shell {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.166"></script>
+  <script src="./app/catalog.js?v=68.167"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5376,7 +5461,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.166"></script>
+  <script src="./engine/reader.js?v=68.167"></script>
 
 <script>
 (function(){
