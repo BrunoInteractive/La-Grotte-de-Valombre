@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68168");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68169");
 }
 
 /* =========================
@@ -5100,6 +5100,68 @@ body.library-home-open .app-shell {
   top: auto !important;
 }
 
+/* =========================================================
+   V68.169 — RENVOI DE PAGE DISCRET, EN BAS À DROITE
+   ========================================================= */
+
+/* On conserve assez d'espace pour le renvoi de page. */
+.choice-btn {
+  padding-bottom: 48px !important;
+}
+
+/* Plus aucun trait / cartouche intérieur.
+   Le renvoi est simplement posé tout en bas à droite. */
+.choice-dest {
+  position: absolute !important;
+  left: auto !important;
+  right: 12px !important;
+  top: auto !important;
+  bottom: 8px !important;
+
+  width: auto !important;
+  max-width: calc(100% - 24px) !important;
+  min-height: 0 !important;
+
+  display: block !important;
+  place-items: initial !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  color: #d2bd91 !important;
+  text-align: right !important;
+  font-size: 15px !important;
+  line-height: 1.1 !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+}
+
+.choice-dest::before,
+.choice-dest::after {
+  content: none !important;
+  display: none !important;
+}
+
+@media (max-width: 620px) {
+  .choice-btn {
+    padding-bottom: 44px !important;
+  }
+
+  .choice-dest {
+    right: 10px !important;
+    bottom: 7px !important;
+    max-width: calc(100% - 20px) !important;
+    font-size: 14px !important;
+  }
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5467,7 +5529,7 @@ body.library-home-open .app-shell {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.168"></script>
+  <script src="./app/catalog.js?v=68.169"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5540,7 +5602,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.168"></script>
+  <script src="./engine/reader.js?v=68.169"></script>
 
 <script>
 (function(){
