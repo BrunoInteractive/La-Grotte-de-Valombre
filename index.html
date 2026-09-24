@@ -2967,6 +2967,118 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.142 — BARRE CARACTÉRISTIQUES COMPACTE / TOUJOURS 1 LIGNE
+   ========================================================= */
+
+.app-shell {
+  padding-bottom: calc(86px + env(safe-area-inset-bottom)) !important;
+}
+
+.status-tags {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: max(7px, env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  z-index: 30 !important;
+
+  /* Largeur calée sur la page/parchemin, sans jamais dépasser l'écran. */
+  width: min(948px, calc(100vw - 18px)) !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: clamp(1px, .45vw, 5px) !important;
+  padding: clamp(2px, .45vw, 5px) !important;
+  margin: 0 !important;
+}
+
+.status-tags .tag {
+  min-width: 0 !important;
+  min-height: clamp(40px, 6vw, 54px) !important;
+  padding: clamp(3px, .65vw, 7px) 2px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+}
+
+.status-tags .tag-copy {
+  min-width: 0 !important;
+  width: 100% !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: clamp(2px, .4vw, 4px) !important;
+  text-align: center !important;
+}
+
+.status-tags .tag-copy small {
+  min-width: 0 !important;
+  width: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: clamp(2px, .45vw, 6px) !important;
+  margin: 0 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+
+  font-size: clamp(6.2px, 1.75vw, 9px) !important;
+  line-height: 1 !important;
+  letter-spacing: clamp(.01em, .15vw, .07em) !important;
+}
+
+.status-tags .tag-label {
+  min-width: 0 !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+}
+
+.status-tags .tag-copy strong {
+  width: 100% !important;
+  margin: 0 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+
+  text-align: center !important;
+  font-size: clamp(10px, 2.7vw, 16px) !important;
+  line-height: 1 !important;
+}
+
+.status-tags .tag-icon,
+.status-tags .tag-icon.icon-jpg {
+  width: clamp(10px, 2.6vw, 16px) !important;
+  height: clamp(10px, 2.6vw, 16px) !important;
+  flex: 0 0 clamp(10px, 2.6vw, 16px) !important;
+
+  display: inline-block !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+}
+
+/* Annule les anciens basculements 3 puis 2 colonnes. */
+@media (max-width: 960px), (max-width: 700px), (max-width: 430px) {
+  .app-shell {
+    padding-bottom: calc(86px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .status-tags {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    width: calc(100vw - 18px) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3048,10 +3160,10 @@ body::before {
   </div>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.141"></script>
+  <script src="./app/catalog.js?v=68.142"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.141"></script>
+  <script src="./engine/reader.js?v=68.142"></script>
 
 <script>
 (function(){

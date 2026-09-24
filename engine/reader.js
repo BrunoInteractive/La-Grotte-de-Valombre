@@ -444,11 +444,11 @@ function render() {
     const protection = BOOK.rules && typeof BOOK.rules.currentProtection === 'function' ? BOOK.rules.currentProtection(state) : 0;
     const hpRatio = state.maxHp > 0 ? state.hp / state.maxHp : 0;
     const earth = Number(state.contamination || 0);
-    const compactWeapon = state.weapon === 'heavy' ? 'Épée lourde'
-      : state.weapon === 'light' ? 'Épée légère'
-      : state.weapon === 'black_blade' ? 'Lame noire'
-      : state.weapon === 'sorcerer_sword' ? 'Épée rouge'
-      : 'Aucune';
+    // Dans la barre compacte, on affiche seulement la puissance de l'arme.
+    // Le nom complet reste disponible dans l'inventaire / la fiche personnage.
+    const compactWeapon = state.weapon === 'none'
+      ? '0'
+      : `+${combatPower(state)}`;
     const stats = [
       {icon:'♥', label:'Vie', value:`${state.hp}/${state.maxHp}`, cls: hpRatio <= .3 ? 'status-critical' : hpRatio <= .55 ? 'status-warning' : ''},
       {icon:'◆', label:'Dextérité', value:String(currentDexterity(state))},
