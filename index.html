@@ -4110,6 +4110,89 @@ body::before {
     0 5px 14px rgba(0,0,0,.22) !important;
 }
 
+/* =========================================================
+   V68.158 — CADRE PNG COMPLET SUPERPOSÉ
+   Le fichier cadre-image.png est affiché entier, sans border-image.
+   Photo et cadre occupent exactement la même zone 4:3.
+   ========================================================= */
+
+.image-frame {
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* Avec une vraie illustration : aucune bordure CSS parasite. */
+.image-frame.has-story-image {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow: hidden !important;
+}
+
+.image-frame.has-story-image::before,
+.image-frame.has-story-image::after {
+  display: none !important;
+}
+
+/* Photo : exactement toute la zone. */
+.image-frame.has-story-image .story-image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2 !important;
+  display: block !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Cadre : PNG ENTIER, même emprise exacte que la photo, mais au-dessus. */
+.image-frame.has-story-image .story-frame-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 7 !important;
+
+  display: block !important;
+  object-fit: fill !important;
+  object-position: center !important;
+
+  border: 0 !important;
+  border-image: none !important;
+  outline: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* Quand il n'y a pas d'image, le cadre reste invisible. */
+.image-frame .story-frame-overlay.hidden {
+  display: none !important;
+}
+
+/* Placeholder sous le cadre, uniquement quand nécessaire. */
+.image-frame .image-placeholder {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+}
+
+/* Le cartouche éventuel reste au-dessus de tout. */
+.image-banner {
+  z-index: 8 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4129,7 +4212,7 @@ body::before {
           <div class="book-page-banner-title">La Grotte de Valombre</div>
         </div>
         <img id="storyImage" class="story-image hidden" alt="" />
-        <div id="storyFrameOverlay" class="story-frame-overlay hidden" aria-hidden="true"></div>
+        <img id="storyFrameOverlay" class="story-frame-overlay hidden" src="./assets/ui/cadres/cadre-image.png?v=68158" alt="" aria-hidden="true" />
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
           <small id="imageLabel">La-Grotte-de-Valombre-001</small>
@@ -4334,7 +4417,7 @@ body::before {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.157"></script>
+  <script src="./app/catalog.js?v=68.158"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -4407,7 +4490,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.157"></script>
+  <script src="./engine/reader.js?v=68.158"></script>
 
 <script>
 (function(){
