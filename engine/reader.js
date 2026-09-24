@@ -522,6 +522,7 @@ function restartGame() {
 }
 
 function showModal(title, html) {
+  modal.dataset.panel = title === 'Fiche perso' ? 'character' : 'plain';
   modalTitle.textContent = title;
   modalContent.innerHTML = html;
   modal.classList.remove('hidden');
@@ -536,6 +537,7 @@ function openCharacterSheet() {
 }
 
 function openInventory() {
+  modal.dataset.panel = 'inventory';
   modalTitle.textContent = 'Inventaire';
   const items = Object.entries(state.inventory);
   const topText = BOOK.inventory && BOOK.inventory.topLine ? BOOK.inventory.topLine(state) : '';

@@ -2076,7 +2076,7 @@ body::before {
    matière de pierre bleutée, sans quadrillage synthétique.
    ========================================================= */
 :root {
-  --ui-button-texture:url("./assets/ui/texture-bouton.jpg");
+  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=137");
 }
 
 .choice-btn,
@@ -2453,7 +2453,7 @@ body::before {
    - l’inventaire et la fiche perso utilisent la texture parchemin
    ========================================================= */
 :root {
-  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg');
+  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg?v=137');
 }
 
 /* Boutons croix : plus de texture ardoise. */
@@ -2627,6 +2627,57 @@ body::before {
   .card-banner { margin:0 0 14px; padding:0 0 12px; }
 }
 
+
+
+/* =========================================================
+   V68.137 — INVENTAIRE SANS PARCHEMIN + CACHE BUST TEXTURES
+   - l'inventaire et ses sous-panneaux reviennent sur un fond simple
+   - la fiche perso conserve le parchemin
+   - ?v=137 force le navigateur à redemander les JPG de texture
+   ========================================================= */
+
+/* Base des modales : pas de texture parchemin par défaut. */
+.modal-card {
+  background-image:none !important;
+  background:linear-gradient(180deg, #eee4cf 0%, #dfd1b5 100%) !important;
+  border:1px solid #8a6c47 !important;
+}
+
+/* La fiche perso seule garde la texture parchemin. */
+#modal[data-panel="character"] .modal-card,
+#modal[data-panel="character"] .character-modal-sheet,
+#modal[data-panel="character"] .character-modal-stats > div {
+  background-color:#e8dcc4 !important;
+  background-image:var(--ui-parchment-texture) !important;
+  background-position:top center !important;
+  background-size:100% auto !important;
+  background-repeat:no-repeat !important;
+}
+
+/* Inventaire : aucune texture parchemin sur le panneau ni sur ses cartes. */
+#modal[data-panel="inventory"] .modal-card,
+#modal[data-panel="inventory"] .inventory-equipment-card,
+#modal[data-panel="inventory"] .inventory-item,
+#modal[data-panel="inventory"] .test-inventory-panel,
+#modal[data-panel="inventory"] .test-item-row,
+#modal[data-panel="inventory"] .inventory-empty,
+#modal[data-panel="inventory"] .inventory-owned-section {
+  background-image:none !important;
+}
+
+#modal[data-panel="inventory"] .modal-card {
+  background:linear-gradient(180deg, #eee4cf 0%, #dfd1b5 100%) !important;
+}
+#modal[data-panel="inventory"] .inventory-equipment-card,
+#modal[data-panel="inventory"] .inventory-item,
+#modal[data-panel="inventory"] .test-inventory-panel,
+#modal[data-panel="inventory"] .test-item-row,
+#modal[data-panel="inventory"] .inventory-empty,
+#modal[data-panel="inventory"] .inventory-owned-section {
+  background-color:rgba(255,255,255,.12) !important;
+  box-shadow:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -2686,7 +2737,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.132 · TEST DA V14</h3>
+      <h3>Pages · TEST — V68.137 · TEST DA V16</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
@@ -2707,7 +2758,7 @@ body::before {
   <script src="./app/catalog.js"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.122"></script>
+  <script src="./engine/reader.js?v=68.137"></script>
 
 <script>
 (function(){
