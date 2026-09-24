@@ -3192,6 +3192,142 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.144 — BARRE RESPONSIVE
+   Grand écran : 6 cases sur 1 rangée
+   Écran étroit : 3 cases x 2 rangées
+   ========================================================= */
+
+.status-tags {
+  width: min(948px, calc(100vw - 18px)) !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+}
+
+.status-tags .tag {
+  min-width: 0 !important;
+  min-height: 54px !important;
+  padding: 6px 5px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.status-tags .tag-copy {
+  min-width: 0 !important;
+  width: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  align-content: center !important;
+  justify-items: center !important;
+  gap: 3px !important;
+  text-align: center !important;
+}
+
+.status-tags .tag-copy small {
+  width: 100% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  font-size: clamp(7px, .85vw, 9px) !important;
+  line-height: 1 !important;
+}
+
+.status-tags .tag-label {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.status-tags .tag-copy strong {
+  width: 100% !important;
+  margin: 0 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  font-size: clamp(12px, 1.35vw, 16px) !important;
+  line-height: 1 !important;
+}
+
+.status-tags .tag-icon,
+.status-tags .tag-icon.icon-jpg {
+  width: clamp(13px, 1.6vw, 17px) !important;
+  height: clamp(13px, 1.6vw, 17px) !important;
+  flex: 0 0 clamp(13px, 1.6vw, 17px) !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Dès qu'une rangée de 6 devient trop serrée : 3 colonnes / 2 rangées. */
+@media (max-width: 760px) {
+  .app-shell {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .status-tags {
+    width: calc(100vw - 12px) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    padding: 5px !important;
+    bottom: max(6px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .status-tags .tag {
+    min-height: 52px !important;
+    padding: 6px 4px !important;
+  }
+
+  .status-tags .tag-copy small {
+    gap: 6px !important;
+    font-size: clamp(7px, 2.35vw, 9px) !important;
+  }
+
+  .status-tags .tag-copy strong {
+    font-size: clamp(12px, 4vw, 15px) !important;
+  }
+
+  .status-tags .tag-icon,
+  .status-tags .tag-icon.icon-jpg {
+    width: clamp(14px, 4vw, 17px) !important;
+    height: clamp(14px, 4vw, 17px) !important;
+    flex-basis: clamp(14px, 4vw, 17px) !important;
+  }
+}
+
+/* Très petit téléphone : toujours 3 x 2, jamais 2 x 3. */
+@media (max-width: 390px) {
+  .status-tags {
+    gap: 4px !important;
+    padding: 4px !important;
+  }
+
+  .status-tags .tag {
+    min-height: 50px !important;
+    padding: 5px 3px !important;
+  }
+
+  .status-tags .tag-copy small {
+    font-size: 7px !important;
+    gap: 4px !important;
+  }
+
+  .status-tags .tag-copy strong {
+    font-size: 12px !important;
+  }
+
+  .status-tags .tag-icon,
+  .status-tags .tag-icon.icon-jpg {
+    width: 13px !important;
+    height: 13px !important;
+    flex-basis: 13px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3273,10 +3409,10 @@ body::before {
   </div>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.143"></script>
+  <script src="./app/catalog.js?v=68.144"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.143"></script>
+  <script src="./engine/reader.js?v=68.144"></script>
 
 <script>
 (function(){
