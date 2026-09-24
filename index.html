@@ -3471,6 +3471,100 @@ body::before {
   color: #eadcc1 !important;
 }
 
+/* =========================================================
+   V68.148 — FOOTER SÛR : ne casse pas la barre de caractéristiques
+   ========================================================= */
+
+.footer-character-hidden {
+  display: none !important;
+}
+
+.footer {
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr) 50px !important;
+  align-items: stretch !important;
+}
+
+.restart-icon-btn {
+  width: 50px !important;
+  min-width: 50px !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 29px !important;
+  line-height: 1 !important;
+  color: #f5ecd8 !important;
+}
+
+.restart-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(4,8,10,.72);
+  backdrop-filter: blur(3px);
+}
+
+.restart-confirm-backdrop.hidden {
+  display: none !important;
+}
+
+.restart-confirm-card {
+  width: min(420px, calc(100vw - 30px));
+  padding: 18px 18px 16px;
+  border: 1px solid #a47d48;
+  background: var(--ui-slate-surface);
+  background-color: #142229;
+  color: #f5ecd8;
+  text-align: center;
+  box-shadow:
+    inset 0 0 0 1px rgba(5,9,11,.94),
+    inset 0 0 0 3px rgba(190,148,83,.10),
+    0 18px 50px rgba(0,0,0,.5);
+}
+
+.restart-confirm-card h3 {
+  margin: 0 0 12px;
+  color: #f5ecd8;
+  font-size: 21px;
+}
+
+.restart-confirm-card p {
+  margin: 0 auto 18px;
+  max-width: 330px;
+  color: #eadcc1;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.restart-confirm-actions {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+}
+
+.restart-confirm-actions button {
+  min-height: 43px;
+  border: 1px solid rgba(184,142,79,.62);
+  background: linear-gradient(180deg,#26343b,#172229);
+  color: #f5ecd8;
+  font: inherit;
+  cursor: pointer;
+}
+
+@media (max-width:560px) {
+  .footer {
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) 46px !important;
+  }
+  .restart-icon-btn {
+    width:46px !important;
+    min-width:46px !important;
+    font-size:27px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3510,10 +3604,10 @@ body::before {
     </main>
 
     <footer class="footer">
-      <button id="characterBtn" class="footer-btn">Fiche perso</button>
+      <button id="characterBtn" class="footer-btn footer-character-hidden" aria-hidden="true" tabindex="-1">Fiche perso</button>
       <button id="inventoryBtn" class="footer-btn">Inventaire <span id="inventoryCount">0</span></button>
       <button id="journalBtn" class="footer-btn" type="button">Journal de bord</button>
-      <button id="restartBtn" class="footer-btn danger">Recommencer</button>
+      <button id="restartBtn" class="footer-btn restart-icon-btn" type="button" aria-label="Recommencer l’aventure" title="Recommencer l’aventure">↶</button>
     </footer>
   </div>
 
@@ -3551,11 +3645,83 @@ body::before {
     </div>
   </div>
 
+
+  <div id="restartConfirmBackdrop" class="restart-confirm-backdrop hidden" aria-hidden="true">
+    <div class="restart-confirm-card" role="dialog" aria-modal="true" aria-labelledby="restartConfirmTitle">
+      <h3 id="restartConfirmTitle">Recommencer l’aventure</h3>
+      <p>Souhaitez-vous vraiment recommencer l’aventure au début ?</p>
+      <div class="restart-confirm-actions">
+        <button id="restartConfirmYes" type="button">Oui</button>
+        <button id="restartConfirmNo" type="button">Non</button>
+      </div>
+    </div>
+  </div>
+
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.146"></script>
+  <script src="./app/catalog.js?v=68.148"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.146"></script>
+
+  <script>
+  (function(){
+    const RESTART_FLAG = 'valombre.confirmedRestart';
+
+    if (sessionStorage.getItem(RESTART_FLAG) === '1') {
+      sessionStorage.removeItem(RESTART_FLAG);
+      try {
+        Object.keys(localStorage).forEach(function(key){
+          if (
+            key.indexOf('ldveh.book.ecuyer-01.save.v') === 0 ||
+            key.indexOf('ldveh.book.ecuyer-01.checkpoint.v') === 0
+          ) {
+            localStorage.removeItem(key);
+          }
+        });
+      } catch (e) {}
+    }
+
+    const restartBtn = document.getElementById('restartBtn');
+    const backdrop = document.getElementById('restartConfirmBackdrop');
+    const yesBtn = document.getElementById('restartConfirmYes');
+    const noBtn = document.getElementById('restartConfirmNo');
+
+    function openConfirm(){
+      backdrop.classList.remove('hidden');
+      backdrop.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeConfirm(){
+      backdrop.classList.add('hidden');
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    if (restartBtn && backdrop && yesBtn && noBtn) {
+      restartBtn.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        openConfirm();
+      }, true);
+
+      yesBtn.addEventListener('click', function(){
+        sessionStorage.setItem(RESTART_FLAG, '1');
+        location.reload();
+      });
+
+      noBtn.addEventListener('click', closeConfirm);
+
+      backdrop.addEventListener('click', function(event){
+        if (event.target === backdrop) closeConfirm();
+      });
+
+      document.addEventListener('keydown', function(event){
+        if (event.key === 'Escape' && !backdrop.classList.contains('hidden')) closeConfirm();
+      });
+    }
+  })();
+  </script>
+
+  <script src="./engine/reader.js?v=68.148"></script>
 
 <script>
 (function(){
