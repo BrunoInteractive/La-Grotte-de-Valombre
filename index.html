@@ -3846,6 +3846,78 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.154 — CADRE AUTOUR DE LA PHOTO, MAIS DEVANT
+   Le cadre encadre l'image et se trouve au-dessus d'elle en z-index.
+   ========================================================= */
+
+.image-frame {
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+/* Quand une illustration existe, l'ancien cadre CSS s'efface. */
+.image-frame.has-story-image {
+  border-color: transparent !important;
+  border-image: none !important;
+  box-shadow: none !important;
+  background: #0f171c !important;
+}
+
+.image-frame.has-story-image::before,
+.image-frame.has-story-image::after {
+  display: none !important;
+}
+
+/* La photo reste en dessous du cadre. */
+.image-frame .story-image {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.image-frame .image-placeholder {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Le cadre transparent est posé AU-DESSUS, exactement sur le pourtour. */
+.image-frame .story-frame-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 7 !important;
+  box-sizing: border-box !important;
+  display: block !important;
+
+  border-style: solid !important;
+  border-width: clamp(10px, 1.35vw, 18px) !important;
+  border-color: transparent !important;
+
+  border-image-source: url('./assets/ui/cadres/cadre-image.png?v=68154') !important;
+  border-image-slice: 120 100 120 100 !important;
+  border-image-width: 1 !important;
+  border-image-outset: 0 !important;
+  border-image-repeat: stretch !important;
+
+  background: transparent !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.image-frame .story-frame-overlay.hidden {
+  display: none !important;
+}
+
+/* Le petit cartouche sur image reste encore au-dessus du cadre. */
+.image-banner {
+  z-index: 8 !important;
+}
+
+@media (max-width: 700px) {
+  .image-frame .story-frame-overlay {
+    border-width: clamp(8px, 2.4vw, 13px) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4025,8 +4097,52 @@ body::before {
   })();
   </script>
 
+
+  <script>
+  (function () {
+    const storyImage = document.getElementById('storyImage');
+    const imageFrame = document.getElementById('imageFrame');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
+    const frameOverlay = document.getElementById('storyFrameOverlay');
+
+    if (!storyImage || !imageFrame || !frameOverlay) return;
+
+    function syncFinalStoryFrameOverlay() {
+      const hasSrc = !!storyImage.getAttribute('src');
+      const imageVisible = !storyImage.classList.contains('hidden') && hasSrc;
+      const placeholderVisible = imagePlaceholder &&
+        !imagePlaceholder.classList.contains('hidden') &&
+        getComputedStyle(imagePlaceholder).display !== 'none';
+
+      const show = imageVisible && !placeholderVisible;
+
+      imageFrame.classList.toggle('has-story-image', show);
+      frameOverlay.classList.toggle('hidden', !show);
+    }
+
+    storyImage.addEventListener('load', syncFinalStoryFrameOverlay);
+    storyImage.addEventListener('error', syncFinalStoryFrameOverlay);
+
+    new MutationObserver(syncFinalStoryFrameOverlay).observe(storyImage, {
+      attributes: true,
+      attributeFilter: ['class', 'src', 'style']
+    });
+
+    if (imagePlaceholder) {
+      new MutationObserver(syncFinalStoryFrameOverlay).observe(imagePlaceholder, {
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', syncFinalStoryFrameOverlay);
+    window.addEventListener('load', syncFinalStoryFrameOverlay);
+    setTimeout(syncFinalStoryFrameOverlay, 80);
+  })();
+  </script>
+
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.153"></script>
+  <script src="./app/catalog.js?v=68.154"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -4099,7 +4215,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.153"></script>
+  <script src="./engine/reader.js?v=68.154"></script>
 
 <script>
 (function(){
