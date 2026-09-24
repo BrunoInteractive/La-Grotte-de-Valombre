@@ -2,9 +2,6 @@
 (() => {
   'use strict';
 
-  if (window.__VALOMBRE_STAT_ICONS__) return;
-  window.__VALOMBRE_STAT_ICONS__ = true;
-
   const ICONS = {
     'VIE': 'vie.jpg',
     'DEXTERITE': 'dexterite.jpg',
@@ -18,8 +15,8 @@
   const scriptUrl = SCRIPT && SCRIPT.src
     ? new URL(SCRIPT.src, document.baseURI)
     : new URL('./assets/ui/stat-icons.js', document.baseURI);
+
   const ICON_BASE = new URL('./icons/caracteristiques/', scriptUrl);
-  const cacheBust = Date.now().toString(36);
 
   function normalize(value) {
     return (value || '')
@@ -30,76 +27,54 @@
       .toUpperCase();
   }
 
-  function directLabelElements() {
-    return Array.from(document.querySelectorAll(
-      'span, strong, label, p, div'
-    )).filter(el => {
-      if (el.closest('.valombre-stat-icon-card')) return false;
-      if (el.childElementCount !== 0) return false;
-      return Object.prototype.hasOwnProperty.call(ICONS, normalize(el.textContent));
+  function removeOldInjection() {
+    document.querySelectorAll('.valombre-stat-icon').forEach(img => img.remove());
+    document.querySelectorAll('.valombre-stat-icon-card').forEach(el => {
+      el.classList.remove('valombre-stat-icon-card');
+      delete el.dataset.valombreStatIcon;
+    });
+    document.querySelectorAll('.valombre-stat-label-with-icon').forEach(el => {
+      el.classList.remove('valombre-stat-label-with-icon');
     });
   }
 
-  function containsAnotherStatLabel(el, ownLabel) {
-    const text = normalize(el.textContent);
-    let count = 0;
-    for (const key of Object.keys(ICONS)) {
-      if (text.includes(key)) count++;
-    }
-    return count > 1 || (count === 1 && !text.includes(ownLabel));
+  function findLabels() {
+    return Array.from(document.querySelectorAll('span, strong, label, p, div'))
+      .filter(el => {
+        if (el.childElementCount !== 0) return false;
+        return Object.prototype.hasOwnProperty.call(ICONS, normalize(el.textContent));
+      });
   }
 
-  function likelyCard(labelEl, label) {
-    let node = labelEl.parentElement;
-    for (let depth = 0; node && depth < 4; depth++, node = node.parentElement) {
-      const txt = normalize(node.textContent);
-      if (!txt.includes(label)) continue;
-      if (containsAnotherStatLabel(node, label)) continue;
+  function addIconToLabel(labelEl) {
+    if (labelEl.querySelector('.valombre-stat-icon')) return;
 
-      const rect = node.getBoundingClientRect();
-      const sensibleWidth = !rect.width || rect.width <= 520;
-      const sensibleHeight = !rect.height || rect.height <= 220;
-      const shortEnough = txt.length <= 90;
-
-      if (sensibleWidth && sensibleHeight && shortEnough) return node;
-    }
-    return labelEl.parentElement;
-  }
-
-  function addIcon(labelEl) {
     const label = normalize(labelEl.textContent);
     const filename = ICONS[label];
     if (!filename) return;
 
-    const card = likelyCard(labelEl, label);
-    if (!card || card.querySelector(':scope > .valombre-stat-icon')) return;
-
-    card.classList.add('valombre-stat-icon-card');
-    card.dataset.valombreStatIcon = label.toLowerCase().replace(/\s+/g, '-');
+    labelEl.classList.add('valombre-stat-label-with-icon');
 
     const img = document.createElement('img');
     img.className = 'valombre-stat-icon';
     img.alt = '';
     img.setAttribute('aria-hidden', 'true');
     img.decoding = 'async';
-    img.src = new URL(filename + '?v=' + cacheBust, ICON_BASE).href;
 
-    card.prepend(img);
+    /* Paramètre de version pour éviter qu'un ancien JPG reste en cache. */
+    img.src = new URL(filename + '?v=2', ICON_BASE).href;
+
+    /* L'icône est placée directement devant le titre, pas dans la case entière. */
+    labelEl.prepend(img);
   }
 
   function apply() {
-    directLabelElements().forEach(addIcon);
+    findLabels().forEach(addIconToLabel);
   }
 
-  let scheduled = false;
-  function scheduleApply() {
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(() => {
-      scheduled = false;
-      apply();
-    });
-  }
+  /* Supprime d'abord les injections de l'ancienne version si la page
+     a été mise à jour sans rechargement complet. */
+  removeOldInjection();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', apply, { once: true });
@@ -107,7 +82,16 @@
     apply();
   }
 
-  const observer = new MutationObserver(scheduleApply);
+  let scheduled = false;
+  const observer = new MutationObserver(() => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      apply();
+    });
+  });
+
   observer.observe(document.documentElement, {
     childList: true,
     subtree: true
