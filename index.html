@@ -2072,7 +2072,7 @@ body::before {
 /* =========================================================
    V68.124 — TEST DA V6 · TEXTURE EXTERNE SUR LES BOUTONS
    Les boutons utilisent désormais un fichier image dédié
-   (assets/ui/texture-bouton.png) pour retrouver une vraie
+   (assets/ui/texture-bouton.jpg) pour retrouver une vraie
    matière de pierre bleutée, sans quadrillage synthétique.
    ========================================================= */
 :root {
@@ -2404,7 +2404,7 @@ body::before {
 /* =========================================================
    V68.132 — TEST DA V14 · PARCHEMIN IMAGE RÉEL
    Le panneau central utilise désormais la texture dédiée
-   assets/ui/parchemin-fond-texte.png. L'image garde sa largeur,
+   assets/ui/parchemin-fond-texte.jpg. L'image garde sa largeur,
    son bord supérieur et ses bords latéraux ; le bas est simplement
    rogné selon la hauteur réelle du contenu de chaque page.
    ========================================================= */
@@ -2415,7 +2415,7 @@ body::before {
   padding:34px clamp(30px,4vw,52px) 42px !important;
   border:0 !important;
   background-color:#e8dcc4 !important;
-  background-image:url('./assets/ui/parchemin-fond-texte.png') !important;
+  background-image:var(--ui-parchment-texture) !important;
   background-position:top center !important;
   background-size:100% auto !important;
   background-repeat:no-repeat !important;
@@ -2444,6 +2444,98 @@ body::before {
     background-position:top center !important;
   }
 }
+
+
+
+/* =========================================================
+   V68.133 — CROIX SANS TEXTURE + INVENTAIRE/FICHE EN PARCHEMIN
+   - les boutons de fermeture ne reprennent plus la texture pierre
+   - l’inventaire et la fiche perso utilisent la texture parchemin
+   ========================================================= */
+:root {
+  --ui-parchment-texture:url('./assets/ui/parchemin-fond-texte.jpg');
+}
+
+/* Boutons croix : plus de texture ardoise. */
+#closeDrawerBtn.icon-btn,
+#closeModalBtn.icon-btn,
+.journal-close {
+  background:#efe2c5 !important;
+  background-image:none !important;
+  color:#4a3523 !important;
+  text-shadow:none !important;
+  border:1px solid rgba(146,113,76,.92) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,248,231,.55),
+    0 3px 10px rgba(0,0,0,.14) !important;
+  filter:none !important;
+}
+#closeDrawerBtn.icon-btn:hover,
+#closeModalBtn.icon-btn:hover,
+.journal-close:hover {
+  background:#f5ead1 !important;
+  background-image:none !important;
+  color:#2f2116 !important;
+  filter:none !important;
+}
+#closeDrawerBtn.icon-btn:active,
+#closeModalBtn.icon-btn:active,
+.journal-close:active {
+  background:#e7d8b8 !important;
+  background-image:none !important;
+  transform:translateY(1px);
+}
+
+/* Inventaire + fiche perso : fond parchemin. */
+.modal-card {
+  background-color:#e8dcc4 !important;
+  background-image:var(--ui-parchment-texture) !important;
+  background-position:top center !important;
+  background-size:100% auto !important;
+  background-repeat:no-repeat !important;
+  border:1px solid #8a6c47 !important;
+  box-shadow:0 18px 40px rgba(0,0,0,.32) !important;
+}
+
+.inventory-equipment-card,
+.character-modal-sheet,
+.inventory-item,
+.test-inventory-panel,
+.test-item-row,
+.character-modal-stats > div,
+.inventory-empty,
+.inventory-owned-section {
+  background-color:rgba(245,236,216,.72) !important;
+  background-image:var(--ui-parchment-texture) !important;
+  background-position:top center !important;
+  background-size:100% auto !important;
+  background-repeat:no-repeat !important;
+  border-color:rgba(138,108,71,.72) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,247,229,.28) !important;
+}
+
+.inventory-empty {
+  padding:14px 12px;
+  border:1px solid rgba(138,108,71,.72);
+}
+
+.inventory-item strong,
+.inventory-equipment-title,
+.character-modal-name,
+.test-inventory-title,
+.inventory-owned-title,
+.character-modal-stats span,
+.character-modal-rank,
+.inventory-topline,
+.inventory-equipment-row span,
+.inventory-protection-state,
+.test-item-copy strong,
+.test-item-copy small,
+.test-inventory-note,
+.character-modal-equipment p {
+  text-shadow:none !important;
+}
+
 
 </style>
 </head>
