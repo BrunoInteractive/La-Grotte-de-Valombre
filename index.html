@@ -2076,7 +2076,7 @@ body::before {
    matière de pierre bleutée, sans quadrillage synthétique.
    ========================================================= */
 :root {
-  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=68160");
+  --ui-button-texture:url("./assets/ui/texture-bouton.jpg?v=68161");
 }
 
 .choice-btn,
@@ -4387,6 +4387,47 @@ body::before {
   color: #eadcc1 !important;
 }
 
+/* =========================================================
+   V68.161 — PHOTO CLIPPÉE EXACTEMENT DANS L'OUVERTURE DU CADRE
+   ========================================================= */
+
+/* Le cadre PNG complet reste au-dessus. */
+.image-frame.has-story-image .story-frame-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 7 !important;
+  object-fit: fill !important;
+  pointer-events: none !important;
+}
+
+/* La photo garde toute sa taille mais n'est visible QUE dans
+   l'ouverture intérieure exacte du cadre. */
+.image-frame.has-story-image .story-image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2 !important;
+  object-fit: cover !important;
+
+  -webkit-mask-image: url('./assets/ui/cadres/cadre-image-mask.png?v=68161') !important;
+  -webkit-mask-size: 100% 100% !important;
+  -webkit-mask-position: center !important;
+  -webkit-mask-repeat: no-repeat !important;
+
+  mask-image: url('./assets/ui/cadres/cadre-image-mask.png?v=68161') !important;
+  mask-size: 100% 100% !important;
+  mask-position: center !important;
+  mask-repeat: no-repeat !important;
+}
+
+/* Rien de la photo ne peut dépasser de l'ensemble. */
+.image-frame.has-story-image {
+  overflow: hidden !important;
+}
+
 </style>
 </head>
 <body>
@@ -4406,7 +4447,7 @@ body::before {
           <div class="book-page-banner-title">La Grotte de Valombre</div>
         </div>
         <img id="storyImage" class="story-image hidden" alt="" />
-        <img id="storyFrameOverlay" class="story-frame-overlay hidden" src="./assets/ui/cadres/cadre-image.png?v=68158" alt="" aria-hidden="true" />
+        <img id="storyFrameOverlay" class="story-frame-overlay hidden" src="./assets/ui/cadres/cadre-image.png?v=68161" alt="" aria-hidden="true" />
         <div class="image-placeholder" id="imagePlaceholder">
           <span>IMAGE À VENIR</span>
           <small id="imageLabel">La-Grotte-de-Valombre-001</small>
@@ -4611,7 +4652,7 @@ body::before {
   </script>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.160"></script>
+  <script src="./app/catalog.js?v=68.161"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -4684,7 +4725,7 @@ body::before {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.160"></script>
+  <script src="./engine/reader.js?v=68.161"></script>
 
 <script>
 (function(){
