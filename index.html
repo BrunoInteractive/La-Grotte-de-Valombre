@@ -199,10 +199,24 @@ button { font: inherit; }
 .story-card {
   position:relative;
   z-index:2;
-  margin: 18px 18px 0;
-  padding: 0 26px 0;
-  background: transparent;
+  margin: 18px 8px 0;
+  padding: 26px 34px 38px;
+  background:
+    url('./assets/ui/parchemin-fond-texte.png') top center / 100% 100% no-repeat;
   border: 0;
+}
+.story-card::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(78,53,28,.03));
+  mix-blend-mode:multiply;
+  opacity:.45;
+}
+.story-card > * {
+  position:relative;
+  z-index:1;
 }
 .chapter-number {
   display:block;
@@ -558,7 +572,7 @@ button { font: inherit; }
   .game { padding: 12px 12px 20px; box-shadow: 0 14px 36px rgba(0,0,0,.24); }
   .game::before { inset: 5px; }
   .image-frame { margin: 4px 4px 0; }
-  .story-card { margin: 14px 10px 0; padding:0 8px; }
+  .story-card { margin: 14px 2px 0; padding: 18px 18px 24px; background:url('./assets/ui/parchemin-fond-texte.png') top center / 100% 100% no-repeat; }
   .chapter-number { font-size:13px; }
   .story-card h2 { font-size: 32px; margin-bottom: 12px; }
   .story-text { font-size: 18px; line-height: 1.22; }
