@@ -1,0 +1,8 @@
+{
+  "force": "assets/ui/icons/caracteristiques/force.jpg",
+  "dexterite": "assets/ui/icons/caracteristiques/dexterite.jpg",
+  "vie": "assets/ui/icons/caracteristiques/vie.jpg",
+  "volonte": "assets/ui/icons/caracteristiques/volonte.jpg",
+  "protection": "assets/ui/icons/caracteristiques/protection.jpg",
+  "terreNoire": "assets/ui/icons/caracteristiques/terre-noire.jpg"
+}
