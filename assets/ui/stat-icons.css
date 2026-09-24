@@ -1,5 +1,17 @@
 
-/* Valombre V68.124 — barre de caractéristiques avec icônes natives */
+/* La Grotte de Valombre — Icônes caractéristiques V3
+   Disposition : [ICÔNE]  VIE  18/18
+   Même principe pour les 6 caractéristiques. */
+
+/* Neutralise l'ancien correctif V2 s'il est encore présent en cache. */
+.valombre-stat-icon-card {
+  position: initial !important;
+  padding-left: initial !important;
+}
+.valombre-stat-label-with-icon .valombre-stat-icon,
+.valombre-stat-icon {
+  display: none !important;
+}
 
 .status-tags .tag {
   justify-content: flex-start !important;
@@ -9,20 +21,21 @@
 }
 
 .status-tags .tag-icon {
-  flex: 0 0 30px !important;
-  width: 30px !important;
-  height: 30px !important;
+  flex: 0 0 28px !important;
+  width: 28px !important;
+  height: 28px !important;
   display: grid !important;
   place-items: center !important;
+  font-size: 0 !important;
   line-height: 1 !important;
 }
 
-.status-tags .stat-icon-img {
+.status-tags .valombre-stat-img-v3 {
   display: block !important;
-  width: 28px !important;
-  height: 28px !important;
-  max-width: 28px !important;
-  max-height: 28px !important;
+  width: 26px !important;
+  height: 26px !important;
+  max-width: 26px !important;
+  max-height: 26px !important;
   object-fit: contain !important;
   object-position: center !important;
   border: 0 !important;
@@ -53,7 +66,6 @@
   .status-tags .tag {
     gap: 6px !important;
     padding-left: 7px !important;
-    padding-right: 6px !important;
   }
 
   .status-tags .tag-icon {
@@ -62,7 +74,7 @@
     height: 24px !important;
   }
 
-  .status-tags .stat-icon-img {
+  .status-tags .valombre-stat-img-v3 {
     width: 22px !important;
     height: 22px !important;
     max-width: 22px !important;
