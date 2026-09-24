@@ -798,13 +798,43 @@ const STORY = {
         <div class="hero-sheet-row"><span class="hero-label">Style</span><span class="hero-value">Vif, prudent et observateur</span></div>
         <div class="hero-sheet-row"><span class="hero-label">Technique de bataille</span><span class="hero-value">Esquive, déplacement rapide et contre-attaque</span></div>
 
-        <div class="hero-sheet-grid">
-          <div class="hero-stat"><strong>Vie</strong><span>${state.hp} / ${state.maxHp}</span></div>
-          <div class="hero-stat"><strong>Protection</strong><span>${currentProtection(state)}</span></div>
-          <div class="hero-stat"><strong>Force</strong><span>${currentForce(state)}</span></div>
-          <div class="hero-stat"><strong>Dextérité</strong><span>${currentDexterity(state)}</span></div>
-          ${contaminationLevel(state)>0 ? `<div class="hero-stat"><strong>Terre noire</strong><span>${contaminationLevel(state)}/13 · ${state.flags.physicianNotesRead ? contaminationLevel(state)>=9 ? "Danger" : contaminationLevel(state)>=4 ? "Équilibre précaire" : "Appel puissant" : "Effets inconnus"}</span></div>` : ""}
-          <div class="hero-stat hero-stat-wide"><strong>Puissance de l’arme</strong><span>${state.weapon === 'none' ? 0 : combatPower(state)}</span></div>
+        <div class="hero-sheet-grid hero-sheet-tag-grid">
+          <div class="tag">
+            <span class="tag-copy">
+              <small><span class="tag-icon icon-jpg icon-vie" aria-hidden="true"></span>Vie</small>
+              <strong>${state.hp}/${state.maxHp}</strong>
+            </span>
+          </div>
+          <div class="tag">
+            <span class="tag-copy">
+              <small><span class="tag-icon icon-jpg icon-dexterite" aria-hidden="true"></span>Dextérité</small>
+              <strong>${currentDexterity(state)}</strong>
+            </span>
+          </div>
+          <div class="tag">
+            <span class="tag-copy">
+              <small><span class="tag-icon icon-jpg icon-force" aria-hidden="true"></span>Force</small>
+              <strong>${currentForce(state)}</strong>
+            </span>
+          </div>
+          <div class="tag">
+            <span class="tag-copy">
+              <small><span class="tag-icon icon-jpg icon-arme" aria-hidden="true"></span>Arme</small>
+              <strong>${state.weapon === 'none' ? '0' : `+${combatPower(state)}`}</strong>
+            </span>
+          </div>
+          <div class="tag">
+            <span class="tag-copy">
+              <small><span class="tag-icon icon-jpg icon-protection" aria-hidden="true"></span>Protection</small>
+              <strong>${currentProtection(state)}</strong>
+            </span>
+          </div>
+          <div class="tag">
+            <span class="tag-copy">
+              <small><span class="tag-icon icon-jpg icon-terre-noire" aria-hidden="true"></span>Terre noire</small>
+              <strong>${contaminationLevel(state)}/13</strong>
+            </span>
+          </div>
         </div>
 
         <div class="hero-characteristics">
@@ -825,7 +855,7 @@ const STORY = {
         <div class="hero-weapon">Au départ, tu ne portes encore aucune arme.</div>
         <div class="hero-characteristics" role="note">
           <div class="hero-info-title">Avant de commencer</div>
-          <p>En bas de l’écran, tu peux consulter à tout moment ta fiche perso et ton inventaire. Tu y retrouveras tes caractéristiques, ton équipement et les objets découverts pendant l’aventure.</p>
+          <p>En bas de l’écran, tu peux consulter à tout moment tes caractéristiques, ton inventaire et ton journal de bord. Tu y retrouveras ton équipement ainsi que les objets découverts pendant l’aventure.</p>
           <p>Chaque chemin révèle une partie du mystère.</p>
           <p>Pour en percer tous les secrets, il te faudra peut-être vivre l’aventure plusieurs fois…</p>
         </div>
