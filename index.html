@@ -2399,6 +2399,89 @@ body::before {
   }
 }
 
+
+
+/* =========================================================
+   V68.130 — TEST DA V12
+   Panneau central : parchemin/papier vieilli plus marqué,
+   proche du rendu de référence envoyé par Bruno.
+   ========================================================= */
+.story-card {
+  position:relative;
+  overflow:hidden;
+  border:1px solid #8f724a !important;
+  border-top:0 !important;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(120,88,48,.11) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 80% 16%, rgba(118,86,47,.09) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 82% 74%, rgba(110,80,43,.08) 0 .9px, transparent 1.5px),
+    radial-gradient(circle at 28% 76%, rgba(101,73,39,.06) 0 .9px, transparent 1.4px),
+    linear-gradient(180deg, rgba(255,255,255,.40), rgba(255,255,255,0) 16%),
+    linear-gradient(180deg, #efe5d2 0%, #e7dbc5 38%, #e1d3bb 100%) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,250,239,.38),
+    inset 0 0 48px rgba(99,69,34,.065),
+    inset 0 -18px 26px rgba(88,61,31,.06),
+    0 2px 10px rgba(0,0,0,.05) !important;
+}
+.story-card::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.62;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(118,84,43,.14) 0, rgba(118,84,43,.06) 8%, transparent 18%),
+    radial-gradient(circle at 88% 10%, rgba(118,84,43,.10) 0, rgba(118,84,43,.04) 6%, transparent 16%),
+    radial-gradient(circle at 8% 92%, rgba(118,84,43,.10) 0, rgba(118,84,43,.04) 7%, transparent 17%),
+    radial-gradient(circle at 92% 90%, rgba(118,84,43,.12) 0, rgba(118,84,43,.05) 7%, transparent 18%),
+    radial-gradient(circle at 50% 36%, rgba(255,255,255,.12), transparent 34%),
+    repeating-linear-gradient(14deg, rgba(116,83,45,.018) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(103deg, rgba(255,255,255,.022) 0 1px, transparent 1px 8px);
+  mix-blend-mode:multiply;
+}
+.story-card::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    linear-gradient(90deg, rgba(110,80,44,.12), transparent 22%, transparent 78%, rgba(110,80,44,.11)),
+    linear-gradient(180deg, rgba(110,80,44,.11), transparent 18%, transparent 84%, rgba(110,80,44,.12));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,247,232,.24),
+    inset 0 0 24px rgba(91,61,27,.07);
+}
+.story-card > * { position:relative; z-index:1; }
+.story-card h2 {
+  color:#1f1712 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.12);
+}
+.story-card h2:not(:empty)::after {
+  color:#8a6b43 !important;
+  border-top-color:rgba(133,102,61,.62) !important;
+}
+.story-text {
+  color:#2a221a !important;
+}
+.story-text blockquote {
+  color:#4a3a2b !important;
+}
+.chapter-number {
+  color:#7d6544 !important;
+}
+@media (max-width:700px) {
+  .story-card {
+    box-shadow:
+      inset 0 0 0 1px rgba(255,250,239,.34),
+      inset 0 0 30px rgba(99,69,34,.055),
+      inset 0 -12px 20px rgba(88,61,31,.055),
+      0 2px 8px rgba(0,0,0,.04) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2454,7 +2537,7 @@ body::before {
   <div id="drawerBackdrop" class="backdrop hidden"></div>
   <aside id="drawer" class="drawer page-drawer" aria-hidden="true">
     <div class="drawer-head">
-      <h3>Pages · TEST — V68.129 · TEST DA V11</h3>
+      <h3>Pages · TEST — V68.130 · TEST DA V12</h3>
       <button id="closeDrawerBtn" class="icon-btn" aria-label="Fermer la liste des pages">×</button>
     </div>
     <div id="pageNavList" class="page-nav-list" aria-label="Navigation directe entre les pages"></div>
