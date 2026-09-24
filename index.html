@@ -3079,6 +3079,119 @@ body::before {
   }
 }
 
+/* =========================================================
+   V68.143 — BARRE STATS : 2 LIGNES MAXIMUM PAR CASE
+   Ligne 1 = icône + libellé
+   Ligne 2 = valeur
+   Toujours 6 cases sur une seule rangée.
+   ========================================================= */
+
+.status-tags {
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+}
+
+.status-tags .tag {
+  min-width: 0 !important;
+  min-height: clamp(42px, 7vw, 56px) !important;
+  padding: clamp(3px, .6vw, 6px) 2px !important;
+  overflow: hidden !important;
+}
+
+.status-tags .tag-copy {
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  align-content: center !important;
+  justify-items: center !important;
+
+  gap: clamp(2px, .45vw, 4px) !important;
+  text-align: center !important;
+}
+
+/* Ligne 1 : icône + nom */
+.status-tags .tag-copy small {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: clamp(2px, .35vw, 5px) !important;
+  margin: 0 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+
+  font-size: clamp(5.4px, 1.55vw, 8.5px) !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+}
+
+.status-tags .tag-label {
+  min-width: 0 !important;
+  max-width: calc(100% - 13px) !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: clip !important;
+}
+
+/* Ligne 2 : valeur */
+.status-tags .tag-copy strong {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+
+  display: block !important;
+  margin: 0 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+
+  text-align: center !important;
+  font-size: clamp(10px, 2.8vw, 16px) !important;
+  line-height: 1 !important;
+}
+
+/* Icône compacte, mais toujours lisible */
+.status-tags .tag-icon,
+.status-tags .tag-icon.icon-jpg {
+  width: clamp(9px, 2.3vw, 15px) !important;
+  height: clamp(9px, 2.3vw, 15px) !important;
+  flex: 0 0 clamp(9px, 2.3vw, 15px) !important;
+
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+}
+
+/* Aucun passage en 3 ou 2 colonnes : toujours 6 cases. */
+@media (max-width: 960px), (max-width: 700px), (max-width: 430px) {
+  .status-tags {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    width: calc(100vw - 14px) !important;
+  }
+
+  .status-tags .tag {
+    min-height: 46px !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+
+  .status-tags .tag-copy small {
+    font-size: clamp(5.2px, 1.65vw, 7.5px) !important;
+  }
+
+  .status-tags .tag-copy strong {
+    font-size: clamp(10px, 2.8vw, 14px) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3160,10 +3273,10 @@ body::before {
   </div>
 
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.142"></script>
+  <script src="./app/catalog.js?v=68.143"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
-  <script src="./engine/reader.js?v=68.142"></script>
+  <script src="./engine/reader.js?v=68.143"></script>
 
 <script>
 (function(){
