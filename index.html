@@ -4501,7 +4501,7 @@ body::before {
    ========================================================= */
 
 :root {
-  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68172");
+  --ui-stats-texture: url("./assets/ui/texture-caracteristiques.jpg?v=68173");
 }
 
 /* =========================
@@ -5235,6 +5235,92 @@ body.library-home-open .app-shell {
   }
 }
 
+/* =========================================================
+   V68.173 — CHOIX SANS NUMÉRO + RENVOI VRAIMENT EN BAS À DROITE
+   ========================================================= */
+
+/* Les numéros 1 / 2 / 3 ne sont plus affichés. */
+.choice-index {
+  display: none !important;
+}
+
+/* Le bouton reste la référence de positionnement. */
+.choice-btn {
+  position: relative !important;
+  padding: 16px 18px 38px !important;
+}
+
+/* La décision principale reste exactement au centre du bouton. */
+.choice-copy {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: calc(100% - 36px) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+  text-align: center !important;
+  line-height: 1.18 !important;
+  z-index: 2 !important;
+}
+
+/* Le renvoi est désormais un ENFANT DIRECT du bouton
+   et se place donc réellement dans son angle inférieur droit. */
+.choice-btn > .choice-dest {
+  position: absolute !important;
+  left: auto !important;
+  right: 10px !important;
+  top: auto !important;
+  bottom: 6px !important;
+
+  width: auto !important;
+  max-width: calc(100% - 20px) !important;
+  min-height: 0 !important;
+
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  color: #d2bd91 !important;
+  text-align: right !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  z-index: 4 !important;
+}
+
+.choice-btn > .choice-dest::before,
+.choice-btn > .choice-dest::after {
+  content: none !important;
+  display: none !important;
+}
+
+@media (max-width: 620px) {
+  .choice-btn {
+    padding: 14px 14px 34px !important;
+  }
+
+  .choice-copy {
+    width: calc(100% - 28px) !important;
+  }
+
+  .choice-btn > .choice-dest {
+    right: 8px !important;
+    bottom: 5px !important;
+    max-width: calc(100% - 16px) !important;
+    font-size: 13px !important;
+  }
+}
+
 </style>
 </head>
 <body class="library-home-open">
@@ -5601,8 +5687,47 @@ body.library-home-open .app-shell {
   })();
   </script>
 
+
+  <script>
+  (function () {
+    const choicesRoot = document.getElementById('choices');
+
+    function fixChoiceButton(btn) {
+      if (!btn || !btn.classList.contains('choice-btn')) return;
+
+      const indexEl = btn.querySelector(':scope > .choice-index');
+      if (indexEl) indexEl.remove();
+
+      const copy = btn.querySelector(':scope > .choice-copy');
+      if (!copy) return;
+
+      const dest = copy.querySelector('.choice-dest');
+      if (dest) {
+        btn.appendChild(dest);
+      }
+    }
+
+    function fixAllChoices() {
+      if (!choicesRoot) return;
+      choicesRoot.querySelectorAll('.choice-btn').forEach(fixChoiceButton);
+    }
+
+    if (choicesRoot) {
+      new MutationObserver(fixAllChoices).observe(choicesRoot, {
+        childList: true,
+        subtree: true
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', fixAllChoices);
+    window.addEventListener('load', fixAllChoices);
+    setTimeout(fixAllChoices, 50);
+    setTimeout(fixAllChoices, 200);
+  })();
+  </script>
+
   <script src="./engine/core.js"></script>
-  <script src="./app/catalog.js?v=68.172"></script>
+  <script src="./app/catalog.js?v=68.173"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/book.js?v=68.122"></script>
   <script src="./books/ecuyer/01-la-grotte-de-valombre/journal.js?v=68.122"></script>
 
@@ -5675,7 +5800,7 @@ body.library-home-open .app-shell {
   })();
   </script>
 
-  <script src="./engine/reader.js?v=68.172"></script>
+  <script src="./engine/reader.js?v=68.173"></script>
 
 <script>
 (function(){
